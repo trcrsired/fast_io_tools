@@ -1,4 +1,4 @@
-app	*[fstream]seek to the end of stream before each write.
+app	*["a"]seek to the end of stream before each write.
 archive	[Windows]FILE_ATTRIBUTE_ARCHIVE 0x20
 binary	["b"]open in binary mode. native_file is always binary. The text mode is provided by the POSIX layer, while native_file is win32_file or nt_file, which ignores this toggle.
 compressed	[Windows]FILE_ATTRIBUTE_COMPRESSED 0x800
