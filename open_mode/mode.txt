@@ -1,0 +1,28 @@
+app	[All]seek to the end of stream before each write.
+archive	[Windows]
+binary	
+compressed	
+creat	
+direct	
+directory	
+encrypted	
+excl	
+follow	
+hidden	
+in	
+inherit	
+large_file	
+no_atime	
+no_block	
+no_ctty	
+no_recall	
+normal	
+offline	
+out	
+posix_semantics	
+random_access	
+session_aware	
+sync	
+system	
+temporary	
+trunc	

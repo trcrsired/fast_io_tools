@@ -1,0 +1,30 @@
+app	*[fstream]seek to the end of stream before each write.
+archive	[Windows]FILE_ATTRIBUTE_ARCHIVE 0x20
+binary	["b"]open in binary mode. native_file is always binary. The text mode is provided by the POSIX layer, while native_file is win32_file or nt_file, which ignores this toggle.
+compressed	[Windows]FILE_ATTRIBUTE_COMPRESSED 0x800
+creat	*POSIX O_CREAT
+direct	*POSIX O_DIRECT
+directory	*POSIX O_DIRECTORY.
+encrypted	[Windows]FILE_ATTRIBUTE_ENCRYPTED 0x4000
+excl	*["x"]POSIX O_EXCL
+follow	*Inverse of POSIX O_NOFOLLOW.
+hidden	[Windows]FILE_ATTRIBUTE_HIDDEN 0x2
+in	*["r"]open for reading.
+inherit	*Inverse of POSIX O_CLOEXEC.
+no_atime	[Linux]O_NOATIME
+no_block	*POSIX O_NONBLOCK
+no_ctty	[Linux]O_NOCTTY
+no_recall	[Windows]FILE_FLAG_OPEN_NO_RECALL 0x00100000
+normal	[Windows]FILE_ATTRIBUTE_NORMAL 0x80
+offline	[Windows]FILE_ATTRIBUTE_OFFLINE 0x1000
+out	*["w"]open for writing.
+case_insensitive	[Windows]NT OBJ_CASE_INSENSITIVE 0x00000040L
+random_access	[Windows]FILE_FLAG_RANDOM_ACCESS 0x10000000
+session_aware	[Windows]FILE_FLAG_SESSION_AWARE 0x00800000
+sync	*POSIX O_SYNC
+system	[Windows]FILE_ATTRIBUTE_SYSTEM 0x4
+temporary	*[Linux]O_TMPFILE. [Windows]FILE_ATTRIBUTE_TEMPORARY 0x100 + FILE_FLAG_DELETE_ON_CLOSE 0x04000000
+trunc	*POSIX O_TRUNC
+path	[Linux]O_PATH
+search	POSIX O_SEARCH
+tty_init	POSIX O_TTY_INIT
