@@ -9,8 +9,8 @@ int main()
 	std::vector<std::pair<std::string,std::string>> vec;
 	for(std::string str1,str2;scan<true>(ibf,str1,fast_io::line(str2));vec.emplace_back(std::move(str1),std::move(str2)));		
 	std::ranges::sort(vec);
-	print(obf,"none=0,\n");
+	print(obf,"none=0,\n//\t*indicates that the open mode has not been evaluated yet\n");
 	for(std::size_t i{};i!=vec.size();++i)
-		println(obf,vec[i].first,"=1<<",i,",\n\\\\",vec[i].second);
+		println(obf,vec[i].first,"=1<<",i,",\n//",vec[i].second);
 }
 
