@@ -1,8 +1,8 @@
 app	*["a"]seek to the end of stream before each write.
 archive	[Windows]FILE_ATTRIBUTE_ARCHIVE 0x20
-binary	["b"]open in binary mode. native_file is always binary. The text mode is provided by the POSIX layer, while native_file is win32_file or nt_file, which ignores this toggle.
+text	[inverse of "b"]open in text mode. native_file is always binary. The text mode is provided by the POSIX layer or C FILE layer. When native_file is win32_file or nt_file or zw_file or unsupported character type for C FILE* or C++ filebuf, throw invalid arguments eh.
 compressed	[Windows]FILE_ATTRIBUTE_COMPRESSED 0x800
-creat	*POSIX O_CREAT
+creat	POSIX O_CREAT
 direct	*POSIX O_DIRECT
 directory	*POSIX O_DIRECTORY.
 encrypted	[Windows]FILE_ATTRIBUTE_ENCRYPTED 0x4000

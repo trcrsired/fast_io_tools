@@ -139,25 +139,33 @@ inline constexpr bool exec_charset_is_ebcdic() noexcept
 		return false;
 }
 
-template<typename char_type>
-inline constexpr std::uint64_t bar(char_type* b,char_type* e,std::uint64_t& res)
+template<char8_t base,typename char_type>
+inline constexpr std::uint64_t from_chars_u64(char_type* b,char_type* e,std::uint64_t& res)
 {
-    std::uint64_t overflow{b==e};
-    using unsigned_char_type = std::make_unsigned_t<char_type>;
-    constexpr unsigned_char_type ten(10);
-    for(;b!=e;++b)
-    {
-        unsigned_char_type result(*b);
-        if constexpr(exec_charset_is_ebcdic<char_type>())
-            result-=static_cast<unsigned_char_type>('0');
-        else
-            result-=static_cast<unsigned_char_type>(u8'0');
-        if(ten<=result)
-            break;
-        std::uint64_t umulres;
-        res=intrinsics::umul(res,ten,umulres);
-        overflow|=umulres;
-        overflow|=intrinsics::add_carry(0,res,static_cast<std::uint64_t>(result),res);
-    }
-    return overflow;
+	std::uint64_t overflow{b==e};
+	using unsigned_char_type = std::make_unsigned_t<char_type>;
+	constexpr unsigned_char_type ten(base);
+	for(;b!=e;++b)
+	{
+		unsigned_char_type result(*b);
+		if constexpr(exec_charset_is_ebcdic<char_type>())
+			result-=static_cast<unsigned_char_type>(240);
+		else
+			result-=static_cast<unsigned_char_type>(u8'0');
+		if(ten<=result)
+			break;
+		std::uint64_t umulres;
+		res=intrinsics::umul(res,ten,umulres);
+		overflow|=umulres;
+		overflow|=intrinsics::add_carry(0,res,static_cast<std::uint64_t>(result),res);
+	}
+	return overflow;
 }
+
+inline constexpr std::uint64_t from_chars_u64over10(char8_t* b,char8_t* e,std::uint64_t& res)
+{
+	return from_chars_u64<10>(b,e,res);
+}
+/*
+https://godbolt.org/z/T1KGT5
+*/
