@@ -34,7 +34,14 @@ floor,
 half_down,
 half_even,
 half_up,
-up,
+up
+};
+
+enum class floating_mode
+{
+general,
+fixed,
+scientific
 };
 
 }

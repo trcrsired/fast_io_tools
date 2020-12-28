@@ -3,7 +3,4 @@
 namespace fast_io::details::fp::dragonbox
 {
 
-
-
-
 }
