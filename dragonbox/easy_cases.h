@@ -147,7 +147,7 @@ struct floating_point_result
 	using exponent_type = typename floating_trait::exponent_type;
 	using signed_exponent_type = std::make_signed_t<exponent_type>;
 	mantissa_type significand;
-	exponent_type exponent;
+	signed_exponent_type exponent;
 };
 
 template<floating_mode flt_mode,bool uppercase_e,char8_t decimal_point,std::random_access_iterator Iter,my_unsigned_integral mantissa_type>
@@ -572,7 +572,7 @@ inline constexpr Iter normal_case_no_sign(Iter result,mantissa_type vr,exponent_
 	}
 }
 
-template<floating_mode flt_mode,bool uppercase_e,char8_t decimal_point,std::random_access_iterator Iter,std::floating_point fp_type,my_unsigned_integral muint,
+template<floating_mode flt_mode,bool uppercase_e,char8_t decimal_point,std::random_access_iterator Iter,my_unsigned_integral muint,
 		my_signed_integral exp_type>
 inline constexpr Iter normal_case(Iter result,bool sign,muint vr,exp_type e10) noexcept
 {

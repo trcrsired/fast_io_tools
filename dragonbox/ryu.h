@@ -2,9 +2,16 @@
 
 namespace fast_io::details::fp::ryu
 {
-template<std::floating_type F,my_unsigned_integral mantissa_type,my_signed_integral signed_exponent_type>
-inline constexpr floating_point_result<F> ryu_main(mantissa_type mantissa,signed_exponent_type exponent) noexcept
+template<std::floating_point F>
+inline constexpr floating_point_result<F> ryu_main(typename floating_traits<F>::mantissa_type mantissa,typename floating_traits<F>::exponent_type exponent) noexcept
 {
+	using namespace fast_io::details::ryu;
+	using floating_type = std::remove_cvref_t<F>;
+	using floating_trait = floating_traits<floating_type>;
+	using mantissa_type = typename floating_traits<F>::mantissa_type;
+	using exponent_type = typename floating_trait::exponent_type;
+	using signed_exponent_type = std::make_signed_t<exponent_type>;
+
 	auto const r2(init_repm2<F>(mantissa,static_cast<signed_exponent_type>(exponent)));
 	bool const accept_bounds(!(r2.m&1));
 	auto const mv(r2.m<<2);
@@ -220,7 +227,7 @@ inline constexpr floating_point_result<F> ryu_main(mantissa_type mantissa,signed
 			vr+=(vr==vm||round_up);
 		}
 	}
-	return {vr,e10-removed};
+	return {vr,e10+removed};
 }
 
 }

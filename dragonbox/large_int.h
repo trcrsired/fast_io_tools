@@ -34,10 +34,8 @@ inline constexpr iter_type fp_to_chars(iter_type result, fp_type d) noexcept
 			return integer_case<flt_mode,uppercase_e,decimal_point>(result,sign,(r2.m>>-r2.e));
 	}
 	}
-//	if(init_rep)
-
 	auto res{fast_io::details::fp::ryu::ryu_main<floating_type>(mantissa,exponent)};
-	return result;
+	return normal_case<flt_mode,uppercase_e,decimal_point>(result,sign,res.significand,res.exponent);
 }
 
 }
