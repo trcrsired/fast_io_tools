@@ -138,18 +138,6 @@ inline constexpr Iter zero_case(Iter result,bool sign) noexcept
 		return zero_case<floating_mode::general,true>(result,sign);
 }
 
-template<std::floating_point fp_type>
-struct floating_point_result
-{
-	using floating_type = fp_type;
-	using floating_trait = floating_traits<floating_type>;
-	using mantissa_type = typename floating_trait::mantissa_type;
-	using exponent_type = typename floating_trait::exponent_type;
-	using signed_exponent_type = std::make_signed_t<exponent_type>;
-	mantissa_type significand;
-	signed_exponent_type exponent;
-};
-
 template<floating_mode flt_mode,bool uppercase_e,char8_t decimal_point,std::random_access_iterator Iter,my_unsigned_integral mantissa_type>
 inline constexpr Iter integer_case_no_sign(Iter result,mantissa_type v2) noexcept
 {
@@ -578,5 +566,20 @@ inline constexpr Iter normal_case(Iter result,bool sign,muint vr,exp_type e10) n
 {
 	return normal_case_no_sign<flt_mode,uppercase_e,decimal_point>(sign_case(result,sign),vr,e10);
 }
+
+
+
+
+template<std::floating_point fp_type>
+struct floating_point_result
+{
+	using floating_type = fp_type;
+	using floating_trait = floating_traits<floating_type>;
+	using mantissa_type = typename floating_trait::mantissa_type;
+	using exponent_type = typename floating_trait::exponent_type;
+	using signed_exponent_type = std::make_signed_t<exponent_type>;
+	mantissa_type significand;
+	signed_exponent_type exponent;
+};
 
 }
