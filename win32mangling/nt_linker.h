@@ -9,7 +9,7 @@ namespace fast_io::win32::nt
 
 __declspec(dllimport) extern std::uint32_t rtl_nt_status_to_dos_error(std::uint32_t status) noexcept;
 
-__declspec(dllimport) extern std::uint32_t __stdcall NtClose(void*) noexcept
+__declspec(dllimport) extern std::uint32_t __stdcall NtClose(void*) noexcept;
 __declspec(dllimport) extern std::uint32_t __stdcall ZwClose(void*) noexcept;
 
 template<bool zw>
