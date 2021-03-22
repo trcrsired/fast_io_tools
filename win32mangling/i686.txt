@@ -39,3 +39,32 @@ __imp_?GetACP@win32@fast_io@@YGIXZ __imp__GetACP@0
 __imp_?getenv_s@win32@fast_io@@YAHPAIPADIPBD@Z __imp__getenv_s
 
 
+__imp_?rtl_nt_status_to_dos_error@nt@win32@fast_io@@YAII@Z __imp__RtlNtStatusToDosError@4
+__imp_?NtClose@nt@win32@fast_io@@YGIPAX@Z __imp__NtClose@4
+__imp_?ZwClose@nt@win32@fast_io@@YGIPAX@Z __imp__ZwClose@4
+__imp_?NtCreateFile@nt@win32@fast_io@@YGIPAPAXIPAUobject_attributes@123@PAUio_status_block@123@PA_JIIIIPAXI@Z __imp__NtCreateFile@44
+__imp_?ZwCreateFile@nt@win32@fast_io@@YGIPAPAXIPAUobject_attributes@123@PAUio_status_block@123@PA_JIIIIPAXI@Z __imp__ZwCreateFile@44
+__imp_?NtCreateSection@nt@win32@fast_io@@YGIPIAPAXIPIAUobject_attributes@123@PA_KIIPIAX@Z __imp__NtCreateSection@28
+__imp_?ZwCreateSection@nt@win32@fast_io@@YGIPIAPAXIPIAUobject_attributes@123@PA_KIIPIAX@Z __imp__ZwCreateSection@28
+__imp_?NtQueryInformationProcess@nt@win32@fast_io@@YGIPIAXW4process_information_class@123@PAUprocess_basic_information@123@IPAI@Z __imp__NtQueryInformationProcess@20
+__imp_?ZwQueryInformationProcess@nt@win32@fast_io@@YGIPIAXW4process_information_class@123@PAUprocess_basic_information@123@IPAI@Z __imp__ZwQueryInformationProcess@20
+__imp_?NtWriteFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@Z01PBXIPA_JPAI@Z __imp__NtWriteFile@36
+__imp_?ZwWriteFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@Z01PBXIPA_JPAI@Z __imp__ZwWriteFile@36
+__imp_?NtReadFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@Z01PBXIPA_JPAI@Z __imp__NtReadFile@36
+__imp_?ZwReadFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@Z01PBXIPA_JPAI@Z __imp__ZwReadFile@36
+__imp_?NtQueryDirectoryFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@Z010IW4file_information_class@123@HPAUunicode_string@123@H@Z __imp__NtQueryDirectoryFile@44
+__imp_?ZwQueryDirectoryFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@Z010IW4file_information_class@123@HPAUunicode_string@123@H@Z __imp__ZwQueryDirectoryFile@44
+__imp_?NtQuerySection@nt@win32@fast_io@@YGIPAXW4section_information_class@123@0IPAI@Z __imp__NtQuerySection@20
+__imp_?ZwQuerySection@nt@win32@fast_io@@YGIPAXW4section_information_class@123@0IPAI@Z __imp__ZwQuerySection@20
+__imp_?NtQueryInformationFile@nt@win32@fast_io@@YGIPIAXPIAUio_status_block@123@0IW4file_information_class@123@@Z __imp__NtQueryInformationFile@20
+__imp_?ZwQueryInformationFile@nt@win32@fast_io@@YGIPIAXPIAUio_status_block@123@0IW4file_information_class@123@@Z __imp__ZwQueryInformationFile@20
+__imp_?NtSetInformationFile@nt@win32@fast_io@@YGIPIAXPIAUio_status_block@123@0IW4file_information_class@123@@Z __imp__NtSetInformationFile@20
+__imp_?ZwSetInformationFile@nt@win32@fast_io@@YGIPIAXPIAUio_status_block@123@0IW4file_information_class@123@@Z __imp__ZwSetInformationFile@20
+__imp_?NtDuplicateObject@nt@win32@fast_io@@YGIPAX00PAPAXIII@Z __imp__NtDuplicateObject@28
+__imp_?ZwDuplicateObject@nt@win32@fast_io@@YGIPAX00PAPAXIII@Z __imp__ZwDuplicateObject@28
+__imp_?NtWaitForSingleObject@nt@win32@fast_io@@YGIPAXHPA_K@Z __imp__NtWaitForSingleObject@12
+__imp_?ZwWaitForSingleObject@nt@win32@fast_io@@YGIPAXHPA_K@Z __imp__ZwWaitForSingleObject@12
+__imp_?NtSetSystemTime@nt@win32@fast_io@@YGIPA_K0@Z __imp__NtSetSystemTime@8
+__imp_?ZwSetSystemTime@nt@win32@fast_io@@YGIPA_K0@Z __imp__ZwSetSystemTime@8
+__imp_?rtl_dos_path_name_to_nt_path_name_u@nt@win32@fast_io@@YGIPB_WPAUunicode_string@123@PAPB_WPAUrtl_relative_name_u@123@@Z __imp__RtlDosPathNameToNtPathName_U@16
+__imp_?rtl_free_unicode_string@nt@win32@fast_io@@YGXPAUunicode_string@123@@Z __imp__RtlFreeUnicodeString@4
