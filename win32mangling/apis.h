@@ -225,7 +225,7 @@ asm("GetACP")
 #endif
 ;
 
-__declspec(dllimport) extern errno_t __stdcall getenv_s(std::size_t *,char* buffer,std::size_t ,char const *) noexcept
+__declspec(dllimport) extern errno_t __cdecl getenv_s(std::size_t *,char* buffer,std::size_t ,char const *) noexcept
 #if 0
 asm("getenv_s")
 #endif

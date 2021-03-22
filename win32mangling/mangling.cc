@@ -314,7 +314,7 @@ auto get_SystemFunction036() noexcept
 	return fast_io::win32::SystemFunction036;
 }
 
-__declspec(dllimport) extern "C" int __stdcall SystemFunction036(void*,std::uint32_t) noexcept;
+extern "C" __declspec(dllimport)  int __stdcall SystemFunction036(void*,std::uint32_t) noexcept;
 
 auto sys_SystemFunction036() noexcept
 {
@@ -372,4 +372,15 @@ auto get_GetACP() noexcept
 auto sys_GetACP() noexcept
 {
 	return GetACP;
+}
+
+auto get_getenv_s() noexcept
+{
+	return fast_io::win32::getenv_s;
+}
+extern "C" errno_t __cdecl getenv_s(std::size_t *,char* buffer,std::size_t ,char const *) noexcept;
+
+auto sys_getenv_s() noexcept
+{
+	return getenv_s;
 }
