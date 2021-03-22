@@ -19,7 +19,7 @@ __imp_?LoadLibraryA@win32@fast_io@@YGPAXPBD@Z __imp__LoadLibraryA@4
 __imp_?WaitForSingleObject@win32@fast_io@@YGIPAXI@Z __imp__WaitForSingleObject@8
 __imp_?CancelIo@win32@fast_io@@YGIPAX@Z __imp__CancelIo@4
 __imp_?GetFileInformationByHandle@win32@fast_io@@YGHPIAXPIAUby_handle_file_information@12@@Z __imp__GetFileInformationByHandle@8
-__imp_?GetUserDefaultLocaleName@win32@fast_io@@YGHPA_WH@Z __imp__GetUserDefaultLocaleName@
+__imp_?GetUserDefaultLocaleName@win32@fast_io@@YGHPA_WH@Z __imp__GetUserDefaultLocaleName@8
 __imp_?GetSystemTimePreciseAsFileTime@win32@fast_io@@YGXPAUfiletime@12@@Z __imp__GetSystemTimePreciseAsFileTime@4
 __imp_?QueryUnbiasedInterruptTime@win32@fast_io@@YGHPA_K@Z __imp__QueryUnbiasedInterruptTime@4
 __imp_?GetProcessTimes@win32@fast_io@@YGHPAXPAUfiletime@12@111@Z __imp__GetProcessTimes@20
