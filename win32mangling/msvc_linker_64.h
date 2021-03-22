@@ -32,6 +32,7 @@
 #pragma comment(linker,"/alternatename:__imp_?CreateFileW@win32@fast_io@@YAPEAXPEB_WIIPEAUsecurity_attributes@12@IIPEAX@Z=__imp_CreateFileW")
 #pragma comment(linker,"/alternatename:__imp_?CreateIoCompletionPort@win32@fast_io@@YAPEAXPEAX0_KI@Z=__imp_CreateIoCompletionPort")
 #pragma comment(linker,"/alternatename:__imp_?SystemFunction036@win32@fast_io@@YAHPEAXI@Z=__imp_SystemFunction036")
+#pragma comment(linker,"/alternatename:__imp_?CloseHandle@win32@fast_io@@YAHPEAX@Z=__imp_CloseHandle")
 #pragma comment(linker,"/alternatename:__imp_?LockFileEx@win32@fast_io@@YAHPEAXIIIIPEAUoverlapped@12@@Z=__imp_LockFileEx")
 #pragma comment(linker,"/alternatename:__imp_?UnlockFileEx@win32@fast_io@@YAHPEAXIIIPEAUoverlapped@12@@Z=__imp_UnlockFileEx")
 #pragma comment(linker,"/alternatename:__imp_?DeviceIoControl@win32@fast_io@@YAHPEAXI0I0I0PEAUoverlapped@12@@Z=__imp_DeviceIoControl")
