@@ -26,8 +26,9 @@
 	.thumb_func
 "?sys_RtlNtStatusToDosError@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:RtlNtStatusToDosError
-	movt	r0, :upper16:RtlNtStatusToDosError
+	movw	r0, :lower16:__imp_RtlNtStatusToDosError
+	movt	r0, :upper16:__imp_RtlNtStatusToDosError
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_NtClose@@YA?A?<auto>@@XZ";
@@ -55,8 +56,9 @@
 	.thumb_func
 "?sys_NtClose@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:NtClose
-	movt	r0, :upper16:NtClose
+	movw	r0, :lower16:__imp_NtClose
+	movt	r0, :upper16:__imp_NtClose
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_ZwClose@@YA?A?<auto>@@XZ";
@@ -84,8 +86,9 @@
 	.thumb_func
 "?sys_ZwClose@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:ZwClose
-	movt	r0, :upper16:ZwClose
+	movw	r0, :lower16:__imp_ZwClose
+	movt	r0, :upper16:__imp_ZwClose
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_NtCreateFile@@YA?A?<auto>@@XZ";
@@ -113,8 +116,9 @@
 	.thumb_func
 "?sys_NtCreateFile@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:NtCreateFile
-	movt	r0, :upper16:NtCreateFile
+	movw	r0, :lower16:__imp_NtCreateFile
+	movt	r0, :upper16:__imp_NtCreateFile
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_ZwCreateFile@@YA?A?<auto>@@XZ";
@@ -142,8 +146,9 @@
 	.thumb_func
 "?sys_ZwCreateFile@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:ZwCreateFile
-	movt	r0, :upper16:ZwCreateFile
+	movw	r0, :lower16:__imp_ZwCreateFile
+	movt	r0, :upper16:__imp_ZwCreateFile
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_NtCreateSection@@YA?A?<auto>@@XZ";
@@ -171,8 +176,9 @@
 	.thumb_func
 "?sys_NtCreateSection@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:NtCreateSection
-	movt	r0, :upper16:NtCreateSection
+	movw	r0, :lower16:__imp_NtCreateSection
+	movt	r0, :upper16:__imp_NtCreateSection
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_ZwCreateSection@@YA?A?<auto>@@XZ";
@@ -200,8 +206,9 @@
 	.thumb_func
 "?sys_ZwCreateSection@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:ZwCreateSection
-	movt	r0, :upper16:ZwCreateSection
+	movw	r0, :lower16:__imp_ZwCreateSection
+	movt	r0, :upper16:__imp_ZwCreateSection
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_NtQueryInformationProcess@@YA?A?<auto>@@XZ";
@@ -229,8 +236,9 @@
 	.thumb_func
 "?sys_NtQueryInformationProcess@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:NtQueryInformationProcess
-	movt	r0, :upper16:NtQueryInformationProcess
+	movw	r0, :lower16:__imp_NtQueryInformationProcess
+	movt	r0, :upper16:__imp_NtQueryInformationProcess
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_ZwQueryInformationProcess@@YA?A?<auto>@@XZ";
@@ -258,8 +266,9 @@
 	.thumb_func
 "?sys_ZwQueryInformationProcess@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:ZwQueryInformationProcess
-	movt	r0, :upper16:ZwQueryInformationProcess
+	movw	r0, :lower16:__imp_ZwQueryInformationProcess
+	movt	r0, :upper16:__imp_ZwQueryInformationProcess
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_NtWriteFile@@YA?A?<auto>@@XZ";
@@ -287,8 +296,9 @@
 	.thumb_func
 "?sys_NtWriteFile@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:NtWriteFile
-	movt	r0, :upper16:NtWriteFile
+	movw	r0, :lower16:__imp_NtWriteFile
+	movt	r0, :upper16:__imp_NtWriteFile
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_ZwWriteFile@@YA?A?<auto>@@XZ";
@@ -316,8 +326,9 @@
 	.thumb_func
 "?sys_ZwWriteFile@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:ZwWriteFile
-	movt	r0, :upper16:ZwWriteFile
+	movw	r0, :lower16:__imp_ZwWriteFile
+	movt	r0, :upper16:__imp_ZwWriteFile
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_NtReadFile@@YA?A?<auto>@@XZ";
@@ -345,8 +356,9 @@
 	.thumb_func
 "?sys_NtReadFile@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:NtReadFile
-	movt	r0, :upper16:NtReadFile
+	movw	r0, :lower16:__imp_NtReadFile
+	movt	r0, :upper16:__imp_NtReadFile
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_ZwReadFile@@YA?A?<auto>@@XZ";
@@ -374,8 +386,9 @@
 	.thumb_func
 "?sys_ZwReadFile@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:ZwReadFile
-	movt	r0, :upper16:ZwReadFile
+	movw	r0, :lower16:__imp_ZwReadFile
+	movt	r0, :upper16:__imp_ZwReadFile
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_NtQueryDirectoryFile@@YA?A?<auto>@@XZ";
@@ -403,8 +416,9 @@
 	.thumb_func
 "?sys_NtQueryDirectoryFile@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:NtQueryDirectoryFile
-	movt	r0, :upper16:NtQueryDirectoryFile
+	movw	r0, :lower16:__imp_NtQueryDirectoryFile
+	movt	r0, :upper16:__imp_NtQueryDirectoryFile
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_ZwQueryDirectoryFile@@YA?A?<auto>@@XZ";
@@ -432,8 +446,9 @@
 	.thumb_func
 "?sys_ZwQueryDirectoryFile@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:ZwQueryDirectoryFile
-	movt	r0, :upper16:ZwQueryDirectoryFile
+	movw	r0, :lower16:__imp_ZwQueryDirectoryFile
+	movt	r0, :upper16:__imp_ZwQueryDirectoryFile
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_NtQuerySection@@YA?A?<auto>@@XZ";
@@ -461,8 +476,9 @@
 	.thumb_func
 "?sys_NtQuerySection@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:NtQuerySection
-	movt	r0, :upper16:NtQuerySection
+	movw	r0, :lower16:__imp_NtQuerySection
+	movt	r0, :upper16:__imp_NtQuerySection
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_ZwQuerySection@@YA?A?<auto>@@XZ";
@@ -490,8 +506,9 @@
 	.thumb_func
 "?sys_ZwQuerySection@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:ZwQuerySection
-	movt	r0, :upper16:ZwQuerySection
+	movw	r0, :lower16:__imp_ZwQuerySection
+	movt	r0, :upper16:__imp_ZwQuerySection
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_NtQueryInformationFile@@YA?A?<auto>@@XZ";
@@ -519,8 +536,9 @@
 	.thumb_func
 "?sys_NtQueryInformationFile@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:NtQueryInformationFile
-	movt	r0, :upper16:NtQueryInformationFile
+	movw	r0, :lower16:__imp_NtQueryInformationFile
+	movt	r0, :upper16:__imp_NtQueryInformationFile
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_ZwQueryInformationFile@@YA?A?<auto>@@XZ";
@@ -548,8 +566,9 @@
 	.thumb_func
 "?sys_ZwQueryInformationFile@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:ZwQueryInformationFile
-	movt	r0, :upper16:ZwQueryInformationFile
+	movw	r0, :lower16:__imp_ZwQueryInformationFile
+	movt	r0, :upper16:__imp_ZwQueryInformationFile
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_NtSetInformationFile@@YA?A?<auto>@@XZ";
@@ -577,8 +596,9 @@
 	.thumb_func
 "?sys_NtSetInformationFile@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:NtSetInformationFile
-	movt	r0, :upper16:NtSetInformationFile
+	movw	r0, :lower16:__imp_NtSetInformationFile
+	movt	r0, :upper16:__imp_NtSetInformationFile
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_ZwSetInformationFile@@YA?A?<auto>@@XZ";
@@ -606,8 +626,9 @@
 	.thumb_func
 "?sys_ZwSetInformationFile@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:ZwSetInformationFile
-	movt	r0, :upper16:ZwSetInformationFile
+	movw	r0, :lower16:__imp_ZwSetInformationFile
+	movt	r0, :upper16:__imp_ZwSetInformationFile
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_NtDuplicateObject@@YA?A?<auto>@@XZ";
@@ -635,8 +656,9 @@
 	.thumb_func
 "?sys_NtDuplicateObject@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:NtDuplicateObject
-	movt	r0, :upper16:NtDuplicateObject
+	movw	r0, :lower16:__imp_NtDuplicateObject
+	movt	r0, :upper16:__imp_NtDuplicateObject
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_ZwDuplicateObject@@YA?A?<auto>@@XZ";
@@ -664,8 +686,9 @@
 	.thumb_func
 "?sys_ZwDuplicateObject@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:ZwDuplicateObject
-	movt	r0, :upper16:ZwDuplicateObject
+	movw	r0, :lower16:__imp_ZwDuplicateObject
+	movt	r0, :upper16:__imp_ZwDuplicateObject
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_NtWaitForSingleObject@@YA?A?<auto>@@XZ";
@@ -693,8 +716,9 @@
 	.thumb_func
 "?sys_NtWaitForSingleObject@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:NtWaitForSingleObject
-	movt	r0, :upper16:NtWaitForSingleObject
+	movw	r0, :lower16:__imp_NtWaitForSingleObject
+	movt	r0, :upper16:__imp_NtWaitForSingleObject
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_ZwWaitForSingleObject@@YA?A?<auto>@@XZ";
@@ -722,8 +746,9 @@
 	.thumb_func
 "?sys_ZwWaitForSingleObject@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:ZwWaitForSingleObject
-	movt	r0, :upper16:ZwWaitForSingleObject
+	movw	r0, :lower16:__imp_ZwWaitForSingleObject
+	movt	r0, :upper16:__imp_ZwWaitForSingleObject
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_NtSetSystemTime@@YA?A?<auto>@@XZ";
@@ -751,8 +776,9 @@
 	.thumb_func
 "?sys_NtSetSystemTime@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:NtSetSystemTime
-	movt	r0, :upper16:NtSetSystemTime
+	movw	r0, :lower16:__imp_NtSetSystemTime
+	movt	r0, :upper16:__imp_NtSetSystemTime
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_ZwSetSystemTime@@YA?A?<auto>@@XZ";
@@ -780,8 +806,9 @@
 	.thumb_func
 "?sys_ZwSetSystemTime@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:ZwSetSystemTime
-	movt	r0, :upper16:ZwSetSystemTime
+	movw	r0, :lower16:__imp_ZwSetSystemTime
+	movt	r0, :upper16:__imp_ZwSetSystemTime
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_rtl_dos_path_name_to_nt_path_name_u@@YA?A?<auto>@@XZ";
@@ -809,8 +836,9 @@
 	.thumb_func
 "?sys_RtlDosPathNameToNtPathName_U@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:RtlDosPathNameToNtPathName_U
-	movt	r0, :upper16:RtlDosPathNameToNtPathName_U
+	movw	r0, :lower16:__imp_RtlDosPathNameToNtPathName_U
+	movt	r0, :upper16:__imp_RtlDosPathNameToNtPathName_U
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.def	 "?get_rtl_free_unicode_string@@YA?A?<auto>@@XZ";
@@ -838,39 +866,11 @@
 	.thumb_func
 "?sys_RtlFreeUnicodeString@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:RtlFreeUnicodeString
-	movt	r0, :upper16:RtlFreeUnicodeString
+	movw	r0, :lower16:__imp_RtlFreeUnicodeString
+	movt	r0, :upper16:__imp_RtlFreeUnicodeString
+	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
 	.section	.drectve,"yn"
 	.ascii	" /DEFAULTLIB:ntdll.lib"
 	.addrsig
-	.addrsig_sym RtlNtStatusToDosError
-	.addrsig_sym NtClose
-	.addrsig_sym ZwClose
-	.addrsig_sym NtCreateFile
-	.addrsig_sym ZwCreateFile
-	.addrsig_sym NtCreateSection
-	.addrsig_sym ZwCreateSection
-	.addrsig_sym NtQueryInformationProcess
-	.addrsig_sym ZwQueryInformationProcess
-	.addrsig_sym NtWriteFile
-	.addrsig_sym ZwWriteFile
-	.addrsig_sym NtReadFile
-	.addrsig_sym ZwReadFile
-	.addrsig_sym NtQueryDirectoryFile
-	.addrsig_sym ZwQueryDirectoryFile
-	.addrsig_sym NtQuerySection
-	.addrsig_sym ZwQuerySection
-	.addrsig_sym NtQueryInformationFile
-	.addrsig_sym ZwQueryInformationFile
-	.addrsig_sym NtSetInformationFile
-	.addrsig_sym ZwSetInformationFile
-	.addrsig_sym NtDuplicateObject
-	.addrsig_sym ZwDuplicateObject
-	.addrsig_sym NtWaitForSingleObject
-	.addrsig_sym ZwWaitForSingleObject
-	.addrsig_sym NtSetSystemTime
-	.addrsig_sym ZwSetSystemTime
-	.addrsig_sym RtlDosPathNameToNtPathName_U
-	.addrsig_sym RtlFreeUnicodeString

@@ -25,7 +25,7 @@
 	.p2align	4, 0x90
 "?sys_RtlNtStatusToDosError@@YA?A?<auto>@@XZ": # @"?sys_RtlNtStatusToDosError@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	RtlNtStatusToDosError(%rip), %rax
+	movq	__imp_RtlNtStatusToDosError(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_NtClose@@YA?A?<auto>@@XZ";
@@ -47,7 +47,7 @@
 	.p2align	4, 0x90
 "?sys_NtClose@@YA?A?<auto>@@XZ":        # @"?sys_NtClose@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	NtClose(%rip), %rax
+	movq	__imp_NtClose(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_ZwClose@@YA?A?<auto>@@XZ";
@@ -69,7 +69,7 @@
 	.p2align	4, 0x90
 "?sys_ZwClose@@YA?A?<auto>@@XZ":        # @"?sys_ZwClose@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	ZwClose(%rip), %rax
+	movq	__imp_ZwClose(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_NtCreateFile@@YA?A?<auto>@@XZ";
@@ -91,7 +91,7 @@
 	.p2align	4, 0x90
 "?sys_NtCreateFile@@YA?A?<auto>@@XZ":   # @"?sys_NtCreateFile@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	NtCreateFile(%rip), %rax
+	movq	__imp_NtCreateFile(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_ZwCreateFile@@YA?A?<auto>@@XZ";
@@ -113,7 +113,7 @@
 	.p2align	4, 0x90
 "?sys_ZwCreateFile@@YA?A?<auto>@@XZ":   # @"?sys_ZwCreateFile@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	ZwCreateFile(%rip), %rax
+	movq	__imp_ZwCreateFile(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_NtCreateSection@@YA?A?<auto>@@XZ";
@@ -135,7 +135,7 @@
 	.p2align	4, 0x90
 "?sys_NtCreateSection@@YA?A?<auto>@@XZ": # @"?sys_NtCreateSection@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	NtCreateSection(%rip), %rax
+	movq	__imp_NtCreateSection(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_ZwCreateSection@@YA?A?<auto>@@XZ";
@@ -157,7 +157,7 @@
 	.p2align	4, 0x90
 "?sys_ZwCreateSection@@YA?A?<auto>@@XZ": # @"?sys_ZwCreateSection@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	ZwCreateSection(%rip), %rax
+	movq	__imp_ZwCreateSection(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_NtQueryInformationProcess@@YA?A?<auto>@@XZ";
@@ -179,7 +179,7 @@
 	.p2align	4, 0x90
 "?sys_NtQueryInformationProcess@@YA?A?<auto>@@XZ": # @"?sys_NtQueryInformationProcess@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	NtQueryInformationProcess(%rip), %rax
+	movq	__imp_NtQueryInformationProcess(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_ZwQueryInformationProcess@@YA?A?<auto>@@XZ";
@@ -201,7 +201,7 @@
 	.p2align	4, 0x90
 "?sys_ZwQueryInformationProcess@@YA?A?<auto>@@XZ": # @"?sys_ZwQueryInformationProcess@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	ZwQueryInformationProcess(%rip), %rax
+	movq	__imp_ZwQueryInformationProcess(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_NtWriteFile@@YA?A?<auto>@@XZ";
@@ -223,7 +223,7 @@
 	.p2align	4, 0x90
 "?sys_NtWriteFile@@YA?A?<auto>@@XZ":    # @"?sys_NtWriteFile@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	NtWriteFile(%rip), %rax
+	movq	__imp_NtWriteFile(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_ZwWriteFile@@YA?A?<auto>@@XZ";
@@ -245,7 +245,7 @@
 	.p2align	4, 0x90
 "?sys_ZwWriteFile@@YA?A?<auto>@@XZ":    # @"?sys_ZwWriteFile@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	ZwWriteFile(%rip), %rax
+	movq	__imp_ZwWriteFile(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_NtReadFile@@YA?A?<auto>@@XZ";
@@ -267,7 +267,7 @@
 	.p2align	4, 0x90
 "?sys_NtReadFile@@YA?A?<auto>@@XZ":     # @"?sys_NtReadFile@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	NtReadFile(%rip), %rax
+	movq	__imp_NtReadFile(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_ZwReadFile@@YA?A?<auto>@@XZ";
@@ -289,7 +289,7 @@
 	.p2align	4, 0x90
 "?sys_ZwReadFile@@YA?A?<auto>@@XZ":     # @"?sys_ZwReadFile@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	ZwReadFile(%rip), %rax
+	movq	__imp_ZwReadFile(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_NtQueryDirectoryFile@@YA?A?<auto>@@XZ";
@@ -311,7 +311,7 @@
 	.p2align	4, 0x90
 "?sys_NtQueryDirectoryFile@@YA?A?<auto>@@XZ": # @"?sys_NtQueryDirectoryFile@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	NtQueryDirectoryFile(%rip), %rax
+	movq	__imp_NtQueryDirectoryFile(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_ZwQueryDirectoryFile@@YA?A?<auto>@@XZ";
@@ -333,7 +333,7 @@
 	.p2align	4, 0x90
 "?sys_ZwQueryDirectoryFile@@YA?A?<auto>@@XZ": # @"?sys_ZwQueryDirectoryFile@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	ZwQueryDirectoryFile(%rip), %rax
+	movq	__imp_ZwQueryDirectoryFile(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_NtQuerySection@@YA?A?<auto>@@XZ";
@@ -355,7 +355,7 @@
 	.p2align	4, 0x90
 "?sys_NtQuerySection@@YA?A?<auto>@@XZ": # @"?sys_NtQuerySection@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	NtQuerySection(%rip), %rax
+	movq	__imp_NtQuerySection(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_ZwQuerySection@@YA?A?<auto>@@XZ";
@@ -377,7 +377,7 @@
 	.p2align	4, 0x90
 "?sys_ZwQuerySection@@YA?A?<auto>@@XZ": # @"?sys_ZwQuerySection@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	ZwQuerySection(%rip), %rax
+	movq	__imp_ZwQuerySection(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_NtQueryInformationFile@@YA?A?<auto>@@XZ";
@@ -399,7 +399,7 @@
 	.p2align	4, 0x90
 "?sys_NtQueryInformationFile@@YA?A?<auto>@@XZ": # @"?sys_NtQueryInformationFile@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	NtQueryInformationFile(%rip), %rax
+	movq	__imp_NtQueryInformationFile(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_ZwQueryInformationFile@@YA?A?<auto>@@XZ";
@@ -421,7 +421,7 @@
 	.p2align	4, 0x90
 "?sys_ZwQueryInformationFile@@YA?A?<auto>@@XZ": # @"?sys_ZwQueryInformationFile@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	ZwQueryInformationFile(%rip), %rax
+	movq	__imp_ZwQueryInformationFile(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_NtSetInformationFile@@YA?A?<auto>@@XZ";
@@ -443,7 +443,7 @@
 	.p2align	4, 0x90
 "?sys_NtSetInformationFile@@YA?A?<auto>@@XZ": # @"?sys_NtSetInformationFile@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	NtSetInformationFile(%rip), %rax
+	movq	__imp_NtSetInformationFile(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_ZwSetInformationFile@@YA?A?<auto>@@XZ";
@@ -465,7 +465,7 @@
 	.p2align	4, 0x90
 "?sys_ZwSetInformationFile@@YA?A?<auto>@@XZ": # @"?sys_ZwSetInformationFile@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	ZwSetInformationFile(%rip), %rax
+	movq	__imp_ZwSetInformationFile(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_NtDuplicateObject@@YA?A?<auto>@@XZ";
@@ -487,7 +487,7 @@
 	.p2align	4, 0x90
 "?sys_NtDuplicateObject@@YA?A?<auto>@@XZ": # @"?sys_NtDuplicateObject@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	NtDuplicateObject(%rip), %rax
+	movq	__imp_NtDuplicateObject(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_ZwDuplicateObject@@YA?A?<auto>@@XZ";
@@ -509,7 +509,7 @@
 	.p2align	4, 0x90
 "?sys_ZwDuplicateObject@@YA?A?<auto>@@XZ": # @"?sys_ZwDuplicateObject@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	ZwDuplicateObject(%rip), %rax
+	movq	__imp_ZwDuplicateObject(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_NtWaitForSingleObject@@YA?A?<auto>@@XZ";
@@ -531,7 +531,7 @@
 	.p2align	4, 0x90
 "?sys_NtWaitForSingleObject@@YA?A?<auto>@@XZ": # @"?sys_NtWaitForSingleObject@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	NtWaitForSingleObject(%rip), %rax
+	movq	__imp_NtWaitForSingleObject(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_ZwWaitForSingleObject@@YA?A?<auto>@@XZ";
@@ -553,7 +553,7 @@
 	.p2align	4, 0x90
 "?sys_ZwWaitForSingleObject@@YA?A?<auto>@@XZ": # @"?sys_ZwWaitForSingleObject@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	ZwWaitForSingleObject(%rip), %rax
+	movq	__imp_ZwWaitForSingleObject(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_NtSetSystemTime@@YA?A?<auto>@@XZ";
@@ -575,7 +575,7 @@
 	.p2align	4, 0x90
 "?sys_NtSetSystemTime@@YA?A?<auto>@@XZ": # @"?sys_NtSetSystemTime@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	NtSetSystemTime(%rip), %rax
+	movq	__imp_NtSetSystemTime(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_ZwSetSystemTime@@YA?A?<auto>@@XZ";
@@ -597,7 +597,7 @@
 	.p2align	4, 0x90
 "?sys_ZwSetSystemTime@@YA?A?<auto>@@XZ": # @"?sys_ZwSetSystemTime@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	ZwSetSystemTime(%rip), %rax
+	movq	__imp_ZwSetSystemTime(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_rtl_dos_path_name_to_nt_path_name_u@@YA?A?<auto>@@XZ";
@@ -619,7 +619,7 @@
 	.p2align	4, 0x90
 "?sys_RtlDosPathNameToNtPathName_U@@YA?A?<auto>@@XZ": # @"?sys_RtlDosPathNameToNtPathName_U@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	RtlDosPathNameToNtPathName_U(%rip), %rax
+	movq	__imp_RtlDosPathNameToNtPathName_U(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_rtl_free_unicode_string@@YA?A?<auto>@@XZ";
@@ -641,38 +641,9 @@
 	.p2align	4, 0x90
 "?sys_RtlFreeUnicodeString@@YA?A?<auto>@@XZ": # @"?sys_RtlFreeUnicodeString@@YA?A?<auto>@@XZ"
 # %bb.0:
-	leaq	RtlFreeUnicodeString(%rip), %rax
+	movq	__imp_RtlFreeUnicodeString(%rip), %rax
 	retq
                                         # -- End function
 	.section	.drectve,"yn"
 	.ascii	" /DEFAULTLIB:ntdll.lib"
 	.addrsig
-	.addrsig_sym RtlNtStatusToDosError
-	.addrsig_sym NtClose
-	.addrsig_sym ZwClose
-	.addrsig_sym NtCreateFile
-	.addrsig_sym ZwCreateFile
-	.addrsig_sym NtCreateSection
-	.addrsig_sym ZwCreateSection
-	.addrsig_sym NtQueryInformationProcess
-	.addrsig_sym ZwQueryInformationProcess
-	.addrsig_sym NtWriteFile
-	.addrsig_sym ZwWriteFile
-	.addrsig_sym NtReadFile
-	.addrsig_sym ZwReadFile
-	.addrsig_sym NtQueryDirectoryFile
-	.addrsig_sym ZwQueryDirectoryFile
-	.addrsig_sym NtQuerySection
-	.addrsig_sym ZwQuerySection
-	.addrsig_sym NtQueryInformationFile
-	.addrsig_sym ZwQueryInformationFile
-	.addrsig_sym NtSetInformationFile
-	.addrsig_sym ZwSetInformationFile
-	.addrsig_sym NtDuplicateObject
-	.addrsig_sym ZwDuplicateObject
-	.addrsig_sym NtWaitForSingleObject
-	.addrsig_sym ZwWaitForSingleObject
-	.addrsig_sym NtSetSystemTime
-	.addrsig_sym ZwSetSystemTime
-	.addrsig_sym RtlDosPathNameToNtPathName_U
-	.addrsig_sym RtlFreeUnicodeString

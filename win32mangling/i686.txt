@@ -37,3 +37,5 @@ __imp_?DeviceIoControl@win32@fast_io@@YGHPAXI0I0I0PAUoverlapped@12@@Z __imp__Dev
 __imp_?GetFileType@win32@fast_io@@YGIPAX@Z __imp__GetFileType@4
 __imp_?GetACP@win32@fast_io@@YGIXZ __imp__GetACP@0
 __imp_?getenv_s@win32@fast_io@@YAHPAIPADIPBD@Z __imp__getenv_s
+
+

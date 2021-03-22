@@ -21,4 +21,4 @@ msvc_linker_32_i686.h:i686.txt
 msvc_linker_32.h:arm.txt
 	msvc_comment arm.txt msvc_linker_32.h
 clean:
-	rm msvc_linker_32.h msvc_linker_32_i686.h msvc_linker_64.h manglingarm.s manglingi686.s manglingx86_64.s
+	del msvc_linker_32.h msvc_linker_32_i686.h msvc_linker_64.h manglingarm.s manglingi686.s manglingx86_64.s nt_manglingx86_64.s nt_manglingi686.s nt_manglingarm.s
