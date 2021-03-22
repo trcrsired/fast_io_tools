@@ -1,9 +1,21 @@
 #include<cstdint>
 #include<type_traits>
+#include"rtl_api.h"
 #include"win32_definitions.h"
 #include"apis.h"
 #include<windows.h>
 
+auto get_RtlSecureZeroMemory() noexcept
+{
+	return fast_io::win32::RtlSecureZeroMemory;
+}
+
+[[gnu::dllimport]] extern "C" void* __stdcall RtlSecureZeroMemorym(void* __restrict,std::size_t) noexcept;
+
+auto sys_RtlSecureZeroMemorym() noexcept
+{
+	return RtlSecureZeroMemorym;
+}
 
 auto get_GetLastError() noexcept
 {
@@ -378,9 +390,10 @@ auto get_getenv_s() noexcept
 {
 	return fast_io::win32::getenv_s;
 }
-extern "C" errno_t __cdecl getenv_s(std::size_t *,char* buffer,std::size_t ,char const *) noexcept;
+extern "C" __declspec(dllimport) errno_t __cdecl mgetenv_s(std::size_t *,char* buffer,std::size_t ,char const *) noexcept;
 
-auto sys_getenv_s() noexcept
+
+auto sys_mgetenv_s() noexcept
 {
-	return getenv_s;
+	return mgetenv_s;
 }

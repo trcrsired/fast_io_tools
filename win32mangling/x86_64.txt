@@ -1,3 +1,4 @@
+__imp_?RtlSecureZeroMemory@win32@fast_io@@YAPEAXPEIAX_K@Z __imp_RtlSecureZeroMemory
 __imp_?GetLastError@win32@fast_io@@YAIXZ __imp_GetLastError
 __imp_?LoadLibraryW@win32@fast_io@@YAPEAXPEB_W@Z __imp_LoadLibraryW
 __imp_?FormatMessageW@win32@fast_io@@YAIIPEBXIIPEA_WIPEAX@Z __imp_FormatMessageW
@@ -34,3 +35,4 @@ __imp_?UnlockFileEx@win32@fast_io@@YAHPEAXIIIPEAUoverlapped@12@@Z __imp_UnlockFi
 __imp_?DeviceIoControl@win32@fast_io@@YAHPEAXI0I0I0PEAUoverlapped@12@@Z __imp_DeviceIoControl
 __imp_?GetFileType@win32@fast_io@@YAIPEAX@Z __imp_GetFileType
 __imp_?GetACP@win32@fast_io@@YAIXZ __imp_GetACP
+__imp_?getenv_s@win32@fast_io@@YAHPEA_KPEAD_KPEBD@Z __imp_getenv_s

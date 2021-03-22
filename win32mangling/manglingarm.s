@@ -1,6 +1,36 @@
 	.text
 	.syntax unified
 	.file	"mangling.cc"
+	.def	 "?get_RtlSecureZeroMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlSecureZeroMemory@@YA?A?<auto>@@XZ" ; -- Begin function ?get_RtlSecureZeroMemory@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_RtlSecureZeroMemory@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_RtlSecureZeroMemory@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:"__imp_?RtlSecureZeroMemory@win32@fast_io@@YAPAXPIAXI@Z"
+	movt	r0, :upper16:"__imp_?RtlSecureZeroMemory@win32@fast_io@@YAPAXPIAXI@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_RtlSecureZeroMemorym@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlSecureZeroMemorym@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_RtlSecureZeroMemorym@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_RtlSecureZeroMemorym@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_RtlSecureZeroMemorym@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:__imp_RtlSecureZeroMemorym
+	movt	r0, :upper16:__imp_RtlSecureZeroMemorym
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
 	.def	 "?get_GetLastError@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
@@ -1078,6 +1108,36 @@
 ; %bb.0:
 	movw	r0, :lower16:__imp_GetACP
 	movt	r0, :upper16:__imp_GetACP
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_getenv_s@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_getenv_s@@YA?A?<auto>@@XZ" ; -- Begin function ?get_getenv_s@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_getenv_s@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_getenv_s@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:"__imp_?getenv_s@win32@fast_io@@YAHPAIPADIPBD@Z"
+	movt	r0, :upper16:"__imp_?getenv_s@win32@fast_io@@YAHPAIPADIPBD@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_mgetenv_s@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_mgetenv_s@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_mgetenv_s@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_mgetenv_s@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_mgetenv_s@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:__imp_mgetenv_s
+	movt	r0, :upper16:__imp_mgetenv_s
 	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function

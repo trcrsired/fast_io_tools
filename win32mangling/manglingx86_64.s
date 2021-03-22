@@ -6,6 +6,28 @@
 	.globl	@feat.00
 .set @feat.00, 0
 	.file	"mangling.cc"
+	.def	 "?get_RtlSecureZeroMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlSecureZeroMemory@@YA?A?<auto>@@XZ" # -- Begin function ?get_RtlSecureZeroMemory@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_RtlSecureZeroMemory@@YA?A?<auto>@@XZ": # @"?get_RtlSecureZeroMemory@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?RtlSecureZeroMemory@win32@fast_io@@YAPEAXPEIAX_K@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?sys_RtlSecureZeroMemorym@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlSecureZeroMemorym@@YA?A?<auto>@@XZ" # -- Begin function ?sys_RtlSecureZeroMemorym@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_RtlSecureZeroMemorym@@YA?A?<auto>@@XZ": # @"?sys_RtlSecureZeroMemorym@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_RtlSecureZeroMemorym(%rip), %rax
+	retq
+                                        # -- End function
 	.def	 "?get_GetLastError@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
@@ -796,6 +818,28 @@
 "?sys_GetACP@@YA?A?<auto>@@XZ":         # @"?sys_GetACP@@YA?A?<auto>@@XZ"
 # %bb.0:
 	movq	__imp_GetACP(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?get_getenv_s@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_getenv_s@@YA?A?<auto>@@XZ" # -- Begin function ?get_getenv_s@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_getenv_s@@YA?A?<auto>@@XZ":       # @"?get_getenv_s@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?getenv_s@win32@fast_io@@YAHPEA_KPEAD_KPEBD@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?sys_mgetenv_s@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_mgetenv_s@@YA?A?<auto>@@XZ" # -- Begin function ?sys_mgetenv_s@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_mgetenv_s@@YA?A?<auto>@@XZ":      # @"?sys_mgetenv_s@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_mgetenv_s(%rip), %rax
 	retq
                                         # -- End function
 	.section	.drectve,"yn"
