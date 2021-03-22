@@ -30,6 +30,7 @@ __imp_?GetTempPathW@win32@fast_io@@YGIIPA_W@Z __imp__GetTempPathW@8
 __imp_?CreateFileW@win32@fast_io@@YGPAXPB_WIIPAUsecurity_attributes@12@IIPAX@Z __imp__CreateFileW@28
 __imp_?CreateIoCompletionPort@win32@fast_io@@YGPAXPAX0II@Z __imp__CreateIoCompletionPort@16
 __imp_?SystemFunction036@win32@fast_io@@YGHPAXI@Z __imp__SystemFunction036@8
+__imp_?CloseHandle@win32@fast_io@@YGHPAX@Z __imp__CloseHandle@4
 __imp_?LockFileEx@win32@fast_io@@YGHPAXIIIIPAUoverlapped@12@@Z __imp__LockFileEx@24
 __imp_?UnlockFileEx@win32@fast_io@@YGHPAXIIIPAUoverlapped@12@@Z __imp__UnlockFileEx@20
 __imp_?DeviceIoControl@win32@fast_io@@YGHPAXI0I0I0PAUoverlapped@12@@Z __imp__DeviceIoControl@32

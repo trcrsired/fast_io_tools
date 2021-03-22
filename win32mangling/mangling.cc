@@ -333,6 +333,15 @@ auto sys_SystemFunction036() noexcept
 	return SystemFunction036;
 }
 
+auto get_CloseHandle() noexcept
+{
+	return fast_io::win32::CloseHandle;
+}
+
+auto sys_CloseHandle() noexcept
+{
+	return CloseHandle;
+}
 
 auto get_LockFileEx() noexcept
 {

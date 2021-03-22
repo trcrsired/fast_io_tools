@@ -710,6 +710,28 @@
 	movl	__imp__SystemFunction036@8, %eax
 	retl
                                         # -- End function
+	.def	 "?get_CloseHandle@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_CloseHandle@@YA?A?<auto>@@XZ" # -- Begin function ?get_CloseHandle@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_CloseHandle@@YA?A?<auto>@@XZ":    # @"?get_CloseHandle@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?CloseHandle@win32@fast_io@@YGHPAX@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_CloseHandle@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_CloseHandle@@YA?A?<auto>@@XZ" # -- Begin function ?sys_CloseHandle@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_CloseHandle@@YA?A?<auto>@@XZ":    # @"?sys_CloseHandle@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__CloseHandle@4, %eax
+	retl
+                                        # -- End function
 	.def	 "?get_LockFileEx@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;

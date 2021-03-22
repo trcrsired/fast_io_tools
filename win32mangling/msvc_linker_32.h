@@ -1,5 +1,6 @@
 #pragma once
 
+#pragma comment(linker,"/alternatename:__imp_?RtlSecureZeroMemory@win32@fast_io@@YAPAXPIAXI@Z=__imp_RtlSecureZeroMemory")
 #pragma comment(linker,"/alternatename:__imp_?GetLastError@win32@fast_io@@YAIXZ=__imp_GetLastError")
 #pragma comment(linker,"/alternatename:__imp_?LoadLibraryW@win32@fast_io@@YAPAXPB_W@Z=__imp_LoadLibraryW")
 #pragma comment(linker,"/alternatename:__imp_?FormatMessageW@win32@fast_io@@YAIIPBXIIPA_WIPAX@Z=__imp_FormatMessageW")
@@ -36,3 +37,4 @@
 #pragma comment(linker,"/alternatename:__imp_?DeviceIoControl@win32@fast_io@@YAHPAXI0I0I0PAUoverlapped@12@@Z=__imp_DeviceIoControl")
 #pragma comment(linker,"/alternatename:__imp_?GetFileType@win32@fast_io@@YAIPAX@Z=__imp_GetFileType")
 #pragma comment(linker,"/alternatename:__imp_?GetACP@win32@fast_io@@YAIXZ=__imp_GetACP")
+#pragma comment(linker,"/alternatename:__imp_?getenv_s@win32@fast_io@@YAHPAIPADIPBD@Z=__imp_getenv_s")
