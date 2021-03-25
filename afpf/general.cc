@@ -23,17 +23,17 @@ int main(int argc,char** argv) noexcept
 		std::u8string_view first_token(line.cbegin()+tok.first.start,line.cbegin()+tok.first.last);
 		if(first_token.starts_with(u8"//"sv))
 			continue;
-		if(first_token!=u8"#define"sv||(tok.second.last-tok.second.start<static_cast<std::size_t>(4)))
+		if(first_token!=u8"#define"sv)
 		{
 			perrln(fast_io::u8err(),u8"unknown:",line);
 			continue;
 		}
-		std::u8string second(line.data()+tok.second.start+3,line.data()+tok.second.last);
+		std::u8string second(line.data()+tok.second.start,line.data()+tok.second.last);
 		for(auto & e : second)
 			e=fast_io::char_category::to_c_lower(e);
-		if(static_cast<std::size_t>(3)<tok.third.last-tok.third.start)
+		if(tok.third.last!=tok.third.start)
 		{
-			std::u8string third(line.cbegin()+tok.third.start+3,line.cbegin()+tok.third.last);
+			std::u8string third(line.cbegin()+tok.third.start,line.cbegin()+tok.third.last);
 			for(auto & e : third)
 				e=fast_io::char_category::to_c_lower(e);
 			if(map.contains(third))

@@ -1,80 +1,80 @@
-alg              	=	0, 	/* Algorithm sockets.  */
-appletalk        	=	1, 	/* Appletalk DDP.  */
-arp              	=	2, 	/* Address Resolution Protocol */
-ash              	=	3, 	/* Ash.  */
-atm              	=	4, 	/* ATM */
-atmpvc           	=	5, 	/* ATM PVCs.  */
-atmsvc           	=	6, 	/* ATM SVCs.  */
-ax25             	=	7, 	/* Amateur Radio AX.25.  */
-ban              	=	8, 	/* Banyan address. */
-bluetooth        	=	9, 	/* Bluetooth sockets.  */
-bridge           	=	10,	/* Multiprotocol bridge.  */
-caif             	=	11,	/* CAIF sockets.  */
-can              	=	12,	/* Controller Area Network.  */
-ccitt            	=	13,	/* CCITT protocols, X.25 etc */
-chaos            	=	14,	/* mit CHAOS protocols */
-cluster          	=	15,	/* Address for Microsoft cluster products. */
-cnt              	=	16,	/* Computer Network Technology */
-coip             	=	17,	/* connection-oriented IP, aka ST II */
-datakit          	=	18,	/* datakit protocols */
-decnet           	=	19,	/* Reserved for DECnet project.  */
-dli              	=	20,	/* DEC Direct data link interface */
-ecma             	=	21,	/* European computer manufacturers */
-econet           	=	22,	/* Acorn Econet.  */
-firefox          	=	23,	/* FireFox address. */
-hylink           	=	24,	/* NSC Hyperchannel */
-hyperv           	=	25,	/* HyperV sockets */
-ib               	=	26,	/* Native InfiniBand address.  */
-ieee12844        	=	27,	/* IEEE 1284.4 workgroup address. */
-ieee80211        	=	28,	/* IEEE 802.11 protocol */
-ieee802154       	=	29,	/* IEEE 802.15.4 sockets.  */
-implink          	=	30,	/* arpanet imp addresses */
-inet             	=	31,	/* IP protocol family.  */
-inet6            	=	32,	/* IP version 6.  */
-inet6_sdp        	=	33,	/* OFED Socket Direct Protocol ipv6 */
-inet_sdp         	=	34,	/* OFED Socket Direct Protocol ipv4 */
-ipx              	=	35,	/* Novell Internet Protocol.  */
-irda             	=	36,	/* IRDA sockets.  */
-isdn             	=	37,	/* mISDN sockets.  */
-iso              	=	38,	/* ISO protocols */
-iucv             	=	39,	/* IUCV sockets.  */
-kcm              	=	40,	/* Kernel Connection Multiplexor.  */
-key              	=	41,	/* PF_KEY key management API.  */
-lat              	=	42,	/* LAT */
-link             	=	43,	/* Link layer interface */
-llc              	=	44,	/* Linux LLC.  */
-local            	=	45,	/* Local to host (pipes and file-domain).  */
-mpls             	=	46,	/* MPLS.  */
-natm             	=	47,	/* native ATM access */
-netbeui          	=	48,	/* Reserved for 802.2LLC project.  */
-netbios          	=	49,	/* SMB protocols */
-netgraph         	=	50,	/* Netgraph sockets */
-netrom           	=	51,	/* Amateur radio NetROM.  */
-network_designers	=	52,	/* Address for Network Designers OSI gateway-enabled protocols. */
-nfc              	=	53,	/* NFC sockets.  */
-packet           	=	54,	/* Packet family.  */
-phonet           	=	55,	/* Phonet sockets.  */
-pppox            	=	56,	/* PPPoX sockets.  */
-pseudo_hdrcmplt  	=	57,	/* Used by BPF to not rewrite headers * in interface output routine */
-pseudo_key       	=	58,	/* Internal key-management function */
-pseudo_pip       	=	59,	/* Help Identify PIP packets */
-pseudo_rtip      	=	60,	/* Help Identify RTIP packets */
-pseudo_xtp       	=	61,	/* eXpress Transfer Protocol (no AF) */
-pup              	=	62,	/* pup protocols: e.g. BSP */
-qipcrtr          	=	63,	/* Qualcomm IPC Router.  */
-rds              	=	64,	/* RDS sockets.  */
-rose             	=	65,	/* Amateur Radio X.25 PLP.  */
-route            	=	66,	/* Internal Routing Protocol */
-rxrpc            	=	67,	/* RxRPC sockets.  */
-scluster         	=	68,	/* Sitara cluster protocol */
-security         	=	69,	/* Security callback pseudo AF.  */
-sip              	=	70,	/* Simple Internet Protocol */
-slow             	=	71,	/* 802.3ad slow protocol */
-smc              	=	72,	/* SMC sockets.  */
-sna              	=	73,	/* IBM SNA */
-tipc             	=	74,	/* TIPC sockets.  */
-voiceview        	=	75,	/* VoiceView address. */
-vsock            	=	76,	/* vSockets.  */
-wanpipe          	=	77,	/* Wanpipe API sockets.  */
-x25              	=	78,	/* Reserved for X.25 project.  */
-xdp              	=	79,	/* XDP sockets.  */
+alg,              	/* Algorithm sockets.  */
+appletalk,        	/* Appletalk DDP.  */
+arp,              	/* Address Resolution Protocol */
+ash,              	/* Ash.  */
+atm,              	/* ATM */
+atmpvc,           	/* ATM PVCs.  */
+atmsvc,           	/* ATM SVCs.  */
+ax25,             	/* Amateur Radio AX.25.  */
+ban,              	/* Banyan address. */
+bluetooth,        	/* Bluetooth sockets.  */
+bridge,           	/* Multiprotocol bridge.  */
+caif,             	/* CAIF sockets.  */
+can,              	/* Controller Area Network.  */
+ccitt,            	/* CCITT protocols, X.25 etc */
+chaos,            	/* mit CHAOS protocols */
+cluster,          	/* Address for Microsoft cluster products. */
+cnt,              	/* Computer Network Technology */
+coip,             	/* connection-oriented IP, aka ST II */
+datakit,          	/* datakit protocols */
+decnet,           	/* Reserved for DECnet project.  */
+dli,              	/* DEC Direct data link interface */
+ecma,             	/* European computer manufacturers */
+econet,           	/* Acorn Econet.  */
+firefox,          	/* FireFox address. */
+hylink,           	/* NSC Hyperchannel */
+hyperv,           	/* HyperV sockets */
+ib,               	/* Native InfiniBand address.  */
+ieee12844,        	/* IEEE 1284.4 workgroup address. */
+ieee80211,        	/* IEEE 802.11 protocol */
+ieee802154,       	/* IEEE 802.15.4 sockets.  */
+implink,          	/* arpanet imp addresses */
+inet,             	/* IP protocol family.  */
+inet6,            	/* IP version 6.  */
+inet6_sdp,        	/* OFED Socket Direct Protocol ipv6 */
+inet_sdp,         	/* OFED Socket Direct Protocol ipv4 */
+ipx,              	/* Novell Internet Protocol.  */
+irda,             	/* IRDA sockets.  */
+isdn,             	/* mISDN sockets.  */
+iso,              	/* ISO protocols */
+iucv,             	/* IUCV sockets.  */
+kcm,              	/* Kernel Connection Multiplexor.  */
+key,              	/* PF_KEY key management API.  */
+lat,              	/* LAT */
+link,             	/* Link layer interface */
+llc,              	/* Linux LLC.  */
+local,            	/* Local to host (pipes and file-domain).  */
+mpls,             	/* MPLS.  */
+natm,             	/* native ATM access */
+netbeui,          	/* Reserved for 802.2LLC project.  */
+netbios,          	/* SMB protocols */
+netgraph,         	/* Netgraph sockets */
+netrom,           	/* Amateur radio NetROM.  */
+network_designers,	/* Address for Network Designers OSI gateway-enabled protocols. */
+nfc,              	/* NFC sockets.  */
+packet,           	/* Packet family.  */
+phonet,           	/* Phonet sockets.  */
+pppox,            	/* PPPoX sockets.  */
+pseudo_hdrcmplt,  	/* Used by BPF to not rewrite headers * in interface output routine */
+pseudo_key,       	/* Internal key-management function */
+pseudo_pip,       	/* Help Identify PIP packets */
+pseudo_rtip,      	/* Help Identify RTIP packets */
+pseudo_xtp,       	/* eXpress Transfer Protocol (no AF) */
+pup,              	/* pup protocols: e.g. BSP */
+qipcrtr,          	/* Qualcomm IPC Router.  */
+rds,              	/* RDS sockets.  */
+rose,             	/* Amateur Radio X.25 PLP.  */
+route,            	/* Internal Routing Protocol */
+rxrpc,            	/* RxRPC sockets.  */
+scluster,         	/* Sitara cluster protocol */
+security,         	/* Security callback pseudo AF.  */
+sip,              	/* Simple Internet Protocol */
+slow,             	/* 802.3ad slow protocol */
+smc,              	/* SMC sockets.  */
+sna,              	/* IBM SNA */
+tipc,             	/* TIPC sockets.  */
+voiceview,        	/* VoiceView address. */
+vsock,            	/* vSockets.  */
+wanpipe,          	/* Wanpipe API sockets.  */
+x25,              	/* Reserved for X.25 project.  */
+xdp,              	/* XDP sockets.  */
