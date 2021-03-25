@@ -46,8 +46,9 @@ int main(int argc,char** argv) noexcept
 	{
 		print(ref,e.first,u8"\t=\t",i);
 		if(!e.second.empty())
-			print(ref,u8",\t",e.second);
-		println(ref);
+			println(ref,u8",\t",e.second);
+		else
+			print(ref,u8",\n");
 		++i;
 	}
 
