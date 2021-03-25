@@ -20,8 +20,10 @@ int main(int argc,char** argv) noexcept
 		if(line.empty())
 			continue;
 		auto tok{parse_token(line)};
-		std::u8string_view fist_token(line.cbegin()+tok.first.start,line.cbegin()+tok.first.last);
-		if(fist_token!=u8"#define"sv||(tok.second.last-tok.second.start<static_cast<std::size_t>(4)))
+		std::u8string_view first_token(line.cbegin()+tok.first.start,line.cbegin()+tok.first.last);
+		if(first_token.starts_with(u8"//"sv))
+			continue;
+		if(first_token!=u8"#define"sv||(tok.second.last-tok.second.start<static_cast<std::size_t>(4)))
 		{
 			perrln(fast_io::u8err(),u8"unknown:",line);
 			continue;

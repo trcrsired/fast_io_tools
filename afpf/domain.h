@@ -110,5 +110,5 @@
 #define AF_IEEE12844 25		/* IEEE 1284.4 workgroup address. */
 #define AF_IRDA 26		/* IrDA address. */
 #define AF_Network_Designers 28		/* Address for Network Designers OSI gateway-enabled protocols. */
-#define AF_Controller_Area_Network 65537 /* Controller Area Network address. */
+// #define AF_Controller_Area_Network 65537 /* Controller Area Network address. */
 #define AF_X25 9999 /* AX.25 packet layer protocol. */
