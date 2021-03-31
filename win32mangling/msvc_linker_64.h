@@ -39,6 +39,7 @@
 #pragma comment(linker,"/alternatename:__imp_?GetFileType@win32@fast_io@@YAIPEAX@Z=__imp_GetFileType")
 #pragma comment(linker,"/alternatename:__imp_?GetACP@win32@fast_io@@YAIXZ=__imp_GetACP")
 #pragma comment(linker,"/alternatename:__imp_?getenv_s@win32@fast_io@@YAHPEA_KPEAD_KPEBD@Z=__imp_getenv_s")
+#pragma comment(linker,"/alternatename:__imp_?MessageBoxW@win32@fast_io@@YAIPEAXPEB_W1I@Z=__imp_MessageBoxW")
 #pragma comment(linker,"/alternatename:__imp_?rtl_nt_status_to_dos_error@nt@win32@fast_io@@YAII@Z=__imp_RtlNtStatusToDosError")
 #pragma comment(linker,"/alternatename:__imp_?NtClose@nt@win32@fast_io@@YAIPEAX@Z=__imp_NtClose")
 #pragma comment(linker,"/alternatename:__imp_?ZwClose@nt@win32@fast_io@@YAIPEAX@Z=__imp_ZwClose")

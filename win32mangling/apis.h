@@ -231,4 +231,6 @@ asm("getenv_s")
 #endif
 ;
 
+__declspec(dllimport) extern std::uint32_t __stdcall MessageBoxW(void*,wchar_t const*,wchar_t const*,std::uint32_t) noexcept;
+
 }

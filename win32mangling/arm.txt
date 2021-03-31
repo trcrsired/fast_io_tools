@@ -37,6 +37,7 @@ __imp_?DeviceIoControl@win32@fast_io@@YAHPAXI0I0I0PAUoverlapped@12@@Z __imp_Devi
 __imp_?GetFileType@win32@fast_io@@YAIPAX@Z __imp_GetFileType
 __imp_?GetACP@win32@fast_io@@YAIXZ __imp_GetACP
 __imp_?getenv_s@win32@fast_io@@YAHPAIPADIPBD@Z __imp_getenv_s
+__imp_?MessageBoxW@win32@fast_io@@YAIPAXPB_W1I@Z __imp_MessageBoxW
 
 
 __imp_?rtl_nt_status_to_dos_error@nt@win32@fast_io@@YAII@Z __imp_RtlNtStatusToDosError

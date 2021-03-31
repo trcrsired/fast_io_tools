@@ -407,3 +407,12 @@ auto sys_mgetenv_s() noexcept
 	return mgetenv_s;
 }
 
+auto get_MessageBoxW() noexcept
+{
+	return fast_io::win32::MessageBoxW;
+}
+
+auto sys_MessageBoxW() noexcept
+{
+	return MessageBoxW;
+}

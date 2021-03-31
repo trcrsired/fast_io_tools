@@ -461,8 +461,8 @@
 	.thumb_func
 "?get_GetProcAddress@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:"__imp_?GetProcAddress@win32@fast_io@@YAP6AHXZPAXPBD@Z"
-	movt	r0, :upper16:"__imp_?GetProcAddress@win32@fast_io@@YAP6AHXZPAXPBD@Z"
+	movw	r0, :lower16:"__imp_?GetProcAddress@win32@fast_io@@YAP6AHX_EPAXPBD@Z"
+	movt	r0, :upper16:"__imp_?GetProcAddress@win32@fast_io@@YAP6AHX_EPAXPBD@Z"
 	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
@@ -1168,6 +1168,36 @@
 ; %bb.0:
 	movw	r0, :lower16:__imp_mgetenv_s
 	movt	r0, :upper16:__imp_mgetenv_s
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_MessageBoxW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_MessageBoxW@@YA?A?<auto>@@XZ" ; -- Begin function ?get_MessageBoxW@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_MessageBoxW@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_MessageBoxW@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:"__imp_?MessageBoxW@win32@fast_io@@YAIPAXPB_W1I@Z"
+	movt	r0, :upper16:"__imp_?MessageBoxW@win32@fast_io@@YAIPAXPB_W1I@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_MessageBoxW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_MessageBoxW@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_MessageBoxW@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_MessageBoxW@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_MessageBoxW@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:__imp_MessageBoxW
+	movt	r0, :upper16:__imp_MessageBoxW
 	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function

@@ -864,6 +864,28 @@
 	movq	__imp_mgetenv_s(%rip), %rax
 	retq
                                         # -- End function
+	.def	 "?get_MessageBoxW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_MessageBoxW@@YA?A?<auto>@@XZ" # -- Begin function ?get_MessageBoxW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_MessageBoxW@@YA?A?<auto>@@XZ":    # @"?get_MessageBoxW@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?MessageBoxW@win32@fast_io@@YAIPEAXPEB_W1I@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?sys_MessageBoxW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_MessageBoxW@@YA?A?<auto>@@XZ" # -- Begin function ?sys_MessageBoxW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_MessageBoxW@@YA?A?<auto>@@XZ":    # @"?sys_MessageBoxW@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_MessageBoxW(%rip), %rax
+	retq
+                                        # -- End function
 	.section	.drectve,"yn"
 	.ascii	" /DEFAULTLIB:uuid.lib"
 	.ascii	" /DEFAULTLIB:uuid.lib"
