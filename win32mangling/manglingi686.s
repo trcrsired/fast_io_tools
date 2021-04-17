@@ -886,6 +886,160 @@
 	movl	__imp__MessageBoxW@16, %eax
 	retl
                                         # -- End function
+	.def	 "?get_GetConsoleMode@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_GetConsoleMode@@YA?A?<auto>@@XZ" # -- Begin function ?get_GetConsoleMode@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_GetConsoleMode@@YA?A?<auto>@@XZ": # @"?get_GetConsoleMode@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?GetConsoleMode@win32@fast_io@@YGHPAXPAI@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_GetConsoleMode@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_GetConsoleMode@@YA?A?<auto>@@XZ" # -- Begin function ?sys_GetConsoleMode@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_GetConsoleMode@@YA?A?<auto>@@XZ": # @"?sys_GetConsoleMode@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__GetConsoleMode@8, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_SetConsoleMode@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_SetConsoleMode@@YA?A?<auto>@@XZ" # -- Begin function ?get_SetConsoleMode@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_SetConsoleMode@@YA?A?<auto>@@XZ": # @"?get_SetConsoleMode@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?SetConsoleMode@win32@fast_io@@YGHPAXI@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_SetConsoleMode@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_SetConsoleMode@@YA?A?<auto>@@XZ" # -- Begin function ?sys_SetConsoleMode@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_SetConsoleMode@@YA?A?<auto>@@XZ": # @"?sys_SetConsoleMode@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__SetConsoleMode@8, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_ReadConsoleW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ReadConsoleW@@YA?A?<auto>@@XZ" # -- Begin function ?get_ReadConsoleW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_ReadConsoleW@@YA?A?<auto>@@XZ":   # @"?get_ReadConsoleW@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?ReadConsoleW@win32@fast_io@@YGHPAX0IPAI0@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_ReadConsoleW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ReadConsoleW@@YA?A?<auto>@@XZ" # -- Begin function ?sys_ReadConsoleW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_ReadConsoleW@@YA?A?<auto>@@XZ":   # @"?sys_ReadConsoleW@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__ReadConsoleW@20, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_WriteConsoleW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WriteConsoleW@@YA?A?<auto>@@XZ" # -- Begin function ?get_WriteConsoleW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_WriteConsoleW@@YA?A?<auto>@@XZ":  # @"?get_WriteConsoleW@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?WriteConsoleW@win32@fast_io@@YGHPAXPBXIPAI0@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_WriteConsoleW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WriteConsoleW@@YA?A?<auto>@@XZ" # -- Begin function ?sys_WriteConsoleW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_WriteConsoleW@@YA?A?<auto>@@XZ":  # @"?sys_WriteConsoleW@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__WriteConsoleW@20, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_GetConsoleScreenBufferInfo@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_GetConsoleScreenBufferInfo@@YA?A?<auto>@@XZ" # -- Begin function ?get_GetConsoleScreenBufferInfo@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_GetConsoleScreenBufferInfo@@YA?A?<auto>@@XZ": # @"?get_GetConsoleScreenBufferInfo@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?GetConsoleScreenBufferInfo@win32@fast_io@@YGHPAXPAUconsole_screen_buffer_info@12@@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_GetConsoleScreenBufferInfo@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_GetConsoleScreenBufferInfo@@YA?A?<auto>@@XZ" # -- Begin function ?sys_GetConsoleScreenBufferInfo@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_GetConsoleScreenBufferInfo@@YA?A?<auto>@@XZ": # @"?sys_GetConsoleScreenBufferInfo@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__GetConsoleScreenBufferInfo@8, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_ScrollConsoleScreenBufferW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ScrollConsoleScreenBufferW@@YA?A?<auto>@@XZ" # -- Begin function ?get_ScrollConsoleScreenBufferW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_ScrollConsoleScreenBufferW@@YA?A?<auto>@@XZ": # @"?get_ScrollConsoleScreenBufferW@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?ScrollConsoleScreenBufferW@win32@fast_io@@YGHPAXPBUsmall_rect@12@1Ucoord@12@PBUchar_info@12@@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_ScrollConsoleScreenBufferW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ScrollConsoleScreenBufferW@@YA?A?<auto>@@XZ" # -- Begin function ?sys_ScrollConsoleScreenBufferW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_ScrollConsoleScreenBufferW@@YA?A?<auto>@@XZ": # @"?sys_ScrollConsoleScreenBufferW@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__ScrollConsoleScreenBufferW@20, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_SetConsoleCursorPosition@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_SetConsoleCursorPosition@@YA?A?<auto>@@XZ" # -- Begin function ?get_SetConsoleCursorPosition@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_SetConsoleCursorPosition@@YA?A?<auto>@@XZ": # @"?get_SetConsoleCursorPosition@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?SetConsoleCursorPosition@win32@fast_io@@YGHPAXUcoord@12@@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_SetConsoleCursorPosition@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_SetConsoleCursorPosition@@YA?A?<auto>@@XZ" # -- Begin function ?sys_SetConsoleCursorPosition@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_SetConsoleCursorPosition@@YA?A?<auto>@@XZ": # @"?sys_SetConsoleCursorPosition@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__SetConsoleCursorPosition@8, %eax
+	retl
+                                        # -- End function
 	.section	.drectve,"yn"
 	.ascii	" /DEFAULTLIB:uuid.lib"
 	.ascii	" /DEFAULTLIB:uuid.lib"
