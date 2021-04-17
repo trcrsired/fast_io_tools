@@ -233,4 +233,18 @@ asm("getenv_s")
 
 __declspec(dllimport) extern std::uint32_t __stdcall MessageBoxW(void*,wchar_t const*,wchar_t const*,std::uint32_t) noexcept;
 
+__declspec(dllimport) extern int __stdcall GetConsoleMode(void *, std::uint32_t *) noexcept;
+
+__declspec(dllimport) extern int __stdcall SetConsoleMode(void *, std::uint32_t) noexcept;
+
+__declspec(dllimport) extern int __stdcall ReadConsoleW(void*,void*,std::uint32_t,std::uint32_t*,void*) noexcept;
+
+__declspec(dllimport) extern int __stdcall WriteConsoleW(void*,void const*,std::uint32_t,std::uint32_t*,void*) noexcept;
+
+__declspec(dllimport) extern int __stdcall GetConsoleScreenBufferInfo(void *, console_screen_buffer_info *) noexcept;
+
+__declspec(dllimport) extern int __stdcall ScrollConsoleScreenBufferW(void *, small_rect const *, small_rect const *, coord, char_info const *) noexcept;
+
+__declspec(dllimport) extern int __stdcall SetConsoleCursorPosition(void *, coord) noexcept;
+
 }

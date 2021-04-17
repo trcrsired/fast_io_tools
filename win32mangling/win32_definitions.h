@@ -117,4 +117,29 @@ std::uint32_t    nNumberOfLinks;
 std::uint32_t    nFileIndexHigh;
 std::uint32_t    nFileIndexLow;
 };
+
+struct coord
+{
+	std::int16_t X, Y;
+};
+
+struct small_rect
+{
+	std::int16_t Left, Top, Right, Bottom;
+};
+
+struct char_info
+{
+	char16_t character;
+	std::uint16_t Attrib;
+};
+
+struct console_screen_buffer_info
+{
+	coord Size, CursorPosition;
+	std::uint16_t Attrib;
+	small_rect Window;
+	coord MaxWindowSize;
+};
+
 }

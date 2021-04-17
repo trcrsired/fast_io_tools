@@ -38,6 +38,13 @@ __imp_?GetFileType@win32@fast_io@@YAIPAX@Z __imp_GetFileType
 __imp_?GetACP@win32@fast_io@@YAIXZ __imp_GetACP
 __imp_?getenv_s@win32@fast_io@@YAHPAIPADIPBD@Z __imp_getenv_s
 __imp_?MessageBoxW@win32@fast_io@@YAIPAXPB_W1I@Z __imp_MessageBoxW
+__imp_?GetConsoleMode@win32@fast_io@@YAHPAXPAI@Z __imp_GetConsoleMode
+__imp_?SetConsoleMode@win32@fast_io@@YAHPAXI@Z __imp_SetConsoleMode
+__imp_?ReadConsoleW@win32@fast_io@@YAHPAX0IPAI0@Z __imp_ReadConsoleW
+__imp_?WriteConsoleW@win32@fast_io@@YAHPAXPBXIPAI0@Z __imp_WriteConsoleW
+__imp_?GetConsoleScreenBufferInfo@win32@fast_io@@YAHPAXPAUconsole_screen_buffer_info@12@@Z __imp_GetConsoleScreenBufferInfo
+__imp_?ScrollConsoleScreenBufferW@win32@fast_io@@YAHPAXPBUsmall_rect@12@1Ucoord@12@PBUchar_info@12@@Z __imp_ScrollConsoleScreenBufferW
+__imp_?SetConsoleCursorPosition@win32@fast_io@@YAHPAXUcoord@12@@Z __imp_SetConsoleCursorPosition
 
 
 __imp_?rtl_nt_status_to_dos_error@nt@win32@fast_io@@YAII@Z __imp_RtlNtStatusToDosError

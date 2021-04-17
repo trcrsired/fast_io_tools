@@ -416,3 +416,73 @@ auto sys_MessageBoxW() noexcept
 {
 	return MessageBoxW;
 }
+
+auto get_GetConsoleMode() noexcept
+{
+	return fast_io::win32::GetConsoleMode;
+}
+
+auto sys_GetConsoleMode() noexcept
+{
+	return GetConsoleMode;
+}
+
+auto get_SetConsoleMode() noexcept
+{
+	return fast_io::win32::SetConsoleMode;
+}
+
+auto sys_SetConsoleMode() noexcept
+{
+	return SetConsoleMode;
+}
+
+auto get_ReadConsoleW() noexcept
+{
+	return fast_io::win32::ReadConsoleW;
+}
+
+auto sys_ReadConsoleW() noexcept
+{
+	return ReadConsoleW;
+}
+
+auto get_WriteConsoleW() noexcept
+{
+	return fast_io::win32::WriteConsoleW;
+}
+
+auto sys_WriteConsoleW() noexcept
+{
+	return WriteConsoleW;
+}
+
+auto get_GetConsoleScreenBufferInfo() noexcept
+{
+	return fast_io::win32::GetConsoleScreenBufferInfo;
+}
+
+auto sys_GetConsoleScreenBufferInfo() noexcept
+{
+	return GetConsoleScreenBufferInfo;
+}
+
+auto get_ScrollConsoleScreenBufferW() noexcept
+{
+	return fast_io::win32::ScrollConsoleScreenBufferW;
+}
+
+auto sys_ScrollConsoleScreenBufferW() noexcept
+{
+	return ScrollConsoleScreenBufferW;
+}
+
+auto get_SetConsoleCursorPosition() noexcept
+{
+	return fast_io::win32::SetConsoleCursorPosition;
+}
+
+auto sys_SetConsoleCursorPosition() noexcept
+{
+	return SetConsoleCursorPosition;
+}
