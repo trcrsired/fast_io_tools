@@ -1,6 +1,6 @@
 #pragma once
 
-namespace fast_io::details
+namespace fast_io::details::intrinsics
 {
 
 template<std::unsigned_integral U>
@@ -11,11 +11,58 @@ struct udiv_result
 	U remainder_low,remainder_high;
 };
 
+template<typename U>
+inline constexpr U shiftright_naive(U low_part,U high_part,std::uint8_t shift) noexcept
+{
+	U const value{(static_cast<U>(1)<<shift)-1};
+	constexpr std::uint8_t bits{sizeof(U)*8};
+	U const v{high_part&value};
+	if(shift==0)
+		return low_part;
+	return (low_part>>shift)|(v<<(bits-shift));
+}
+
+template<typename U>
+inline constexpr U shiftright_naive(U low_part,U high_part,std::uint8_t shift) noexcept
+{
+	U const value{(static_cast<U>(1)<<shift)-1};
+	constexpr std::uint8_t bits{sizeof(U)*8};
+	U const v{high_part&value};
+	if(shift==0)
+		return low_part;
+	return (low_part>>shift)|(v<<(bits-shift));
+}
+
+
+template<typename U>
+inline constexpr U shiftright(U low_part,U high_part,std::uint8_t shift) noexcept
+{
+//	1<<shift
+//	__shiftright128
+#if __cpp_lib_is_constant_evaluated >= 201811L
+	if(std::is_constant_evaluated())
+		return shiftright_naive(low_part,high_part,shift);
+	else
+#endif
+	{
+#if defined(_MSC_VER) && (defined(__x86_64__) || defined(__i386__))
+		if constexpr(sizeof(U)==8&&sizeof(std::size_t)>=8)
+		{
+			return __shiftright128(low_part,high_part,shift);
+		}
+		else
+#endif
+		{
+			return shiftright_naive(low_part,high_part,shift);
+		}
+	}
+}
+
 /*
 https://code.woboq.org/llvm/compiler-rt/lib/builtins/udivmodti4.c.html#__udivmodti4
 */
 template<std::unsigned_integral U>
-inline constexpr udiv_result<U> udivmodti4(U n_low, U n_high,U d_low,U d_high) noexcept
+inline constexpr udiv_result<U> udivmod(U n_low, U n_high,U d_low,U d_high) noexcept
 {
 	// special cases, X is unknown, K != 0
 	if (a_high == 0)
@@ -101,18 +148,17 @@ inline constexpr udiv_result<U> udivmodti4(U n_low, U n_high,U d_low,U d_high) n
 			// 0 K
 			if ((d_low & (d_low - 1)) == 0) /* if d is a power of 2 */
 			{
-				if (rem)
-					*rem = n_low & (d_low - 1);
+				U rem{n_low & (d_low - 1)};
 				if (d_low == 1)
-					return {n_low,n_high,};
+					return {n_low,n_high,rem,0};
 #if 0
 				sr = __builtin_ctzll(d_low);
 #else
-
+				sr = std::countl_zero(d_low);
 #endif
 				q_high = n_high >> sr;
 				q_low = (n_high << (n_udword_bits - sr)) | (n_low >> sr);
-				return q.all;
+				return {q_low,q_high,rem,0};
 			}
 			// K X
 			// ---
@@ -196,12 +242,19 @@ inline constexpr udiv_result<U> udivmodti4(U n_low, U n_high,U d_low,U d_high) n
 		q_low = (q_low << 1) | carry;
 
 
-
-		ti_int const s{(ti_int)(d.all - r.all - 1) >> n_udwords_bits_m1};
-		carry = s & 1;
-		r.all -= d.all & s;
+		U s_low,s_high;
+		sub_borrow(sub_borrow(true,d_low,r_low,s_low),d_high,r_high,s_high);
+		s_low=shiftright(s_low,s_high,n_udwords_bits_m1);
+		s_high>>=n_udwords_bits_m1;
+//		ti_int const s{(ti_int)(d.all - r.all - 1) >> n_udwords_bits_m1};
+		carry = s_low & 1;
+		s_low&=d_low;
+		s_high&=d_high;
+		sub_borrow(sub_borrow(false,r_low,s_low,r_low),r_high,s_high,r_high);
+//		r.all -= d.all & s;
 	}
-	q.all = (q.all << 1) | carry;
+	q_high = (q_high << 1) | (q_low >> n_udwords_bits_m1);
+	q_low = (q_low << 1) | carry;
 	return {q_low,q_high,r_low,r_high};
 }
 
