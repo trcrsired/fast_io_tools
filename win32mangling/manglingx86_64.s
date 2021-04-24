@@ -512,6 +512,28 @@
 	movq	__imp_GetSystemTimePreciseAsFileTime(%rip), %rax
 	retq
                                         # -- End function
+	.def	 "?get_GetSystemTimeAsFileTime@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_GetSystemTimeAsFileTime@@YA?A?<auto>@@XZ" # -- Begin function ?get_GetSystemTimeAsFileTime@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_GetSystemTimeAsFileTime@@YA?A?<auto>@@XZ": # @"?get_GetSystemTimeAsFileTime@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?GetSystemTimeAsFileTime@win32@fast_io@@YAXPEAUfiletime@12@@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?sys_GetSystemTimeAsFileTime@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_GetSystemTimeAsFileTime@@YA?A?<auto>@@XZ" # -- Begin function ?sys_GetSystemTimeAsFileTime@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_GetSystemTimeAsFileTime@@YA?A?<auto>@@XZ": # @"?sys_GetSystemTimeAsFileTime@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_GetSystemTimeAsFileTime(%rip), %rax
+	retq
+                                        # -- End function
 	.def	 "?get_QueryUnbiasedInterruptTime@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;

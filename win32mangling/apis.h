@@ -138,6 +138,12 @@ asm("GetSystemTimePreciseAsFileTime")
 #endif
 ;
 
+__declspec(dllimport) extern void __stdcall GetSystemTimeAsFileTime(filetime*) noexcept
+#if 0
+asm("GetSystemTimeAsFileTime")
+#endif
+;
+
 __declspec(dllimport) extern int __stdcall QueryUnbiasedInterruptTime(std::uint64_t* unbiasedtime) noexcept
 #if 0
 asm("QueryUnbiasedInterruptTime")

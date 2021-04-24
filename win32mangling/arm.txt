@@ -21,6 +21,7 @@ __imp_?CancelIo@win32@fast_io@@YAIPAX@Z __imp_CancelIo
 __imp_?GetFileInformationByHandle@win32@fast_io@@YAHPIAXPIAUby_handle_file_information@12@@Z __imp_GetFileInformationByHandle
 __imp_?GetUserDefaultLocaleName@win32@fast_io@@YAHPA_WH@Z __imp_GetUserDefaultLocaleName
 __imp_?GetSystemTimePreciseAsFileTime@win32@fast_io@@YAXPAUfiletime@12@@Z __imp_GetSystemTimePreciseAsFileTime
+__imp_?GetSystemTimeAsFileTime@win32@fast_io@@YAXPAUfiletime@12@@Z __imp_GetSystemTimeAsFileTime
 __imp_?QueryUnbiasedInterruptTime@win32@fast_io@@YAHPA_K@Z __imp_QueryUnbiasedInterruptTime
 __imp_?QueryPerformanceCounter@win32@fast_io@@YAHPA_J@Z __imp_QueryPerformanceCounter
 __imp_?QueryPerformanceFrequency@win32@fast_io@@YAHPA_J@Z __imp_QueryPerformanceFrequency

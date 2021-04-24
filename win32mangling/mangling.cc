@@ -241,6 +241,16 @@ auto sys_GetSystemTimePreciseAsFileTime() noexcept
 	return GetSystemTimePreciseAsFileTime;
 }
 
+auto get_GetSystemTimeAsFileTime() noexcept
+{
+	return fast_io::win32::GetSystemTimeAsFileTime;
+}
+
+auto sys_GetSystemTimeAsFileTime() noexcept
+{
+	return GetSystemTimeAsFileTime;
+}
+
 auto get_QueryUnbiasedInterruptTime() noexcept
 {
 	return fast_io::win32::QueryUnbiasedInterruptTime;
