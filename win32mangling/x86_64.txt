@@ -45,6 +45,11 @@ __imp_?WriteConsoleW@win32@fast_io@@YAHPEAXPEBXIPEAI0@Z __imp_WriteConsoleW
 __imp_?GetConsoleScreenBufferInfo@win32@fast_io@@YAHPEAXPEAUconsole_screen_buffer_info@12@@Z __imp_GetConsoleScreenBufferInfo
 __imp_?ScrollConsoleScreenBufferW@win32@fast_io@@YAHPEAXPEBUsmall_rect@12@1Ucoord@12@PEBUchar_info@12@@Z __imp_ScrollConsoleScreenBufferW
 __imp_?SetConsoleCursorPosition@win32@fast_io@@YAHPEAXUcoord@12@@Z __imp_SetConsoleCursorPosition
+__imp_?InitializeCriticalSection@win32@fast_io@@YAXPEAX@Z __imp_InitializeCriticalSection
+__imp_?EnterCriticalSection@win32@fast_io@@YAXPEAX@Z __imp_EnterCriticalSection
+__imp_?TryEnterCriticalSection@win32@fast_io@@YAHPEAX@Z __imp_TryEnterCriticalSection
+__imp_?LeaveCriticalSection@win32@fast_io@@YAXPEAX@Z __imp_LeaveCriticalSection
+__imp_?DeleteCriticalSection@win32@fast_io@@YAXPEAX@Z __imp_DeleteCriticalSection
 
 
 __imp_?rtl_nt_status_to_dos_error@nt@win32@fast_io@@YAII@Z __imp_RtlNtStatusToDosError

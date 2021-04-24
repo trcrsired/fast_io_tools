@@ -247,4 +247,15 @@ __declspec(dllimport) extern int __stdcall ScrollConsoleScreenBufferW(void *, sm
 
 __declspec(dllimport) extern int __stdcall SetConsoleCursorPosition(void *, coord) noexcept;
 
+__declspec(dllimport) extern void __stdcall InitializeCriticalSection(void*) noexcept;
+
+__declspec(dllimport) extern void __stdcall EnterCriticalSection(void*) noexcept;
+
+__declspec(dllimport) extern int __stdcall TryEnterCriticalSection(void*) noexcept;
+
+__declspec(dllimport) extern void __stdcall LeaveCriticalSection(void*) noexcept;
+
+__declspec(dllimport) extern void __stdcall DeleteCriticalSection(void*) noexcept;
+
+
 }

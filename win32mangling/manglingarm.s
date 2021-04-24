@@ -1411,6 +1411,156 @@
 	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
+	.def	 "?get_InitializeCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_InitializeCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?get_InitializeCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_InitializeCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_InitializeCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:"__imp_?InitializeCriticalSection@win32@fast_io@@YAXPAX@Z"
+	movt	r0, :upper16:"__imp_?InitializeCriticalSection@win32@fast_io@@YAXPAX@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_InitializeCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_InitializeCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_InitializeCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_InitializeCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_InitializeCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:__imp_InitializeCriticalSection
+	movt	r0, :upper16:__imp_InitializeCriticalSection
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_EnterCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_EnterCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?get_EnterCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_EnterCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_EnterCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:"__imp_?EnterCriticalSection@win32@fast_io@@YAXPAX@Z"
+	movt	r0, :upper16:"__imp_?EnterCriticalSection@win32@fast_io@@YAXPAX@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_EnterCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_EnterCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_EnterCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_EnterCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_EnterCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:__imp_EnterCriticalSection
+	movt	r0, :upper16:__imp_EnterCriticalSection
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_TryEnterCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_TryEnterCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?get_TryEnterCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_TryEnterCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_TryEnterCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:"__imp_?TryEnterCriticalSection@win32@fast_io@@YAHPAX@Z"
+	movt	r0, :upper16:"__imp_?TryEnterCriticalSection@win32@fast_io@@YAHPAX@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_TryEnterCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_TryEnterCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_TryEnterCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_TryEnterCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_TryEnterCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:__imp_TryEnterCriticalSection
+	movt	r0, :upper16:__imp_TryEnterCriticalSection
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_LeaveCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_LeaveCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?get_LeaveCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_LeaveCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_LeaveCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:"__imp_?LeaveCriticalSection@win32@fast_io@@YAXPAX@Z"
+	movt	r0, :upper16:"__imp_?LeaveCriticalSection@win32@fast_io@@YAXPAX@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_LeaveCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_LeaveCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_LeaveCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_LeaveCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_LeaveCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:__imp_LeaveCriticalSection
+	movt	r0, :upper16:__imp_LeaveCriticalSection
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_DeleteCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_DeleteCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?get_DeleteCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_DeleteCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_DeleteCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:"__imp_?DeleteCriticalSection@win32@fast_io@@YAXPAX@Z"
+	movt	r0, :upper16:"__imp_?DeleteCriticalSection@win32@fast_io@@YAXPAX@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_DeleteCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_DeleteCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_DeleteCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_DeleteCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_DeleteCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:__imp_DeleteCriticalSection
+	movt	r0, :upper16:__imp_DeleteCriticalSection
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
 	.section	.drectve,"yn"
 	.ascii	" /DEFAULTLIB:uuid.lib"
 	.ascii	" /DEFAULTLIB:uuid.lib"

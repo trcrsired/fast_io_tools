@@ -1040,6 +1040,116 @@
 	movl	__imp__SetConsoleCursorPosition@8, %eax
 	retl
                                         # -- End function
+	.def	 "?get_InitializeCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_InitializeCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?get_InitializeCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_InitializeCriticalSection@@YA?A?<auto>@@XZ": # @"?get_InitializeCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?InitializeCriticalSection@win32@fast_io@@YGXPAX@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_InitializeCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_InitializeCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?sys_InitializeCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_InitializeCriticalSection@@YA?A?<auto>@@XZ": # @"?sys_InitializeCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__InitializeCriticalSection@4, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_EnterCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_EnterCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?get_EnterCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_EnterCriticalSection@@YA?A?<auto>@@XZ": # @"?get_EnterCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?EnterCriticalSection@win32@fast_io@@YGXPAX@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_EnterCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_EnterCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?sys_EnterCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_EnterCriticalSection@@YA?A?<auto>@@XZ": # @"?sys_EnterCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__EnterCriticalSection@4, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_TryEnterCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_TryEnterCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?get_TryEnterCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_TryEnterCriticalSection@@YA?A?<auto>@@XZ": # @"?get_TryEnterCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?TryEnterCriticalSection@win32@fast_io@@YGHPAX@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_TryEnterCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_TryEnterCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?sys_TryEnterCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_TryEnterCriticalSection@@YA?A?<auto>@@XZ": # @"?sys_TryEnterCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__TryEnterCriticalSection@4, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_LeaveCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_LeaveCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?get_LeaveCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_LeaveCriticalSection@@YA?A?<auto>@@XZ": # @"?get_LeaveCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?LeaveCriticalSection@win32@fast_io@@YGXPAX@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_LeaveCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_LeaveCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?sys_LeaveCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_LeaveCriticalSection@@YA?A?<auto>@@XZ": # @"?sys_LeaveCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__LeaveCriticalSection@4, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_DeleteCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_DeleteCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?get_DeleteCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_DeleteCriticalSection@@YA?A?<auto>@@XZ": # @"?get_DeleteCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?DeleteCriticalSection@win32@fast_io@@YGXPAX@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_DeleteCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_DeleteCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?sys_DeleteCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_DeleteCriticalSection@@YA?A?<auto>@@XZ": # @"?sys_DeleteCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__DeleteCriticalSection@4, %eax
+	retl
+                                        # -- End function
 	.section	.drectve,"yn"
 	.ascii	" /DEFAULTLIB:uuid.lib"
 	.ascii	" /DEFAULTLIB:uuid.lib"

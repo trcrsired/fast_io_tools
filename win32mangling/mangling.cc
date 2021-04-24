@@ -486,3 +486,53 @@ auto sys_SetConsoleCursorPosition() noexcept
 {
 	return SetConsoleCursorPosition;
 }
+
+auto get_InitializeCriticalSection() noexcept
+{
+	return fast_io::win32::InitializeCriticalSection;
+}
+
+auto sys_InitializeCriticalSection() noexcept
+{
+	return InitializeCriticalSection;
+}
+
+auto get_EnterCriticalSection() noexcept
+{
+	return fast_io::win32::EnterCriticalSection;
+}
+
+auto sys_EnterCriticalSection() noexcept
+{
+	return EnterCriticalSection;
+}
+
+auto get_TryEnterCriticalSection() noexcept
+{
+	return fast_io::win32::TryEnterCriticalSection;
+}
+
+auto sys_TryEnterCriticalSection() noexcept
+{
+	return TryEnterCriticalSection;
+}
+
+auto get_LeaveCriticalSection() noexcept
+{
+	return fast_io::win32::LeaveCriticalSection;
+}
+
+auto sys_LeaveCriticalSection() noexcept
+{
+	return LeaveCriticalSection;
+}
+
+auto get_DeleteCriticalSection() noexcept
+{
+	return fast_io::win32::DeleteCriticalSection;
+}
+
+auto sys_DeleteCriticalSection() noexcept
+{
+	return DeleteCriticalSection;
+}
