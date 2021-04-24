@@ -55,7 +55,13 @@ extern "C" [[gnu::dllimport]] std::uint32_t __stdcall NtSetSystemTime(std::uint6
 extern "C" [[gnu::dllimport]] std::uint32_t __stdcall ZwSetSystemTime(std::uint64_t*,std::uint64_t*) noexcept;
 
 extern "C" [[gnu::dllimport]] std::uint32_t __stdcall RtlDosPathNameToNtPathName_U(wchar_t const*,unicode_string*,wchar_t const**,rtl_relative_name_u*) noexcept;
+
 extern "C" [[gnu::dllimport]] void __stdcall RtlFreeUnicodeString(unicode_string*) noexcept;
 
+extern "C" [[gnu::dllimport]] void __stdcall RtlInitializeCriticalSection(void*) noexcept;
+extern "C" [[gnu::dllimport]] void __stdcall RtlEnterCriticalSection(void*) noexcept;
+extern "C" [[gnu::dllimport]] int __stdcall RtlTryEnterCriticalSection(void*) noexcept;
+extern "C" [[gnu::dllimport]] void __stdcall RtlLeaveCriticalSection(void*) noexcept;
+extern "C" [[gnu::dllimport]] void __stdcall RtlDeleteCriticalSection(void*) noexcept;
 
 }

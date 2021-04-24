@@ -871,6 +871,156 @@
 	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
+	.def	 "?get_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?get_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:"__imp_?RtlInitializeCriticalSection@nt@win32@fast_io@@YAXPAX@Z"
+	movt	r0, :upper16:"__imp_?RtlInitializeCriticalSection@nt@win32@fast_io@@YAXPAX@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:__imp_RtlInitializeCriticalSection
+	movt	r0, :upper16:__imp_RtlInitializeCriticalSection
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_RtlEnterCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlEnterCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?get_RtlEnterCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_RtlEnterCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_RtlEnterCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:"__imp_?RtlEnterCriticalSection@nt@win32@fast_io@@YAXPAX@Z"
+	movt	r0, :upper16:"__imp_?RtlEnterCriticalSection@nt@win32@fast_io@@YAXPAX@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_RtlEnterCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlEnterCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_RtlEnterCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_RtlEnterCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_RtlEnterCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:__imp_RtlEnterCriticalSection
+	movt	r0, :upper16:__imp_RtlEnterCriticalSection
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?get_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:"__imp_?RtlTryEnterCriticalSection@nt@win32@fast_io@@YAHPAX@Z"
+	movt	r0, :upper16:"__imp_?RtlTryEnterCriticalSection@nt@win32@fast_io@@YAHPAX@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:__imp_RtlTryEnterCriticalSection
+	movt	r0, :upper16:__imp_RtlTryEnterCriticalSection
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?get_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:"__imp_?RtlLeaveCriticalSection@nt@win32@fast_io@@YAXPAX@Z"
+	movt	r0, :upper16:"__imp_?RtlLeaveCriticalSection@nt@win32@fast_io@@YAXPAX@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:__imp_RtlLeaveCriticalSection
+	movt	r0, :upper16:__imp_RtlLeaveCriticalSection
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?get_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:"__imp_?RtlDeleteCriticalSection@nt@win32@fast_io@@YAXPAX@Z"
+	movt	r0, :upper16:"__imp_?RtlDeleteCriticalSection@nt@win32@fast_io@@YAXPAX@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:__imp_RtlDeleteCriticalSection
+	movt	r0, :upper16:__imp_RtlDeleteCriticalSection
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
 	.section	.drectve,"yn"
 	.ascii	" /DEFAULTLIB:ntdll.lib"
 	.addrsig

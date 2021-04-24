@@ -644,6 +644,116 @@
 	movl	__imp__RtlFreeUnicodeString@4, %eax
 	retl
                                         # -- End function
+	.def	 "?get_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?get_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ": # @"?get_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?RtlInitializeCriticalSection@nt@win32@fast_io@@YGXPAX@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?sys_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ": # @"?sys_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__RtlInitializeCriticalSection@4, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_RtlEnterCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlEnterCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?get_RtlEnterCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_RtlEnterCriticalSection@@YA?A?<auto>@@XZ": # @"?get_RtlEnterCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?RtlEnterCriticalSection@nt@win32@fast_io@@YGXPAX@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_RtlEnterCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlEnterCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?sys_RtlEnterCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_RtlEnterCriticalSection@@YA?A?<auto>@@XZ": # @"?sys_RtlEnterCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__RtlEnterCriticalSection@4, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?get_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ": # @"?get_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?RtlTryEnterCriticalSection@nt@win32@fast_io@@YGHPAX@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?sys_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ": # @"?sys_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__RtlTryEnterCriticalSection@4, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?get_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ": # @"?get_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?RtlLeaveCriticalSection@nt@win32@fast_io@@YGXPAX@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?sys_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ": # @"?sys_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__RtlLeaveCriticalSection@4, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?get_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ": # @"?get_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?RtlDeleteCriticalSection@nt@win32@fast_io@@YGXPAX@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ" # -- Begin function ?sys_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ": # @"?sys_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__RtlDeleteCriticalSection@4, %eax
+	retl
+                                        # -- End function
 	.section	.drectve,"yn"
 	.ascii	" /DEFAULTLIB:ntdll.lib"
 	.addrsig

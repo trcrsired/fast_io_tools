@@ -81,3 +81,8 @@
 #pragma comment(linker,"/alternatename:__imp_?ZwSetSystemTime@nt@win32@fast_io@@YAIPA_K0@Z=__imp_ZwSetSystemTime")
 #pragma comment(linker,"/alternatename:__imp_?rtl_dos_path_name_to_nt_path_name_u@nt@win32@fast_io@@YAIPB_WPAUunicode_string@123@PAPB_WPAUrtl_relative_name_u@123@@Z=__imp_RtlDosPathNameToNtPathName_U")
 #pragma comment(linker,"/alternatename:__imp_?rtl_free_unicode_string@nt@win32@fast_io@@YAXPAUunicode_string@123@@Z=__imp_RtlFreeUnicodeString")
+#pragma comment(linker,"/alternatename:__imp_?RtlInitializeCriticalSection@nt@win32@fast_io@@YAXPAX@Z=__imp_RtlInitializeCriticalSection")
+#pragma comment(linker,"/alternatename:__imp_?RtlEnterCriticalSection@nt@win32@fast_io@@YAXPAX@Z=__imp_RtlEnterCriticalSection")
+#pragma comment(linker,"/alternatename:__imp_?RtlTryEnterCriticalSection@nt@win32@fast_io@@YAHPAX@Z=__imp_RtlTryEnterCriticalSection")
+#pragma comment(linker,"/alternatename:__imp_?RtlLeaveCriticalSection@nt@win32@fast_io@@YAXPAX@Z=__imp_RtlLeaveCriticalSection")
+#pragma comment(linker,"/alternatename:__imp_?RtlDeleteCriticalSection@nt@win32@fast_io@@YAXPAX@Z=__imp_RtlDeleteCriticalSection")

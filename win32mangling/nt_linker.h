@@ -200,5 +200,14 @@ __declspec(dllimport) extern std::uint32_t __stdcall rtl_dos_path_name_to_nt_pat
 
 __declspec(dllimport) extern void __stdcall rtl_free_unicode_string(unicode_string*) noexcept;
 
+__declspec(dllimport) extern void __stdcall RtlInitializeCriticalSection(void*) noexcept;
+
+__declspec(dllimport) extern void __stdcall RtlEnterCriticalSection(void*) noexcept;
+
+__declspec(dllimport) extern int __stdcall RtlTryEnterCriticalSection(void*) noexcept;
+
+__declspec(dllimport) extern void __stdcall RtlLeaveCriticalSection(void*) noexcept;
+
+__declspec(dllimport) extern void __stdcall RtlDeleteCriticalSection(void*) noexcept;
 
 }
