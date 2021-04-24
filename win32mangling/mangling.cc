@@ -251,6 +251,26 @@ auto sys_QueryUnbiasedInterruptTime() noexcept
 	return QueryUnbiasedInterruptTime;
 }
 
+auto get_QueryPerformanceCounter() noexcept
+{
+	return fast_io::win32::QueryPerformanceCounter;
+}
+
+auto sys_QueryPerformanceCounter() noexcept
+{
+	return QueryPerformanceCounter;
+}
+
+auto get_QueryPerformanceFrequency() noexcept
+{
+	return fast_io::win32::QueryPerformanceFrequency;
+}
+
+auto sys_QueryPerformanceFrequency() noexcept
+{
+	return QueryPerformanceFrequency;
+}
+
 auto get_GetProcessTimes() noexcept
 {
 	return fast_io::win32::GetProcessTimes;

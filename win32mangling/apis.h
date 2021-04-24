@@ -144,6 +144,10 @@ asm("QueryUnbiasedInterruptTime")
 #endif
 ;
 
+__declspec(dllimport) extern int __stdcall QueryPerformanceCounter(std::int64_t*) noexcept;
+
+__declspec(dllimport) extern int __stdcall QueryPerformanceFrequency(std::int64_t*) noexcept;
+
 __declspec(dllimport) extern int __stdcall GetProcessTimes(void*,filetime*,filetime*,filetime*,filetime*) noexcept
 #if 0
 asm("GetProcessTimes")

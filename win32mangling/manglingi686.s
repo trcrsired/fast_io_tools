@@ -534,6 +534,50 @@
 	movl	__imp__QueryUnbiasedInterruptTime@4, %eax
 	retl
                                         # -- End function
+	.def	 "?get_QueryPerformanceCounter@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_QueryPerformanceCounter@@YA?A?<auto>@@XZ" # -- Begin function ?get_QueryPerformanceCounter@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_QueryPerformanceCounter@@YA?A?<auto>@@XZ": # @"?get_QueryPerformanceCounter@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?QueryPerformanceCounter@win32@fast_io@@YGHPA_J@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_QueryPerformanceCounter@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_QueryPerformanceCounter@@YA?A?<auto>@@XZ" # -- Begin function ?sys_QueryPerformanceCounter@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_QueryPerformanceCounter@@YA?A?<auto>@@XZ": # @"?sys_QueryPerformanceCounter@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__QueryPerformanceCounter@4, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_QueryPerformanceFrequency@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_QueryPerformanceFrequency@@YA?A?<auto>@@XZ" # -- Begin function ?get_QueryPerformanceFrequency@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_QueryPerformanceFrequency@@YA?A?<auto>@@XZ": # @"?get_QueryPerformanceFrequency@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?QueryPerformanceFrequency@win32@fast_io@@YGHPA_J@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_QueryPerformanceFrequency@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_QueryPerformanceFrequency@@YA?A?<auto>@@XZ" # -- Begin function ?sys_QueryPerformanceFrequency@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_QueryPerformanceFrequency@@YA?A?<auto>@@XZ": # @"?sys_QueryPerformanceFrequency@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__QueryPerformanceFrequency@4, %eax
+	retl
+                                        # -- End function
 	.def	 "?get_GetProcessTimes@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;

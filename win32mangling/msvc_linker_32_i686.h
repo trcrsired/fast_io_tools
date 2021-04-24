@@ -24,6 +24,8 @@
 #pragma comment(linker,"/alternatename:__imp_?GetUserDefaultLocaleName@win32@fast_io@@YGHPA_WH@Z=__imp__GetUserDefaultLocaleName@8")
 #pragma comment(linker,"/alternatename:__imp_?GetSystemTimePreciseAsFileTime@win32@fast_io@@YGXPAUfiletime@12@@Z=__imp__GetSystemTimePreciseAsFileTime@4")
 #pragma comment(linker,"/alternatename:__imp_?QueryUnbiasedInterruptTime@win32@fast_io@@YGHPA_K@Z=__imp__QueryUnbiasedInterruptTime@4")
+#pragma comment(linker,"/alternatename:__imp_?QueryPerformanceCounter@win32@fast_io@@YGHPA_J@Z=__imp__QueryPerformanceCounter@4")
+#pragma comment(linker,"/alternatename:__imp_?QueryPerformanceFrequency@win32@fast_io@@YGHPA_J@Z=__imp__QueryPerformanceFrequency@4")
 #pragma comment(linker,"/alternatename:__imp_?GetProcessTimes@win32@fast_io@@YGHPAXPAUfiletime@12@111@Z=__imp__GetProcessTimes@20")
 #pragma comment(linker,"/alternatename:__imp_?GetThreadTimes@win32@fast_io@@YGHPAXPAUfiletime@12@111@Z=__imp__GetThreadTimes@20")
 #pragma comment(linker,"/alternatename:__imp_?GetHandleInformation@win32@fast_io@@YGHPAXPAI@Z=__imp__GetHandleInformation@8")
