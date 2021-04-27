@@ -1,4 +1,3 @@
-__imp_?RtlSecureZeroMemory@win32@fast_io@@YAPEAXPEIAX_K@Z __imp_RtlSecureZeroMemory
 __imp_?GetLastError@win32@fast_io@@YAIXZ __imp_GetLastError
 __imp_?LoadLibraryW@win32@fast_io@@YAPEAXPEB_W@Z __imp_LoadLibraryW
 __imp_?FormatMessageW@win32@fast_io@@YAIIPEBXIIPEA_WIPEAX@Z __imp_FormatMessageW

@@ -1,6 +1,5 @@
 #pragma once
 
-#pragma comment(linker,"/alternatename:__imp_?RtlSecureZeroMemory@win32@fast_io@@YGPAXPIAXI@Z=__imp__RtlSecureZeroMemory@8")
 #pragma comment(linker,"/alternatename:__imp_?GetLastError@win32@fast_io@@YGIXZ=__imp__GetLastError@0")
 #pragma comment(linker,"/alternatename:__imp_?LoadLibraryW@win32@fast_io@@YGPAXPB_W@Z=__imp__LoadLibraryW@4")
 #pragma comment(linker,"/alternatename:__imp_?FormatMessageW@win32@fast_io@@YGIIPBXIIPA_WIPAX@Z=__imp__FormatMessageW@28")

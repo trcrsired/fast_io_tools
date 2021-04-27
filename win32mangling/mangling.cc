@@ -5,18 +5,6 @@
 #include"apis.h"
 #include<windows.h>
 
-auto get_RtlSecureZeroMemory() noexcept
-{
-	return fast_io::win32::RtlSecureZeroMemory;
-}
-
-[[gnu::dllimport]] extern "C" void* __stdcall RtlSecureZeroMemorym(void* __restrict,std::size_t) noexcept;
-
-auto sys_RtlSecureZeroMemorym() noexcept
-{
-	return RtlSecureZeroMemorym;
-}
-
 auto get_GetLastError() noexcept
 {
 	return fast_io::win32::GetLastError;
