@@ -121,6 +121,9 @@ extern int TranslateMessage(msg const*) noexcept __asm__("TranslateMessage");
 
 [[gnu::dllimport,gnu::stdcall]]
 extern std::intptr_t DispatchMessageW(msg const*) noexcept __asm__("DispatchMessageW");
+
+[[gnu::dllimport,gnu::stdcall]]
+extern int ShowWindow(void*,int) noexcept __asm__("ShowWindow");
 }
 
 /*
@@ -141,18 +144,21 @@ try
 	};
 	if(!fast_io::win32::RegisterClassW(__builtin_addressof(wc)))
 		fast_io::throw_win32_error();
-
 	fast_io::win32::win32_window_file window(0,u"LOL🤣",u"GDI🤣🤣🤣🤣",fast_io::win32::window_styles::overlappedwindow,
 		fast_io::win32::cw_usedefault,
 		fast_io::win32::cw_usedefault,
 		fast_io::win32::cw_usedefault,
 		fast_io::win32::cw_usedefault,
 		nullptr,nullptr,hinstance,nullptr);
+	if(!fast_io::win32::ShowWindow(window.hwnd,5))
+		fast_io::throw_win32_error();
 	for(fast_io::win32::msg msg{};;)
 	{
 		int val{fast_io::win32::GetMessageW(__builtin_addressof(msg),nullptr,0,0)};
 		if(val==-1)
 			fast_io::throw_win32_error();
+		else if(val==0)
+			break;
 		fast_io::win32::TranslateMessage(__builtin_addressof(msg));
 		fast_io::win32::DispatchMessageW(__builtin_addressof(msg));
 	}
