@@ -68,8 +68,8 @@ public:
 	void *hwnd{};
 	constexpr win32_window_file() noexcept = default;
 	win32_window_file(std::uint32_t dxExStyle,char16_t const* lpclassname,char16_t const* lpwindowname,
-		window_styles dwstyle,int x,int y,int nwidth,int nheight,void* hwndparent,void* hmenu,void* hinstance,void* lpParam):
-		hwnd(CreateWindowExW(dxExStyle,lpclassname,lpwindowname,static_cast<std::uint32_t>(dwstyle),
+		std::uint32_t dwstyle,int x,int y,int nwidth,int nheight,void* hwndparent,void* hmenu,void* hinstance,void* lpParam):
+		hwnd(CreateWindowExW(dxExStyle,lpclassname,lpwindowname,dwstyle,
 		x,y,nwidth,nheight,hwndparent,hmenu,hinstance,lpParam))
 	{
 		if(hwnd==nullptr)
@@ -144,7 +144,8 @@ try
 	};
 	if(!fast_io::win32::RegisterClassW(__builtin_addressof(wc)))
 		fast_io::throw_win32_error();
-	fast_io::win32::win32_window_file window(0,u"LOL🤣",u"GDI🤣🤣🤣🤣",fast_io::win32::window_styles::overlappedwindow,
+	fast_io::win32::win32_window_file window(0,u"LOL🤣",u"GDI🤣🤣🤣🤣",
+		static_cast<std::uint32_t>(fast_io::win32::window_styles::overlappedwindow),
 		fast_io::win32::cw_usedefault,
 		fast_io::win32::cw_usedefault,
 		fast_io::win32::cw_usedefault,
@@ -166,12 +167,12 @@ try
 }
 catch(fast_io::nt_error e)
 {
-	perrln(fast_io::u16box(),e);
+	perrln(fast_io::box(),e);
 	return 1;
 }
 catch(fast_io::win32_error e)
 {
-	perrln(fast_io::u16box(),e);
+	perrln(fast_io::box(),e);
 	return 1;
 }
 catch(fast_io::posix_error e)
