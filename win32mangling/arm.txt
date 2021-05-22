@@ -88,3 +88,4 @@ __imp_?RtlEnterCriticalSection@nt@win32@fast_io@@YAXPAX@Z __imp_RtlEnterCritical
 __imp_?RtlTryEnterCriticalSection@nt@win32@fast_io@@YAHPAX@Z __imp_RtlTryEnterCriticalSection
 __imp_?RtlLeaveCriticalSection@nt@win32@fast_io@@YAXPAX@Z __imp_RtlLeaveCriticalSection
 __imp_?RtlDeleteCriticalSection@nt@win32@fast_io@@YAXPAX@Z __imp_RtlDeleteCriticalSection
+__imp_?RtlDeleteCriticalSection@nt@win32@fast_io@@YAXPAX@Z __imp_RtlCreateUserThread

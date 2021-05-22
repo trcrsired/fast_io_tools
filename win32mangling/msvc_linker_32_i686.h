@@ -88,3 +88,4 @@
 #pragma comment(linker,"/alternatename:__imp_?RtlTryEnterCriticalSection@nt@win32@fast_io@@YGHPAX@Z=__imp__RtlTryEnterCriticalSection@4")
 #pragma comment(linker,"/alternatename:__imp_?RtlLeaveCriticalSection@nt@win32@fast_io@@YGXPAX@Z=__imp__RtlLeaveCriticalSection@4")
 #pragma comment(linker,"/alternatename:__imp_?RtlDeleteCriticalSection@nt@win32@fast_io@@YGXPAX@Z=__imp__RtlDeleteCriticalSection@4")
+#pragma comment(linker,"/alternatename:__imp_?RtlCreateUserThread@nt@win32@fast_io@@YGIPAX0HIII00PAPAXPAUclient_id@123@@Z=__imp__RtlCreateUserThread@40")

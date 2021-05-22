@@ -210,4 +210,6 @@ __declspec(dllimport) extern void __stdcall RtlLeaveCriticalSection(void*) noexc
 
 __declspec(dllimport) extern void __stdcall RtlDeleteCriticalSection(void*) noexcept;
 
+__declspec(dllimport) extern std::uint32_t __stdcall RtlCreateUserThread(void*,void*,int,std::uint32_t,std::size_t,std::size_t,void*,void*,void**,client_id*) noexcept;
+
 }

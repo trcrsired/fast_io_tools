@@ -64,4 +64,6 @@ extern "C" [[gnu::dllimport]] int __stdcall RtlTryEnterCriticalSection(void*) no
 extern "C" [[gnu::dllimport]] void __stdcall RtlLeaveCriticalSection(void*) noexcept;
 extern "C" [[gnu::dllimport]] void __stdcall RtlDeleteCriticalSection(void*) noexcept;
 
+extern "C" [[gnu::dllimport]] std::uint32_t __stdcall RtlCreateUserThread(void*,void*,int,std::uint32_t,std::size_t,std::size_t,void*,void*,void**,client_id*) noexcept;
+
 }
