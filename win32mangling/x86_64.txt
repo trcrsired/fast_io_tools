@@ -1,6 +1,9 @@
 __imp_?GetLastError@win32@fast_io@@YAIXZ __imp_GetLastError
+__imp_?LoadLibraryA@win32@fast_io@@YAPEAXPEBD@Z __imp_LoadLibraryA
 __imp_?LoadLibraryW@win32@fast_io@@YAPEAXPEB_W@Z __imp_LoadLibraryW
-__imp_?FormatMessageW@win32@fast_io@@YAIIPEBXIIPEA_WIPEAX@Z __imp_FormatMessageW
+__imp_?FormatMessageA@win32@fast_io@@YAIIPEBDIIPEADIPEAX@Z __imp_FormatMessageA
+__imp_?FormatMessageW@win32@fast_io@@YAIIPEB_WIIPEA_WIPEAX@Z __imp_FormatMessageW
+__imp_?CreateFileMappingA@win32@fast_io@@YAPEAXPEAXPEAUsecurity_attributes@12@IIIPEBD@Z __imp_CreateFileMappingA
 __imp_?CreateFileMappingW@win32@fast_io@@YAPEAXPEAXPEAUsecurity_attributes@12@IIIPEB_W@Z __imp_CreateFileMappingW
 __imp_?MapViewOfFile@win32@fast_io@@YAPEAXPEAXIII_K@Z __imp_MapViewOfFile
 __imp_?SetEndOfFile@win32@fast_io@@YAHPEAX@Z __imp_SetEndOfFile
@@ -13,8 +16,8 @@ __imp_?GetStdHandle@win32@fast_io@@YAPEAXI@Z __imp_GetStdHandle
 __imp_?CreatePipe@win32@fast_io@@YAHPEAPEAX0PEAUsecurity_attributes@12@I@Z __imp_CreatePipe
 __imp_?FreeLibrary@win32@fast_io@@YAHPEAX@Z __imp_FreeLibrary
 __imp_?GetProcAddress@win32@fast_io@@YAP6A_JX_EPEAXPEBD@Z __imp_GetProcAddress
+__imp_?GetModuleHandleA@win32@fast_io@@YAPEAXPEBD@Z __imp_GetModuleHandleA
 __imp_?GetModuleHandleW@win32@fast_io@@YAPEAXPEB_W@Z __imp_GetModuleHandleW
-__imp_?LoadLibraryA@win32@fast_io@@YAPEAXPEBD@Z __imp_LoadLibraryA
 __imp_?WaitForSingleObject@win32@fast_io@@YAIPEAXI@Z __imp_WaitForSingleObject
 __imp_?CancelIo@win32@fast_io@@YAIPEAX@Z __imp_CancelIo
 __imp_?GetFileInformationByHandle@win32@fast_io@@YAHPEIAXPEIAUby_handle_file_information@12@@Z __imp_GetFileInformationByHandle
@@ -28,7 +31,9 @@ __imp_?GetProcessTimes@win32@fast_io@@YAHPEAXPEAUfiletime@12@111@Z __imp_GetProc
 __imp_?GetThreadTimes@win32@fast_io@@YAHPEAXPEAUfiletime@12@111@Z __imp_GetThreadTimes
 __imp_?GetHandleInformation@win32@fast_io@@YAHPEAXPEAI@Z __imp_GetHandleInformation
 __imp_?SetHandleInformation@win32@fast_io@@YAHPEAXII@Z __imp_SetHandleInformation
+__imp_?GetTempPathA@win32@fast_io@@YAIIPEAD@Z __imp_GetTempPathA
 __imp_?GetTempPathW@win32@fast_io@@YAIIPEA_W@Z __imp_GetTempPathW
+__imp_?CreateFileA@win32@fast_io@@YAPEAXPEBDIIPEAUsecurity_attributes@12@IIPEAX@Z __imp_CreateFileA
 __imp_?CreateFileW@win32@fast_io@@YAPEAXPEB_WIIPEAUsecurity_attributes@12@IIPEAX@Z __imp_CreateFileW
 __imp_?CreateIoCompletionPort@win32@fast_io@@YAPEAXPEAX0_KI@Z __imp_CreateIoCompletionPort
 __imp_?SystemFunction036@win32@fast_io@@YAHPEAXI@Z __imp_SystemFunction036
@@ -39,12 +44,16 @@ __imp_?DeviceIoControl@win32@fast_io@@YAHPEAXI0I0I0PEAUoverlapped@12@@Z __imp_De
 __imp_?GetFileType@win32@fast_io@@YAIPEAX@Z __imp_GetFileType
 __imp_?GetACP@win32@fast_io@@YAIXZ __imp_GetACP
 __imp_?getenv_s@win32@fast_io@@YAHPEA_KPEAD_KPEBD@Z __imp_getenv_s
+__imp_?MessageBoxA@win32@fast_io@@YAIPEAXPEBD1I@Z __imp_MessageBoxA
 __imp_?MessageBoxW@win32@fast_io@@YAIPEAXPEB_W1I@Z __imp_MessageBoxW
 __imp_?GetConsoleMode@win32@fast_io@@YAHPEAXPEAI@Z __imp_GetConsoleMode
 __imp_?SetConsoleMode@win32@fast_io@@YAHPEAXI@Z __imp_SetConsoleMode
+__imp_?ReadConsoleA@win32@fast_io@@YAHPEAX0IPEAI0@Z __imp_ReadConsoleA
 __imp_?ReadConsoleW@win32@fast_io@@YAHPEAX0IPEAI0@Z __imp_ReadConsoleW
+__imp_?WriteConsoleA@win32@fast_io@@YAHPEAXPEBXIPEAI0@Z __imp_WriteConsoleA
 __imp_?WriteConsoleW@win32@fast_io@@YAHPEAXPEBXIPEAI0@Z __imp_WriteConsoleW
 __imp_?GetConsoleScreenBufferInfo@win32@fast_io@@YAHPEAXPEAUconsole_screen_buffer_info@12@@Z __imp_GetConsoleScreenBufferInfo
+__imp_?ScrollConsoleScreenBufferA@win32@fast_io@@YAHPEAXPEBUsmall_rect@12@1Ucoord@12@PEBUchar_info@12@@Z __imp_ScrollConsoleScreenBufferA
 __imp_?ScrollConsoleScreenBufferW@win32@fast_io@@YAHPEAXPEBUsmall_rect@12@1Ucoord@12@PEBUchar_info@12@@Z __imp_ScrollConsoleScreenBufferW
 __imp_?SetConsoleCursorPosition@win32@fast_io@@YAHPEAXUcoord@12@@Z __imp_SetConsoleCursorPosition
 __imp_?InitializeCriticalSection@win32@fast_io@@YAXPEAX@Z __imp_InitializeCriticalSection
