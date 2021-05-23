@@ -212,7 +212,7 @@
 	.p2align	4, 0x90
 "?get_NtWriteFile@@YA?A?<auto>@@XZ":    # @"?get_NtWriteFile@@YA?A?<auto>@@XZ"
 # %bb.0:                                # %entry
-	movl	"__imp_?NtWriteFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@Z01PBXIPA_JPAI@Z", %eax
+	movl	"__imp_?NtWriteFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@_E01PBXIPA_JPAI@Z", %eax
 	retl
                                         # -- End function
 	.def	 "?sys_NtWriteFile@@YA?A?<auto>@@XZ";
@@ -234,7 +234,7 @@
 	.p2align	4, 0x90
 "?get_ZwWriteFile@@YA?A?<auto>@@XZ":    # @"?get_ZwWriteFile@@YA?A?<auto>@@XZ"
 # %bb.0:                                # %entry
-	movl	"__imp_?ZwWriteFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@Z01PBXIPA_JPAI@Z", %eax
+	movl	"__imp_?ZwWriteFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@_E01PBXIPA_JPAI@Z", %eax
 	retl
                                         # -- End function
 	.def	 "?sys_ZwWriteFile@@YA?A?<auto>@@XZ";
@@ -256,7 +256,7 @@
 	.p2align	4, 0x90
 "?get_NtReadFile@@YA?A?<auto>@@XZ":     # @"?get_NtReadFile@@YA?A?<auto>@@XZ"
 # %bb.0:                                # %entry
-	movl	"__imp_?NtReadFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@Z01PBXIPA_JPAI@Z", %eax
+	movl	"__imp_?NtReadFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@_E01PBXIPA_JPAI@Z", %eax
 	retl
                                         # -- End function
 	.def	 "?sys_NtReadFile@@YA?A?<auto>@@XZ";
@@ -278,7 +278,7 @@
 	.p2align	4, 0x90
 "?get_ZwReadFile@@YA?A?<auto>@@XZ":     # @"?get_ZwReadFile@@YA?A?<auto>@@XZ"
 # %bb.0:                                # %entry
-	movl	"__imp_?ZwReadFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@Z01PBXIPA_JPAI@Z", %eax
+	movl	"__imp_?ZwReadFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@_E01PBXIPA_JPAI@Z", %eax
 	retl
                                         # -- End function
 	.def	 "?sys_ZwReadFile@@YA?A?<auto>@@XZ";
@@ -300,7 +300,7 @@
 	.p2align	4, 0x90
 "?get_NtQueryDirectoryFile@@YA?A?<auto>@@XZ": # @"?get_NtQueryDirectoryFile@@YA?A?<auto>@@XZ"
 # %bb.0:                                # %entry
-	movl	"__imp_?NtQueryDirectoryFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@Z010IW4file_information_class@123@HPAUunicode_string@123@H@Z", %eax
+	movl	"__imp_?NtQueryDirectoryFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@_E010IW4file_information_class@123@HPAUunicode_string@123@H@Z", %eax
 	retl
                                         # -- End function
 	.def	 "?sys_NtQueryDirectoryFile@@YA?A?<auto>@@XZ";
@@ -322,7 +322,7 @@
 	.p2align	4, 0x90
 "?get_ZwQueryDirectoryFile@@YA?A?<auto>@@XZ": # @"?get_ZwQueryDirectoryFile@@YA?A?<auto>@@XZ"
 # %bb.0:                                # %entry
-	movl	"__imp_?ZwQueryDirectoryFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@Z010IW4file_information_class@123@HPAUunicode_string@123@H@Z", %eax
+	movl	"__imp_?ZwQueryDirectoryFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@_E010IW4file_information_class@123@HPAUunicode_string@123@H@Z", %eax
 	retl
                                         # -- End function
 	.def	 "?sys_ZwQueryDirectoryFile@@YA?A?<auto>@@XZ";
@@ -598,6 +598,50 @@
 "?sys_ZwSetSystemTime@@YA?A?<auto>@@XZ": # @"?sys_ZwSetSystemTime@@YA?A?<auto>@@XZ"
 # %bb.0:                                # %entry
 	movl	__imp__ZwSetSystemTime@8, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_NtCreateProcess@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtCreateProcess@@YA?A?<auto>@@XZ" # -- Begin function ?get_NtCreateProcess@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_NtCreateProcess@@YA?A?<auto>@@XZ": # @"?get_NtCreateProcess@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?NtCreateProcess@nt@win32@fast_io@@YGIPAPAXIPAUobject_attributes@123@PAXI222@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_NtCreateProcess@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtCreateProcess@@YA?A?<auto>@@XZ" # -- Begin function ?sys_NtCreateProcess@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_NtCreateProcess@@YA?A?<auto>@@XZ": # @"?sys_NtCreateProcess@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__NtCreateProcess@32, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_ZwCreateProcess@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwCreateProcess@@YA?A?<auto>@@XZ" # -- Begin function ?get_ZwCreateProcess@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_ZwCreateProcess@@YA?A?<auto>@@XZ": # @"?get_ZwCreateProcess@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?ZwCreateProcess@nt@win32@fast_io@@YGIPAPAXIPAUobject_attributes@123@PAXI222@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_ZwCreateProcess@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwCreateProcess@@YA?A?<auto>@@XZ" # -- Begin function ?sys_ZwCreateProcess@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_ZwCreateProcess@@YA?A?<auto>@@XZ": # @"?sys_ZwCreateProcess@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__ZwCreateProcess@32, %eax
 	retl
                                         # -- End function
 	.def	 "?get_rtl_dos_path_name_to_nt_path_name_u@@YA?A?<auto>@@XZ";

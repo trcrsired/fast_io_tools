@@ -1,4 +1,4 @@
-namespace 
+namespace
 #if defined(FAST_IO_NT_C_LINKER)
 fast_io_nt_c_linkers
 #else
@@ -33,7 +33,7 @@ union
 std::uintptr_t Information;
 };
 
-using pio_apc_routine = void (*)(void*,io_status_block*,std::uint32_t);
+using pio_apc_routine = void (*)(void*,io_status_block*,std::uint32_t) noexcept;
 
 struct rtlp_curdir_def
 {
@@ -344,6 +344,98 @@ SectionBasicInformation,
 SectionImageInformation,
 SectionRelocationInformation,
 MaxSectionInfoClass
+};
+
+struct rtl_critical_section
+{
+	void* debug_info;
+	std::int32_t lock_count;
+	std::int32_t recursion_count;
+	void* owning_thread;
+	void* lock_semaphore;
+	std::uintptr_t spin_count;
+};
+
+struct section_image_information
+{
+	void* TransferAddress;
+	std::uint32_t ZeroBits;
+	std::size_t MaximumStackSize;
+	std::size_t CommittedStackSize;
+	std::uint32_t SubSystemType;
+	union U
+	{
+		struct S
+		{
+			std::uint16_t SubSystemMinorVersion;
+			std::uint16_t SubSystemMajorVersion;
+		}s;
+		std::uint32_t SubSystemVersion;
+	}u;
+	std::uint32_t GpValue;
+	std::uint16_t ImageCharacteristics;
+	std::uint16_t DllCharacteristics;
+	std::uint16_t Machine;
+	int ImageContainsCode;
+	union U1
+	{
+		char unsigned ImageFlags;
+		struct S
+		{
+			char unsigned ComPlusNativeReady : 1;
+			char unsigned ComPlusILOnly : 1;
+			char unsigned ImageDynamicallyRelocated : 1;
+			char unsigned ImageMappedFlat : 1;
+			char unsigned BaseBelow4gb : 1;
+			char unsigned Reserved : 3;
+		}s;
+	}u1;
+	std::uint32_t LoaderFlags;
+	std::uint32_t ImageFileSize;
+	std::uint32_t CheckSum;
+};
+
+struct rtl_user_process_parameters
+{
+	std::uint32_t MaximumLength;
+	std::uint32_t Length;
+
+	std::uint32_t Flags;
+	std::uint32_t DebugFlags;
+
+	void* ConsoleHandle;
+	std::uint32_t ConsoleFlags;
+	void* StandardInput;
+	void* StandardOutput;
+	void* StandardError;
+
+	curdir CurrentDirectory;
+	unicode_string DllPath;
+	unicode_string ImagePathName;
+	unicode_string CommandLine;
+	wchar_t *Environment;
+
+	std::uint32_t StartingX;
+	std::uint32_t StartingY;
+	std::uint32_t CountX;
+	std::uint32_t CountY;
+	std::uint32_t CountCharsX;
+	std::uint32_t CountCharsY;
+	std::uint32_t FillAttribute;
+
+	std::uint32_t WindowFlags;
+	std::uint32_t ShowWindowFlags;
+	unicode_string WindowTitle;
+	unicode_string DesktopInfo;
+	unicode_string ShellInfo;
+	unicode_string RuntimeData;
+	rtl_drive_letter_curdir CurrentDirectories[rtl_max_drive_letters];
+
+	std::uint32_t EnvironmentSize;
+	std::uint32_t EnvironmentVersion;
+	void* PackageDependencyData;
+	std::uint32_t ProcessGroupId;
+	std::uint32_t LoaderThreads;
 };
 
 }

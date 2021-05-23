@@ -6,7 +6,6 @@
 namespace fast_io_nt_c_linkers
 {
 
-
 extern "C" [[gnu::dllimport]] std::uint32_t __stdcall RtlNtStatusToDosError(std::uint32_t status) noexcept;
 extern "C" [[gnu::dllimport]] std::uint32_t __stdcall NtClose(void*) noexcept;
 extern "C" [[gnu::dllimport]] std::uint32_t __stdcall ZwClose(void*) noexcept;
@@ -53,6 +52,9 @@ extern "C" [[gnu::dllimport]] std::uint32_t __stdcall ZwWaitForSingleObject(void
 
 extern "C" [[gnu::dllimport]] std::uint32_t __stdcall NtSetSystemTime(std::uint64_t*,std::uint64_t*) noexcept;
 extern "C" [[gnu::dllimport]] std::uint32_t __stdcall ZwSetSystemTime(std::uint64_t*,std::uint64_t*) noexcept;
+
+extern "C" [[gnu::dllimport]] std::uint32_t __stdcall NtCreateProcess(void**,std::uint32_t,object_attributes*,void*,std::uint32_t,void*,void*,void*) noexcept;
+extern "C" [[gnu::dllimport]] std::uint32_t __stdcall ZwCreateProcess(void**,std::uint32_t,object_attributes*,void*,std::uint32_t,void*,void*,void*) noexcept;
 
 extern "C" [[gnu::dllimport]] std::uint32_t __stdcall RtlDosPathNameToNtPathName_U(wchar_t const*,unicode_string*,wchar_t const**,rtl_relative_name_u*) noexcept;
 
