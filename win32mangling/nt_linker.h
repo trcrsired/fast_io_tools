@@ -671,4 +671,32 @@ asm("RtlCreateUserThread")
 #endif
 ;
 
+__declspec(dllimport) extern std::uint32_t __stdcall NtResumeThread(void*,std::uint32_t*) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("NtResumeThread@8")
+#else
+asm("_NtResumeThread@8")
+#endif
+#else
+asm("NtResumeThread")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern std::uint32_t __stdcall ZwResumeThread(void*,std::uint32_t*) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("ZwResumeThread@8")
+#else
+asm("_ZwResumeThread@8")
+#endif
+#else
+asm("ZwResumeThread")
+#endif
+#endif
+;
+
 }

@@ -820,6 +820,50 @@
 	movq	__imp_RtlCreateUserThread(%rip), %rax
 	retq
                                         # -- End function
+	.def	 "?get_NtResumeThread@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtResumeThread@@YA?A?<auto>@@XZ" # -- Begin function ?get_NtResumeThread@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_NtResumeThread@@YA?A?<auto>@@XZ": # @"?get_NtResumeThread@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movq	"__imp_?NtResumeThread@nt@win32@fast_io@@YAIPEAXPEAI@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?sys_NtResumeThread@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtResumeThread@@YA?A?<auto>@@XZ" # -- Begin function ?sys_NtResumeThread@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_NtResumeThread@@YA?A?<auto>@@XZ": # @"?sys_NtResumeThread@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movq	__imp_NtResumeThread(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?get_ZwResumeThread@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwResumeThread@@YA?A?<auto>@@XZ" # -- Begin function ?get_ZwResumeThread@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_ZwResumeThread@@YA?A?<auto>@@XZ": # @"?get_ZwResumeThread@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movq	"__imp_?ZwResumeThread@nt@win32@fast_io@@YAIPEAXPEAI@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?sys_ZwResumeThread@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwResumeThread@@YA?A?<auto>@@XZ" # -- Begin function ?sys_ZwResumeThread@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_ZwResumeThread@@YA?A?<auto>@@XZ": # @"?sys_ZwResumeThread@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movq	__imp_ZwResumeThread(%rip), %rax
+	retq
+                                        # -- End function
 	.section	.drectve,"yn"
 	.ascii	" /DEFAULTLIB:ntdll.lib"
 	.addrsig

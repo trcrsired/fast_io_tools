@@ -100,3 +100,5 @@ __imp_?RtlTryEnterCriticalSection@nt@win32@fast_io@@YAHPEAX@Z __imp_RtlTryEnterC
 __imp_?RtlLeaveCriticalSection@nt@win32@fast_io@@YAXPEAX@Z __imp_RtlLeaveCriticalSection
 __imp_?RtlDeleteCriticalSection@nt@win32@fast_io@@YAXPEAX@Z __imp_RtlDeleteCriticalSection
 __imp_?RtlCreateUserThread@nt@win32@fast_io@@YAIPEAX0HI_K100PEAPEAXPEAUclient_id@123@@Z __imp_RtlCreateUserThread
+__imp_?NtResumeThread@nt@win32@fast_io@@YAIPEAXPEAI@Z NtResumeThread
+__imp_?ZwResumeThread@nt@win32@fast_io@@YAIPEAXPEAI@Z ZwResumeThread

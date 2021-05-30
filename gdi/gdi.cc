@@ -8,9 +8,12 @@ https://docs.microsoft.com/en-us/windows/win32/learnwin32/your-first-windows-pro
 
 int main()
 {
+	fast_io::posix_tzset();
 	fast_io::win32::wndclass wc{
 	.lpfnWndProc=[](void* hwnd,std::uint32_t msg,std::uintptr_t wparam,std::intptr_t lparam) noexcept -> std::intptr_t
 	{
+		auto tsp{fast_io::posix_clock_gettime(fast_io::posix_clock_id::realtime)};
+		println(local(tsp)," ",std::source_location::current()," hwnd:",hwnd," msg:",msg," wparam:",wparam," lparam:",lparam);
 		return fast_io::win32::DefWindowProcW(hwnd,msg,wparam,lparam);
 	},
 	.hInstance=fast_io::win32::GetProcessInstanceHandle(),
@@ -34,7 +37,8 @@ int main()
 		else if(val==0)
 			break;
 		fast_io::win32::TranslateMessage(__builtin_addressof(msg));
+		auto tsp{fast_io::posix_clock_gettime(fast_io::posix_clock_id::realtime)};
+		println(local(tsp)," ",std::source_location::current()," hwnd:",msg.hwnd," msg:",msg.message," wparam:",msg.wparam," lparam:",msg.lparam);
 		fast_io::win32::DispatchMessageW(__builtin_addressof(msg));
 	}
-	return 0;
 }

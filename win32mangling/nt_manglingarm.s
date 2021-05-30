@@ -1111,6 +1111,66 @@
 	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
+	.def	 "?get_NtResumeThread@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtResumeThread@@YA?A?<auto>@@XZ" ; -- Begin function ?get_NtResumeThread@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_NtResumeThread@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_NtResumeThread@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?NtResumeThread@nt@win32@fast_io@@YAIPAXPAI@Z"
+	movt	r0, :upper16:"__imp_?NtResumeThread@nt@win32@fast_io@@YAIPAXPAI@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_NtResumeThread@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtResumeThread@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_NtResumeThread@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_NtResumeThread@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_NtResumeThread@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_NtResumeThread
+	movt	r0, :upper16:__imp_NtResumeThread
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_ZwResumeThread@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwResumeThread@@YA?A?<auto>@@XZ" ; -- Begin function ?get_ZwResumeThread@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_ZwResumeThread@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_ZwResumeThread@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?ZwResumeThread@nt@win32@fast_io@@YAIPAXPAI@Z"
+	movt	r0, :upper16:"__imp_?ZwResumeThread@nt@win32@fast_io@@YAIPAXPAI@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_ZwResumeThread@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwResumeThread@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_ZwResumeThread@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_ZwResumeThread@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_ZwResumeThread@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_ZwResumeThread
+	movt	r0, :upper16:__imp_ZwResumeThread
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
 	.section	.drectve,"yn"
 	.ascii	" /DEFAULTLIB:ntdll.lib"
 	.addrsig
