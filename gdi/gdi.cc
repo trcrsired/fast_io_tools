@@ -7,14 +7,22 @@ https://docs.microsoft.com/en-us/windows/win32/learnwin32/your-first-windows-pro
 */
 
 int main()
+#ifdef __cpp_exceptions
+try
+#endif
 {
-	fast_io::posix_tzset();
+	using namespace fast_io::win32;
 	fast_io::win32::wndclass wc{
 	.lpfnWndProc=[](void* hwnd,std::uint32_t msg,std::uintptr_t wparam,std::intptr_t lparam) noexcept -> std::intptr_t
 	{
-		auto tsp{fast_io::posix_clock_gettime(fast_io::posix_clock_id::realtime)};
-		println(local(tsp)," ",std::source_location::current()," hwnd:",hwnd," msg:",msg," wparam:",wparam," lparam:",lparam);
+		switch(msg)
+		{
+		case 2://WM_DESTROY
+			PostQuitMessage(0);
+			return 0;
+		default:
 		return fast_io::win32::DefWindowProcW(hwnd,msg,wparam,lparam);
+		}
 	},
 	.hInstance=fast_io::win32::GetProcessInstanceHandle(),
 	.lpszClassName=u"LOL🤣"
@@ -28,6 +36,22 @@ int main()
 		fast_io::win32::cw_usedefault,
 		fast_io::win32::cw_usedefault,
 		nullptr,nullptr,fast_io::win32::GetProcessInstanceHandle(),nullptr);
+
+
+
+	menu menu;
+	append_menu(menu.hmenu,0,0,L"New");
+	append_menu(menu.hmenu,0,1,L"New");
+	append_menu(menu.hmenu,0,2,L"New");
+	append_menu(menu.hmenu,0,2,L"New");
+	append_menu(menu.hmenu,0,2,L"New");
+	append_menu(menu.hmenu,0,2,L"New");
+	append_menu(menu.hmenu,0,2,L"New");
+	append_menu(menu.hmenu,0,2,L"New");
+	set_menu(window.hwnd,menu.hmenu);
+
+
+
 	fast_io::win32::ShowWindow(window.hwnd,10);
 	for(fast_io::win32::msg msg{};;)
 	{
@@ -37,8 +61,11 @@ int main()
 		else if(val==0)
 			break;
 		fast_io::win32::TranslateMessage(__builtin_addressof(msg));
-		auto tsp{fast_io::posix_clock_gettime(fast_io::posix_clock_id::realtime)};
-		println(local(tsp)," ",std::source_location::current()," hwnd:",msg.hwnd," msg:",msg.message," wparam:",msg.wparam," lparam:",msg.lparam);
 		fast_io::win32::DispatchMessageW(__builtin_addressof(msg));
 	}
+}
+catch(fast_io::win32_error ec)
+{
+	perrln(ec);
+	return 1;
 }

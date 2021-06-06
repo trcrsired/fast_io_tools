@@ -128,11 +128,58 @@ extern std::intptr_t DispatchMessageW(msg const*) noexcept __asm__("DispatchMess
 [[gnu::dllimport,gnu::stdcall]]
 extern int ShowWindow(void*,int) noexcept __asm__("ShowWindow");
 
+[[gnu::dllimport,gnu::stdcall]]
+extern int PostQuitMessage(int) noexcept __asm__("PostQuitMessage");
 
 [[gnu::pure]]
 inline void* GetProcessInstanceHandle() noexcept
 {
 	return GetModuleHandleW(nullptr);
+}
+
+
+[[gnu::dllimport,gnu::stdcall]]
+extern void* CreateMenu() noexcept __asm__("CreateMenu");
+
+[[gnu::dllimport,gnu::stdcall]]
+extern int DestroyMenu(void*) noexcept __asm__("DestroyMenu");
+
+[[gnu::dllimport,gnu::stdcall]]
+extern int SetMenu(void*,void*) noexcept __asm__("SetMenu");
+
+[[gnu::dllimport,gnu::stdcall]]
+extern int AppendMenuW(void*,std::uint32_t,std::uintptr_t,wchar_t const*) noexcept __asm__("AppendMenuW");
+
+[[gnu::dllimport,gnu::stdcall]]
+extern int AppendMenuA(void*,std::uint32_t,std::uintptr_t,char const*) noexcept __asm__("AppendMenuA");
+
+
+struct menu
+{
+	void* hmenu{};
+	menu():hmenu(CreateMenu())
+	{
+		if(hmenu==nullptr)
+			throw_win32_error();
+	}
+	menu(menu const&)=delete;
+	menu& operator=(menu const&)=delete;
+	~menu()
+	{
+		DestroyMenu(hmenu);
+	}
+};
+
+inline void set_menu(void* hwnd,void* hmenu)
+{
+	if(!SetMenu(hwnd,hmenu))
+		throw_win32_error();
+}
+
+inline void append_menu(void* hmenu,std::uint32_t uflags,std::uintptr_t uIDNewItem,wchar_t const* lpNewItem)
+{
+	if(!AppendMenuW(hmenu,uflags,uIDNewItem,lpNewItem))
+		throw_win32_error();
 }
 
 }
