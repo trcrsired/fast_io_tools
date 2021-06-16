@@ -1,6 +1,8 @@
 __imp_?GetLastError@win32@fast_io@@YAIXZ __imp_GetLastError
 __imp_?LoadLibraryA@win32@fast_io@@YAPEAXPEBD@Z __imp_LoadLibraryA
 __imp_?LoadLibraryW@win32@fast_io@@YAPEAXPEB_W@Z __imp_LoadLibraryW
+__imp_?LoadLibraryExA@win32@fast_io@@YAPEAXPEBDPEAXI@Z __imp_LoadLibraryExA
+__imp_?LoadLibraryExW@win32@fast_io@@YAPEAXPEB_WPEAXI@Z __imp_LoadLibraryExW
 __imp_?FormatMessageA@win32@fast_io@@YAIIPEBDIIPEADIPEAX@Z __imp_FormatMessageA
 __imp_?FormatMessageW@win32@fast_io@@YAIIPEB_WIIPEA_WIPEAX@Z __imp_FormatMessageW
 __imp_?CreateFileMappingA@win32@fast_io@@YAPEAXPEAXPEAUsecurity_attributes@12@IIIPEBD@Z __imp_CreateFileMappingA

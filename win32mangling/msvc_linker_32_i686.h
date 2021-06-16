@@ -3,6 +3,8 @@
 #pragma comment(linker,"/alternatename:__imp_?GetLastError@win32@fast_io@@YGIXZ=__imp__GetLastError@0")
 #pragma comment(linker,"/alternatename:__imp_?LoadLibraryA@win32@fast_io@@YGPAXPBD@Z=__imp__LoadLibraryA@4")
 #pragma comment(linker,"/alternatename:__imp_?LoadLibraryW@win32@fast_io@@YGPAXPB_W@Z=__imp__LoadLibraryW@4")
+#pragma comment(linker,"/alternatename:__imp_?LoadLibraryExA@win32@fast_io@@YGPAXPBDPAXI@Z=__imp__LoadLibraryExA@12")
+#pragma comment(linker,"/alternatename:__imp_?LoadLibraryExW@win32@fast_io@@YGPAXPB_WPAXI@Z=__imp__LoadLibraryExW@12")
 #pragma comment(linker,"/alternatename:__imp_?FormatMessageA@win32@fast_io@@YGIIPBDIIPADIPAX@Z=__imp__FormatMessageA@28")
 #pragma comment(linker,"/alternatename:__imp_?FormatMessageW@win32@fast_io@@YGIIPBXIIPA_WIPAX@Z=__imp__FormatMessageW@28")
 #pragma comment(linker,"/alternatename:__imp_?CreateFileMappingA@win32@fast_io@@YGPAXPAXPAUsecurity_attributes@12@IIIPBD@Z=__imp__CreateFileMappingA@24")

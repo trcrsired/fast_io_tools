@@ -72,6 +72,50 @@
 	movl	__imp__LoadLibraryW@4, %eax
 	retl
                                         # -- End function
+	.def	 "?get_LoadLibraryExA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_LoadLibraryExA@@YA?A?<auto>@@XZ" # -- Begin function ?get_LoadLibraryExA@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_LoadLibraryExA@@YA?A?<auto>@@XZ": # @"?get_LoadLibraryExA@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?LoadLibraryExA@win32@fast_io@@YGPAXPBDPAXI@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_LoadLibraryExA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_LoadLibraryExA@@YA?A?<auto>@@XZ" # -- Begin function ?sys_LoadLibraryExA@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_LoadLibraryExA@@YA?A?<auto>@@XZ": # @"?sys_LoadLibraryExA@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__LoadLibraryExA@12, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_LoadLibraryExW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_LoadLibraryExW@@YA?A?<auto>@@XZ" # -- Begin function ?get_LoadLibraryExW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_LoadLibraryExW@@YA?A?<auto>@@XZ": # @"?get_LoadLibraryExW@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?LoadLibraryExW@win32@fast_io@@YGPAXPB_WPAXI@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_LoadLibraryExW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_LoadLibraryExW@@YA?A?<auto>@@XZ" # -- Begin function ?sys_LoadLibraryExW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_LoadLibraryExW@@YA?A?<auto>@@XZ": # @"?sys_LoadLibraryExW@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__LoadLibraryExW@12, %eax
+	retl
+                                        # -- End function
 	.def	 "?get_FormatMessageA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;

@@ -91,6 +91,66 @@
 	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
+	.def	 "?get_LoadLibraryExA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_LoadLibraryExA@@YA?A?<auto>@@XZ" ; -- Begin function ?get_LoadLibraryExA@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_LoadLibraryExA@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_LoadLibraryExA@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?LoadLibraryExA@win32@fast_io@@YAPAXPBDPAXI@Z"
+	movt	r0, :upper16:"__imp_?LoadLibraryExA@win32@fast_io@@YAPAXPBDPAXI@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_LoadLibraryExA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_LoadLibraryExA@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_LoadLibraryExA@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_LoadLibraryExA@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_LoadLibraryExA@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_LoadLibraryExA
+	movt	r0, :upper16:__imp_LoadLibraryExA
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_LoadLibraryExW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_LoadLibraryExW@@YA?A?<auto>@@XZ" ; -- Begin function ?get_LoadLibraryExW@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_LoadLibraryExW@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_LoadLibraryExW@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?LoadLibraryExW@win32@fast_io@@YAPAXPB_WPAXI@Z"
+	movt	r0, :upper16:"__imp_?LoadLibraryExW@win32@fast_io@@YAPAXPB_WPAXI@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_LoadLibraryExW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_LoadLibraryExW@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_LoadLibraryExW@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_LoadLibraryExW@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_LoadLibraryExW@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_LoadLibraryExW
+	movt	r0, :upper16:__imp_LoadLibraryExW
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
 	.def	 "?get_FormatMessageA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;

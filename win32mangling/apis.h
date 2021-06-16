@@ -45,6 +45,34 @@ asm("LoadLibraryW")
 #endif
 ;
 
+__declspec(dllimport) extern void* __stdcall LoadLibraryExA(char const*,void*,std::uint32_t) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("LoadLibraryExA@12")
+#else
+asm("_LoadLibraryExA@12")
+#endif
+#else
+asm("LoadLibraryExA")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern void * __stdcall LoadLibraryExW(wchar_t const*,void*,std::uint32_t) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("LoadLibraryExW@12")
+#else
+asm("_LoadLibraryExW@12")
+#endif
+#else
+asm("LoadLibraryExW")
+#endif
+#endif
+;
+
 // Used to retrieve a locale-specific message string for some error code
 __declspec(dllimport) extern std::uint32_t __stdcall FormatMessageA(std::uint32_t, char const*, std::uint32_t,std::uint32_t, char*, std::uint32_t, void /*va_list*/ *) noexcept
 #if 0
