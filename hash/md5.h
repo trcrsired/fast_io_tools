@@ -135,7 +135,6 @@ inline void md5_main(std::uint32_t * __restrict state,std::byte const* __restric
 #else
 inline void md5_main(std::uint32_t * __restrict state,std::byte const* __restrict block_start,std::size_t block_bytes) noexcept
 {
-//	std::uint32_t at{*state},bt{state[1]},ct{state[2]},dt{state[3]};
 	constexpr std::size_t block_size{64};
 	using uint32_may_alias
 #if __has_cpp_attribute(gnu::may_alias)

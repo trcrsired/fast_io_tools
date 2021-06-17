@@ -1436,6 +1436,446 @@
 	movl	__imp__DeleteCriticalSection@4, %eax
 	retl
                                         # -- End function
+	.def	 "?get_WSADuplicateSocketA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSADuplicateSocketA@@YA?A?<auto>@@XZ" # -- Begin function ?get_WSADuplicateSocketA@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_WSADuplicateSocketA@@YA?A?<auto>@@XZ": # @"?get_WSADuplicateSocketA@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?WSADuplicateSocketA@win32@fast_io@@YGHPAXIPAUwsaprotocol_infoa@12@@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_WSADuplicateSocketA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSADuplicateSocketA@@YA?A?<auto>@@XZ" # -- Begin function ?sys_WSADuplicateSocketA@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_WSADuplicateSocketA@@YA?A?<auto>@@XZ": # @"?sys_WSADuplicateSocketA@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__WSADuplicateSocketA@12, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_WSADuplicateSocketW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSADuplicateSocketW@@YA?A?<auto>@@XZ" # -- Begin function ?get_WSADuplicateSocketW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_WSADuplicateSocketW@@YA?A?<auto>@@XZ": # @"?get_WSADuplicateSocketW@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?WSADuplicateSocketW@win32@fast_io@@YGXPAXIPAUwsaprotocol_infow@12@@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_WSADuplicateSocketW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSADuplicateSocketW@@YA?A?<auto>@@XZ" # -- Begin function ?sys_WSADuplicateSocketW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_WSADuplicateSocketW@@YA?A?<auto>@@XZ": # @"?sys_WSADuplicateSocketW@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__WSADuplicateSocketW@12, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_WSACleanup@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSACleanup@@YA?A?<auto>@@XZ" # -- Begin function ?get_WSACleanup@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_WSACleanup@@YA?A?<auto>@@XZ":     # @"?get_WSACleanup@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?WSACleanup@win32@fast_io@@YGHXZ", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_WSACleanup@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSACleanup@@YA?A?<auto>@@XZ" # -- Begin function ?sys_WSACleanup@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_WSACleanup@@YA?A?<auto>@@XZ":     # @"?sys_WSACleanup@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__WSACleanup@0, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_WSAStartup@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSAStartup@@YA?A?<auto>@@XZ" # -- Begin function ?get_WSAStartup@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_WSAStartup@@YA?A?<auto>@@XZ":     # @"?get_WSAStartup@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?WSAStartup@win32@fast_io@@YGHIPAUwsadata@12@@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_WSAStartup@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSAStartup@@YA?A?<auto>@@XZ" # -- Begin function ?sys_WSAStartup@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_WSAStartup@@YA?A?<auto>@@XZ":     # @"?sys_WSAStartup@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__WSAStartup@8, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_WSAGetLastError@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSAGetLastError@@YA?A?<auto>@@XZ" # -- Begin function ?get_WSAGetLastError@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_WSAGetLastError@@YA?A?<auto>@@XZ": # @"?get_WSAGetLastError@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?WSAGetLastError@win32@fast_io@@YGHXZ", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_WSAGetLastError@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSAGetLastError@@YA?A?<auto>@@XZ" # -- Begin function ?sys_WSAGetLastError@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_WSAGetLastError@@YA?A?<auto>@@XZ": # @"?sys_WSAGetLastError@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__WSAGetLastError@0, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_closesocket@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_closesocket@@YA?A?<auto>@@XZ" # -- Begin function ?get_closesocket@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_closesocket@@YA?A?<auto>@@XZ":    # @"?get_closesocket@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?closesocket@win32@fast_io@@YGHI@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_closesocket@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_closesocket@@YA?A?<auto>@@XZ" # -- Begin function ?sys_closesocket@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_closesocket@@YA?A?<auto>@@XZ":    # @"?sys_closesocket@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__closesocket@4, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_WSASocketW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSASocketW@@YA?A?<auto>@@XZ" # -- Begin function ?get_WSASocketW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_WSASocketW@@YA?A?<auto>@@XZ":     # @"?get_WSASocketW@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?WSASocketW@win32@fast_io@@YGIHHHPAUwsaprotocol_infow@12@II@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_WSASocketW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSASocketW@@YA?A?<auto>@@XZ" # -- Begin function ?sys_WSASocketW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_WSASocketW@@YA?A?<auto>@@XZ":     # @"?sys_WSASocketW@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__WSASocketW@24, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_WSASocketA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSASocketA@@YA?A?<auto>@@XZ" # -- Begin function ?get_WSASocketA@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_WSASocketA@@YA?A?<auto>@@XZ":     # @"?get_WSASocketA@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?WSASocketA@win32@fast_io@@YGIHHHPAUwsaprotocol_infoa@12@II@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_WSASocketA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSASocketA@@YA?A?<auto>@@XZ" # -- Begin function ?sys_WSASocketA@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_WSASocketA@@YA?A?<auto>@@XZ":     # @"?sys_WSASocketA@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__WSASocketA@24, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_bind@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_bind@@YA?A?<auto>@@XZ"    # -- Begin function ?get_bind@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_bind@@YA?A?<auto>@@XZ":           # @"?get_bind@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?bind@win32@fast_io@@YGHIPBXH@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_bind@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_bind@@YA?A?<auto>@@XZ"    # -- Begin function ?sys_bind@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_bind@@YA?A?<auto>@@XZ":           # @"?sys_bind@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__bind@12, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_listen@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_listen@@YA?A?<auto>@@XZ"  # -- Begin function ?get_listen@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_listen@@YA?A?<auto>@@XZ":         # @"?get_listen@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?listen@win32@fast_io@@YGHIH@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_listen@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_listen@@YA?A?<auto>@@XZ"  # -- Begin function ?sys_listen@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_listen@@YA?A?<auto>@@XZ":         # @"?sys_listen@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__listen@8, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_WSAAccept@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSAAccept@@YA?A?<auto>@@XZ" # -- Begin function ?get_WSAAccept@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_WSAAccept@@YA?A?<auto>@@XZ":      # @"?get_WSAAccept@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?WSAAccept@win32@fast_io@@YGIIPBXPAHP6GXPAUwsabuf@12@2PAUqualityofservice@12@322PAII@_EI@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_WSAAccept@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSAAccept@@YA?A?<auto>@@XZ" # -- Begin function ?sys_WSAAccept@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_WSAAccept@@YA?A?<auto>@@XZ":      # @"?sys_WSAAccept@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__WSAAccept@20, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_ioctlsocket@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ioctlsocket@@YA?A?<auto>@@XZ" # -- Begin function ?get_ioctlsocket@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_ioctlsocket@@YA?A?<auto>@@XZ":    # @"?get_ioctlsocket@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?ioctlsocket@win32@fast_io@@YGHIJPAI@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_ioctlsocket@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ioctlsocket@@YA?A?<auto>@@XZ" # -- Begin function ?sys_ioctlsocket@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_ioctlsocket@@YA?A?<auto>@@XZ":    # @"?sys_ioctlsocket@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__ioctlsocket@12, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_WSASend@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSASend@@YA?A?<auto>@@XZ" # -- Begin function ?get_WSASend@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_WSASend@@YA?A?<auto>@@XZ":        # @"?get_WSASend@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?WSASend@win32@fast_io@@YGHIPAUwsabuf@12@IPAIIPAUoverlapped@12@P6GXII2I@_E@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_WSASend@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSASend@@YA?A?<auto>@@XZ" # -- Begin function ?sys_WSASend@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_WSASend@@YA?A?<auto>@@XZ":        # @"?sys_WSASend@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__WSASend@28, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_WSASendMsg@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSASendMsg@@YA?A?<auto>@@XZ" # -- Begin function ?get_WSASendMsg@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_WSASendMsg@@YA?A?<auto>@@XZ":     # @"?get_WSASendMsg@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?WSASendMsg@win32@fast_io@@YGHIPAUwsamsg@12@IPAIPAUoverlapped@12@P6GXII2I@_E@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_WSASendMsg@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSASendMsg@@YA?A?<auto>@@XZ" # -- Begin function ?sys_WSASendMsg@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_WSASendMsg@@YA?A?<auto>@@XZ":     # @"?sys_WSASendMsg@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__WSASendMsg@24, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_WSASendTo@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSASendTo@@YA?A?<auto>@@XZ" # -- Begin function ?get_WSASendTo@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_WSASendTo@@YA?A?<auto>@@XZ":      # @"?get_WSASendTo@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?WSASendTo@win32@fast_io@@YGHIPAUwsabuf@12@IPAIIPBXHPAUoverlapped@12@P6GXII3I@_E@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_WSASendTo@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSASendTo@@YA?A?<auto>@@XZ" # -- Begin function ?sys_WSASendTo@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_WSASendTo@@YA?A?<auto>@@XZ":      # @"?sys_WSASendTo@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__WSASendTo@36, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_WSARecv@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSARecv@@YA?A?<auto>@@XZ" # -- Begin function ?get_WSARecv@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_WSARecv@@YA?A?<auto>@@XZ":        # @"?get_WSARecv@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?WSARecv@win32@fast_io@@YGHIPAUwsabuf@12@IPAI1PAUoverlapped@12@P6GXII2I@_E@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_WSARecv@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSARecv@@YA?A?<auto>@@XZ" # -- Begin function ?sys_WSARecv@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_WSARecv@@YA?A?<auto>@@XZ":        # @"?sys_WSARecv@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__WSARecv@28, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_WSARecvFrom@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSARecvFrom@@YA?A?<auto>@@XZ" # -- Begin function ?get_WSARecvFrom@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_WSARecvFrom@@YA?A?<auto>@@XZ":    # @"?get_WSARecvFrom@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?WSARecvFrom@win32@fast_io@@YGHIPAUwsabuf@12@IPAI1PBXPAHPAUoverlapped@12@P6GXII4I@_E@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_WSARecvFrom@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSARecvFrom@@YA?A?<auto>@@XZ" # -- Begin function ?sys_WSARecvFrom@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_WSARecvFrom@@YA?A?<auto>@@XZ":    # @"?sys_WSARecvFrom@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__WSARecvFrom@36, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_connect@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_connect@@YA?A?<auto>@@XZ" # -- Begin function ?get_connect@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_connect@@YA?A?<auto>@@XZ":        # @"?get_connect@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?connect@win32@fast_io@@YGHIPBXH@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_connect@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_connect@@YA?A?<auto>@@XZ" # -- Begin function ?sys_connect@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_connect@@YA?A?<auto>@@XZ":        # @"?sys_connect@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__connect@12, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_shutdown@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_shutdown@@YA?A?<auto>@@XZ" # -- Begin function ?get_shutdown@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_shutdown@@YA?A?<auto>@@XZ":       # @"?get_shutdown@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?shutdown@win32@fast_io@@YGHIPBXH@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_shutdown@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_shutdown@@YA?A?<auto>@@XZ" # -- Begin function ?sys_shutdown@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_shutdown@@YA?A?<auto>@@XZ":       # @"?sys_shutdown@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__shutdown@8, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_GetCurrentProcessId@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_GetCurrentProcessId@@YA?A?<auto>@@XZ" # -- Begin function ?get_GetCurrentProcessId@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_GetCurrentProcessId@@YA?A?<auto>@@XZ": # @"?get_GetCurrentProcessId@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?GetCurrentProcessId@win32@fast_io@@YGIXZ", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_GetCurrentProcessId@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_GetCurrentProcessId@@YA?A?<auto>@@XZ" # -- Begin function ?sys_GetCurrentProcessId@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_GetCurrentProcessId@@YA?A?<auto>@@XZ": # @"?sys_GetCurrentProcessId@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__GetCurrentProcessId@0, %eax
+	retl
+                                        # -- End function
 	.section	.drectve,"yn"
 	.ascii	" /DEFAULTLIB:uuid.lib"
 	.ascii	" /DEFAULTLIB:uuid.lib"

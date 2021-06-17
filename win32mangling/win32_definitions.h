@@ -142,4 +142,129 @@ struct console_screen_buffer_info
 	coord MaxWindowSize;
 };
 
+struct guid
+{
+unsigned long  Data1;
+unsigned short Data2;
+unsigned short Data3;
+unsigned char  Data4[8];
+};
+
+inline constexpr std::size_t wsaprotocol_len{255};
+
+struct wsaprotocolchain
+{
+	int ChainLen;
+	std::uint32_t ChainEntries[7];
+};
+
+struct wsaprotocol_infow
+{
+std::uint32_t            dwServiceFlags1;
+std::uint32_t            dwServiceFlags2;
+std::uint32_t            dwServiceFlags3;
+std::uint32_t            dwServiceFlags4;
+std::uint32_t            dwProviderFlags;
+guid             ProviderId;
+std::uint32_t            dwCatalogEntryId;
+wsaprotocolchain ProtocolChain;
+int              iVersion;
+int              iAddressFamily;
+int              iMaxSockAddr;
+int              iMinSockAddr;
+int              iSocketType;
+int              iProtocol;
+int              iProtocolMaxOffset;
+int              iNetworkByteOrder;
+int              iSecurityScheme;
+std::uint32_t            dwMessageSize;
+std::uint32_t            dwProviderReserved;
+wchar_t  szProtocol[wsaprotocol_len + 1];
+};
+
+struct wsaprotocol_infoa
+{
+std::uint32_t            dwServiceFlags1;
+std::uint32_t            dwServiceFlags2;
+std::uint32_t            dwServiceFlags3;
+std::uint32_t            dwServiceFlags4;
+std::uint32_t            dwProviderFlags;
+guid             ProviderId;
+std::uint32_t            dwCatalogEntryId;
+wsaprotocolchain ProtocolChain;
+int              iVersion;
+int              iAddressFamily;
+int              iMaxSockAddr;
+int              iMinSockAddr;
+int              iSocketType;
+int              iProtocol;
+int              iProtocolMaxOffset;
+int              iNetworkByteOrder;
+int              iSecurityScheme;
+std::uint32_t            dwMessageSize;
+std::uint32_t            dwProviderReserved;
+char  szProtocol[wsaprotocol_len + 1];
+};
+
+inline constexpr std::size_t wsadescription_len{256};
+inline constexpr std::size_t wsasys_status_len{128};
+
+struct wsadata {
+	std::uint16_t	wVersion;
+	std::uint16_t	wHighVersion;
+#ifdef _WIN64
+	unsigned short	iMaxSockets;
+	unsigned short	iMaxUdpDg;
+	char		*lpVendorInfo;
+	char		szDescription[wsadescription_len+1];
+	char		szSystemStatus[wsasys_status_len+1];
+#else
+	char		szDescription[wsadescription_len+1];
+	char		szSystemStatus[wsasys_status_len+1];
+	unsigned short	iMaxSockets;
+	unsigned short	iMaxUdpDg;
+	char		*lpVendorInfo;
+#endif
+};
+
+struct wsabuf
+{
+std::uint32_t len;
+char* buf;
+};
+
+struct wsamsg
+{
+void* name;
+int namelen;
+wsabuf* lpBuffers;
+std::uint32_t dwBufferCount;
+wsabuf Control;
+std::uint32_t dwflags;
+};
+
+using lpwsaoverlapped_completion_routine = void __stdcall(*)(std::uint32_t dwError,std::uint32_t cbTransferred,overlapped* lpOverlapped,std::uint32_t dwFlags) noexcept;
+
+struct flowspec
+{
+std::uint32_t TokenRate;
+std::uint32_t TokenBucketSize;
+std::uint32_t PeakBandwidth;
+std::uint32_t Latency;
+std::uint32_t DelayVariation;
+std::uint32_t ServiceType;
+std::uint32_t MaxSduSize;
+std::uint32_t MinimumPolicedSize;
+};
+
+struct qualityofservice
+{
+flowspec SendingFlowspec;
+flowspec ReceivingFlowspec;
+wsabuf ProviderSpecific;
+};
+
+
+using lpconditionproc = void __stdcall(*)(wsabuf*,wsabuf*,qualityofservice*,qualityofservice*,wsabuf*,wsabuf*,std::uint32_t*,std::uintptr_t) noexcept;
+
 }

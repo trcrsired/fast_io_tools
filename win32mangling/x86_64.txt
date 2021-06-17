@@ -63,6 +63,26 @@ __imp_?EnterCriticalSection@win32@fast_io@@YAXPEAX@Z __imp_EnterCriticalSection
 __imp_?TryEnterCriticalSection@win32@fast_io@@YAHPEAX@Z __imp_TryEnterCriticalSection
 __imp_?LeaveCriticalSection@win32@fast_io@@YAXPEAX@Z __imp_LeaveCriticalSection
 __imp_?DeleteCriticalSection@win32@fast_io@@YAXPEAX@Z __imp_DeleteCriticalSection
+__imp_?WSADuplicateSocketA@win32@fast_io@@YAHPEAXIPEAUwsaprotocol_infoa@12@@Z __imp_WSADuplicateSocketA
+__imp_?WSADuplicateSocketW@win32@fast_io@@YAXPEAXIPEAUwsaprotocol_infow@12@@Z __imp_WSADuplicateSocketW
+__imp_?WSACleanup@win32@fast_io@@YAHXZ __imp_WSACleanup
+__imp_?WSAStartup@win32@fast_io@@YAHIPEAUwsadata@12@@Z __imp_WSAStartup
+__imp_?WSAGetLastError@win32@fast_io@@YAHXZ __imp_WSAGetLastError
+__imp_?closesocket@win32@fast_io@@YAH_K@Z __imp_closesocket
+__imp_?WSASocketW@win32@fast_io@@YA_KHHHPEAUwsaprotocol_infow@12@II@Z __imp_WSASocketW
+__imp_?WSASocketA@win32@fast_io@@YA_KHHHPEAUwsaprotocol_infoa@12@II@Z __imp_WSASocketA
+__imp_?bind@win32@fast_io@@YAH_KPEBXH@Z __imp_bind
+__imp_?listen@win32@fast_io@@YAH_KH@Z __imp_listen
+__imp_?WSAAccept@win32@fast_io@@YA_K_KPEBXPEAHP6AXPEAUwsabuf@12@3PEAUqualityofservice@12@433PEAI0@_E0@Z __imp_WSAAccept
+__imp_?ioctlsocket@win32@fast_io@@YAH_KJPEAI@Z __imp_ioctlsocket
+__imp_?WSASend@win32@fast_io@@YAH_KPEAUwsabuf@12@IPEAIIPEAUoverlapped@12@P6AXII3I@_E@Z __imp_WSASend
+__imp_?WSASendMsg@win32@fast_io@@YAH_KPEAUwsamsg@12@IPEAIPEAUoverlapped@12@P6AXII3I@_E@Z __imp_WSASendMsg
+__imp_?WSASendTo@win32@fast_io@@YAH_KPEAUwsabuf@12@IPEAIIPEBXHPEAUoverlapped@12@P6AXII4I@_E@Z __imp_WSASendTo
+__imp_?WSARecv@win32@fast_io@@YAH_KPEAUwsabuf@12@IPEAI2PEAUoverlapped@12@P6AXII3I@_E@Z __imp_WSARecv
+__imp_?WSARecvFrom@win32@fast_io@@YAH_KPEAUwsabuf@12@IPEAI2PEBXPEAHPEAUoverlapped@12@P6AXII5I@_E@Z __imp_WSARecvFrom
+__imp_?connect@win32@fast_io@@YAH_KPEBXH@Z __imp_connect
+__imp_?shutdown@win32@fast_io@@YAH_KPEBXH@Z __imp_shutdown
+__imp_?GetCurrentProcessId@win32@fast_io@@YAIXZ __imp_GetCurrentProcessId
 
 
 __imp_?rtl_nt_status_to_dos_error@nt@win32@fast_io@@YAII@Z __imp_RtlNtStatusToDosError

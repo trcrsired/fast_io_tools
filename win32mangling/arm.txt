@@ -63,6 +63,26 @@ __imp_?EnterCriticalSection@win32@fast_io@@YAXPAX@Z __imp_EnterCriticalSection
 __imp_?TryEnterCriticalSection@win32@fast_io@@YAHPAX@Z __imp_TryEnterCriticalSection
 __imp_?LeaveCriticalSection@win32@fast_io@@YAXPAX@Z __imp_LeaveCriticalSection
 __imp_?DeleteCriticalSection@win32@fast_io@@YAXPAX@Z __imp_DeleteCriticalSection
+__imp_?WSADuplicateSocketA@win32@fast_io@@YAHPAXIPAUwsaprotocol_infoa@12@@Z __imp_WSADuplicateSocketA
+__imp_?WSADuplicateSocketW@win32@fast_io@@YAXPAXIPAUwsaprotocol_infow@12@@Z __imp_WSADuplicateSocketW
+__imp_?WSACleanup@win32@fast_io@@YAHXZ __imp_WSACleanup
+__imp_?WSAStartup@win32@fast_io@@YAHIPAUwsadata@12@@Z __imp_WSAStartup
+__imp_?WSAGetLastError@win32@fast_io@@YAHXZ __imp_WSAGetLastError
+__imp_?closesocket@win32@fast_io@@YAHI@Z __imp_closesocket
+__imp_?WSASocketW@win32@fast_io@@YAIHHHPAUwsaprotocol_infow@12@II@Z __imp_WSASocketW
+__imp_?WSASocketA@win32@fast_io@@YAIHHHPAUwsaprotocol_infoa@12@II@Z __imp_WSASocketA
+__imp_?bind@win32@fast_io@@YAHIPBXH@Z __imp_bind
+__imp_?listen@win32@fast_io@@YAHIH@Z __imp_listen
+__imp_?WSAAccept@win32@fast_io@@YAIIPBXPAHP6AXPAUwsabuf@12@2PAUqualityofservice@12@322PAII@ZI@Z __imp_WSAAccept
+__imp_?ioctlsocket@win32@fast_io@@YAHIJPAI@Z __imp_ioctlsocket
+__imp_?WSASend@win32@fast_io@@YAHIPAUwsabuf@12@IPAIIPAUoverlapped@12@P6AXII2I@Z@Z __imp_WSASend
+__imp_?WSASendMsg@win32@fast_io@@YAHIPAUwsamsg@12@IPAIPAUoverlapped@12@P6AXII2I@Z@Z __imp_WSASendMsg
+__imp_?WSASendTo@win32@fast_io@@YAHIPAUwsabuf@12@IPAIIPBXHPAUoverlapped@12@P6AXII3I@Z@Z __imp_WSASendTo
+__imp_?WSARecv@win32@fast_io@@YAHIPAUwsabuf@12@IPAI1PAUoverlapped@12@P6AXII2I@Z@Z __imp_WSARecv
+__imp_?WSARecvFrom@win32@fast_io@@YAHIPAUwsabuf@12@IPAI1PBXPAHPAUoverlapped@12@P6AXII4I@Z@Z __imp_WSARecvFrom
+__imp_?connect@win32@fast_io@@YAHIPBXH@Z __imp_connect
+__imp_?shutdown@win32@fast_io@@YAHIPBXH@Z __imp_shutdown
+__imp_?GetCurrentProcessId@win32@fast_io@@YAIXZ __imp_GetCurrentProcessId
 
 
 __imp_?rtl_nt_status_to_dos_error@nt@win32@fast_io@@YAII@Z __imp_RtlNtStatusToDosError

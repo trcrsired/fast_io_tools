@@ -1951,6 +1951,606 @@
 	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
+	.def	 "?get_WSADuplicateSocketA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSADuplicateSocketA@@YA?A?<auto>@@XZ" ; -- Begin function ?get_WSADuplicateSocketA@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_WSADuplicateSocketA@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_WSADuplicateSocketA@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?WSADuplicateSocketA@win32@fast_io@@YAHPAXIPAUwsaprotocol_infoa@12@@Z"
+	movt	r0, :upper16:"__imp_?WSADuplicateSocketA@win32@fast_io@@YAHPAXIPAUwsaprotocol_infoa@12@@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_WSADuplicateSocketA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSADuplicateSocketA@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_WSADuplicateSocketA@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_WSADuplicateSocketA@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_WSADuplicateSocketA@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_WSADuplicateSocketA
+	movt	r0, :upper16:__imp_WSADuplicateSocketA
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_WSADuplicateSocketW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSADuplicateSocketW@@YA?A?<auto>@@XZ" ; -- Begin function ?get_WSADuplicateSocketW@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_WSADuplicateSocketW@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_WSADuplicateSocketW@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?WSADuplicateSocketW@win32@fast_io@@YAXPAXIPAUwsaprotocol_infow@12@@Z"
+	movt	r0, :upper16:"__imp_?WSADuplicateSocketW@win32@fast_io@@YAXPAXIPAUwsaprotocol_infow@12@@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_WSADuplicateSocketW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSADuplicateSocketW@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_WSADuplicateSocketW@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_WSADuplicateSocketW@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_WSADuplicateSocketW@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_WSADuplicateSocketW
+	movt	r0, :upper16:__imp_WSADuplicateSocketW
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_WSACleanup@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSACleanup@@YA?A?<auto>@@XZ" ; -- Begin function ?get_WSACleanup@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_WSACleanup@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_WSACleanup@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?WSACleanup@win32@fast_io@@YAHXZ"
+	movt	r0, :upper16:"__imp_?WSACleanup@win32@fast_io@@YAHXZ"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_WSACleanup@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSACleanup@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_WSACleanup@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_WSACleanup@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_WSACleanup@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_WSACleanup
+	movt	r0, :upper16:__imp_WSACleanup
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_WSAStartup@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSAStartup@@YA?A?<auto>@@XZ" ; -- Begin function ?get_WSAStartup@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_WSAStartup@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_WSAStartup@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?WSAStartup@win32@fast_io@@YAHIPAUwsadata@12@@Z"
+	movt	r0, :upper16:"__imp_?WSAStartup@win32@fast_io@@YAHIPAUwsadata@12@@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_WSAStartup@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSAStartup@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_WSAStartup@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_WSAStartup@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_WSAStartup@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_WSAStartup
+	movt	r0, :upper16:__imp_WSAStartup
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_WSAGetLastError@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSAGetLastError@@YA?A?<auto>@@XZ" ; -- Begin function ?get_WSAGetLastError@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_WSAGetLastError@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_WSAGetLastError@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?WSAGetLastError@win32@fast_io@@YAHXZ"
+	movt	r0, :upper16:"__imp_?WSAGetLastError@win32@fast_io@@YAHXZ"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_WSAGetLastError@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSAGetLastError@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_WSAGetLastError@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_WSAGetLastError@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_WSAGetLastError@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_WSAGetLastError
+	movt	r0, :upper16:__imp_WSAGetLastError
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_closesocket@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_closesocket@@YA?A?<auto>@@XZ" ; -- Begin function ?get_closesocket@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_closesocket@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_closesocket@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?closesocket@win32@fast_io@@YAHI@Z"
+	movt	r0, :upper16:"__imp_?closesocket@win32@fast_io@@YAHI@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_closesocket@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_closesocket@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_closesocket@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_closesocket@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_closesocket@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_closesocket
+	movt	r0, :upper16:__imp_closesocket
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_WSASocketW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSASocketW@@YA?A?<auto>@@XZ" ; -- Begin function ?get_WSASocketW@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_WSASocketW@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_WSASocketW@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?WSASocketW@win32@fast_io@@YAIHHHPAUwsaprotocol_infow@12@II@Z"
+	movt	r0, :upper16:"__imp_?WSASocketW@win32@fast_io@@YAIHHHPAUwsaprotocol_infow@12@II@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_WSASocketW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSASocketW@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_WSASocketW@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_WSASocketW@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_WSASocketW@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_WSASocketW
+	movt	r0, :upper16:__imp_WSASocketW
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_WSASocketA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSASocketA@@YA?A?<auto>@@XZ" ; -- Begin function ?get_WSASocketA@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_WSASocketA@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_WSASocketA@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?WSASocketA@win32@fast_io@@YAIHHHPAUwsaprotocol_infoa@12@II@Z"
+	movt	r0, :upper16:"__imp_?WSASocketA@win32@fast_io@@YAIHHHPAUwsaprotocol_infoa@12@II@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_WSASocketA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSASocketA@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_WSASocketA@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_WSASocketA@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_WSASocketA@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_WSASocketA
+	movt	r0, :upper16:__imp_WSASocketA
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_bind@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_bind@@YA?A?<auto>@@XZ"    ; -- Begin function ?get_bind@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_bind@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_bind@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?bind@win32@fast_io@@YAHIPBXH@Z"
+	movt	r0, :upper16:"__imp_?bind@win32@fast_io@@YAHIPBXH@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_bind@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_bind@@YA?A?<auto>@@XZ"    ; -- Begin function ?sys_bind@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_bind@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_bind@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_bind
+	movt	r0, :upper16:__imp_bind
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_listen@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_listen@@YA?A?<auto>@@XZ"  ; -- Begin function ?get_listen@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_listen@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_listen@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?listen@win32@fast_io@@YAHIH@Z"
+	movt	r0, :upper16:"__imp_?listen@win32@fast_io@@YAHIH@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_listen@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_listen@@YA?A?<auto>@@XZ"  ; -- Begin function ?sys_listen@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_listen@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_listen@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_listen
+	movt	r0, :upper16:__imp_listen
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_WSAAccept@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSAAccept@@YA?A?<auto>@@XZ" ; -- Begin function ?get_WSAAccept@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_WSAAccept@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_WSAAccept@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?WSAAccept@win32@fast_io@@YAIIPBXPAHP6AXPAUwsabuf@12@2PAUqualityofservice@12@322PAII@ZI@Z"
+	movt	r0, :upper16:"__imp_?WSAAccept@win32@fast_io@@YAIIPBXPAHP6AXPAUwsabuf@12@2PAUqualityofservice@12@322PAII@ZI@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_WSAAccept@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSAAccept@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_WSAAccept@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_WSAAccept@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_WSAAccept@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_WSAAccept
+	movt	r0, :upper16:__imp_WSAAccept
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_ioctlsocket@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ioctlsocket@@YA?A?<auto>@@XZ" ; -- Begin function ?get_ioctlsocket@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_ioctlsocket@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_ioctlsocket@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?ioctlsocket@win32@fast_io@@YAHIJPAI@Z"
+	movt	r0, :upper16:"__imp_?ioctlsocket@win32@fast_io@@YAHIJPAI@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_ioctlsocket@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ioctlsocket@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_ioctlsocket@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_ioctlsocket@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_ioctlsocket@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_ioctlsocket
+	movt	r0, :upper16:__imp_ioctlsocket
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_WSASend@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSASend@@YA?A?<auto>@@XZ" ; -- Begin function ?get_WSASend@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_WSASend@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_WSASend@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?WSASend@win32@fast_io@@YAHIPAUwsabuf@12@IPAIIPAUoverlapped@12@P6AXII2I@Z@Z"
+	movt	r0, :upper16:"__imp_?WSASend@win32@fast_io@@YAHIPAUwsabuf@12@IPAIIPAUoverlapped@12@P6AXII2I@Z@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_WSASend@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSASend@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_WSASend@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_WSASend@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_WSASend@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_WSASend
+	movt	r0, :upper16:__imp_WSASend
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_WSASendMsg@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSASendMsg@@YA?A?<auto>@@XZ" ; -- Begin function ?get_WSASendMsg@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_WSASendMsg@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_WSASendMsg@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?WSASendMsg@win32@fast_io@@YAHIPAUwsamsg@12@IPAIPAUoverlapped@12@P6AXII2I@Z@Z"
+	movt	r0, :upper16:"__imp_?WSASendMsg@win32@fast_io@@YAHIPAUwsamsg@12@IPAIPAUoverlapped@12@P6AXII2I@Z@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_WSASendMsg@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSASendMsg@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_WSASendMsg@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_WSASendMsg@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_WSASendMsg@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_WSASendMsg
+	movt	r0, :upper16:__imp_WSASendMsg
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_WSASendTo@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSASendTo@@YA?A?<auto>@@XZ" ; -- Begin function ?get_WSASendTo@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_WSASendTo@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_WSASendTo@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?WSASendTo@win32@fast_io@@YAHIPAUwsabuf@12@IPAIIPBXHPAUoverlapped@12@P6AXII3I@Z@Z"
+	movt	r0, :upper16:"__imp_?WSASendTo@win32@fast_io@@YAHIPAUwsabuf@12@IPAIIPBXHPAUoverlapped@12@P6AXII3I@Z@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_WSASendTo@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSASendTo@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_WSASendTo@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_WSASendTo@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_WSASendTo@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_WSASendTo
+	movt	r0, :upper16:__imp_WSASendTo
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_WSARecv@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSARecv@@YA?A?<auto>@@XZ" ; -- Begin function ?get_WSARecv@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_WSARecv@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_WSARecv@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?WSARecv@win32@fast_io@@YAHIPAUwsabuf@12@IPAI1PAUoverlapped@12@P6AXII2I@Z@Z"
+	movt	r0, :upper16:"__imp_?WSARecv@win32@fast_io@@YAHIPAUwsabuf@12@IPAI1PAUoverlapped@12@P6AXII2I@Z@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_WSARecv@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSARecv@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_WSARecv@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_WSARecv@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_WSARecv@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_WSARecv
+	movt	r0, :upper16:__imp_WSARecv
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_WSARecvFrom@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSARecvFrom@@YA?A?<auto>@@XZ" ; -- Begin function ?get_WSARecvFrom@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_WSARecvFrom@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_WSARecvFrom@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?WSARecvFrom@win32@fast_io@@YAHIPAUwsabuf@12@IPAI1PBXPAHPAUoverlapped@12@P6AXII4I@Z@Z"
+	movt	r0, :upper16:"__imp_?WSARecvFrom@win32@fast_io@@YAHIPAUwsabuf@12@IPAI1PBXPAHPAUoverlapped@12@P6AXII4I@Z@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_WSARecvFrom@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSARecvFrom@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_WSARecvFrom@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_WSARecvFrom@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_WSARecvFrom@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_WSARecvFrom
+	movt	r0, :upper16:__imp_WSARecvFrom
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_connect@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_connect@@YA?A?<auto>@@XZ" ; -- Begin function ?get_connect@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_connect@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_connect@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?connect@win32@fast_io@@YAHIPBXH@Z"
+	movt	r0, :upper16:"__imp_?connect@win32@fast_io@@YAHIPBXH@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_connect@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_connect@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_connect@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_connect@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_connect@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_connect
+	movt	r0, :upper16:__imp_connect
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_shutdown@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_shutdown@@YA?A?<auto>@@XZ" ; -- Begin function ?get_shutdown@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_shutdown@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_shutdown@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?shutdown@win32@fast_io@@YAHIPBXH@Z"
+	movt	r0, :upper16:"__imp_?shutdown@win32@fast_io@@YAHIPBXH@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_shutdown@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_shutdown@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_shutdown@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_shutdown@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_shutdown@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_shutdown
+	movt	r0, :upper16:__imp_shutdown
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_GetCurrentProcessId@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_GetCurrentProcessId@@YA?A?<auto>@@XZ" ; -- Begin function ?get_GetCurrentProcessId@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_GetCurrentProcessId@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_GetCurrentProcessId@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?GetCurrentProcessId@win32@fast_io@@YAIXZ"
+	movt	r0, :upper16:"__imp_?GetCurrentProcessId@win32@fast_io@@YAIXZ"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_GetCurrentProcessId@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_GetCurrentProcessId@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_GetCurrentProcessId@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_GetCurrentProcessId@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_GetCurrentProcessId@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_GetCurrentProcessId
+	movt	r0, :upper16:__imp_GetCurrentProcessId
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
 	.section	.drectve,"yn"
 	.ascii	" /DEFAULTLIB:uuid.lib"
 	.ascii	" /DEFAULTLIB:uuid.lib"

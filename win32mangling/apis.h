@@ -912,5 +912,288 @@ asm("DeleteCriticalSection")
 #endif
 ;
 
+__declspec(dllimport) extern int __stdcall WSADuplicateSocketA(void*,std::uint32_t,wsaprotocol_infoa*) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("WSADuplicateSocketA@12")
+#else
+asm("_WSADuplicateSocketA@12")
+#endif
+#else
+asm("WSADuplicateSocketA")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern void __stdcall WSADuplicateSocketW(void*,std::uint32_t,wsaprotocol_infow*) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("WSADuplicateSocketW@12")
+#else
+asm("_WSADuplicateSocketW@12")
+#endif
+#else
+asm("WSADuplicateSocketW")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern int __stdcall WSACleanup() noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("WSACleanup@0")
+#else
+asm("_WSACleanup@0")
+#endif
+#else
+asm("WSACleanup")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern int __stdcall WSAStartup(std::uint32_t,wsadata*) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("WSAStartup@8")
+#else
+asm("_WSAStartup@8")
+#endif
+#else
+asm("WSAStartup")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern int __stdcall WSAGetLastError() noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("WSAGetLastError@0")
+#else
+asm("_WSAGetLastError@0")
+#endif
+#else
+asm("WSAGetLastError")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern int __stdcall closesocket(std::uintptr_t) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("closesocket@4")
+#else
+asm("_closesocket@4")
+#endif
+#else
+asm("closesocket")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern std::uintptr_t __stdcall WSASocketW(int,int,int,wsaprotocol_infow*,std::uint32_t,std::uint32_t) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("WSASocketW@24")
+#else
+asm("_WSASocketW@24")
+#endif
+#else
+asm("WSASocketW")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern std::uintptr_t __stdcall WSASocketA(int,int,int,wsaprotocol_infoa*,std::uint32_t,std::uint32_t) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("WSASocketA@24")
+#else
+asm("_WSASocketA@24")
+#endif
+#else
+asm("WSASocketA")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern int __stdcall bind(std::uintptr_t,void const*,int) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("bind@12")
+#else
+asm("_bind@12")
+#endif
+#else
+asm("bind")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern int __stdcall listen(std::uintptr_t,int) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("listen@8")
+#else
+asm("_listen@8")
+#endif
+#else
+asm("listen")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern std::uintptr_t __stdcall WSAAccept(std::uintptr_t,void const*,int*,lpconditionproc,std::uintptr_t) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("WSAAccept@20")
+#else
+asm("_WSAAccept@20")
+#endif
+#else
+asm("WSAAccept")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern int __stdcall ioctlsocket(std::uintptr_t,long,std::uint32_t*) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("ioctlsocket@12")
+#else
+asm("_ioctlsocket@12")
+#endif
+#else
+asm("ioctlsocket")
+#endif
+#endif
+;
+
+
+__declspec(dllimport) extern int __stdcall WSASend(std::uintptr_t,wsabuf*,std::uint32_t,std::uint32_t*,std::uint32_t,overlapped*,lpwsaoverlapped_completion_routine) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("WSASend@28")
+#else
+asm("_WSASend@28")
+#endif
+#else
+asm("WSASend")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern int __stdcall WSASendMsg(std::uintptr_t,wsamsg*,std::uint32_t,std::uint32_t*,overlapped*,lpwsaoverlapped_completion_routine) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("WSASendMsg@24")
+#else
+asm("_WSASendMsg@24")
+#endif
+#else
+asm("WSASendMsg")
+#endif
+#endif
+;
+
+
+__declspec(dllimport) extern int __stdcall WSASendTo(std::uintptr_t,wsabuf*,std::uint32_t,std::uint32_t*,std::uint32_t,void const*,int,overlapped*,lpwsaoverlapped_completion_routine) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("WSASendTo@36")
+#else
+asm("_WSASendTo@36")
+#endif
+#else
+asm("WSASendTo")
+#endif
+#endif
+;
+
+
+__declspec(dllimport) extern int __stdcall WSARecv(std::uintptr_t,wsabuf*,std::uint32_t,std::uint32_t*,std::uint32_t*,overlapped*,lpwsaoverlapped_completion_routine) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("WSARecv@28")
+#else
+asm("_WSARecv@28")
+#endif
+#else
+asm("WSARecv")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern int __stdcall WSARecvFrom(std::uintptr_t,wsabuf*,std::uint32_t,std::uint32_t*,std::uint32_t*,void const*,int*,overlapped*,lpwsaoverlapped_completion_routine) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("WSARecvFrom@36")
+#else
+asm("_WSARecvFrom@36")
+#endif
+#else
+asm("WSARecvFrom")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern int __stdcall connect(std::uintptr_t,void const*,int) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("connect@12")
+#else
+asm("_connect@12")
+#endif
+#else
+asm("connect")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern int __stdcall shutdown(std::uintptr_t,void const*,int) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("shutdown@12")
+#else
+asm("_shutdown@12")
+#endif
+#else
+asm("shutdown")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern std::uint32_t __stdcall GetCurrentProcessId() noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("GetCurrentProcessId@0")
+#else
+asm("_GetCurrentProcessId@0")
+#endif
+#else
+asm("GetCurrentProcessId")
+#endif
+#endif
+;
+
 
 }

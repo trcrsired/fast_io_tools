@@ -3,6 +3,8 @@
 #include"rtl_api.h"
 #include"win32_definitions.h"
 #include"apis.h"
+
+#include<winsock2.h>
 #include<windows.h>
 
 #define DEF(x) auto get_##x() {return fast_io::win32::x;} auto sys_##x() {return x;}
@@ -97,3 +99,23 @@ DEF(EnterCriticalSection)
 DEF(TryEnterCriticalSection)
 DEF(LeaveCriticalSection)
 DEF(DeleteCriticalSection)
+DEF(WSADuplicateSocketA)
+DEF(WSADuplicateSocketW)
+DEF(WSACleanup)
+DEF(WSAStartup)
+DEF(WSAGetLastError)
+DEF(closesocket)
+DEF(WSASocketW)
+DEF(WSASocketA)
+DEF(bind)
+DEF(listen)
+DEF(WSAAccept)
+DEF(ioctlsocket)
+DEF(WSASend)
+DEF(WSASendMsg)
+DEF(WSASendTo)
+DEF(WSARecv)
+DEF(WSARecvFrom)
+DEF(connect)
+DEF(shutdown)
+DEF(GetCurrentProcessId)
