@@ -81,6 +81,7 @@ __imp_?WSASendTo@win32@fast_io@@YGHIPAUwsabuf@12@IPAIIPBXHPAUoverlapped@12@P6GXI
 __imp_?WSARecv@win32@fast_io@@YGHIPAUwsabuf@12@IPAI1PAUoverlapped@12@P6GXII2I@_E@Z __imp__WSARecv@28
 __imp_?WSARecvFrom@win32@fast_io@@YGHIPAUwsabuf@12@IPAI1PBXPAHPAUoverlapped@12@P6GXII4I@_E@Z __imp__WSARecvFrom@36
 __imp_?connect@win32@fast_io@@YGHIPBXH@Z __imp__connect@12
+__imp_?WSAConnect@win32@fast_io@@YGHIPBXHPAUwsabuf@12@1PAUqualityofservice@12@2@Z __imp__WSAConnect@28
 __imp_?shutdown@win32@fast_io@@YGHIPBXH@Z __imp__shutdown@8
 __imp_?GetCurrentProcessId@win32@fast_io@@YGIXZ __imp__GetCurrentProcessId@0
 

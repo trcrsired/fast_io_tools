@@ -1167,6 +1167,20 @@ asm("connect")
 #endif
 ;
 
+__declspec(dllimport) extern int __stdcall WSAConnect(std::uintptr_t,void const*,int,wsabuf*,wsabuf*,qualityofservice*,qualityofservice*) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("WSAConnect@28")
+#else
+asm("_WSAConnect@28")
+#endif
+#else
+asm("WSAConnect")
+#endif
+#endif
+;
+
 __declspec(dllimport) extern int __stdcall shutdown(std::uintptr_t,void const*,int) noexcept
 #if 0
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))

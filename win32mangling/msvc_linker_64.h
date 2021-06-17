@@ -83,6 +83,7 @@
 #pragma comment(linker,"/alternatename:__imp_?WSARecv@win32@fast_io@@YAH_KPEAUwsabuf@12@IPEAI2PEAUoverlapped@12@P6AXII3I@_E@Z=__imp_WSARecv")
 #pragma comment(linker,"/alternatename:__imp_?WSARecvFrom@win32@fast_io@@YAH_KPEAUwsabuf@12@IPEAI2PEBXPEAHPEAUoverlapped@12@P6AXII5I@_E@Z=__imp_WSARecvFrom")
 #pragma comment(linker,"/alternatename:__imp_?connect@win32@fast_io@@YAH_KPEBXH@Z=__imp_connect")
+#pragma comment(linker,"/alternatename:__imp_?WSAConnect@win32@fast_io@@YAH_KPEBXHPEAUwsabuf@12@2PEAUqualityofservice@12@3@Z=__imp_WSAConnect")
 #pragma comment(linker,"/alternatename:__imp_?shutdown@win32@fast_io@@YAH_KPEBXH@Z=__imp_shutdown")
 #pragma comment(linker,"/alternatename:__imp_?GetCurrentProcessId@win32@fast_io@@YAIXZ=__imp_GetCurrentProcessId")
 #pragma comment(linker,"/alternatename:__imp_?rtl_nt_status_to_dos_error@nt@win32@fast_io@@YAII@Z=__imp_RtlNtStatusToDosError")

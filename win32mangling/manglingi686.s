@@ -1832,6 +1832,28 @@
 	movl	__imp__connect@12, %eax
 	retl
                                         # -- End function
+	.def	 "?get_WSAConnect@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_WSAConnect@@YA?A?<auto>@@XZ" # -- Begin function ?get_WSAConnect@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_WSAConnect@@YA?A?<auto>@@XZ":     # @"?get_WSAConnect@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?WSAConnect@win32@fast_io@@YGHIPBXHPAUwsabuf@12@1PAUqualityofservice@12@2@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_WSAConnect@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_WSAConnect@@YA?A?<auto>@@XZ" # -- Begin function ?sys_WSAConnect@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_WSAConnect@@YA?A?<auto>@@XZ":     # @"?sys_WSAConnect@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__WSAConnect@28, %eax
+	retl
+                                        # -- End function
 	.def	 "?get_shutdown@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
