@@ -2401,6 +2401,36 @@
 	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
+	.def	 "?get_recv@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_recv@@YA?A?<auto>@@XZ"    ; -- Begin function ?get_recv@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_recv@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_recv@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?recv@win32@fast_io@@YAHIPADHH@Z"
+	movt	r0, :upper16:"__imp_?recv@win32@fast_io@@YAHIPADHH@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_recv@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_recv@@YA?A?<auto>@@XZ"    ; -- Begin function ?sys_recv@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_recv@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_recv@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_recv
+	movt	r0, :upper16:__imp_recv
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
 	.def	 "?get_WSARecv@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;

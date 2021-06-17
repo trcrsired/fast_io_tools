@@ -80,6 +80,7 @@
 #pragma comment(linker,"/alternatename:__imp_?WSASend@win32@fast_io@@YGHIPAUwsabuf@12@IPAIIPAUoverlapped@12@P6GXII2I@_E@Z=__imp__WSASend@28")
 #pragma comment(linker,"/alternatename:__imp_?WSASendMsg@win32@fast_io@@YGHIPAUwsamsg@12@IPAIPAUoverlapped@12@P6GXII2I@_E@Z=__imp__WSASendMsg@24")
 #pragma comment(linker,"/alternatename:__imp_?WSASendTo@win32@fast_io@@YGHIPAUwsabuf@12@IPAIIPBXHPAUoverlapped@12@P6GXII3I@_E@Z=__imp__WSASendTo@36")
+#pragma comment(linker,"/alternatename:__imp_?recv@win32@fast_io@@YGHIPADHH@Z=__imp__recv@16")
 #pragma comment(linker,"/alternatename:__imp_?WSARecv@win32@fast_io@@YGHIPAUwsabuf@12@IPAI1PAUoverlapped@12@P6GXII2I@_E@Z=__imp__WSARecv@28")
 #pragma comment(linker,"/alternatename:__imp_?WSARecvFrom@win32@fast_io@@YGHIPAUwsabuf@12@IPAI1PBXPAHPAUoverlapped@12@P6GXII4I@_E@Z=__imp__WSARecvFrom@36")
 #pragma comment(linker,"/alternatename:__imp_?connect@win32@fast_io@@YGHIPBXH@Z=__imp__connect@12")

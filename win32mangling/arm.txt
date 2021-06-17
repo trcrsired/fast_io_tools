@@ -78,6 +78,7 @@ __imp_?ioctlsocket@win32@fast_io@@YAHIJPAI@Z __imp_ioctlsocket
 __imp_?WSASend@win32@fast_io@@YAHIPAUwsabuf@12@IPAIIPAUoverlapped@12@P6AXII2I@Z@Z __imp_WSASend
 __imp_?WSASendMsg@win32@fast_io@@YAHIPAUwsamsg@12@IPAIPAUoverlapped@12@P6AXII2I@Z@Z __imp_WSASendMsg
 __imp_?WSASendTo@win32@fast_io@@YAHIPAUwsabuf@12@IPAIIPBXHPAUoverlapped@12@P6AXII3I@Z@Z __imp_WSASendTo
+__imp_?recv@win32@fast_io@@YAHIPADHH@Z __imp_recv
 __imp_?WSARecv@win32@fast_io@@YAHIPAUwsabuf@12@IPAI1PAUoverlapped@12@P6AXII2I@Z@Z __imp_WSARecv
 __imp_?WSARecvFrom@win32@fast_io@@YAHIPAUwsabuf@12@IPAI1PBXPAHPAUoverlapped@12@P6AXII4I@Z@Z __imp_WSARecvFrom
 __imp_?connect@win32@fast_io@@YAHIPBXH@Z __imp_connect

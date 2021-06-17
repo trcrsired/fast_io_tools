@@ -1125,6 +1125,20 @@ asm("WSASendTo")
 ;
 
 
+__declspec(dllimport) extern int __stdcall recv(std::uintptr_t,char* buf,int len,int flags) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("recv@16")
+#else
+asm("_recv@16")
+#endif
+#else
+asm("recv")
+#endif
+#endif
+;
+
 __declspec(dllimport) extern int __stdcall WSARecv(std::uintptr_t,wsabuf*,std::uint32_t,std::uint32_t*,std::uint32_t*,overlapped*,lpwsaoverlapped_completion_routine) noexcept
 #if 0
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))

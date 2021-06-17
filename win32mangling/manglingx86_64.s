@@ -1766,6 +1766,28 @@
 	movq	__imp_WSASendTo(%rip), %rax
 	retq
                                         # -- End function
+	.def	 "?get_recv@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_recv@@YA?A?<auto>@@XZ"    # -- Begin function ?get_recv@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_recv@@YA?A?<auto>@@XZ":           # @"?get_recv@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movq	"__imp_?recv@win32@fast_io@@YAH_KPEADHH@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?sys_recv@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_recv@@YA?A?<auto>@@XZ"    # -- Begin function ?sys_recv@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_recv@@YA?A?<auto>@@XZ":           # @"?sys_recv@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movq	__imp_recv(%rip), %rax
+	retq
+                                        # -- End function
 	.def	 "?get_WSARecv@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
