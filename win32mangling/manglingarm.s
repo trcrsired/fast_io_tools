@@ -2611,6 +2611,36 @@
 	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
+	.def	 "?get_FlushFileBuffers@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_FlushFileBuffers@@YA?A?<auto>@@XZ" ; -- Begin function ?get_FlushFileBuffers@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_FlushFileBuffers@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_FlushFileBuffers@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:"__imp_?FlushFileBuffers@win32@fast_io@@YAHPAX@Z"
+	movt	r0, :upper16:"__imp_?FlushFileBuffers@win32@fast_io@@YAHPAX@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_FlushFileBuffers@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_FlushFileBuffers@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_FlushFileBuffers@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_FlushFileBuffers@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_FlushFileBuffers@@YA?A?<auto>@@XZ":
+; %bb.0:                                ; %entry
+	movw	r0, :lower16:__imp_FlushFileBuffers
+	movt	r0, :upper16:__imp_FlushFileBuffers
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
 	.section	.drectve,"yn"
 	.ascii	" /DEFAULTLIB:uuid.lib"
 	.ascii	" /DEFAULTLIB:uuid.lib"

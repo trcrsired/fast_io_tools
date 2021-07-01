@@ -1920,6 +1920,28 @@
 	movl	__imp__GetCurrentProcessId@0, %eax
 	retl
                                         # -- End function
+	.def	 "?get_FlushFileBuffers@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_FlushFileBuffers@@YA?A?<auto>@@XZ" # -- Begin function ?get_FlushFileBuffers@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_FlushFileBuffers@@YA?A?<auto>@@XZ": # @"?get_FlushFileBuffers@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	"__imp_?FlushFileBuffers@win32@fast_io@@YGHPAX@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_FlushFileBuffers@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_FlushFileBuffers@@YA?A?<auto>@@XZ" # -- Begin function ?sys_FlushFileBuffers@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_FlushFileBuffers@@YA?A?<auto>@@XZ": # @"?sys_FlushFileBuffers@@YA?A?<auto>@@XZ"
+# %bb.0:                                # %entry
+	movl	__imp__FlushFileBuffers@4, %eax
+	retl
+                                        # -- End function
 	.section	.drectve,"yn"
 	.ascii	" /DEFAULTLIB:uuid.lib"
 	.ascii	" /DEFAULTLIB:uuid.lib"

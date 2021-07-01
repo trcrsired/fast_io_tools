@@ -87,6 +87,7 @@
 #pragma comment(linker,"/alternatename:__imp_?WSAConnect@win32@fast_io@@YGHIPBXHPAUwsabuf@12@1PAUqualityofservice@12@2@Z=__imp__WSAConnect@28")
 #pragma comment(linker,"/alternatename:__imp_?shutdown@win32@fast_io@@YGHIPBXH@Z=__imp__shutdown@8")
 #pragma comment(linker,"/alternatename:__imp_?GetCurrentProcessId@win32@fast_io@@YGIXZ=__imp__GetCurrentProcessId@0")
+#pragma comment(linker,"/alternatename:__imp_?FlushFileBuffers@win32@fast_io@@YGHPAX@Z=__imp__FlushFileBuffers@4")
 #pragma comment(linker,"/alternatename:__imp_?rtl_nt_status_to_dos_error@nt@win32@fast_io@@YAII@Z=__imp__RtlNtStatusToDosError@4")
 #pragma comment(linker,"/alternatename:__imp_?NtClose@nt@win32@fast_io@@YGIPAX@Z=__imp__NtClose@4")
 #pragma comment(linker,"/alternatename:__imp_?ZwClose@nt@win32@fast_io@@YGIPAX@Z=__imp__ZwClose@4")

@@ -1223,5 +1223,18 @@ asm("GetCurrentProcessId")
 #endif
 ;
 
+__declspec(dllimport) extern int __stdcall FlushFileBuffers(void*) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("FlushFileBuffers@4")
+#else
+asm("_FlushFileBuffers@4")
+#endif
+#else
+asm("FlushFileBuffers")
+#endif
+#endif
+;
 
 }
