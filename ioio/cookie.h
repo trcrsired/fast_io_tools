@@ -254,8 +254,8 @@ inline constexpr Iter read(basic_io_io_observer<ch_type> biob,Iter first,Iter la
 	else
 	{
 		return (biob.cookie.vptr->read_funptr(biob.cookie.cookie,
-		reinterpret_cast<ch_type const*>(::fast_io::freestanding::to_address(first)),
-		reinterpret_cast<ch_type const*>(::fast_io::freestanding::to_address(last)))-::fast_io::freestanding::to_address(first))/sizeof(*first)+first;
+		reinterpret_cast<ch_type*>(::fast_io::freestanding::to_address(first)),
+		reinterpret_cast<ch_type*>(::fast_io::freestanding::to_address(last)))-::fast_io::freestanding::to_address(first))/sizeof(*first)+first;
 	}
 }
 
