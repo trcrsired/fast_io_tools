@@ -349,14 +349,16 @@ public:
 	using native_handle_type = basic_io_cookie_object_t<ch_type>;
 	explicit constexpr basic_io_io_handle(native_handle_type cookie):basic_io_io_observer<char_type>{cookie}{}
 
-	constexpr basic_io_io_handle(basic_io_io_handle const& other):basic_io_io_observer<char_type>{{other.cookie.vptr,other.cookie.vptr->clone_funptr(other.cookie.cookie)}}
+	constexpr basic_io_io_handle(basic_io_io_handle const& other):basic_io_io_observer<char_type>{{other.cookie.vptr,other.cookie.vptr?other.cookie.vptr->clone_funptr(other.cookie.cookie):static_cast<std::uintptr_t>(0)}}
 	{
 	}
 	constexpr basic_io_io_handle& operator=(basic_io_io_handle const& other)
 	{
 		auto other_vptr{other.cookie.vptr};
 		std::uintptr_t other_cookie{other.cookie.cookie};
-		std::uintptr_t cloned_cookie{other_vptr->clone_funptr(other_cookie)};
+		std::uintptr_t cloned_cookie{};
+		if(other_vptr)
+			cloned_cookie=other_vptr->clone_funptr(other_cookie);
 		if(this->cookie.vptr)
 #if __has_cpp_attribute(likely)
 [[likely]]
@@ -422,6 +424,7 @@ public:
 	requires std::constructible_from<T,Args...>
 	constexpr basic_io_file(io_cookie_type_t<T>,Args&& ...args):basic_io_io_handle<ch_type>(native_handle_type{__builtin_addressof(io_cookie_vtable<T>),details::create_io_io_cookie_impl<T>(::fast_io::freestanding::forward<Args>(args)...)})
 	{}
+	constexpr basic_io_file(io_dup_t,basic_io_io_observer<ch_type> biob):basic_io_io_handle<ch_type>(native_handle_type{biob.cookie.vptr,biob.cookie.vptr?biob.cookie.vptr->clone_funptr(biob.cookie.cookie):static_cast<std::uintptr_t>(0)}){}
 
 	constexpr basic_io_file(basic_io_file const&) = default;
 	constexpr basic_io_file& operator=(basic_io_file const&) = default;
