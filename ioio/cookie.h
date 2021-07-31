@@ -201,7 +201,7 @@ inline constexpr basic_io_cookie_vtable_t<typename hd_type::char_type> cal_io_co
 		};
 	}
 	else
-		tb.clone_funptr==io_cookie_clone_impl;
+		tb.clone_funptr=io_cookie_clone_impl;
 	tb.close_funptr=[](std::uintptr_t h) noexcept
 	{
 		delete (hd_type*)h;
@@ -347,7 +347,7 @@ class basic_io_io_handle:public basic_io_io_observer<ch_type>
 public:
 	using char_type = ch_type;
 	using native_handle_type = basic_io_cookie_object_t<ch_type>;
-	explicit constexpr basic_io_io_handle(native_handle_type cookie):basic_io_io_observer<char_type>{cookie}{}
+	explicit constexpr basic_io_io_handle(native_handle_type cookie1):basic_io_io_observer<char_type>{cookie1}{}
 
 	constexpr basic_io_io_handle(basic_io_io_handle const& other):basic_io_io_observer<char_type>{{other.cookie.vptr,other.cookie.vptr?other.cookie.vptr->clone_funptr(other.cookie.cookie):static_cast<std::uintptr_t>(0)}}
 	{
