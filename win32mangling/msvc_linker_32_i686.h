@@ -131,3 +131,6 @@
 #pragma comment(linker,"/alternatename:__imp_?ZwLockFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@_E01PA_J3IEE@Z=__imp__ZwLockFile@40")
 #pragma comment(linker,"/alternatename:__imp_?NtUnlockFile@nt@win32@fast_io@@YGIPAXPAUio_status_block@123@PA_J2I@Z=__imp__NtUnlockFile@20")
 #pragma comment(linker,"/alternatename:__imp_?ZwUnlockFile@nt@win32@fast_io@@YGIPAXPAUio_status_block@123@PA_J2I@Z=__imp__ZwUnlockFile@20")
+#pragma comment(linker,"/alternatename:__imp_?NtFlushBuffersFile@nt@win32@fast_io@@YGIPAXPAUio_status_block@123@@Z=__imp__NtFlushBuffersFile@8")
+#pragma comment(linker,"/alternatename:__imp_?ZwFlushBuffersFile@nt@win32@fast_io@@YGIPAXPAUio_status_block@123@@Z=__imp__ZwFlushBuffersFile@8")
+#pragma comment(linker,"/alternatename:__imp_?NtFlushBuffersFileEx@nt@win32@fast_io@@YGIPAXI0IPAUio_status_block@123@@Z=__imp__NtFlushBuffersFileEx@20")

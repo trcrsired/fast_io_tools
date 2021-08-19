@@ -131,3 +131,7 @@ __imp_?NtLockFile@nt@win32@fast_io@@YAIPAX0P6AX0PAUio_status_block@123@I@_E01PA_
 __imp_?ZwLockFile@nt@win32@fast_io@@YAIPAX0P6AX0PAUio_status_block@123@I@_E01PA_J3IEE@Z __imp_ZwLockFile
 __imp_?NtUnlockFile@nt@win32@fast_io@@YAIPAXPAUio_status_block@123@PA_J2I@Z __imp_NtUnlockFile
 __imp_?ZwUnlockFile@nt@win32@fast_io@@YAIPAXPAUio_status_block@123@PA_J2I@Z __imp_ZwUnlockFile
+__imp_?NtFlushBuffersFile@nt@win32@fast_io@@YAIPAXPAUio_status_block@123@@Z __imp_NtFlushBuffersFile
+__imp_?ZwFlushBuffersFile@nt@win32@fast_io@@YAIPAXPAUio_status_block@123@@Z __imp_ZwFlushBuffersFile
+__imp_?NtFlushBuffersFileEx@nt@win32@fast_io@@YAIPAXI0IPAUio_status_block@123@@Z __imp_NtFlushBuffersFileEx
+__imp_?ZwFlushBuffersFileEx@nt@win32@fast_io@@YAIPAXI0IPAUio_status_block@123@@Z __imp_ZwFlushBuffersFileEx

@@ -78,4 +78,10 @@ extern "C" [[gnu::dllimport,gnu::stdcall]] std::uint32_t ZwLockFile(void*,void*,
 extern "C" [[gnu::dllimport,gnu::stdcall]] std::uint32_t NtUnlockFile(void*,io_status_block*,std::int64_t*,std::int64_t*,std::uint32_t) noexcept;
 extern "C" [[gnu::dllimport,gnu::stdcall]] std::uint32_t ZwUnlockFile(void*,io_status_block*,std::int64_t*,std::int64_t*,std::uint32_t) noexcept;
 
+extern "C" [[gnu::dllimport,gnu::stdcall]] std::uint32_t NtFlushBuffersFile(void*,io_status_block*) noexcept;
+extern "C" [[gnu::dllimport,gnu::stdcall]] std::uint32_t ZwFlushBuffersFile(void*,io_status_block*) noexcept;
+
+extern "C" [[gnu::dllimport,gnu::stdcall]] std::uint32_t NtFlushBuffersFileEx(void*,std::uint32_t,void*,std::uint32_t,io_status_block*) noexcept;
+extern "C" [[gnu::dllimport,gnu::stdcall]] std::uint32_t ZwFlushBuffersFileEx(void*,std::uint32_t,void*,std::uint32_t,io_status_block*) noexcept;
+
 }

@@ -1291,6 +1291,126 @@
 	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
+	.def	 "?get_NtFlushBuffersFile@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtFlushBuffersFile@@YA?A?<auto>@@XZ" ; -- Begin function ?get_NtFlushBuffersFile@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_NtFlushBuffersFile@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_NtFlushBuffersFile@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:"__imp_?NtFlushBuffersFile@nt@win32@fast_io@@YAIPAXPAUio_status_block@123@@Z"
+	movt	r0, :upper16:"__imp_?NtFlushBuffersFile@nt@win32@fast_io@@YAIPAXPAUio_status_block@123@@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_NtFlushBuffersFile@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtFlushBuffersFile@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_NtFlushBuffersFile@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_NtFlushBuffersFile@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_NtFlushBuffersFile@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:__imp_NtFlushBuffersFile
+	movt	r0, :upper16:__imp_NtFlushBuffersFile
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_ZwFlushBuffersFile@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwFlushBuffersFile@@YA?A?<auto>@@XZ" ; -- Begin function ?get_ZwFlushBuffersFile@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_ZwFlushBuffersFile@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_ZwFlushBuffersFile@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:"__imp_?ZwFlushBuffersFile@nt@win32@fast_io@@YAIPAXPAUio_status_block@123@@Z"
+	movt	r0, :upper16:"__imp_?ZwFlushBuffersFile@nt@win32@fast_io@@YAIPAXPAUio_status_block@123@@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_ZwFlushBuffersFile@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwFlushBuffersFile@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_ZwFlushBuffersFile@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_ZwFlushBuffersFile@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_ZwFlushBuffersFile@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:__imp_ZwFlushBuffersFile
+	movt	r0, :upper16:__imp_ZwFlushBuffersFile
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ" ; -- Begin function ?get_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:"__imp_?NtFlushBuffersFileEx@nt@win32@fast_io@@YAIPAXI0IPAUio_status_block@123@@Z"
+	movt	r0, :upper16:"__imp_?NtFlushBuffersFileEx@nt@win32@fast_io@@YAIPAXI0IPAUio_status_block@123@@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:__imp_NtFlushBuffersFileEx
+	movt	r0, :upper16:__imp_NtFlushBuffersFileEx
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ" ; -- Begin function ?get_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:"__imp_?ZwFlushBuffersFileEx@nt@win32@fast_io@@YAIPAXI0IPAUio_status_block@123@@Z"
+	movt	r0, :upper16:"__imp_?ZwFlushBuffersFileEx@nt@win32@fast_io@@YAIPAXI0IPAUio_status_block@123@@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:__imp_ZwFlushBuffersFileEx
+	movt	r0, :upper16:__imp_ZwFlushBuffersFileEx
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
 	.section	.drectve,"yn"
 	.ascii	" /DEFAULTLIB:ntdll.lib"
 	.addrsig

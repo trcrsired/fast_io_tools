@@ -754,4 +754,61 @@ asm("ZwUnlockFile")
 #endif
 #endif
 ;
+
+__declspec(dllimport) extern std::uint32_t __stdcall NtFlushBuffersFile(void*,io_status_block*) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("NtFlushBuffersFile@8")
+#else
+asm("_NtFlushBuffersFile@8")
+#endif
+#else
+asm("NtFlushBuffersFile")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern std::uint32_t __stdcall ZwFlushBuffersFile(void*,io_status_block*) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("ZwFlushBuffersFile@8")
+#else
+asm("_ZwFlushBuffersFile@8")
+#endif
+#else
+asm("ZwFlushBuffersFile")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern std::uint32_t __stdcall NtFlushBuffersFileEx(void*,std::uint32_t,void*,std::uint32_t,io_status_block*) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("NtFlushBuffersFileEx@20")
+#else
+asm("_NtFlushBuffersFileEx@20")
+#endif
+#else
+asm("NtFlushBuffersFileEx")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern std::uint32_t __stdcall ZwFlushBuffersFileEx(void*,std::uint32_t,void*,std::uint32_t,io_status_block*) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("ZwFlushBuffersFileEx@20")
+#else
+asm("_ZwFlushBuffersFileEx@20")
+#endif
+#else
+asm("ZwFlushBuffersFileEx")
+#endif
+#endif
+;
+
 }

@@ -952,6 +952,94 @@
 	movq	__imp_ZwUnlockFile(%rip), %rax
 	retq
                                         # -- End function
+	.def	 "?get_NtFlushBuffersFile@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtFlushBuffersFile@@YA?A?<auto>@@XZ" # -- Begin function ?get_NtFlushBuffersFile@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_NtFlushBuffersFile@@YA?A?<auto>@@XZ": # @"?get_NtFlushBuffersFile@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?NtFlushBuffersFile@nt@win32@fast_io@@YAIPEAXPEAUio_status_block@123@@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?sys_NtFlushBuffersFile@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtFlushBuffersFile@@YA?A?<auto>@@XZ" # -- Begin function ?sys_NtFlushBuffersFile@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_NtFlushBuffersFile@@YA?A?<auto>@@XZ": # @"?sys_NtFlushBuffersFile@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_NtFlushBuffersFile(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?get_ZwFlushBuffersFile@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwFlushBuffersFile@@YA?A?<auto>@@XZ" # -- Begin function ?get_ZwFlushBuffersFile@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_ZwFlushBuffersFile@@YA?A?<auto>@@XZ": # @"?get_ZwFlushBuffersFile@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?ZwFlushBuffersFile@nt@win32@fast_io@@YAIPEAXPEAUio_status_block@123@@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?sys_ZwFlushBuffersFile@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwFlushBuffersFile@@YA?A?<auto>@@XZ" # -- Begin function ?sys_ZwFlushBuffersFile@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_ZwFlushBuffersFile@@YA?A?<auto>@@XZ": # @"?sys_ZwFlushBuffersFile@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_ZwFlushBuffersFile(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?get_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ" # -- Begin function ?get_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ": # @"?get_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?NtFlushBuffersFileEx@nt@win32@fast_io@@YAIPEAXI0IPEAUio_status_block@123@@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?sys_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ" # -- Begin function ?sys_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ": # @"?sys_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_NtFlushBuffersFileEx(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?get_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ" # -- Begin function ?get_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ": # @"?get_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?ZwFlushBuffersFileEx@nt@win32@fast_io@@YAIPEAXI0IPEAUio_status_block@123@@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?sys_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ" # -- Begin function ?sys_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ": # @"?sys_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_ZwFlushBuffersFileEx(%rip), %rax
+	retq
+                                        # -- End function
 	.section	.drectve,"yn"
 	.ascii	" /DEFAULTLIB:ntdll.lib"
 	.addrsig
