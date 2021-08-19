@@ -15,10 +15,10 @@ nt_manglingarm.s:nt_mangling.cc
 
 
 msvc_linker_64.h:x86_64.txt
-	msvc_comment x86_64.txt msvc_linker_64.h
+	./msvc_comment x86_64.txt msvc_linker_64.h
 msvc_linker_32_i686.h:i686.txt
-	msvc_comment i686.txt msvc_linker_32_i686.h
+	./msvc_comment i686.txt msvc_linker_32_i686.h
 msvc_linker_32.h:arm.txt
-	msvc_comment arm.txt msvc_linker_32.h
+	./msvc_comment arm.txt msvc_linker_32.h
 clean:
 	del msvc_linker_32.h msvc_linker_32_i686.h msvc_linker_64.h manglingarm.s manglingi686.s manglingx86_64.s nt_manglingx86_64.s nt_manglingi686.s nt_manglingarm.s

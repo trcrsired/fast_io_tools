@@ -699,4 +699,59 @@ asm("ZwResumeThread")
 #endif
 ;
 
+__declspec(dllimport) extern std::uint32_t __stdcall NtLockFile(void*,void*,pio_apc_routine,void*,io_status_block*,std::int64_t*,std::int64_t*,std::uint32_t,char unsigned,char unsigned) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("NtLockFile@40")
+#else
+asm("_NtLockFile@40")
+#endif
+#else
+asm("NtLockFile")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern std::uint32_t __stdcall ZwLockFile(void*,void*,pio_apc_routine,void*,io_status_block*,std::int64_t*,std::int64_t*,std::uint32_t,char unsigned,char unsigned) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("ZwLockFile@40")
+#else
+asm("_ZwLockFile@40")
+#endif
+#else
+asm("ZwLockFile")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern std::uint32_t __stdcall NtUnlockFile(void*,io_status_block*,std::int64_t*,std::int64_t*,std::uint32_t) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("NtUnlockFile@20")
+#else
+asm("_NtUnlockFile@20")
+#endif
+#else
+asm("NtUnlockFile")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern std::uint32_t __stdcall ZwUnlockFile(void*,io_status_block*,std::int64_t*,std::int64_t*,std::uint32_t) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("ZwUnlockFile@20")
+#else
+asm("_ZwUnlockFile@20")
+#endif
+#else
+asm("ZwUnlockFile")
+#endif
+#endif
+;
 }

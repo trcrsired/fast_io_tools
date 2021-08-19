@@ -127,3 +127,7 @@
 #pragma comment(linker,"/alternatename:__imp_?RtlCreateUserThread@nt@win32@fast_io@@YAIPAX0HIII00PAPAXPAUclient_id@123@@Z=__imp_RtlCreateUserThread")
 #pragma comment(linker,"/alternatename:__imp_?NtResumeThread@nt@win32@fast_io@@YAIPAXPAI@Z=__imp_NtResumeThread")
 #pragma comment(linker,"/alternatename:__imp_?ZwResumeThread@nt@win32@fast_io@@YAIPAXPAI@Z=__imp_ZwResumeThread")
+#pragma comment(linker,"/alternatename:__imp_?NtLockFile@nt@win32@fast_io@@YAIPAX0P6AX0PAUio_status_block@123@I@_E01PA_J3IEE@Z=__imp_NtLockFile")
+#pragma comment(linker,"/alternatename:__imp_?ZwLockFile@nt@win32@fast_io@@YAIPAX0P6AX0PAUio_status_block@123@I@_E01PA_J3IEE@Z=__imp_ZwLockFile")
+#pragma comment(linker,"/alternatename:__imp_?NtUnlockFile@nt@win32@fast_io@@YAIPAXPAUio_status_block@123@PA_J2I@Z=__imp_NtUnlockFile")
+#pragma comment(linker,"/alternatename:__imp_?ZwUnlockFile@nt@win32@fast_io@@YAIPAXPAUio_status_block@123@PA_J2I@Z=__imp_ZwUnlockFile")

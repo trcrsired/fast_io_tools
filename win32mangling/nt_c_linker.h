@@ -71,4 +71,11 @@ extern "C" [[gnu::dllimport]] std::uint32_t __stdcall RtlCreateUserThread(void*,
 
 extern "C" [[gnu::dllimport,gnu::stdcall]] void NtResumeThread(void*,std::uint32_t*) noexcept;
 extern "C" [[gnu::dllimport,gnu::stdcall]] void ZwResumeThread(void*,std::uint32_t*) noexcept;
+
+extern "C" [[gnu::dllimport,gnu::stdcall]] std::uint32_t NtLockFile(void*,void*,pio_apc_routine,void*,io_status_block*,std::int64_t*,std::int64_t*,std::uint32_t,char unsigned,char unsigned) noexcept;
+extern "C" [[gnu::dllimport,gnu::stdcall]] std::uint32_t ZwLockFile(void*,void*,pio_apc_routine,void*,io_status_block*,std::int64_t*,std::int64_t*,std::uint32_t,char unsigned,char unsigned) noexcept;
+
+extern "C" [[gnu::dllimport,gnu::stdcall]] std::uint32_t NtUnlockFile(void*,io_status_block*,std::int64_t*,std::int64_t*,std::uint32_t) noexcept;
+extern "C" [[gnu::dllimport,gnu::stdcall]] std::uint32_t ZwUnlockFile(void*,io_status_block*,std::int64_t*,std::int64_t*,std::uint32_t) noexcept;
+
 }
