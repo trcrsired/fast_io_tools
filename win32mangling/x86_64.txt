@@ -46,6 +46,7 @@ __imp_?DeviceIoControl@win32@fast_io@@YAHPEAXI0I0I0PEAUoverlapped@12@@Z __imp_De
 __imp_?GetFileType@win32@fast_io@@YAIPEAX@Z __imp_GetFileType
 __imp_?GetACP@win32@fast_io@@YAIXZ __imp_GetACP
 __imp_?getenv_s@win32@fast_io@@YAHPEA_KPEAD_KPEBD@Z __imp_getenv_s
+?getenv_s@win32@fast_io@@YAHPEA_KPEAD_KPEBD@Z getenv_s
 __imp_?MessageBoxA@win32@fast_io@@YAIPEAXPEBD1I@Z __imp_MessageBoxA
 __imp_?MessageBoxW@win32@fast_io@@YAIPEAXPEB_W1I@Z __imp_MessageBoxW
 __imp_?GetConsoleMode@win32@fast_io@@YAHPEAXPEAI@Z __imp_GetConsoleMode

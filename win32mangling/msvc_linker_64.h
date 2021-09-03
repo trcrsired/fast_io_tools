@@ -48,6 +48,7 @@
 #pragma comment(linker,"/alternatename:__imp_?GetFileType@win32@fast_io@@YAIPEAX@Z=__imp_GetFileType")
 #pragma comment(linker,"/alternatename:__imp_?GetACP@win32@fast_io@@YAIXZ=__imp_GetACP")
 #pragma comment(linker,"/alternatename:__imp_?getenv_s@win32@fast_io@@YAHPEA_KPEAD_KPEBD@Z=__imp_getenv_s")
+#pragma comment(linker,"/alternatename:?getenv_s@win32@fast_io@@YAHPEA_KPEAD_KPEBD@Z=getenv_s")
 #pragma comment(linker,"/alternatename:__imp_?MessageBoxA@win32@fast_io@@YAIPEAXPEBD1I@Z=__imp_MessageBoxA")
 #pragma comment(linker,"/alternatename:__imp_?MessageBoxW@win32@fast_io@@YAIPEAXPEB_W1I@Z=__imp_MessageBoxW")
 #pragma comment(linker,"/alternatename:__imp_?GetConsoleMode@win32@fast_io@@YAHPEAXPEAI@Z=__imp_GetConsoleMode")
