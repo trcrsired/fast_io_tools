@@ -63,7 +63,7 @@ vscroll=0x00200000L,
 overlappedwindow=overlapped|caption|sysmenu|thickframe|minimizebox|maximizebox
 };
 
-constexpr int cw_usedefault(0x80000000);
+inline constexpr int cw_usedefault(0x80000000);
 
 class win32_window_file
 {

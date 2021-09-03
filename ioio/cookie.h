@@ -407,7 +407,12 @@ namespace details
 template<typename T,typename... Args>
 inline constexpr std::uintptr_t create_io_io_cookie_impl(Args&& ...args)
 {
-	return (std::uintptr_t)new T(::fast_io::freestanding::forward<Args>(args)...);
+	if constexpr(value_based_stream<T>)
+	{
+		return (std::uintptr_t)T(::fast_io::freestanding::forward<Args>(args)...).release();
+	}
+	else
+		return (std::uintptr_t)new T(::fast_io::freestanding::forward<Args>(args)...);
 }
 
 }
