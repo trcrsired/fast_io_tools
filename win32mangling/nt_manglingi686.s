@@ -652,7 +652,7 @@
 	.p2align	4, 0x90
 "?get_rtl_dos_path_name_to_nt_path_name_u@@YA?A?<auto>@@XZ": # @"?get_rtl_dos_path_name_to_nt_path_name_u@@YA?A?<auto>@@XZ"
 # %bb.0:
-	movl	"__imp_?rtl_dos_path_name_to_nt_path_name_u@nt@win32@fast_io@@YGIPB_WPAUunicode_string@123@PAPB_WPAUrtl_relative_name_u@123@@Z", %eax
+	movl	"__imp_?rtl_dos_path_name_to_nt_path_name_u@nt@win32@fast_io@@YGEPB_WPAUunicode_string@123@PAPB_WPAUrtl_relative_name_u@123@@Z", %eax
 	retl
                                         # -- End function
 	.def	 "?sys_RtlDosPathNameToNtPathName_U@@YA?A?<auto>@@XZ";
@@ -664,6 +664,28 @@
 "?sys_RtlDosPathNameToNtPathName_U@@YA?A?<auto>@@XZ": # @"?sys_RtlDosPathNameToNtPathName_U@@YA?A?<auto>@@XZ"
 # %bb.0:
 	movl	__imp__RtlDosPathNameToNtPathName_U@16, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_rtl_dos_path_name_to_nt_path_name_u_with_status@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_rtl_dos_path_name_to_nt_path_name_u_with_status@@YA?A?<auto>@@XZ" # -- Begin function ?get_rtl_dos_path_name_to_nt_path_name_u_with_status@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_rtl_dos_path_name_to_nt_path_name_u_with_status@@YA?A?<auto>@@XZ": # @"?get_rtl_dos_path_name_to_nt_path_name_u_with_status@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?rtl_dos_path_name_to_nt_path_name_u_with_status@nt@win32@fast_io@@YGIPB_WPAUunicode_string@123@PAPB_WPAUrtl_relative_name_u@123@@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_RtlDosPathNameToNtPathName_U_WithStatus@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlDosPathNameToNtPathName_U_WithStatus@@YA?A?<auto>@@XZ" # -- Begin function ?sys_RtlDosPathNameToNtPathName_U_WithStatus@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_RtlDosPathNameToNtPathName_U_WithStatus@@YA?A?<auto>@@XZ": # @"?sys_RtlDosPathNameToNtPathName_U_WithStatus@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__RtlDosPathNameToNtPathName_U_WithStatus@16, %eax
 	retl
                                         # -- End function
 	.def	 "?get_rtl_free_unicode_string@@YA?A?<auto>@@XZ";

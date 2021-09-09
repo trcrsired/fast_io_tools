@@ -558,7 +558,7 @@ inline std::uint32_t nt_create_process(Args... args) noexcept
 		return ZwCreateProcess(args...);
 }
 
-__declspec(dllimport) extern std::uint32_t __stdcall rtl_dos_path_name_to_nt_path_name_u(wchar_t const*,unicode_string*,wchar_t const**,rtl_relative_name_u*) noexcept
+__declspec(dllimport) extern char unsigned __stdcall rtl_dos_path_name_to_nt_path_name_u(wchar_t const*,unicode_string*,wchar_t const**,rtl_relative_name_u*) noexcept
 #if 0
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
@@ -568,6 +568,20 @@ asm("_RtlDosPathNameToNtPathName_U@16")
 #endif
 #else
 asm("RtlDosPathNameToNtPathName_U")
+#endif
+#endif
+;
+
+__declspec(dllimport) extern std::uint32_t __stdcall rtl_dos_path_name_to_nt_path_name_u_with_status(wchar_t const*,unicode_string*,wchar_t const**,rtl_relative_name_u*) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if defined(__GNUC__)
+asm("RtlDosPathNameToNtPathName_U_WithStatus@16")
+#else
+asm("_RtlDosPathNameToNtPathName_U_WithStatus@16")
+#endif
+#else
+asm("RtlDosPathNameToNtPathName_U_WithStatus")
 #endif
 #endif
 ;

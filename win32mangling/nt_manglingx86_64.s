@@ -652,7 +652,7 @@
 	.p2align	4, 0x90
 "?get_rtl_dos_path_name_to_nt_path_name_u@@YA?A?<auto>@@XZ": # @"?get_rtl_dos_path_name_to_nt_path_name_u@@YA?A?<auto>@@XZ"
 # %bb.0:
-	movq	"__imp_?rtl_dos_path_name_to_nt_path_name_u@nt@win32@fast_io@@YAIPEB_WPEAUunicode_string@123@PEAPEB_WPEAUrtl_relative_name_u@123@@Z"(%rip), %rax
+	movq	"__imp_?rtl_dos_path_name_to_nt_path_name_u@nt@win32@fast_io@@YAEPEB_WPEAUunicode_string@123@PEAPEB_WPEAUrtl_relative_name_u@123@@Z"(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?sys_RtlDosPathNameToNtPathName_U@@YA?A?<auto>@@XZ";
@@ -664,6 +664,28 @@
 "?sys_RtlDosPathNameToNtPathName_U@@YA?A?<auto>@@XZ": # @"?sys_RtlDosPathNameToNtPathName_U@@YA?A?<auto>@@XZ"
 # %bb.0:
 	movq	__imp_RtlDosPathNameToNtPathName_U(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?get_rtl_dos_path_name_to_nt_path_name_u_with_status@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_rtl_dos_path_name_to_nt_path_name_u_with_status@@YA?A?<auto>@@XZ" # -- Begin function ?get_rtl_dos_path_name_to_nt_path_name_u_with_status@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_rtl_dos_path_name_to_nt_path_name_u_with_status@@YA?A?<auto>@@XZ": # @"?get_rtl_dos_path_name_to_nt_path_name_u_with_status@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?rtl_dos_path_name_to_nt_path_name_u_with_status@nt@win32@fast_io@@YAIPEB_WPEAUunicode_string@123@PEAPEB_WPEAUrtl_relative_name_u@123@@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?sys_RtlDosPathNameToNtPathName_U_WithStatus@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlDosPathNameToNtPathName_U_WithStatus@@YA?A?<auto>@@XZ" # -- Begin function ?sys_RtlDosPathNameToNtPathName_U_WithStatus@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_RtlDosPathNameToNtPathName_U_WithStatus@@YA?A?<auto>@@XZ": # @"?sys_RtlDosPathNameToNtPathName_U_WithStatus@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_RtlDosPathNameToNtPathName_U_WithStatus(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?get_rtl_free_unicode_string@@YA?A?<auto>@@XZ";

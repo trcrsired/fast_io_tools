@@ -881,8 +881,8 @@
 	.thumb_func
 "?get_rtl_dos_path_name_to_nt_path_name_u@@YA?A?<auto>@@XZ":
 ; %bb.0:
-	movw	r0, :lower16:"__imp_?rtl_dos_path_name_to_nt_path_name_u@nt@win32@fast_io@@YAIPB_WPAUunicode_string@123@PAPB_WPAUrtl_relative_name_u@123@@Z"
-	movt	r0, :upper16:"__imp_?rtl_dos_path_name_to_nt_path_name_u@nt@win32@fast_io@@YAIPB_WPAUunicode_string@123@PAPB_WPAUrtl_relative_name_u@123@@Z"
+	movw	r0, :lower16:"__imp_?rtl_dos_path_name_to_nt_path_name_u@nt@win32@fast_io@@YAEPB_WPAUunicode_string@123@PAPB_WPAUrtl_relative_name_u@123@@Z"
+	movt	r0, :upper16:"__imp_?rtl_dos_path_name_to_nt_path_name_u@nt@win32@fast_io@@YAEPB_WPAUunicode_string@123@PAPB_WPAUrtl_relative_name_u@123@@Z"
 	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
@@ -898,6 +898,36 @@
 ; %bb.0:
 	movw	r0, :lower16:__imp_RtlDosPathNameToNtPathName_U
 	movt	r0, :upper16:__imp_RtlDosPathNameToNtPathName_U
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?get_rtl_dos_path_name_to_nt_path_name_u_with_status@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_rtl_dos_path_name_to_nt_path_name_u_with_status@@YA?A?<auto>@@XZ" ; -- Begin function ?get_rtl_dos_path_name_to_nt_path_name_u_with_status@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?get_rtl_dos_path_name_to_nt_path_name_u_with_status@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_rtl_dos_path_name_to_nt_path_name_u_with_status@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:"__imp_?rtl_dos_path_name_to_nt_path_name_u_with_status@nt@win32@fast_io@@YAIPB_WPAUunicode_string@123@PAPB_WPAUrtl_relative_name_u@123@@Z"
+	movt	r0, :upper16:"__imp_?rtl_dos_path_name_to_nt_path_name_u_with_status@nt@win32@fast_io@@YAIPB_WPAUunicode_string@123@PAPB_WPAUrtl_relative_name_u@123@@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        ; -- End function
+	.def	 "?sys_RtlDosPathNameToNtPathName_U_WithStatus@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlDosPathNameToNtPathName_U_WithStatus@@YA?A?<auto>@@XZ" ; -- Begin function ?sys_RtlDosPathNameToNtPathName_U_WithStatus@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 ; @"?sys_RtlDosPathNameToNtPathName_U_WithStatus@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_RtlDosPathNameToNtPathName_U_WithStatus@@YA?A?<auto>@@XZ":
+; %bb.0:
+	movw	r0, :lower16:__imp_RtlDosPathNameToNtPathName_U_WithStatus
+	movt	r0, :upper16:__imp_RtlDosPathNameToNtPathName_U_WithStatus
 	ldr	r0, [r0]
 	bx	lr
                                         ; -- End function
