@@ -35,7 +35,7 @@ class button:public window
 {
 public:
 	explicit button(context& ctx,window& w):
-		window(0,u"Button",u"",
+		window(ctx,0,u"Button",u"",
 			static_cast<std::uint32_t>(
 			static_cast<std::uint32_t>(window_styles::tabstop|window_styles::visible|window_styles::child)|
 			static_cast<std::uint32_t>(button_styles::defpushbutton)),10,10,100,100,

@@ -96,31 +96,42 @@ inline bool show_window_impl(void* hwnd) noexcept
 	return ::fast_io::win32::ShowWindow(hwnd,cmd);
 }
 
+inline void erase_window_from_context(context* ctx,void* hwnd)
+{
+	std::uintptr_t hwnd_ptr{__builtin_bit_cast(std::uintptr_t,hwnd)};
+	std::erase_if(ctx->multimap,[hwnd_ptr](auto const& e)
+	{
+		return e.first==hwnd_ptr;
+	});
+}
+
 }
 
 inline constexpr int cw_usedefault{static_cast<int>(static_cast<std::uint32_t>(0x80000000))};
+
 
 class window
 {
 public:
 	using char_type = char16_t;
 	using native_handle_type = void*;
+	context* ctx{};
 	native_handle_type hwnd{};
-	window(std::uint32_t dxExStyle,char16_t const* lpclassname,char16_t const* lpwindowname,
+	window(context& ctxr,std::uint32_t dxExStyle,char16_t const* lpclassname,char16_t const* lpwindowname,
 		std::uint32_t dwstyle,int x,int y,int nwidth,int nheight,void* hwndparent,void* hmenu,void* hinstance,void* lpParam):
-		hwnd{::fast_io::win32::CreateWindowExW(dxExStyle,lpclassname,lpwindowname,dwstyle,
+		ctx(__builtin_addressof(ctxr)),hwnd{::fast_io::win32::CreateWindowExW(dxExStyle,lpclassname,lpwindowname,dwstyle,
 		x,y,nwidth,nheight,hwndparent,hmenu,hinstance,lpParam)}
 	{
 		if(hwnd==nullptr)
 			::fast_io::throw_win32_error();
 	}
-	explicit window(context& ctx):window(0,ctx.wc.lpszClassName,u"",
+	explicit window(context& ctxr):window(ctxr,0,ctxr.wc.lpszClassName,u"",
 		static_cast<std::uint32_t>(window_styles::overlappedwindow),
 		cw_usedefault,
 		cw_usedefault,
 		cw_usedefault,
 		cw_usedefault,
-		nullptr,nullptr,ctx.wc.hInstance,nullptr)
+		nullptr,nullptr,ctxr.wc.hInstance,nullptr)
 	{}
 	constexpr native_handle_type release() noexcept
 	{
@@ -130,8 +141,9 @@ public:
 	}
 	window(window const&)=delete;
 	window& operator=(window const&)=delete;
-	window(window&& other) noexcept:hwnd{other.hwnd}
+	window(window&& other) noexcept:ctx{other.ctx},hwnd{other.hwnd}
 	{
+		other.ctx=nullptr;
 		other.hwnd=nullptr;
 	}
 	window& operator=(window&& other) noexcept
@@ -139,7 +151,11 @@ public:
 		if(__builtin_addressof(other)==this)[[unlikely]]
 			return *this;
 		if(this->hwnd)[[likely]]
+		{
+			details::erase_window_from_context(this->ctx,this->hwnd);
 			::fast_io::win32::DestroyWindow(this->hwnd);
+		}
+		this->ctx=other.ctx;
 		this->hwnd=other.hwnd;
 		return *this;
 	}
@@ -147,6 +163,7 @@ public:
 	{
 		if(this->hwnd)[[likely]]
 		{
+			details::erase_window_from_context(this->ctx,this->hwnd);
 			int ret{::fast_io::win32::DestroyWindow(this->hwnd)};
 			this->hwnd=nullptr;
 			if(!ret)[[unlikely]]
@@ -181,10 +198,22 @@ public:
 	{
 		return ::fast_io::win32_gdi::details::show_window_impl<0>(this->hwnd);
 	}
+	template<typename Func>
+	requires requires(Func f,message e)
+	{
+		f(e);
+	}
+	auto add_callback(Func f)
+	{
+		return this->ctx->multimap.emplace(__builtin_bit_cast(std::uintptr_t,this->hwnd),f);
+	}
 	~window()
 	{
 		if(this->hwnd)[[likely]]
+		{
+			details::erase_window_from_context(this->ctx,this->hwnd);
 			::fast_io::win32::DestroyWindow(this->hwnd);
+		}
 	}
 };
 
