@@ -99,10 +99,8 @@ inline bool show_window_impl(void* hwnd) noexcept
 inline void erase_window_from_context(context* ctx,void* hwnd)
 {
 	std::uintptr_t hwnd_ptr{__builtin_bit_cast(std::uintptr_t,hwnd)};
-	std::erase_if(ctx->multimap,[hwnd_ptr](auto const& e)
-	{
-		return e.first==hwnd_ptr;
-	});
+	auto [first,last]=ctx->multimap.equal(hwnd_ptr);
+	ctx->multimap.erase(first,last);
 }
 
 }
