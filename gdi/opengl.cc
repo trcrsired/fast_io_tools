@@ -41,6 +41,7 @@ try
 	choose_opengl_pixel_format(window_dc);
 	fast_io::win32::win32_glrc gl{window_dc};
 	wgl_make_current(window_dc,gl);
+
 	
 	fast_io::win32::ShowWindow(window.hwnd,10);
 	for(fast_io::win32::msg msg{};;)
