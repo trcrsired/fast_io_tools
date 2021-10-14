@@ -87,6 +87,11 @@ __imp_?WSAConnect@win32@fast_io@@YGHIPBXHPAUwsabuf@12@1PAUqualityofservice@12@2@
 __imp_?shutdown@win32@fast_io@@YGHIPBXH@Z __imp__shutdown@8
 __imp_?GetCurrentProcessId@win32@fast_io@@YGIXZ __imp__GetCurrentProcessId@0
 __imp_?FlushFileBuffers@win32@fast_io@@YGHPAX@Z __imp__FlushFileBuffers@4
+__imp_?GetQueuedCompletionStatus@win32@fast_io@@YGHPAXPAI1PAUoverlapped@12@I@Z __imp__GetQueuedCompletionStatus@20
+__imp_?freeaddrinfo@win32@fast_io@@YGXPAU?$win32_family_addrinfo@$0A@@12@@Z __imp__freeaddrinfo@4
+__imp_?FreeAddrInfoW@win32@fast_io@@YGXPAU?$win32_family_addrinfo@$00@12@@Z __imp__FreeAddrInfoW@4
+__imp_?getaddrinfo@win32@fast_io@@YGHPBD0PBU?$win32_family_addrinfo@$0A@@12@PAPAU312@@Z __imp__getaddrinfo@16
+__imp_?GetAddrInfoW@win32@fast_io@@YGHPB_W0PBU?$win32_family_addrinfo@$00@12@PAPAU312@@Z __imp__GetAddrInfoW@16
 
 
 __imp_?rtl_nt_status_to_dos_error@nt@win32@fast_io@@YAII@Z __imp__RtlNtStatusToDosError@4

@@ -264,7 +264,37 @@ flowspec ReceivingFlowspec;
 wsabuf ProviderSpecific;
 };
 
-
 using lpconditionproc = void __stdcall(*)(wsabuf*,wsabuf*,qualityofservice*,qualityofservice*,wsabuf*,wsabuf*,std::uint32_t*,std::uintptr_t) noexcept;
+
+enum class win32_family
+{
+ansi_9x,
+wide_nt,
+#ifdef _WIN32_WINDOWS
+native = ansi_9x
+#else
+native = wide_nt
+#endif
+};
+
+template<win32_family fam>
+struct
+#if __has_cpp_attribute(gnu::may_alias)
+[[gnu::may_alias]]
+#endif
+win32_family_addrinfo
+{
+int              ai_flags{};
+int              ai_family{};
+int              ai_socktype{};
+int              ai_protocol{};
+std::size_t	 ai_addrlen{};
+win32_family_addrinfo<fam> *ai_addr{};
+std::conditional_t<fam==win32_family::ansi_9x,char,wchar_t>  *ai_canonname{};
+win32_family_addrinfo<fam> *ai_next{};
+};
+
+using win32_addrinfo_9xa = win32_family_addrinfo<win32_family::ansi_9x>;
+using win32_addrinfo_ntw = win32_family_addrinfo<win32_family::wide_nt>;
 
 }

@@ -1237,4 +1237,99 @@ asm("FlushFileBuffers")
 #endif
 ;
 
+#if defined(_MSC_VER) && !defined(__clang__)
+__declspec(dllimport)
+#elif __has_cpp_attribute(gnu::dllimport)
+[[gnu::dllimport]]
+#endif
+extern int __stdcall GetQueuedCompletionStatus(void*,std::uint32_t*,std::uintptr_t*,overlapped*,std::uint32_t) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("GetQueuedCompletionStatus@20")
+#else
+asm("_GetQueuedCompletionStatus@20")
+#endif
+#else
+asm("GetQueuedCompletionStatus")
+#endif
+#endif
+;
+
+#if defined(_MSC_VER) && !defined(__clang__)
+__declspec(dllimport)
+#elif __has_cpp_attribute(gnu::dllimport)
+[[gnu::dllimport]]
+#endif
+extern void __stdcall freeaddrinfo(win32_addrinfo_9xa*) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("freeaddrinfo@4")
+#else
+asm("_freeaddrinfo@4")
+#endif
+#else
+asm("freeaddrinfo")
+#endif
+#endif
+;
+
+#if defined(_MSC_VER) && !defined(__clang__)
+__declspec(dllimport)
+#elif __has_cpp_attribute(gnu::dllimport)
+[[gnu::dllimport]]
+#endif
+extern void __stdcall FreeAddrInfoW(win32_addrinfo_ntw*) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("FreeAddrInfoW@4")
+#else
+asm("_FreeAddrInfoW@4")
+#endif
+#else
+asm("FreeAddrInfoW")
+#endif
+#endif
+;
+
+#if defined(_MSC_VER) && !defined(__clang__)
+__declspec(dllimport)
+#elif __has_cpp_attribute(gnu::dllimport)
+[[gnu::dllimport]]
+#endif
+extern int __stdcall getaddrinfo(char const*,char const*,win32_addrinfo_9xa const*,win32_addrinfo_9xa**) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("getaddrinfo@16")
+#else
+asm("_getaddrinfo@16")
+#endif
+#else
+asm("getaddrinfo")
+#endif
+#endif
+;
+
+#if defined(_MSC_VER) && !defined(__clang__)
+__declspec(dllimport)
+#elif __has_cpp_attribute(gnu::dllimport)
+[[gnu::dllimport]]
+#endif
+extern int __stdcall GetAddrInfoW(wchar_t const*,wchar_t const*,win32_addrinfo_ntw const*,win32_addrinfo_ntw**) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("GetAddrInfoW@16")
+#else
+asm("_GetAddrInfoW@16")
+#endif
+#else
+asm("GetAddrInfoW")
+#endif
+#endif
+;
+
 }

@@ -3,9 +3,11 @@
 #include"rtl_api.h"
 #include"win32_definitions.h"
 #include"apis.h"
-
+#define WIN32_LEAN_AND_MEAN
 #include<winsock2.h>
 #include<windows.h>
+#include<winsock.h>
+#include<ws2tcpip.h>
 
 #define DEF(x) auto get_##x() {return fast_io::win32::x;} auto sys_##x() {return x;}
 #define DEF_FROM(x,y) auto get_##x() {return fast_io::win32::x;} auto sys_##x() {return y;}
@@ -122,3 +124,8 @@ DEF(WSAConnect)
 DEF(shutdown)
 DEF(GetCurrentProcessId)
 DEF(FlushFileBuffers)
+DEF(GetQueuedCompletionStatus)
+DEF(freeaddrinfo)
+DEF(FreeAddrInfoW)
+DEF(getaddrinfo)
+DEF(GetAddrInfoW)

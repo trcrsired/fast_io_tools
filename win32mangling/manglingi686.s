@@ -1942,7 +1942,115 @@
 	movl	__imp__FlushFileBuffers@4, %eax
 	retl
                                         # -- End function
+	.def	 "?get_GetQueuedCompletionStatus@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_GetQueuedCompletionStatus@@YA?A?<auto>@@XZ" # -- Begin function ?get_GetQueuedCompletionStatus@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_GetQueuedCompletionStatus@@YA?A?<auto>@@XZ": # @"?get_GetQueuedCompletionStatus@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?GetQueuedCompletionStatus@win32@fast_io@@YGHPAXPAI1PAUoverlapped@12@I@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_GetQueuedCompletionStatus@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_GetQueuedCompletionStatus@@YA?A?<auto>@@XZ" # -- Begin function ?sys_GetQueuedCompletionStatus@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_GetQueuedCompletionStatus@@YA?A?<auto>@@XZ": # @"?sys_GetQueuedCompletionStatus@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__GetQueuedCompletionStatus@20, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_freeaddrinfo@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_freeaddrinfo@@YA?A?<auto>@@XZ" # -- Begin function ?get_freeaddrinfo@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_freeaddrinfo@@YA?A?<auto>@@XZ":   # @"?get_freeaddrinfo@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?freeaddrinfo@win32@fast_io@@YGXPAU?$win32_family_addrinfo@$0A@@12@@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_freeaddrinfo@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_freeaddrinfo@@YA?A?<auto>@@XZ" # -- Begin function ?sys_freeaddrinfo@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_freeaddrinfo@@YA?A?<auto>@@XZ":   # @"?sys_freeaddrinfo@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__freeaddrinfo@4, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_FreeAddrInfoW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_FreeAddrInfoW@@YA?A?<auto>@@XZ" # -- Begin function ?get_FreeAddrInfoW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_FreeAddrInfoW@@YA?A?<auto>@@XZ":  # @"?get_FreeAddrInfoW@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?FreeAddrInfoW@win32@fast_io@@YGXPAU?$win32_family_addrinfo@$00@12@@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_FreeAddrInfoW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_FreeAddrInfoW@@YA?A?<auto>@@XZ" # -- Begin function ?sys_FreeAddrInfoW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_FreeAddrInfoW@@YA?A?<auto>@@XZ":  # @"?sys_FreeAddrInfoW@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__FreeAddrInfoW@4, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_getaddrinfo@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_getaddrinfo@@YA?A?<auto>@@XZ" # -- Begin function ?get_getaddrinfo@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_getaddrinfo@@YA?A?<auto>@@XZ":    # @"?get_getaddrinfo@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?getaddrinfo@win32@fast_io@@YGHPBD0PBU?$win32_family_addrinfo@$0A@@12@PAPAU312@@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_getaddrinfo@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_getaddrinfo@@YA?A?<auto>@@XZ" # -- Begin function ?sys_getaddrinfo@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_getaddrinfo@@YA?A?<auto>@@XZ":    # @"?sys_getaddrinfo@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__getaddrinfo@16, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_GetAddrInfoW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_GetAddrInfoW@@YA?A?<auto>@@XZ" # -- Begin function ?get_GetAddrInfoW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_GetAddrInfoW@@YA?A?<auto>@@XZ":   # @"?get_GetAddrInfoW@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?GetAddrInfoW@win32@fast_io@@YGHPB_W0PBU?$win32_family_addrinfo@$00@12@PAPAU312@@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_GetAddrInfoW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_GetAddrInfoW@@YA?A?<auto>@@XZ" # -- Begin function ?sys_GetAddrInfoW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_GetAddrInfoW@@YA?A?<auto>@@XZ":   # @"?sys_GetAddrInfoW@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__GetAddrInfoW@16, %eax
+	retl
+                                        # -- End function
 	.section	.drectve,"yn"
-	.ascii	" /DEFAULTLIB:uuid.lib"
-	.ascii	" /DEFAULTLIB:uuid.lib"
 	.addrsig
