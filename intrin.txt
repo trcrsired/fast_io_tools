@@ -1,0 +1,32 @@
+	if constexpr(sizeof(T)>sizeof(long long unsigned)&&(sizeof(T)%sizeof(long long unsigned)==0u)&&(std::endian::native==std::endian::little||std::endian::native==std::endian::native))
+	{
+		using may_alias_ptr_type 
+#if __has_cpp_attribute(gnu::may_alias)
+[[gnu::may_alias]]
+#endif
+		= unsigned long long*;
+		constexpr std::size_t n{sizeof(T)/sizeof(long long unsigned)};
+		may_alias_ptr_type a_may_alias_ptr{reinterpret_cast<may_alias_ptr_type>(__builtin_addressof(a))};
+		may_alias_ptr_type b_may_alias_ptr{reinterpret_cast<may_alias_ptr_type>(__builtin_addressof(b))};
+		may_alias_ptr_type out_may_alias_ptr{reinterpret_cast<may_alias_ptr_type>(__builtin_addressof(out))};
+		if constexpr(std::endian::native==std::endian::big)
+		{
+			for(std::size_t i{n};i--;)
+			{
+				long long unsigned carry_out;
+				out_may_alias_ptr[i]=__builtin_addcll(a_may_alias_ptr[i],b_may_alias_ptr[i],carry,__builtin_addressof(carry_out));
+				carry=carry_out;
+			}
+		}
+		else
+		{
+			for(std::size_t i{};i!=n;++i)
+			{
+				long long unsigned carry_out;
+				out_may_alias_ptr[i]=__builtin_addcll(a_may_alias_ptr[i],b_may_alias_ptr[i],carry,__builtin_addressof(carry_out));
+				carry=carry_out;
+			}
+		}
+		return carry;
+	}
+	else 
