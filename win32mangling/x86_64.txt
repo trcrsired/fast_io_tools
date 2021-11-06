@@ -142,3 +142,5 @@ __imp_?NtFlushBuffersFile@nt@win32@fast_io@@YAIPEAXPEAUio_status_block@123@@Z __
 __imp_?ZwFlushBuffersFile@nt@win32@fast_io@@YAIPEAXPEAUio_status_block@123@@Z __imp_ZwFlushBuffersFile
 __imp_?NtFlushBuffersFileEx@nt@win32@fast_io@@YAIPEAXI0IPEAUio_status_block@123@@Z __imp_NtFlushBuffersFileEx
 __imp_?ZwFlushBuffersFileEx@nt@win32@fast_io@@YAIPEAXI0IPEAUio_status_block@123@@Z __imp_ZwFlushBuffersFileEx
+__imp_?DbgPrint@nt@win32@fast_io@@YAIPEBDZZ __imp_DbgPrint
+__imp_?DbgPrintEx@nt@win32@fast_io@@YAIIIPEBDZZ __imp_DbgPrintEx

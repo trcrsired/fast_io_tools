@@ -86,4 +86,7 @@ extern "C" [[gnu::dllimport,gnu::stdcall]] std::uint32_t ZwFlushBuffersFile(void
 extern "C" [[gnu::dllimport,gnu::stdcall]] std::uint32_t NtFlushBuffersFileEx(void*,std::uint32_t,void*,std::uint32_t,io_status_block*) noexcept;
 extern "C" [[gnu::dllimport,gnu::stdcall]] std::uint32_t ZwFlushBuffersFileEx(void*,std::uint32_t,void*,std::uint32_t,io_status_block*) noexcept;
 
+extern "C" [[gnu::dllimport,gnu::cdecl]] std::uint32_t DbgPrint(char const*,...) noexcept;
+extern "C" [[gnu::dllimport,gnu::cdecl]] std::uint32_t DbgPrintEx(std::uint32_t,std::uint32_t,char const*,...) noexcept;
+
 }

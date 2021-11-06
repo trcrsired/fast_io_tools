@@ -1062,6 +1062,50 @@
 	movq	__imp_ZwFlushBuffersFileEx(%rip), %rax
 	retq
                                         # -- End function
+	.def	 "?get_DbgPrint@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_DbgPrint@@YA?A?<auto>@@XZ" # -- Begin function ?get_DbgPrint@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_DbgPrint@@YA?A?<auto>@@XZ":       # @"?get_DbgPrint@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?DbgPrint@nt@win32@fast_io@@YAIPEBDZZ"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?sys_DbgPrint@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_DbgPrint@@YA?A?<auto>@@XZ" # -- Begin function ?sys_DbgPrint@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_DbgPrint@@YA?A?<auto>@@XZ":       # @"?sys_DbgPrint@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_DbgPrint(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?get_DbgPrintEx@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_DbgPrintEx@@YA?A?<auto>@@XZ" # -- Begin function ?get_DbgPrintEx@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_DbgPrintEx@@YA?A?<auto>@@XZ":     # @"?get_DbgPrintEx@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?DbgPrintEx@nt@win32@fast_io@@YAIIIPEBDZZ"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?sys_DbgPrintEx@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_DbgPrintEx@@YA?A?<auto>@@XZ" # -- Begin function ?sys_DbgPrintEx@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_DbgPrintEx@@YA?A?<auto>@@XZ":     # @"?sys_DbgPrintEx@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_DbgPrintEx(%rip), %rax
+	retq
+                                        # -- End function
 	.section	.drectve,"yn"
 	.ascii	" /DEFAULTLIB:ntdll.lib"
 	.addrsig

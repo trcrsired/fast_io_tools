@@ -825,4 +825,42 @@ asm("ZwFlushBuffersFileEx")
 #endif
 ;
 
+#if defined(_MSC_VER) && !defined(__clang__)
+__declspec(dllimport)
+#elif __has_cpp_attribute(gnu::dllimport)
+[[gnu::dllimport]]
+#endif
+extern std::uint32_t __cdecl DbgPrint(char const*,...) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("DbgPrint")
+#else
+asm("_DbgPrint")
+#endif
+#else
+asm("DbgPrint")
+#endif
+#endif
+;
+
+#if defined(_MSC_VER) && !defined(__clang__)
+__declspec(dllimport)
+#elif __has_cpp_attribute(gnu::dllimport)
+[[gnu::dllimport]]
+#endif
+extern std::uint32_t __cdecl DbgPrintEx(std::uint32_t,std::uint32_t,char const*,...) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+asm("DbgPrintEx")
+#else
+asm("_DbgPrintEx")
+#endif
+#else
+asm("DbgPrintEx")
+#endif
+#endif
+;
+
 }
