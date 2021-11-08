@@ -8,6 +8,7 @@ int main()
 {
 	std::string str;
 	auto oref{io_strlike_ref(fast_io::io_alias,str)};
-	print(oref,"Hello\n",124,"agsasg\n");
-	print(str);
+//	static_assert(fast_io::buffer_output_stream<decltype(oref)>);
+	print(oref,"Hello\n",20,"agsasg\n");
+	print(fast_io::out(),str);
 }

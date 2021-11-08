@@ -36,7 +36,7 @@ inline constexpr void strlike_reserve(io_strlike_type_t<char_type,::std::basic_s
 {
 	str.reserve(n);
 }
-#if 0
+
 template<std::integral char_type,typename traits_type,typename allocator_type>
 inline constexpr void strlike_append(io_strlike_type_t<char_type,::std::basic_string<char_type,traits_type,allocator_type>>,::std::basic_string<char_type,traits_type,allocator_type>& str,char_type const* first,char_type const* last)
 {
@@ -48,7 +48,7 @@ inline constexpr void strlike_push_back(io_strlike_type_t<char_type,::std::basic
 {
 	str.push_back(ch);
 }
-#endif
+
 template<std::integral char_type,typename traits_type,typename allocator_type>
 inline constexpr std::size_t strlike_sso_size(io_strlike_type_t<char_type,::std::basic_string<char_type,traits_type,allocator_type>>) noexcept
 {

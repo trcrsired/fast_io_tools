@@ -97,14 +97,21 @@ template<std::integral ch_type,typename T>
 inline constexpr void obuffer_overflow(io_strlike_reference_wrapper<ch_type,T> bref,ch_type ch)
 {
 	auto& strref{*bref.ptr};
-	auto bptr{strlike_begin(io_strlike_type<ch_type,T>,strref)};
-	auto eptr{strlike_end(io_strlike_type<ch_type,T>,strref)};
-	auto cap{static_cast<std::size_t>(eptr-bptr)};
-	strlike_reserve(io_strlike_type<ch_type,T>,strref,::fast_io::details::cal_new_cap_io_strlike<sizeof(ch_type)>(cap));
-	auto curr_ptr{strlike_curr(io_strlike_type<ch_type,T>,strref)};
-	*curr_ptr=ch;
-	++curr_ptr;
-	strlike_set_curr(io_strlike_type<ch_type,T>,strref,curr_ptr);
+	if constexpr(auxiliary_strlike<ch_type,T>)
+	{
+		strlike_push_back(io_strlike_type<ch_type,T>,strref,ch);
+	}
+	else
+	{
+		auto bptr{strlike_begin(io_strlike_type<ch_type,T>,strref)};
+		auto eptr{strlike_end(io_strlike_type<ch_type,T>,strref)};
+		auto cap{static_cast<std::size_t>(eptr-bptr)};
+		strlike_reserve(io_strlike_type<ch_type,T>,strref,::fast_io::details::cal_new_cap_io_strlike<sizeof(ch_type)>(cap));
+		auto curr_ptr{strlike_curr(io_strlike_type<ch_type,T>,strref)};
+		*curr_ptr=ch;
+		++curr_ptr;
+		strlike_set_curr(io_strlike_type<ch_type,T>,strref,curr_ptr);
+	}
 }
 
 namespace details
