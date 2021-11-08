@@ -51,11 +51,10 @@ concept buffer_strlike = strlike<char_type,T> && requires(T& t)
 };
 
 template<typename char_type,typename T>
-concept auxiliary_buffer_strlike = buffer_strlike<char_type,T> && requires(T& t,char_type ch,char_type const* ptr)
+concept auxiliary_strlike = strlike<char_type,T> && requires(T& t,char_type ch,char_type const* ptr)
 {
-	strlike_push_back(io_strlike_type<char_type,T>,ch);
-	strlike_append(io_strlike_type<char_type,T>,ptr,ptr);
-}
+	strlike_append(io_strlike_type<char_type,T>,t,ptr,ptr);
+};
 
 template<typename char_type,typename T>
 concept sso_buffer_strlike = buffer_strlike<char_type,T> && requires()

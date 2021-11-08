@@ -6,5 +6,8 @@
 
 int main()
 {
-
+	std::string str;
+	auto oref{io_strlike_ref(fast_io::io_alias,str)};
+	print(oref,"Hello\n",124,"agsasg\n");
+	print(str);
 }
