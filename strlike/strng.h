@@ -8,6 +8,12 @@ inline constexpr auto strlike_construct_define(io_strlike_type_t<char_type,::std
 }
 
 template<std::integral char_type,typename traits_type,typename allocator_type>
+inline constexpr auto strlike_construct_single_character_define(io_strlike_type_t<char_type,::std::basic_string<char_type,traits_type,allocator_type>>,char_type ch)
+{
+	return ::std::basic_string<char_type,traits_type,allocator_type>(1,ch);
+}
+
+template<std::integral char_type,typename traits_type,typename allocator_type>
 inline constexpr char_type* strlike_begin(io_strlike_type_t<char_type,::std::basic_string<char_type,traits_type,allocator_type>>,::std::basic_string<char_type,traits_type,allocator_type>& str)
 {
 	return str.data();

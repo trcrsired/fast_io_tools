@@ -13,9 +13,10 @@ template<std::integral char_type,typename T>
 inline constexpr io_strlike_type_t<char_type,T> io_strlike_type{};
 
 template<typename char_type,typename T>
-concept strlike = std::integral<char_type>&&requires(char_type const* first)
+concept strlike = std::integral<char_type>&&std::is_default_constructible_v<T>&&requires(char_type const* first,char_type ch)
 {
 	strlike_construct_define(io_strlike_type<char_type,T>,first,first);
+	strlike_construct_single_character_define(io_strlike_type<char_type,T>,ch);
 };
 
 #if 0
