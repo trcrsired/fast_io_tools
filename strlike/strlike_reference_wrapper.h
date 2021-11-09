@@ -3,7 +3,7 @@
 namespace fast_io
 {
 template<std::integral ch_type,typename T>
-requires (strlike<ch_type,T>||auxiliary_strlike<ch_type,T>)
+//requires (strlike<ch_type,T>||auxiliary_strlike<ch_type,T>)
 struct io_strlike_reference_wrapper
 {
 	using value_type = T;
