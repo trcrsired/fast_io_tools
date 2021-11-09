@@ -137,11 +137,11 @@ inline constexpr void basic_general_concat_decay_ref_impl(T& str,Args ...args)
 		{
 			if constexpr(sso_buffer_strlike<ch_type,T>)
 			{
-				constexpr std::size_t local_cap{strlike_sso_size(io_reserve_type<ch_type,T>)};
+				constexpr std::size_t local_cap{strlike_sso_size(io_strlike_type<ch_type,T>)};
 				constexpr bool not_enough_space{(local_cap<sz_with_line)};
 				if constexpr(not_enough_space && ((sizeof...(Args)==1)&&(precise_reserve_printable<ch_type,Args>&&...)))
 				{
-					return basic_general_concat_decay_ref_impl_precise<line,ch_type,T>(str,args...);
+					basic_general_concat_decay_ref_impl_precise<line,ch_type,T>(str,args...);
 				}
 				else
 				{
@@ -202,6 +202,16 @@ inline constexpr T basic_general_concat_phase1_decay_impl(Args ...args)
 			T str;
 			basic_general_concat_decay_ref_impl<line,ch_type>(str,args...);
 			return str;
+		}
+		else if constexpr((reserve_printable<ch_type,Args>&&...))
+		{
+			constexpr std::size_t sz{calculate_scatter_reserve_size<ch_type,Args...>()};
+			if constexpr(line)
+				static_assert(sz!=SIZE_MAX,"overflow\n");
+			constexpr std::size_t sz_with_line{sz+static_cast<std::size_t>(line)};
+			ch_type buffer[sz_with_line];
+			auto p{print_reserve_define_chain_impl<line>(buffer,args...)};
+			return strlike_construct_define(io_strlike_type<ch_type,T>,buffer,p);
 		}
 		else
 		{

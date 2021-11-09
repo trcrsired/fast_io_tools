@@ -8,7 +8,7 @@ template<std::integral ch_type>
 struct basic_concat_buffer
 {
 	using char_type = ch_type;
-	static inline constexpr std::size_t buffer_size{1024u/sizeof(ch_type)};
+	static inline constexpr std::size_t buffer_size{2048u/sizeof(ch_type)};
 	char_type *buffer_begin,*buffer_curr,*buffer_end;
 	char_type stack_buffer[buffer_size];
 	constexpr basic_concat_buffer() noexcept:
@@ -89,7 +89,7 @@ inline constexpr void strlike_reserve(::fast_io::io_strlike_type_t<char_type,::f
 template<std::integral char_type>
 inline constexpr std::size_t strlike_sso_size(::fast_io::io_strlike_type_t<char_type,::fast_io::details::basic_concat_buffer<char_type>>) noexcept
 {
-	return 1024u;
+	return ::fast_io::details::basic_concat_buffer<char_type>::buffer_size;
 }
 
 template<std::integral char_type>
