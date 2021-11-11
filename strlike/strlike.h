@@ -13,26 +13,21 @@ template<std::integral char_type,typename T>
 inline constexpr io_strlike_type_t<char_type,T> io_strlike_type{};
 
 template<typename char_type,typename T>
-concept strlike = std::integral<char_type>&&std::is_default_constructible_v<T>&&requires(char_type const* first,char_type ch)
+concept strlike = std::integral<char_type>&&std::is_default_constructible_v<T>&&requires(char_type const* first)
 {
 	strlike_construct_define(io_strlike_type<char_type,T>,first,first);
-	strlike_construct_single_character_define(io_strlike_type<char_type,T>,ch);
 };
 
-#if 0
 template<typename char_type,typename T>
-concept cross_char_type_constructible_strlike = std::integral<char_type>&&requires()
+concept single_character_constructible_strlike = strlike<char_type,T>&&requires(char_type ch)
 {
-	{typename strlike_cross_char_type_type(io_strlike_type<char_type,T>)::type}
-	requires 
-//	strlike_cross_char_type_construct_define(o_strlike_type<char_type,T>)
+	strlike_construct_single_character_define(io_strlike_type<char_type,T>,ch);
 };
-#endif
 
 template<typename char_type,typename T>
 concept alias_strlike = requires(T& t)
 {
-	strlike_alias_define(io_alias_type<char_type,T>,t);
+	strlike_alias_define(io_alias,t);
 };
 
 template<typename char_type,typename T>

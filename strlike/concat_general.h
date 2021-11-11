@@ -126,7 +126,6 @@ inline constexpr void basic_general_concat_decay_ref_impl_precise(T& str,Arg arg
 template<bool line,std::integral ch_type,typename T,typename... Args>
 inline constexpr void basic_general_concat_decay_ref_impl(T& str,Args ...args)
 {
-
 	if constexpr(((reserve_printable<ch_type,Args>||scatter_printable<ch_type,Args>||dynamic_reserve_printable<ch_type,Args>)&&...))
 	{
 		constexpr std::size_t sz{calculate_scatter_reserve_size<ch_type,Args...>()};
@@ -188,7 +187,12 @@ inline constexpr T basic_general_concat_phase1_decay_impl(Args ...args)
 	{
 		if constexpr(line)
 		{
-			return strlike_construct_single_character_define(io_strlike_type<ch_type,T>,char_literal_v<u8'\n',ch_type>);
+			if constexpr(single_character_constructible_strlike<ch_type,T>)
+				return strlike_construct_single_character_define(io_strlike_type<ch_type,T>,char_literal_v<u8'\n',ch_type>);
+			else
+			{
+				return strlike_construct_define(io_strlike_type<ch_type,T>,__builtin_addressof(char_literal_v<u8'\n',ch_type>),__builtin_addressof(char_literal_v<u8'\n',ch_type>)+1);
+			}
 		}
 		else
 		{
@@ -231,10 +235,10 @@ template<bool line,std::integral char_type,typename T,typename ...Args>
 requires strlike<char_type,T>
 inline constexpr T basic_general_concat(Args&& ...args)
 {
-	return ::fast_io::details::decay::basic_general_concat_phase1_decay_impl<false,char_type,T>(
+	return ::fast_io::details::decay::basic_general_concat_phase1_decay_impl<line,char_type,T>(
 		io_print_forward<char_type>(io_print_alias(args))...);
 }
-
+#if 0
 template<typename ...Args>
 inline constexpr std::string test_concat(Args&& ...args)
 {
@@ -246,5 +250,5 @@ inline constexpr std::string test_concat2(Args&& ...args)
 {
 	return ::fast_io::basic_general_concat<false,char,std::string>(io_print_forward<char>(io_print_alias(args))...);
 }
-
+#endif
 }

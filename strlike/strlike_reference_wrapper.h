@@ -148,7 +148,7 @@ template<std::integral ch_type,typename T, ::fast_io::freestanding::contiguous_i
 requires (std::same_as<ch_type,char>||std::same_as<ch_type, ::fast_io::freestanding::iter_value_t<Iter>>)
 inline constexpr void write(io_strlike_reference_wrapper<ch_type,T> bref,Iter first,Iter last)
 {
-	if constexpr(std::is_pointer_v<Iter>)
+	if constexpr(std::is_pointer_v<Iter>&&std::same_as<ch_type, ::fast_io::freestanding::iter_value_t<Iter>>)
 	{
 		auto& strref{*bref.ptr};
 		if constexpr(auxiliary_strlike<ch_type,T>)
