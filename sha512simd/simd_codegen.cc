@@ -38,7 +38,7 @@ inline void sha512_simd)abc",vec_size,u8R"abc((std::uint_least64_t* __restrict s
 	constexpr bool is_little_endian{std::endian::native==std::endian::little};
 
 	std::uint_least64_t wt[80];
-	std::uint_least64_t w[")abc",static_cast<std::size_t>(80u-magic),u8R"abc(];
+	std::uint_least64_t w[)abc",static_cast<std::size_t>(80u-magic),u8R"abc(];
 	std::uint_least64_t a{state[0]};
 	std::uint_least64_t b{state[1]};
 	std::uint_least64_t c{state[2]};
@@ -119,7 +119,7 @@ u8R"abc(		simd_temp.load(w+)abc",i-15,u8R"abc();
 			println(obf);
 		}
 	}
-	print(obf,u8R"abc(a=(*state+=a);
+	print(obf,u8R"abc(		a=(*state+=a);
 		b=(state[1]+=b);
 		c=(state[2]+=c);
 		d=(state[3]+=d);

@@ -16,7 +16,7 @@ inline void sha512_simd16(std::uint_least64_t* __restrict state,std::byte const*
 	constexpr bool is_little_endian{std::endian::native==std::endian::little};
 
 	std::uint_least64_t wt[80];
-	std::uint_least64_t w["78];
+	std::uint_least64_t w[78];
 	std::uint_least64_t a{state[0]};
 	std::uint_least64_t b{state[1]};
 	std::uint_least64_t c{state[2]};
@@ -620,7 +620,7 @@ inline void sha512_simd16(std::uint_least64_t* __restrict state,std::byte const*
 		sha512_scalar_round(wt[78],c,d,e,f,g,h,a,b);
 		sha512_scalar_round(wt[79],b,c,d,e,f,g,h,a);
 
-a=(*state+=a);
+		a=(*state+=a);
 		b=(state[1]+=b);
 		c=(state[2]+=c);
 		d=(state[3]+=d);
