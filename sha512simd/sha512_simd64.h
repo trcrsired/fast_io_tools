@@ -1,3 +1,33 @@
+#pragma once
+
+#if __has_cpp_attribute(gnu::flatten)
+[[gnu::flatten]]
+#endif
+inline void sha512_simd64(std::uint_least64_t* __restrict state,std::byte const* __restrict blocks_start,std::byte const* __restrict blocks_last) noexcept
+{
+	using namespace fast_io::intrinsics;
+	using namespace fast_io::details::sha512;
+
+	simd_vector<std::uint_least64_t,8> simd;
+	simd_vector<std::uint_least64_t,8> simd_temp;
+	simd_vector<std::uint_least64_t,8> simd_constants_load;
+	constexpr simd_vector<char,64> byteswap_simd{7,6,5,4,3,2,1,0,15,14,13,12,11,10,9,8,23,22,21,20,19,18,17,16,31,30,29,28,27,26,25,24,39,38,37,36,35,34,33,32,47,46,45,44,43,42,41,40,55,54,53,52,51,50,49,48,63,62,61,60,59,58,57,56};
+
+	constexpr bool is_little_endian{std::endian::native==std::endian::little};
+
+	std::uint_least64_t wt[80];
+	std::uint_least64_t w["72];
+	std::uint_least64_t a{state[0]};
+	std::uint_least64_t b{state[1]};
+	std::uint_least64_t c{state[2]};
+	std::uint_least64_t d{state[3]};
+	std::uint_least64_t e{state[4]};
+	std::uint_least64_t f{state[5]};
+	std::uint_least64_t g{state[6]};
+	std::uint_least64_t h{state[7]};
+
+	for(;blocks_start!=blocks_last;blocks_start+=128)
+	{
 		simd.load(blocks_start);
 		simd_constants_load.load(K512);
 		if constexpr(is_little_endian)
@@ -205,3 +235,14 @@
 		sha512_scalar_round(wt[77],d,e,f,g,h,a,b,c);
 		sha512_scalar_round(wt[78],c,d,e,f,g,h,a,b);
 		sha512_scalar_round(wt[79],b,c,d,e,f,g,h,a);
+
+a=(*state+=a);
+		b=(state[1]+=b);
+		c=(state[2]+=c);
+		d=(state[3]+=d);
+		e=(state[4]+=e);
+		f=(state[5]+=f);
+		g=(state[6]+=g);
+		h=(state[7]+=h);
+	}
+}
