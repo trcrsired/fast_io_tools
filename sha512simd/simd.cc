@@ -36,6 +36,7 @@ void sha512_simd_sse(std::uint_least64_t* __restrict state,std::byte const* __re
 	std::uint_least64_t g{state[6]};
 	std::uint_least64_t h{state[7]};
 
+
 	simd16.load(blocks_start);
 	simd16_constants_load.load(K512);
 	simd16.shuffle(byteswap_simd16);
@@ -48,15 +49,56 @@ void sha512_simd_sse(std::uint_least64_t* __restrict state,std::byte const* __re
 	simd16.wrap_add_assign(simd16_constants_load);
 	simd16.store(w+2);
 	sha512_scalar_round(w[0],a,b,c,d,e,f,g,h);
-	sha512_scalar_round(w[1],h,a,b,c,d,e,f,g);
+	sha512_scalar_round(w[1],b,c,d,e,f,g,h,a);
 
 	simd16.load(blocks_start+4);
 	simd16_constants_load.load(K512+4);
 	simd16.shuffle(byteswap_simd16);
 	simd16.wrap_add_assign(simd16_constants_load);
 	simd16.store(w+4);
-	sha512_scalar_round(w[2],g,h,a,b,c,d,e,f);
-	sha512_scalar_round(w[3],f,g,h,a,b,c,d,e);
+	sha512_scalar_round(w[2],c,d,e,f,g,h,a,b);
+	sha512_scalar_round(w[3],d,e,f,g,h,a,b,c);
+
+	simd16.load(blocks_start+6);
+	simd16_constants_load.load(K512+6);
+	simd16.shuffle(byteswap_simd16);
+	simd16.wrap_add_assign(simd16_constants_load);
+	simd16.store(w+6);
+	sha512_scalar_round(w[4],e,f,g,h,a,b,c,d);
+	sha512_scalar_round(w[5],f,g,h,a,b,c,d,e);
+
+	simd16.load(blocks_start+8);
+	simd16_constants_load.load(K512+8);
+	simd16.shuffle(byteswap_simd16);
+	simd16.wrap_add_assign(simd16_constants_load);
+	simd16.store(w+8);
+	sha512_scalar_round(w[6],g,h,a,b,c,d,e,f);
+	sha512_scalar_round(w[7],h,a,b,c,d,e,f,g);
+
+	simd16.load(blocks_start+10);
+	simd16_constants_load.load(K512+10);
+	simd16.shuffle(byteswap_simd16);
+	simd16.wrap_add_assign(simd16_constants_load);
+	simd16.store(w+10);
+	sha512_scalar_round(w[8],a,b,c,d,e,f,g,h);
+	sha512_scalar_round(w[9],b,c,d,e,f,g,h,a);
+
+	simd16.load(blocks_start+12);
+	simd16_constants_load.load(K512+12);
+	simd16.shuffle(byteswap_simd16);
+	simd16.wrap_add_assign(simd16_constants_load);
+	simd16.store(w+12);
+	sha512_scalar_round(w[10],c,d,e,f,g,h,a,b);
+	sha512_scalar_round(w[11],d,e,f,g,h,a,b,c);
+
+	simd16.load(blocks_start+14);
+	simd16_constants_load.load(K512+14);
+	simd16.shuffle(byteswap_simd16);
+	simd16.wrap_add_assign(simd16_constants_load);
+	simd16.store(w+14);
+	sha512_scalar_round(w[12],e,f,g,h,a,b,c,d);
+	sha512_scalar_round(w[13],f,g,h,a,b,c,d,e);
+
 
 	
 
