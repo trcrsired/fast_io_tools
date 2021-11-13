@@ -24,8 +24,8 @@
 
 		simd_temp.load(w+1);
 		simd.load(w+14);
-		simd16=(simd16>>19)^(simd16<<45)^(simd16>>61)^(simd16<<3)^(simd16>>6);
-		simd16_temp=(simd16_temp>>1)^(simd16_temp<<63)^(simd16_temp>>8)^(simd16_temp<<56)^(simd16_temp>>7);
+		simd=(simd>>19)^(simd<<45)^(simd>>61)^(simd<<3)^(simd>>6);
+		simd_temp=(simd_temp>>1)^(simd_temp<<63)^(simd_temp>>8)^(simd_temp<<56)^(simd_temp>>7);
 		simd.wrap_add_assign(simd_temp);
 		simd_temp.load(w);
 		simd.wrap_add_assign(simd_temp);
@@ -46,8 +46,8 @@
 
 		simd_temp.load(w+9);
 		simd.load(w+22);
-		simd16=(simd16>>19)^(simd16<<45)^(simd16>>61)^(simd16<<3)^(simd16>>6);
-		simd16_temp=(simd16_temp>>1)^(simd16_temp<<63)^(simd16_temp>>8)^(simd16_temp<<56)^(simd16_temp>>7);
+		simd=(simd>>19)^(simd<<45)^(simd>>61)^(simd<<3)^(simd>>6);
+		simd_temp=(simd_temp>>1)^(simd_temp<<63)^(simd_temp>>8)^(simd_temp<<56)^(simd_temp>>7);
 		simd.wrap_add_assign(simd_temp);
 		simd_temp.load(w+8);
 		simd.wrap_add_assign(simd_temp);
@@ -68,8 +68,8 @@
 
 		simd_temp.load(w+17);
 		simd.load(w+30);
-		simd16=(simd16>>19)^(simd16<<45)^(simd16>>61)^(simd16<<3)^(simd16>>6);
-		simd16_temp=(simd16_temp>>1)^(simd16_temp<<63)^(simd16_temp>>8)^(simd16_temp<<56)^(simd16_temp>>7);
+		simd=(simd>>19)^(simd<<45)^(simd>>61)^(simd<<3)^(simd>>6);
+		simd_temp=(simd_temp>>1)^(simd_temp<<63)^(simd_temp>>8)^(simd_temp<<56)^(simd_temp>>7);
 		simd.wrap_add_assign(simd_temp);
 		simd_temp.load(w+16);
 		simd.wrap_add_assign(simd_temp);
@@ -90,8 +90,8 @@
 
 		simd_temp.load(w+25);
 		simd.load(w+38);
-		simd16=(simd16>>19)^(simd16<<45)^(simd16>>61)^(simd16<<3)^(simd16>>6);
-		simd16_temp=(simd16_temp>>1)^(simd16_temp<<63)^(simd16_temp>>8)^(simd16_temp<<56)^(simd16_temp>>7);
+		simd=(simd>>19)^(simd<<45)^(simd>>61)^(simd<<3)^(simd>>6);
+		simd_temp=(simd_temp>>1)^(simd_temp<<63)^(simd_temp>>8)^(simd_temp<<56)^(simd_temp>>7);
 		simd.wrap_add_assign(simd_temp);
 		simd_temp.load(w+24);
 		simd.wrap_add_assign(simd_temp);
@@ -112,8 +112,8 @@
 
 		simd_temp.load(w+33);
 		simd.load(w+46);
-		simd16=(simd16>>19)^(simd16<<45)^(simd16>>61)^(simd16<<3)^(simd16>>6);
-		simd16_temp=(simd16_temp>>1)^(simd16_temp<<63)^(simd16_temp>>8)^(simd16_temp<<56)^(simd16_temp>>7);
+		simd=(simd>>19)^(simd<<45)^(simd>>61)^(simd<<3)^(simd>>6);
+		simd_temp=(simd_temp>>1)^(simd_temp<<63)^(simd_temp>>8)^(simd_temp<<56)^(simd_temp>>7);
 		simd.wrap_add_assign(simd_temp);
 		simd_temp.load(w+32);
 		simd.wrap_add_assign(simd_temp);
@@ -134,8 +134,8 @@
 
 		simd_temp.load(w+41);
 		simd.load(w+54);
-		simd16=(simd16>>19)^(simd16<<45)^(simd16>>61)^(simd16<<3)^(simd16>>6);
-		simd16_temp=(simd16_temp>>1)^(simd16_temp<<63)^(simd16_temp>>8)^(simd16_temp<<56)^(simd16_temp>>7);
+		simd=(simd>>19)^(simd<<45)^(simd>>61)^(simd<<3)^(simd>>6);
+		simd_temp=(simd_temp>>1)^(simd_temp<<63)^(simd_temp>>8)^(simd_temp<<56)^(simd_temp>>7);
 		simd.wrap_add_assign(simd_temp);
 		simd_temp.load(w+40);
 		simd.wrap_add_assign(simd_temp);
@@ -156,8 +156,8 @@
 
 		simd_temp.load(w+49);
 		simd.load(w+62);
-		simd16=(simd16>>19)^(simd16<<45)^(simd16>>61)^(simd16<<3)^(simd16>>6);
-		simd16_temp=(simd16_temp>>1)^(simd16_temp<<63)^(simd16_temp>>8)^(simd16_temp<<56)^(simd16_temp>>7);
+		simd=(simd>>19)^(simd<<45)^(simd>>61)^(simd<<3)^(simd>>6);
+		simd_temp=(simd_temp>>1)^(simd_temp<<63)^(simd_temp>>8)^(simd_temp<<56)^(simd_temp>>7);
 		simd.wrap_add_assign(simd_temp);
 		simd_temp.load(w+48);
 		simd.wrap_add_assign(simd_temp);
@@ -178,8 +178,8 @@
 
 		simd_temp.load(w+57);
 		simd.load(w+70);
-		simd16=(simd16>>19)^(simd16<<45)^(simd16>>61)^(simd16<<3)^(simd16>>6);
-		simd16_temp=(simd16_temp>>1)^(simd16_temp<<63)^(simd16_temp>>8)^(simd16_temp<<56)^(simd16_temp>>7);
+		simd=(simd>>19)^(simd<<45)^(simd>>61)^(simd<<3)^(simd>>6);
+		simd_temp=(simd_temp>>1)^(simd_temp<<63)^(simd_temp>>8)^(simd_temp<<56)^(simd_temp>>7);
 		simd.wrap_add_assign(simd_temp);
 		simd_temp.load(w+56);
 		simd.wrap_add_assign(simd_temp);

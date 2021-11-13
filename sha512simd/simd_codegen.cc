@@ -1,7 +1,7 @@
 #include<fast_io.h>
 #include<fast_io_device.h>
 
-inline void code_gen(fast_io::u8obuf_file& obf,std::size_t magic)
+inline void code_gen(fast_io::u8obuf_file& obf,std::size_t magic,bool transform=false)
 {
 	constexpr char8_t perm[]{u8'a',u8'b',u8'c',u8'd',u8'e',u8'f',u8'h',u8'g'};
 	using namespace fast_io::mnp;
@@ -38,9 +38,14 @@ u8R"abc(		simd.load(blocks_start+)abc",i*8u,u8R"abc();
 			{
 				print(obf,
 u8R"abc(		simd_temp.load(w+)abc",i-15,u8R"abc();
-		simd.load(w+)abc",i-2,u8R"abc();
-		simd16=(simd16>>19)^(simd16<<45)^(simd16>>61)^(simd16<<3)^(simd16>>6);
-		simd16_temp=(simd16_temp>>1)^(simd16_temp<<63)^(simd16_temp>>8)^(simd16_temp<<56)^(simd16_temp>>7);
+		simd.load(w+)abc",i-2,u8");\n");
+		if(transform)
+			print(obf,u8R"abc(		simd=(((((simd>>42)^simd)>>13)^simd)>>6)^(((simd<<42)^simd)<<3);
+		simd_temp=(((((simd_temp>>1)^simd_temp)>>6)^simd_temp)>>1)^(((simd_temp<<7)^simd_temp)<<56);)abc");
+		else
+			print(obf,u8R"abc(		simd=(simd>>19)^(simd<<45)^(simd>>61)^(simd<<3)^(simd>>6);
+		simd_temp=(simd_temp>>1)^(simd_temp<<63)^(simd_temp>>8)^(simd_temp<<56)^(simd_temp>>7);)abc");			
+		print(obf,u8R"abc(
 		simd.wrap_add_assign(simd_temp);
 		simd_temp.load(w)abc");
 		if(i!=16)
@@ -75,7 +80,7 @@ u8R"abc(		simd_temp.load(w+)abc",i-15,u8R"abc();
 int main()
 {
 	fast_io::u8obuf_file obf(u8"simd16_res.txt");
-	code_gen(obf,2);
+	code_gen(obf,2,true);
 	obf.reopen(u8"simd32_res.txt");
 	code_gen(obf,4);
 	obf.reopen(u8"simd64_res.txt");
