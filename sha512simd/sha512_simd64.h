@@ -10,7 +10,6 @@ inline void sha512_simd64(std::uint_least64_t* __restrict state,std::byte const*
 
 	simd_vector<std::uint_least64_t,8> simd;
 	simd_vector<std::uint_least64_t,8> simd_temp;
-	simd_vector<std::uint_least64_t,8> simd_constants_load;
 	constexpr simd_vector<char,64> byteswap_simd{7,6,5,4,3,2,1,0,15,14,13,12,11,10,9,8,23,22,21,20,19,18,17,16,31,30,29,28,27,26,25,24,39,38,37,36,35,34,33,32,47,46,45,44,43,42,41,40,55,54,53,52,51,50,49,48,63,62,61,60,59,58,57,56};
 
 	constexpr bool is_little_endian{std::endian::native==std::endian::little};
@@ -29,19 +28,19 @@ inline void sha512_simd64(std::uint_least64_t* __restrict state,std::byte const*
 	for(;blocks_start!=blocks_last;blocks_start+=128)
 	{
 		simd.load(blocks_start);
-		simd_constants_load.load(K512);
+		simd_temp.load(K512);
 		if constexpr(is_little_endian)
 			simd.shuffle(byteswap_simd);
 		simd.store(w);
-		simd.wrap_add_assign(simd_constants_load);
+		simd.wrap_add_assign(simd_temp);
 		simd.store(wt);
 
 		simd.load(blocks_start+64);
-		simd_constants_load.load(K512+8);
+		simd_temp.load(K512+8);
 		if constexpr(is_little_endian)
 			simd.shuffle(byteswap_simd);
 		simd.store(w+8);
-		simd.wrap_add_assign(simd_constants_load);
+		simd.wrap_add_assign(simd_temp);
 		simd.store(wt+8);
 		sha512_scalar_round(wt[0],a,b,c,d,e,f,g,h);
 		sha512_scalar_round(wt[1],h,a,b,c,d,e,f,g);
@@ -62,8 +61,8 @@ inline void sha512_simd64(std::uint_least64_t* __restrict state,std::byte const*
 		simd_temp.load(w+9);
 		simd.wrap_add_assign(simd_temp);
 		simd.store(w+16);
-		simd_constants_load.load(K512+16);
-		simd.wrap_add_assign(simd_constants_load);
+		simd_temp.load(K512+16);
+		simd.wrap_add_assign(simd_temp);
 		simd.store(wt+16);
 		sha512_scalar_round(wt[8],a,b,c,d,e,f,g,h);
 		sha512_scalar_round(wt[9],h,a,b,c,d,e,f,g);
@@ -84,8 +83,8 @@ inline void sha512_simd64(std::uint_least64_t* __restrict state,std::byte const*
 		simd_temp.load(w+17);
 		simd.wrap_add_assign(simd_temp);
 		simd.store(w+24);
-		simd_constants_load.load(K512+24);
-		simd.wrap_add_assign(simd_constants_load);
+		simd_temp.load(K512+24);
+		simd.wrap_add_assign(simd_temp);
 		simd.store(wt+24);
 		sha512_scalar_round(wt[16],a,b,c,d,e,f,g,h);
 		sha512_scalar_round(wt[17],h,a,b,c,d,e,f,g);
@@ -106,8 +105,8 @@ inline void sha512_simd64(std::uint_least64_t* __restrict state,std::byte const*
 		simd_temp.load(w+25);
 		simd.wrap_add_assign(simd_temp);
 		simd.store(w+32);
-		simd_constants_load.load(K512+32);
-		simd.wrap_add_assign(simd_constants_load);
+		simd_temp.load(K512+32);
+		simd.wrap_add_assign(simd_temp);
 		simd.store(wt+32);
 		sha512_scalar_round(wt[24],a,b,c,d,e,f,g,h);
 		sha512_scalar_round(wt[25],h,a,b,c,d,e,f,g);
@@ -128,8 +127,8 @@ inline void sha512_simd64(std::uint_least64_t* __restrict state,std::byte const*
 		simd_temp.load(w+33);
 		simd.wrap_add_assign(simd_temp);
 		simd.store(w+40);
-		simd_constants_load.load(K512+40);
-		simd.wrap_add_assign(simd_constants_load);
+		simd_temp.load(K512+40);
+		simd.wrap_add_assign(simd_temp);
 		simd.store(wt+40);
 		sha512_scalar_round(wt[32],a,b,c,d,e,f,g,h);
 		sha512_scalar_round(wt[33],h,a,b,c,d,e,f,g);
@@ -150,8 +149,8 @@ inline void sha512_simd64(std::uint_least64_t* __restrict state,std::byte const*
 		simd_temp.load(w+41);
 		simd.wrap_add_assign(simd_temp);
 		simd.store(w+48);
-		simd_constants_load.load(K512+48);
-		simd.wrap_add_assign(simd_constants_load);
+		simd_temp.load(K512+48);
+		simd.wrap_add_assign(simd_temp);
 		simd.store(wt+48);
 		sha512_scalar_round(wt[40],a,b,c,d,e,f,g,h);
 		sha512_scalar_round(wt[41],h,a,b,c,d,e,f,g);
@@ -172,8 +171,8 @@ inline void sha512_simd64(std::uint_least64_t* __restrict state,std::byte const*
 		simd_temp.load(w+49);
 		simd.wrap_add_assign(simd_temp);
 		simd.store(w+56);
-		simd_constants_load.load(K512+56);
-		simd.wrap_add_assign(simd_constants_load);
+		simd_temp.load(K512+56);
+		simd.wrap_add_assign(simd_temp);
 		simd.store(wt+56);
 		sha512_scalar_round(wt[48],a,b,c,d,e,f,g,h);
 		sha512_scalar_round(wt[49],h,a,b,c,d,e,f,g);
@@ -194,8 +193,8 @@ inline void sha512_simd64(std::uint_least64_t* __restrict state,std::byte const*
 		simd_temp.load(w+57);
 		simd.wrap_add_assign(simd_temp);
 		simd.store(w+64);
-		simd_constants_load.load(K512+64);
-		simd.wrap_add_assign(simd_constants_load);
+		simd_temp.load(K512+64);
+		simd.wrap_add_assign(simd_temp);
 		simd.store(wt+64);
 		sha512_scalar_round(wt[56],a,b,c,d,e,f,g,h);
 		sha512_scalar_round(wt[57],h,a,b,c,d,e,f,g);
@@ -215,8 +214,8 @@ inline void sha512_simd64(std::uint_least64_t* __restrict state,std::byte const*
 		simd.wrap_add_assign(simd_temp);
 		simd_temp.load(w+65);
 		simd.wrap_add_assign(simd_temp);
-		simd_constants_load.load(K512+72);
-		simd.wrap_add_assign(simd_constants_load);
+		simd_temp.load(K512+72);
+		simd.wrap_add_assign(simd_temp);
 		simd.store(wt+72);
 		sha512_scalar_round(wt[64],a,b,c,d,e,f,g,h);
 		sha512_scalar_round(wt[65],h,a,b,c,d,e,f,g);

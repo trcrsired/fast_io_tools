@@ -20,7 +20,6 @@ inline void sha512_simd)abc",vec_size,u8R"abc((std::uint_least64_t* __restrict s
 
 	simd_vector<std::uint_least64_t,)abc",magic,u8R"abc(> simd;
 	simd_vector<std::uint_least64_t,)abc",magic,u8R"abc(> simd_temp;
-	simd_vector<std::uint_least64_t,)abc",magic,u8R"abc(> simd_constants_load;
 	constexpr simd_vector<char,)abc",vec_size,u8R"abc(> byteswap_simd{)abc");
 	
 	for(std::size_t i{};i!=magic;++i)
@@ -57,11 +56,11 @@ inline void sha512_simd)abc",vec_size,u8R"abc((std::uint_least64_t* __restrict s
 		{
 			print(obf,
 u8R"abc(		simd.load(blocks_start);
-		simd_constants_load.load(K512);
+		simd_temp.load(K512);
 		if constexpr(is_little_endian)
 			simd.shuffle(byteswap_simd);
 		simd.store(w);
-		simd.wrap_add_assign(simd_constants_load);
+		simd.wrap_add_assign(simd_temp);
 		simd.store(wt);
 
 )abc");
@@ -72,11 +71,11 @@ u8R"abc(		simd.load(blocks_start);
 			{
 				print(obf,
 u8R"abc(		simd.load(blocks_start+)abc",i*8u,u8R"abc();
-		simd_constants_load.load(K512+)abc",i,u8R"abc();
+		simd_temp.load(K512+)abc",i,u8R"abc();
 		if constexpr(is_little_endian)
 			simd.shuffle(byteswap_simd);
 		simd.store(w+)abc",i,u8R"abc();
-		simd.wrap_add_assign(simd_constants_load);
+		simd.wrap_add_assign(simd_temp);
 		simd.store(wt+)abc",i,u8");\n");
 			}
 			else if(i<80)
@@ -102,8 +101,8 @@ u8R"abc(		simd_temp.load(w+)abc",i-15,u8R"abc();
 )abc");
 		if(i+magic!=80)
 			print(obf,u8R"abc(		simd.store(w+)abc",i,u8");\n");
-		print(obf,u8R"abc(		simd_constants_load.load(K512+)abc",i,u8R"abc();
-		simd.wrap_add_assign(simd_constants_load);
+		print(obf,u8R"abc(		simd_temp.load(K512+)abc",i,u8R"abc();
+		simd.wrap_add_assign(simd_temp);
 		simd.store(wt+)abc",i,u8");\n");
 			}
 			for(std::size_t j{};j!=magic;++j)
