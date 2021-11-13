@@ -4,8 +4,8 @@
 
 //void test(std::uint_least64_t,std::uint_least64_t) noexcept;
 
-inline constexpr void sha512_scalar_round(std::uint64_t T1k,std::uint64_t a,std::uint64_t b,std::uint64_t c,std::uint64_t& __restrict d,
-				std::uint64_t e,std::uint64_t f,std::uint64_t g,std::uint64_t& __restrict h) noexcept
+inline constexpr void sha512_scalar_round(std::uint_least64_t T1k,std::uint_least64_t a,std::uint_least64_t b,std::uint_least64_t c,std::uint_least64_t& __restrict d,
+				std::uint_least64_t e,std::uint_least64_t f,std::uint_least64_t g,std::uint_least64_t& __restrict h) noexcept
 {
 	using namespace fast_io::details::sha512;
 	T1k+=h+Sigma1(e)+Ch(e,f,g);
@@ -17,7 +17,7 @@ inline constexpr void sha512_scalar_round(std::uint64_t T1k,std::uint64_t a,std:
 #if __has_cpp_attribute(gnu::flatten)
 [[gnu::flatten]]
 #endif
-void sha512_simd_sse(std::uint_least64_t* __restrict state,std::byte const* __restrict blocks_start,std::byte const* __restrict blocks_last) noexcept
+void sha512_simd16(std::uint_least64_t* __restrict state,std::byte const* __restrict blocks_start,std::byte const* __restrict blocks_last) noexcept
 {
 	using namespace fast_io::intrinsics;
 	using namespace fast_io::details::sha512;

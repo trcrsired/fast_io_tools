@@ -25,7 +25,7 @@ u8R"abc(	simd16.load(blocks_start);
 			if(i<16)
 			{
 				print(obf,
-u8R"abc(	simd16.load(blocks_start+)abc",i,u8R"abc();
+u8R"abc(	simd16.load(blocks_start+)abc",i*8u,u8R"abc();
 	simd16_constants_load.load(K512+)abc",i,u8R"abc();
 	simd16.shuffle(byteswap_simd16);
 	simd16.wrap_add_assign(simd16_constants_load);
