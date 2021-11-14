@@ -29,18 +29,19 @@ inline void sha512_simd32_compute_message_4rounds(::fast_io::intrinsics::simd_ve
 {
 	using namespace ::fast_io::intrinsics;
 	simd_vector<std::uint_least64_t,4> simd_temp{simd_vector<std::uint_least64_t,4>{simd[0],simd[1],0,0}};
-	simd_temp.load(w+(round-15));
+	simd_vector<std::uint_least64_t,4> simd_temp1;
+	simd_temp1.load(w+(round-15));
 	simd_temp=(simd_temp>>19)^(simd_temp<<45)^(simd_temp>>61)^(simd_temp<<3)^(simd_temp>>6);
-	simd_temp=(simd_temp>>1)^(simd_temp<<63)^(simd_temp>>8)^(simd_temp<<56)^(simd_temp>>7);
-	simd_temp.wrap_add_assign(simd_temp);
-	simd_temp.load(w+(round-16));
-	simd_temp.wrap_add_assign(simd_temp);
-	simd_temp.load(w+(round-5));
-	simd_temp.wrap_add_assign(simd_temp);
+	simd_temp1=(simd_temp1>>1)^(simd_temp1<<63)^(simd_temp1>>8)^(simd_temp1<<56)^(simd_temp1>>7);
+	simd_temp.wrap_add_assign(simd_temp1);
+	simd_temp1.load(w+(round-16));
+	simd_temp.wrap_add_assign(simd_temp1);
+	simd_temp1.load(w+(round-5));
+	simd_temp.wrap_add_assign(simd_temp1);
 	simd.wrap_add_assign(simd_vector<std::uint_least64_t,4>{0,0,simd_temp[0],simd_temp[1]});
 	simd.wrap_add_assign(simd_temp);
 	simd=simd_vector<std::uint_least64_t,4>{simd_temp[0],simd_temp[1],simd[2],simd[3]};
-	if constexpr(nostorew)
+	if constexpr(!nostorew)
 		simd.store(w+round);
 	simd_temp.load(K512+round);
 	simd_temp.wrap_add_assign(simd);
