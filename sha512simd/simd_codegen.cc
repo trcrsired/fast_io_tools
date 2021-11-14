@@ -79,7 +79,7 @@ u8R"abc(		simd.load(blocks_start);
 				print(obf,
 u8R"abc(		sigma1wm2=sigma1(w[)abc",pos-2,u8R"abc(]);
 		w[)abc",pos,u8R"abc(]+=sigma1wm2;
-		sha512_scalar_round(wt[)abc",pos-2,u8"]+signmalwm1");
+		sha512_scalar_round(wt[)abc",pos-2,u8"]+sigma1wm2");
 				}
 				for(std::size_t k{};k!=8u;++k)
 				{
