@@ -109,10 +109,10 @@ u8R"abc(		simd.load(w+)abc",i-15,u8");\n");
 		print(obf,u8R"abc(
 		simd_temp.load(w)abc");
 		if(i!=16)
-			print(obf,u8"+",i-vec_size);
+			print(obf,u8"+",i-16);
 		print(obf,u8R"abc();
 		simd.wrap_add_assign(simd_temp);
-		simd_temp.load(w+)abc",i-magic-5,u8R"abc();
+		simd_temp.load(w+)abc",i-7,u8R"abc();
 		simd.wrap_add_assign(simd_temp);
 )abc");
 		if(i+magic!=80)
