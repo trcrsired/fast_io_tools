@@ -36,7 +36,7 @@ inline void sha512_simd)abc",vec_size,u8R"abc((std::uint_least64_t* __restrict s
 	constexpr bool is_little_endian{std::endian::native==std::endian::little};
 
 	std::uint_least64_t wt[80];
-	std::uint_least64_t w[)abc",80-magic,u8R"abc()];
+	std::uint_least64_t w[)abc",80-magic,u8R"abc(];
 	std::uint_least64_t a{state[0]};
 	std::uint_least64_t b{state[1]};
 	std::uint_least64_t c{state[2]};
@@ -92,21 +92,21 @@ u8R"abc(		simd.load(blocks_start+)abc",i*8u,u8R"abc();
 			else if(i<80)
 			{
 print(obf,
-u8R"abc(		simd_temp_sm2=simd_vector<std::uint_least64_t,4>{simd[0],simd[1],0,0};
+u8R"abc(		simd_temp=simd_vector<std::uint_least64_t,4>{simd[0],simd[1],0,0};
 		simd_temp.load(w+)abc",i-15,u8R"abc();
-		simd_temp_sm2=(simd_temp_sm2>>19)^(simd_temp_sm2<<45)^(simd_temp_sm2>>61)^(simd_temp_sm2<<3)^(simd_temp_sm2>>6);
+		simd_temp=(simd_temp>>19)^(simd_temp<<45)^(simd_temp>>61)^(simd_temp<<3)^(simd_temp>>6);
 		simd_temp=(simd_temp>>1)^(simd_temp<<63)^(simd_temp>>8)^(simd_temp<<56)^(simd_temp>>7);
-		simd_temp_sm2.wrap_add_assign(simd_temp);
+		simd_temp.wrap_add_assign(simd_temp);
 		simd_temp.load(w)abc");
 		if(i!=16)
 			print(obf,u8"+",i-16);
 		print(obf,u8R"abc();
-		simd_temp_sm2.wrap_add_assign(simd_temp);
+		simd_temp.wrap_add_assign(simd_temp);
 		simd_temp.load(w+)abc",i-5,u8R"abc();
-		simd_temp_sm2.wrap_add_assign(simd_temp);
-		simd.wrap_add_assign(simd_vector<std::uint_least64_t,4>{0,0,simd_temp_sm2[0],simd_temp_sm2[1]});
-		simd.wrap_add_assign(simd_temp_sm2);
-		simd=simd_vector<std::uint_least64_t,4>{simd_temp_sm2[0],simd_temp_sm2[1],simd[2],simd[3]};
+		simd_temp.wrap_add_assign(simd_temp);
+		simd.wrap_add_assign(simd_vector<std::uint_least64_t,4>{0,0,simd_temp[0],simd_temp[1]});
+		simd.wrap_add_assign(simd_temp);
+		simd=simd_vector<std::uint_least64_t,4>{simd_temp[0],simd_temp[1],simd[2],simd[3]};
 )abc");
 		if(i+magic==80)
 		{
