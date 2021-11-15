@@ -131,7 +131,7 @@ public:
 	}
 	constexpr void reset() noexcept
 	{
-		hasher={};
+		hasher.reset();
 		counter={};
 		buffer_offset=0;
 	}
@@ -168,4 +168,9 @@ public:
 	}
 };
 
+}
+
+namespace fast_io
+{
+using sha256_context=::fast_io::details::basic_md5_sha_context_impl<::fast_io::sha256,std::uint_least64_t,::std::endian::big>;
 }
