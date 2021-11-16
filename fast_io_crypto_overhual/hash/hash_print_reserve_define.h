@@ -53,7 +53,6 @@ concept crypto_hasher = requires(T t,std::byte const* first,std::byte const* las
 	typename T::state_value_type;
 	t.state;
 	t.update_blocks(first,last);
-	t.reset();
 };
 
 template<crypto_hasher T>

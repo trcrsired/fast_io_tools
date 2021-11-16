@@ -768,18 +768,6 @@ public:
 			::fast_io::details::sha256::sha256_do_function(this->state,blocks_start,blocks_last);
 		}
 	}
-	constexpr void reset() noexcept
-	{
-		*this={};
-	}
-	constexpr void switch_to_hash_endian() noexcept
-	{
-		if constexpr(std::endian::big!=std::endian::native)
-		{
-			for(auto& e : state)
-				e=::fast_io::big_endian(e);
-		}
-	}
 };
 
 }

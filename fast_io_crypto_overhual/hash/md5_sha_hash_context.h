@@ -15,6 +15,12 @@ struct pesudo_uint_least128_big_endian_t
 
 using pesudo_uint_least128_t=std::conditional_t<::std::endian::native==::std::endian::big,pesudo_uint_least128_big_endian_t,pesudo_uint_least128_little_endian_t>;
 
+template<typename T>
+concept has_reset_impl = requires(T t)
+{
+	t.reset();
+};
+
 template<typename T,typename counter_type,std::endian edian>
 class basic_md5_sha_context_impl
 {
@@ -137,7 +143,10 @@ public:
 	}
 	constexpr void reset() noexcept
 	{
-		hasher.reset();
+		if constexpr(has_reset_impl<T>)
+			hasher.reset();
+		else
+			hasher={};
 		counter={};
 		buffer_offset=0;
 	}
