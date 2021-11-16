@@ -6,7 +6,7 @@
 int main()
 {
 	::fast_io::sha256_context ctx;
-	print(fast_io::mnp::u8as_file(ctx),u8"Hello WorldHello WorldHello WorldHello WorldHello World1124124124");
+	print(fast_io::mnp::u8as_file(ctx),u8"Hello WorldHello Worldasfjopasfjasopfjsapojf[powqejfpo[weqjfpo[qewjfeopw[jHello WorldHello WorldHello World1124124124gewqgeqjwgpoqewejgeopwgjqweopgjqewpogjqew[pogjqewpo[gjqew[pogqewjop[geqwjeop[gewjop");
 	ctx.do_final();
 	println(ctx.hash());
 #if 0
