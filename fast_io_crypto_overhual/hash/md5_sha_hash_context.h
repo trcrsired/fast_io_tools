@@ -111,7 +111,8 @@ private:
 		{
 			::fast_io::details::my_memcpy(buffer+start_pos,__builtin_addressof(ct),sizeof(counter_type));
 		}
-		this->update_impl(buffer,buffer+block_size);
+		this->hasher.update_blocks(buffer,buffer+block_size);
+		this->hasher.switch_to_hash_endian();
 	}
 public:
 	inline constexpr void update(std::byte const* block_first,std::byte const* block_last) noexcept
@@ -143,25 +144,25 @@ public:
 		constexpr std::size_t sz{block_size-counter_type_size};
 		std::size_t const buffer_offs{this->buffer_offset};
 		std::size_t buffer_off{buffer_offs};
-		*buffer[buffer_off]=std::byte{0x80};
+		buffer[buffer_off]=std::byte{0x80};
 		++buffer_off;
 		std::size_t const diff{block_size-buffer_off};
 		if(sz<diff)
 		{
-			::fast_io::none_secure_clear(this->data,static_cast<std::size_t>(sz-buffer_off));
+			::fast_io::none_secure_clear(this->buffer,static_cast<std::size_t>(sz-buffer_off));
 			this->append_sentinal(buffer_offs);
 			return;
 		}
-		::fast_io::none_secure_clear(this->data,static_cast<std::size_t>(block_size-buffer_off));
+		::fast_io::none_secure_clear(this->buffer,static_cast<std::size_t>(block_size-buffer_off));
 		this->hasher.update_blocks(this->buffer,this->buffer+block_size);
-		::fast_io::none_secure_clear(this->data,sz);
+		::fast_io::none_secure_clear(this->buffer,sz);
 		this->append_sentinal(buffer_offs);
 	}
-	constexpr hash_function_type& hash() noexcept
+	constexpr hash_function_type const& hash() const noexcept
 	{
 		return hasher;
 	}
-	constexpr hash_function_type const& hash() const noexcept
+	constexpr hash_function_type& hash() noexcept
 	{
 		return hasher;
 	}
@@ -268,4 +269,7 @@ inline constexpr ::fast_io::basic_crypto_hash_as_file<char32_t,T> u32as_file(T& 
 }
 
 using sha256_context=::fast_io::details::basic_md5_sha_context_impl<::fast_io::sha256,std::uint_least64_t,::std::endian::big>;
+
+static_assert(std::is_standard_layout_v<sha256_context>);
+
 }

@@ -744,6 +744,7 @@ class sha256
 {
 public:
 	static inline constexpr std::size_t block_size{64};
+	static inline constexpr std::endian hash_endian{std::endian::big};
 	std::uint_least32_t state[8]{0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
 #if __cpp_if_consteval >= 202106L || __cpp_lib_is_constant_evaluated >= 201811L
 	constexpr
@@ -769,18 +770,12 @@ public:
 	{
 		*this={};
 	}
-	constexpr sha256 to_standard_endian() const noexcept
+	constexpr void switch_to_hash_endian() noexcept
 	{
-		if constexpr(std::endian::big==std::endian::native)
+		if constexpr(std::endian::big!=std::endian::native)
 		{
-			return *this;
-		}
-		else
-		{
-			sha256 s;
 			for(std::size_t i{};i!=8;++i)
-				s.state[i]=::fast_io::byte_swap(this->state[i]);
-			return s;
+				this->state[i]=::fast_io::big_endian(this->state[i]);
 		}
 	}
 };
