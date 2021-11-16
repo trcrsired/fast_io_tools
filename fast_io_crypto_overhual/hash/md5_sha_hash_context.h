@@ -100,8 +100,7 @@ private:
 		if (__builtin_is_constant_evaluated())
 #endif
 		{
-			using c_array_type = std::byte[sizeof(counter_type)];
-			auto a{__builtin_bit_cast(c_array_type,this->counter)};
+			auto a{__builtin_bit_cast(::fast_io::freestanding::array<std::byte,sizeof(counter_type)>,this->counter)};
 			for(std::size_t i{};i!=sizeof(counter_type);++i)
 			{
 				this->buffer[start_pos+i]=a[i];
@@ -168,9 +167,105 @@ public:
 	}
 };
 
+template<typename T>
+inline void update_multiple_blocks(T* __restrict ctx,io_scatter_t const* base,std::size_t n) noexcept
+{
+	for(std::size_t i{};i!=n;++i)
+	{
+		io_scatter_t e{base[i]};
+		ctx->update(reinterpret_cast<std::byte const*>(e.base),reinterpret_cast<std::byte const*>(e.base)+e.len);
+	}
+}
+
 }
 
 namespace fast_io
 {
+template<::std::integral ch_type,typename T>
+struct basic_crypto_hash_as_file
+{
+	using char_type = ch_type;
+	using manip_tag = manip_tag_t;
+	using native_handle_type = T*;
+	T* ptr{};
+};
+
+template<::std::integral ch_type,typename T>
+inline constexpr basic_crypto_hash_as_file<ch_type,T> io_value_handle(basic_crypto_hash_as_file<ch_type,T> t) noexcept
+{
+	return t;
+}
+
+template<::std::integral ch_type,typename T,::fast_io::freestanding::contiguous_iterator Iter>
+inline constexpr void write(basic_crypto_hash_as_file<ch_type,T> t,Iter first,Iter last) noexcept
+{
+#if (__cpp_if_consteval >= 202106L || __cpp_lib_is_constant_evaluated >= 201811L) && __cpp_lib_bit_cast >= 201806L
+#if __cpp_if_consteval >= 202106L
+	if consteval
+#else
+	if (__builtin_is_constant_evaluated())
+#endif
+	{
+		for(;first!=last;++first)
+		{
+			auto a{__builtin_bit_cast(::fast_io::freestanding::array<std::byte,sizeof(*first)>,*first)};
+			t.ptr->update(a.data(),a.data()+sizeof(*first));
+		}
+	}
+	else
+#endif
+	{
+		t.ptr->update(reinterpret_cast<std::byte const*>(::fast_io::freestanding::to_address(first)),
+			reinterpret_cast<std::byte const*>(::fast_io::freestanding::to_address(last)));
+	}
+}
+
+template<::std::integral ch_type,typename T>
+inline void scatter_write(basic_crypto_hash_as_file<ch_type,T> t,io_scatters_t scatters) noexcept
+{
+	::fast_io::details::update_multiple_blocks(t,scatters.base,scatters.len);
+}
+
+namespace manipulators
+{
+
+template<std::integral char_type,typename T>
+inline constexpr ::fast_io::basic_crypto_hash_as_file<char_type,T> basic_as_file(T& hashctx) noexcept
+{
+	return {__builtin_addressof(hashctx)};
+}
+
+template<typename T>
+inline constexpr ::fast_io::basic_crypto_hash_as_file<char,T> as_file(T& hashctx) noexcept
+{
+	return {__builtin_addressof(hashctx)};
+}
+
+template<typename T>
+inline constexpr ::fast_io::basic_crypto_hash_as_file<wchar_t,T> was_file(T& hashctx) noexcept
+{
+	return {__builtin_addressof(hashctx)};
+}
+
+template<typename T>
+inline constexpr ::fast_io::basic_crypto_hash_as_file<char8_t,T> u8as_file(T& hashctx) noexcept
+{
+	return {__builtin_addressof(hashctx)};
+}
+
+template<typename T>
+inline constexpr ::fast_io::basic_crypto_hash_as_file<char16_t,T> u16as_file(T& hashctx) noexcept
+{
+	return {__builtin_addressof(hashctx)};
+}
+
+template<typename T>
+inline constexpr ::fast_io::basic_crypto_hash_as_file<char32_t,T> u32as_file(T& hashctx) noexcept
+{
+	return {__builtin_addressof(hashctx)};
+}
+
+}
+
 using sha256_context=::fast_io::details::basic_md5_sha_context_impl<::fast_io::sha256,std::uint_least64_t,::std::endian::big>;
 }
