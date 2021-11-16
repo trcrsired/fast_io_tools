@@ -21,6 +21,7 @@ class basic_md5_sha_context_impl
 public:
 	using hash_function_type = T;
 	static inline constexpr std::size_t block_size{T::block_size};
+	static inline constexpr std::endian hash_endian{T::hash_endian};
 private:
 	T hasher{};
 	counter_type counter{};
@@ -29,19 +30,17 @@ private:
 	constexpr void update_impl(std::byte const* first,std::size_t blocks_bytes) noexcept
 	{
 		hasher.update_blocks(first,first+blocks_bytes);
-		constexpr std::uint_least64_t eight{8u};
-		if constexpr(std::same_as<counter_type,details::pesudo_uint_least128_t>)
+		if constexpr(std::same_as<counter_type,::fast_io::details::pesudo_uint_least128_t>)
 		{
 			static_assert(sizeof(std::size_t)<=sizeof(std::uint_least64_t));
 			std::uint_least64_t const blocks_bytes_u64{static_cast<std::uint_least64_t>(blocks_bytes)};
 			using namespace ::fast_io::details::intrinsics;
-			std::uint_least64_t high;
-			std::uint_least64_t const low{umul(blocks_bytes_u64,eight,high)};
-			add_carry(add_carry(false,counter.low,low,counter.low),counter.high,high,counter.high);
+			constexpr std::uint_least64_t zero{};
+			add_carry(add_carry(false,counter.low,blocks_bytes_u64,counter.low),counter.high,zero,counter.high);
 		}
 		else
 		{
-			counter+=static_cast<counter_type>(blocks_bytes)*eight;
+			counter+=static_cast<counter_type>(blocks_bytes);
 		}
 	}
 	constexpr void update_cold_impl(std::byte const* first,std::size_t diff) noexcept
@@ -62,27 +61,30 @@ private:
 		::fast_io::details::non_overlapped_copy_n(first,diff,buffer);
 		buffer_offset=diff;
 	}
-	inline
 #if (__cpp_if_consteval >= 202106L || __cpp_lib_is_constant_evaluated >= 201811L) && __cpp_lib_bit_cast >= 201806L
 	constexpr
 #endif
 	void append_sentinal(std::size_t final_block_offset) noexcept
 	{
 		counter_type ct{counter};
-		std::uint_least64_t const val{static_cast<std::uint_least64_t>(final_block_offset*8u)};
-		if constexpr(std::same_as<counter_type,details::pesudo_uint_least128_t>)
+		std::uint_least64_t const val{static_cast<std::uint_least64_t>(final_block_offset)};
+		if constexpr(std::same_as<counter_type,::fast_io::details::pesudo_uint_least128_t>)
 		{
 			using namespace ::fast_io::details::intrinsics;
 			constexpr std::uint_least64_t zero{};
 			add_carry(add_carry(false,ct.low,val,ct.low),ct.high,zero,ct.high);
+			add_carry(add_carry(false,ct.low,ct.low,ct.low),ct.high,ct.high,ct.high);//*2
+			add_carry(add_carry(false,ct.low,ct.low,ct.low),ct.high,ct.high,ct.high);//*4
+			add_carry(add_carry(false,ct.low,ct.low,ct.low),ct.high,ct.high,ct.high);//*8
 		}
 		else
 		{
 			ct+=val;
+			ct*=8u;
 		}
 		if constexpr(std::endian::native!=edian)
 		{
-			if constexpr(std::same_as<counter_type,details::pesudo_uint_least128_t>)
+			if constexpr(std::same_as<counter_type,::fast_io::details::pesudo_uint_least128_t>)
 			{
 				ct.low=::fast_io::byte_swap(ct.low);
 				ct.high=::fast_io::byte_swap(ct.high);
@@ -112,7 +114,11 @@ private:
 			::fast_io::details::my_memcpy(buffer+start_pos,__builtin_addressof(ct),sizeof(counter_type));
 		}
 		this->hasher.update_blocks(buffer,buffer+block_size);
-		this->hasher.switch_to_hash_endian();
+		if constexpr(hash_endian!=std::endian::native)
+		{
+			for(auto& e : this->hasher.state)
+				e=::fast_io::big_endian(e);
+		}
 	}
 public:
 	inline constexpr void update(std::byte const* block_first,std::byte const* block_last) noexcept
@@ -146,14 +152,13 @@ public:
 		std::size_t buffer_off{buffer_offs};
 		buffer[buffer_off]=std::byte{0x80};
 		++buffer_off;
-		std::size_t const diff{block_size-buffer_off};
-		if(sz<diff)
+		if(buffer_off<=sz)
 		{
-			::fast_io::none_secure_clear(this->buffer,static_cast<std::size_t>(sz-buffer_off));
+			::fast_io::none_secure_clear(this->buffer+buffer_off,static_cast<std::size_t>(sz-buffer_off));
 			this->append_sentinal(buffer_offs);
 			return;
 		}
-		::fast_io::none_secure_clear(this->buffer,static_cast<std::size_t>(block_size-buffer_off));
+		::fast_io::none_secure_clear(this->buffer+buffer_off,static_cast<std::size_t>(block_size-buffer_off));
 		this->hasher.update_blocks(this->buffer,this->buffer+block_size);
 		::fast_io::none_secure_clear(this->buffer,sz);
 		this->append_sentinal(buffer_offs);
