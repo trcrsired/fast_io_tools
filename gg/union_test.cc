@@ -1,50 +1,25 @@
+#include<string>
 #include<fast_io.h>
+#include<vector>
 
-template<std::integral ch_type>
-struct basic_compile_time_os_file_structure
+inline constexpr bool test()
 {
-	using char_type = ch_type;
-};
-
-using compile_time_os_file_structure = basic_compile_time_os_file_structure<char>;
-
-template<>
-inline constexpr void read() noexcept
-{
-	
+	std::vector<fast_io::c_file> vec;
+	vec.emplace_back("a.txt",fast_io::open_mode::out);
+	print(vec.front(),"Hello World\n",241,"dgs\n");
+	vec.emplace_back("b.txt",fast_io::open_mode::out);
+	print(vec.back(),"Hello World\n",241,"dgs\n");
+	for(std::size_t i{};i!=100;++i)
+	{//all sorts of compiler bugs
+		vec.emplace_back(fast_io::concat(i,".txt"),fast_io::open_mode::out);
+		println(vec.back(),"Hello World ",i);
+	}
+	return true;
 }
 
-template<std::integral char_type,::fast_io::freestanding::input_or_output_iterator Iter>
-inline constexpr void write(basic_compile_time_os_file_structure<char_type>,Iter first,Iter last) noexcept
-{
-	constexpr_sanitize_input();
-}
-
-struct compile_time_os_file_handle
-{
-	compile_time_os_file_structure* compile_time_handle{};
-};
-
-template<::std::integral char_type>
-struct basic_buffered_compile_time_os_file_handle
-{
-	::fast_io::basic_iobuf<compile_time_os_file_structure>* compile_time_buffered_handle{};
-};
-
-
-
-template<::std::integral char_type>
-struct test
-{
-	union
-	{
-		std::FILE* fp{};
-		basic_compile_time_os_file_handle<char_type> compile_time_fp;
-	};
-};
+static_assert(test());
 
 int main()
 {
-	test<char> t;
-	t.fp=nullptr;
+	test();
 }
