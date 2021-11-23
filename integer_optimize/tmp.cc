@@ -4,7 +4,7 @@ namespace fast_io::details::jeaiii
 {
 
 template<std::integral char_type>
-inline constexpr void jeaiii_w(char_type* pi,std::uint_least32_t u) noexcept
+inline constexpr void jeaiii_w(char_type* pi,std::uint_fast32_t u) noexcept
 {
 	constexpr auto tb{::fast_io::details::get_shared_inline_constexpr_base_table<char_type,10,false>().element};
 	non_overlapped_copy_n(tb[u].element,2,pi);
@@ -22,7 +22,7 @@ inline constexpr std::uint_least64_t jeaiii_a(char_type* pi,std::uint_least32_t 
 	constexpr std::uint_least64_t add_factor{n/6*4};
 	if constexpr(add_factor)
 		t+=add_factor;
-	jeaiii_w(pi,static_cast<std::uint_least32_t>(t>>32u));
+	jeaiii_w(pi,static_cast<std::uint_fast32_t>(t>>32u));
 	return t;
 }
 
