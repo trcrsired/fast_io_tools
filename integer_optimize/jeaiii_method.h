@@ -197,11 +197,6 @@ inline constexpr char_type* jeaiii_main(char_type* iter,U n) noexcept
 			return jeaiii_main(iter,static_cast<std::uint_least64_t>(n));
 		}
 		constexpr std::uint_least64_t divisor{10000000000000000000ull};
-
-		/*
-1 0000000000000000000 0000000000000000000
-1 0000000000000000000
-		*/
 		U a{n/divisor};
 		std::uint_least64_t u{static_cast<std::uint_least64_t>(n%divisor)};
 		std::uint_least64_t alow{static_cast<std::uint_least64_t>(a)};
@@ -234,7 +229,6 @@ inline constexpr char_type* jeaiii_main(char_type* iter,U n) noexcept
 		{
 			std::uint_least64_t high{n/divisor};
 			std::uint_least32_t low{static_cast<std::uint_least32_t>(n%divisor)};
-			
 			std::uint_least32_t high_first{static_cast<std::uint_least32_t>(high/divisor)};
 			std::uint_least32_t high_low{static_cast<std::uint_least32_t>(high%divisor)};
 			jeaiii_c<0>(iter,high_first);
@@ -252,7 +246,7 @@ inline constexpr char_type* jeaiii_main(char_type* iter,U n) noexcept
 			std::uint_least32_t alow{static_cast<std::uint_least32_t>(a)};
 			if constexpr(ryu_mode)
 			{
-				iter=jeaiii_tree<0,6>(iter,alow);
+				iter=jeaiii_tree<0,7>(iter,alow);
 			}
 			else
 			{
