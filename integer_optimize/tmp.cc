@@ -55,10 +55,6 @@ inline constexpr void jeaiii_c(char_type* pi,std::uint_least32_t u) noexcept
 	{
 		jeaiii_w(pi,u);
 	}
-	else if constexpr(n==1)
-	{
-		jeaiii_s<2>(pi,jeaiii_a<1>(pi,u));
-	}
 	else if constexpr(n==2)
 	{
 		jeaiii_s<2>(pi,jeaiii_a<1>(pi,u));
