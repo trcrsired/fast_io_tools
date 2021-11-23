@@ -26,9 +26,10 @@ inline constexpr std::uint_least64_t jeaiii_a(char_type* pi,std::uint_least32_t 
 	return t;
 }
 
-template<std::size_t n,std::integral char_type>
-inline constexpr void jeaiii_s(char_type* pi,std::uint_least32_t t) noexcept
+template<std::size_t n,std::integral ch_type>
+inline constexpr void jeaiii_s(ch_type* pi,std::uint_least32_t t) noexcept
 {
+	using char_type = ch_type;
 	constexpr std::uint_least64_t ten{10u};
 	pi[n]=static_cast<char_type>(ten*t>>32u)+char_literal_v<u8'0',char_type>;
 }
@@ -48,7 +49,7 @@ inline constexpr void jeaiii_c(char_type* pi,std::uint_least32_t u) noexcept
 {
 	if constexpr(n==0)
 	{
-		*pi=static_cast<char_type>(u)+char_literal_v<char_type,u8'0'>;
+		*pi=static_cast<char_type>(u)+char_literal_v<u8'0',char_type>;
 	}
 	else if constexpr(n==1)
 	{
@@ -108,7 +109,7 @@ template<std::size_t n,std::integral char_type>
 inline constexpr char_type* jeaiii_f(char_type* pi,std::uint_least32_t u) noexcept
 {
 	constexpr std::size_t np1{n+1};
-	jeaiii_c<np1>(pi,u);
+	jeaiii_c<n>(pi,u);
 	return pi+np1;
 }
 
