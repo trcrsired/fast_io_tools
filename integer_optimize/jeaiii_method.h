@@ -187,7 +187,7 @@ binary search tree
 	}
 }
 
-template<std::integral char_type,bool ryu_mode=false,bool recursive=false,::fast_io::details::my_unsigned_integral U>
+template<bool ryu_mode=false,bool recursive=false,std::integral char_type,::fast_io::details::my_unsigned_integral U>
 inline constexpr char_type* jeaiii_main(char_type* iter,U n) noexcept
 {
 	if constexpr(sizeof(U)>sizeof(std::uint_least64_t)&&sizeof(U)==16)//__uint128_t
