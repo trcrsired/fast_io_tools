@@ -188,12 +188,7 @@ binary search tree
 }
 
 template<std::integral char_type,bool ryu_mode=false,bool recursive=false,::fast_io::details::my_unsigned_integral U>
-inline
-#if __cpp_constexpr >= 202110L
-//goto in constexpr is only allowed since C++23
-constexpr
-#endif
-char_type* jeaiii_main(char_type* iter,U n) noexcept
+inline constexpr char_type* jeaiii_main(char_type* iter,U n) noexcept
 {
 	if constexpr(sizeof(U)>sizeof(std::uint_least64_t)&&sizeof(U)==16)//__uint128_t
 	{
@@ -202,6 +197,11 @@ char_type* jeaiii_main(char_type* iter,U n) noexcept
 			return jeaiii_main(iter,static_cast<std::uint_least64_t>(n));
 		}
 		constexpr std::uint_least64_t divisor{10000000000000000000ull};
+
+		/*
+1 0000000000000000000 0000000000000000000
+1 0000000000000000000
+		*/
 		U a{n/divisor};
 		std::uint_least64_t u{static_cast<std::uint_least64_t>(n%divisor)};
 		std::uint_least64_t alow{static_cast<std::uint_least64_t>(a)};
@@ -211,7 +211,7 @@ char_type* jeaiii_main(char_type* iter,U n) noexcept
 		}
 		else
 		{
-			if(static_cast<std::uint_least64_t>(a>>64u)!=0u)
+			if(a!=static_cast<U>(alow))
 			{
 				std::uint_least32_t v{static_cast<std::uint_least32_t>(a/divisor)};
 				std::uint_least64_t m{static_cast<std::uint_least64_t>(a%divisor)};
@@ -225,19 +225,21 @@ char_type* jeaiii_main(char_type* iter,U n) noexcept
 				iter=jeaiii_main<char_type>(iter,static_cast<std::uint_least64_t>(alow));
 			}
 		}
-		iter=jeaiii_main<char_type,false,true>(iter,static_cast<std::uint_least64_t>(alow));
+		return jeaiii_main<char_type,false,true>(iter,static_cast<std::uint_least64_t>(u));
 	}
 	else if constexpr(sizeof(U)==sizeof(std::uint_least64_t))
 	{
 		constexpr std::uint_least32_t divisor{1000000000u};
 		if constexpr(recursive)
 		{
-			std::uint_least32_t high{static_cast<std::uint_least32_t>(n/divisor)};
+			std::uint_least64_t high{n/divisor};
 			std::uint_least32_t low{static_cast<std::uint_least32_t>(n%divisor)};
-			jeaiii_c<8>(iter,high);
-			iter+=8;
-			jeaiii_c<8>(iter,low);
-			iter+=8;
+			
+			std::uint_least32_t high_first{static_cast<std::uint_least32_t>(high/divisor)};
+			std::uint_least32_t high_low{static_cast<std::uint_least32_t>(high%divisor)};
+			jeaiii_c<0>(iter,high_first);
+			++iter;
+			iter=jeaiii_f<8>(jeaiii_f<8>(iter,high_low),low);
 		}
 		else
 		{
@@ -254,50 +256,41 @@ char_type* jeaiii_main(char_type* iter,U n) noexcept
 			}
 			else
 			{
-				if(static_cast<std::uint_least32_t>(a>>32u)!=0u)
+				if(a!=static_cast<std::uint_least64_t>(alow))
 				{
 					std::uint_least32_t v{static_cast<std::uint_least32_t>(a/divisor)};
 					alow=static_cast<std::uint_least32_t>(a%divisor);
-					if(v>=10u)
-					{
-						jeaiii_c<2>(iter,v);
-						iter+=2;
-					}
-					else
+					if(v<10u)
 					{
 						jeaiii_c<0>(iter,v);
 						++iter;
 					}
-					jeaiii_c<8>(iter,alow);
-					iter+=8;
+					else
+					{
+						jeaiii_w(iter,v);
+						iter+=2;
+					}
+					iter=jeaiii_f<8>(iter,alow);
 				}
 				else
 				{
 					iter=jeaiii_tree<0,9>(iter,alow);
 				}
 			}
-			jeaiii_c<8>(iter,u);
-			iter+=8;
-			return iter;
+			iter=jeaiii_f<8>(iter,u);
 		}
+		return iter;
 	}
 	else
 	{
-		if constexpr(recursive)
+		static_assert(!recursive);
+		if constexpr(ryu_mode)
 		{
-			jeaiii_c<8>(iter,n);
-			return iter+8;
+			return jeaiii_tree<0,7>(iter,n);
 		}
 		else
 		{
-			if constexpr(ryu_mode)
-			{
-				return jeaiii_tree<0,7>(iter,n);
-			}
-			else
-			{
-				return jeaiii_tree<0,9>(iter,n);
-			}
+			return jeaiii_tree<0,9>(iter,n);
 		}
 	}
 }
