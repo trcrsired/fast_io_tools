@@ -244,36 +244,72 @@ inline constexpr char_type* jeaiii_l(char_type* pi,std::uint_least32_t u) noexce
 }
 
 template<std::integral char_type,::fast_io::details::my_unsigned_integral U>
-inline constexpr char_type* jeaiii_main(char_type* ptr,U n) noexcept
+inline
+#if __cpp_constexpr >= 202110L
+//goto in constexpr is only allowed since C++23
+constexpr
+#endif
+char_type* jeaiii_main(char_type* ptr,U n) noexcept
 {
-	if constexpr(sizeof(U)==sizeof(std::uint_least64_t))
+	if constexpr(sizeof(U)>sizeof(std::uint_least64_t)&&sizeof(U)==16)//__uint128_t
 	{
-		if(static_cast<std::uint_least32_t>(n>>32u)==0)
+		std::uint_least64_t u;
+		if(static_cast<std::uint_least32_t>(n>>64u)==0)
 		{
-			return jeaiii_l<9>(ptr,static_cast<std::uint_least32_t>(n));
+			u=static_cast<std::uint_least64_t>(n);
+			goto uint128_end_label;
 		}
-		constexpr std::uint_least32_t divisor{1000000000u};
-		std::uint_least64_t a{n/divisor};
-		std::uint_least32_t u{static_cast<std::uint_least32_t>(n%1000000000u)};
-		std::uint_least32_t alow{static_cast<std::uint_least32_t>(a)};
-		if(static_cast<std::uint_least32_t>(a>>32u)!=0u)
 		{
-			std::uint_least32_t v{static_cast<std::uint_least32_t>(a/divisor)};
-			std::uint_least32_t m{static_cast<std::uint_least32_t>(a%divisor)};
-			if(v>=10u)
+			constexpr std::uint_least64_t divisor{10000000000000000000ull};
+			U a{n/divisor};
+			u=static_cast<std::uint_least64_t>(n%divisor);
+			std::uint_least64_t alow{static_cast<std::uint_least64_t>(a)};
+			if(static_cast<std::uint_least64_t>(a>>64u)!=0u)
 			{
-				jeaiii_w(ptr,v);
-				ptr+=2;
-			}
-			else
-			{
+				std::uint_least32_t v{static_cast<std::uint_least32_t>(a/divisor)};
+				std::uint_least64_t m{static_cast<std::uint_least64_t>(a%divisor)};
 				jeaiii_c<0>(ptr,v);
 				++ptr;
+				alow=m;
 			}
-			alow=m;
+			ptr=jeaiii_main(ptr,static_cast<std::uint_least64_t>(alow));
 		}
-		ptr=jeaiii_l<9>(ptr,static_cast<std::uint_least32_t>(alow));
-		return jeaiii_l<9>(ptr,static_cast<std::uint_least32_t>(u));
+uint128_end_label:
+		return jeaiii_main(ptr,static_cast<std::uint_least64_t>(u));
+	}
+	else if constexpr(sizeof(U)==sizeof(std::uint_least64_t))
+	{
+		std::uint_least32_t u;
+		if(static_cast<std::uint_least32_t>(n>>32u)==0)
+		{
+			u=static_cast<std::uint_least32_t>(n);
+			goto uint64_end_label;
+		}
+		{
+			constexpr std::uint_least32_t divisor{1000000000u};
+			std::uint_least64_t a{n/divisor};
+			u=static_cast<std::uint_least32_t>(n%divisor);
+			std::uint_least32_t alow{static_cast<std::uint_least32_t>(a)};
+			if(static_cast<std::uint_least32_t>(a>>32u)!=0u)
+			{
+				std::uint_least32_t v{static_cast<std::uint_least32_t>(a/divisor)};
+				std::uint_least32_t m{static_cast<std::uint_least32_t>(a%divisor)};
+				if(v>=10u)
+				{
+					jeaiii_w(ptr,v);
+					ptr+=2;
+				}
+				else
+				{
+					jeaiii_c<0>(ptr,v);
+					++ptr;
+				}
+				alow=m;
+			}
+			ptr=jeaiii_l<9>(ptr,static_cast<std::uint_least32_t>(alow));
+		}
+uint64_end_label:
+		return jeaiii_l<9>(ptr,u);
 	}
 	else
 	{
