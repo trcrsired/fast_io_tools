@@ -3,17 +3,17 @@
 #if __has_cpp_attribute(gnu::always_inline)
 [[gnu::always_inline]]
 #endif
-inline void sha512_simd32_byte_swap_message_4rounds(::fast_io::intrinsics::simd_vector<std::uint_least64_t,4>& __restrict simd,
-	std::byte const* __restrict blocks_start,std::uint_least64_t* __restrict w,std::uint_least64_t* __restrict wt,std::size_t round) noexcept
+inline void sha512_simd16_byte_swap_message_2rounds(::fast_io::intrinsics::simd_vector<std::uint_least64_t,2>& __restrict simd,
+	std::byte const* __restrict blocks_start,std::uint_least64_t* __restrict w,std::uint_least64_t* __restrict wt,std::uint_fast16_t round) noexcept
 {
 	using namespace ::fast_io::intrinsics;
-	simd_vector<std::uint_least64_t,4> simd_temp;
-	simd.load(blocks_start+(round*8u));
-	simd_temp.load(K512+round);
+	simd_vector<std::uint_least64_t,2> simd_temp;
+	simd.load(blocks_start+(round<<3u));
+	simd_temp.load(::fast_io::details::sha512::K512+round);
 	if constexpr(std::endian::native==std::endian::little)
 	{
-		constexpr simd_vector<char,32> byteswap_simd32{7,6,5,4,3,2,1,0,15,14,13,12,11,10,9,8,23,22,21,20,19,18,17,16,31,30,29,28,27,26,25,24};
-		simd.shuffle(byteswap_simd32);
+		constexpr simd_vector<char,16> byteswap_simd16{7,6,5,4,3,2,1,0,15,14,13,12,11,10,9,8};
+		simd.shuffle(byteswap_simd16);
 	}
 	simd.store(w+round);
 	simd_temp.wrap_add_assign(simd);
@@ -23,25 +23,22 @@ inline void sha512_simd32_byte_swap_message_4rounds(::fast_io::intrinsics::simd_
 #if __has_cpp_attribute(gnu::always_inline)
 [[gnu::always_inline]]
 #endif
-inline void sha512_simd32_compute_message_4rounds(::fast_io::intrinsics::simd_vector<std::uint_least64_t,4>& __restrict simd,
-	std::uint_least64_t* __restrict w,std::uint_least64_t* __restrict wt,std::size_t round) noexcept
+inline void sha512_simd16_compute_message_2rounds(
+	::fast_io::intrinsics::simd_vector<std::uint_least64_t,2>& __restrict simd,
+	std::uint_least64_t* __restrict w,std::uint_least64_t* __restrict wt,std::uint_fast8_t round) noexcept
 {
 	using namespace ::fast_io::intrinsics;
-	simd_vector<std::uint_least64_t,4> simd_temp{simd[0],simd[1],0,0};
-	simd_vector<std::uint_least64_t,4> simd_temp1;
-	simd_temp1.load(w+(round-15));
-	simd_temp=(simd_temp>>19)^(simd_temp<<45)^(simd_temp>>61)^(simd_temp<<3)^(simd_temp>>6);
-	simd_temp1=(simd_temp1>>1)^(simd_temp1<<63)^(simd_temp1>>8)^(simd_temp1<<56)^(simd_temp1>>7);
-	simd_temp.wrap_add_assign(simd_temp1);
-	simd_temp1.load(w+(round-16));
-	simd_temp.wrap_add_assign(simd_temp1);
-	simd_temp1.load(w+(round-5));
-	simd_temp.wrap_add_assign(simd_temp1);
-	simd.wrap_add_assign(simd_vector<std::uint_least64_t,4>{0,0,simd_temp[0],simd_temp[1]});
+	simd_vector<std::uint_least64_t,2> simd_temp;
+	simd_temp.load(w+(round-15));
+	simd=(((((simd>>42)^simd)>>13)^simd)>>6)^(((simd<<42)^simd)<<3);
+	simd_temp=(((((simd_temp>>1)^simd_temp)>>6)^simd_temp)>>1)^(((simd_temp<<7)^simd_temp)<<56);
 	simd.wrap_add_assign(simd_temp);
-	simd=simd_vector<std::uint_least64_t,4>{simd_temp[0],simd_temp[1],simd[2],simd[3]};
+	simd_temp.load(w+(round-16));
+	simd.wrap_add_assign(simd_temp);
+	simd_temp.load(w+(round-7));
+	simd.wrap_add_assign(simd_temp);
 	simd.store(w+round);
-	simd_temp.load(K512+round);
+	simd_temp.load(::fast_io::details::sha512::K512+round);
 	simd_temp.wrap_add_assign(simd);
 	simd_temp.store(wt+round);
 }
@@ -49,12 +46,12 @@ inline void sha512_simd32_compute_message_4rounds(::fast_io::intrinsics::simd_ve
 #if __has_cpp_attribute(gnu::flatten)
 [[gnu::flatten]]
 #endif
-inline void sha512_simd32(std::uint_least64_t* __restrict state,std::byte const* __restrict blocks_start,std::byte const* __restrict blocks_last) noexcept
+inline void sha512_simd16(std::uint_least64_t* __restrict state,std::byte const* __restrict blocks_start,std::byte const* __restrict blocks_last) noexcept
 {
 	using namespace fast_io::intrinsics;
 	using namespace fast_io::details::sha512;
 
-	simd_vector<std::uint_least64_t,4> simd;
+	simd_vector<std::uint_least64_t,2> simd;
 
 	std::uint_least64_t wt[80];
 	std::uint_least64_t w[80];
@@ -69,66 +66,74 @@ inline void sha512_simd32(std::uint_least64_t* __restrict state,std::byte const*
 
 	for(;blocks_start!=blocks_last;blocks_start+=128)
 	{
-		sha512_simd32_byte_swap_message_4rounds(simd,blocks_start,w,wt,0);
-
+		sha512_simd16_byte_swap_message_2rounds(simd,blocks_start,w,wt,0);
 		sha512_scalar_round(wt[0],a,b,c,d,e,f,g,h);
 		sha512_scalar_round(wt[1],h,a,b,c,d,e,f,g);
+		sha512_simd16_byte_swap_message_2rounds(simd,blocks_start,w,wt,2);
+
 		sha512_scalar_round(wt[2],g,h,a,b,c,d,e,f);
 		sha512_scalar_round(wt[3],f,g,h,a,b,c,d,e);
-		
-		sha512_simd32_byte_swap_message_4rounds(simd,blocks_start,w,wt,4);
+		sha512_simd16_byte_swap_message_2rounds(simd,blocks_start,w,wt,4);
 
 		sha512_scalar_round(wt[4],e,f,g,h,a,b,c,d);
 		sha512_scalar_round(wt[5],d,e,f,g,h,a,b,c);
+		sha512_simd16_byte_swap_message_2rounds(simd,blocks_start,w,wt,6);
+
 		sha512_scalar_round(wt[6],c,d,e,f,g,h,a,b);
 		sha512_scalar_round(wt[7],b,c,d,e,f,g,h,a);
-
-		sha512_simd32_byte_swap_message_4rounds(simd,blocks_start,w,wt,8);
+		sha512_simd16_byte_swap_message_2rounds(simd,blocks_start,w,wt,8);
 
 		sha512_scalar_round(wt[8],a,b,c,d,e,f,g,h);
 		sha512_scalar_round(wt[9],h,a,b,c,d,e,f,g);
+		sha512_simd16_byte_swap_message_2rounds(simd,blocks_start,w,wt,10);
+
 		sha512_scalar_round(wt[10],g,h,a,b,c,d,e,f);
 		sha512_scalar_round(wt[11],f,g,h,a,b,c,d,e);
-
-		sha512_simd32_byte_swap_message_4rounds(simd,blocks_start,w,wt,12);
+		sha512_simd16_byte_swap_message_2rounds(simd,blocks_start,w,wt,12);
 
 		sha512_scalar_round(wt[12],e,f,g,h,a,b,c,d);
 		sha512_scalar_round(wt[13],d,e,f,g,h,a,b,c);
+		sha512_simd16_byte_swap_message_2rounds(simd,blocks_start,w,wt,14);
+
 		sha512_scalar_round(wt[14],c,d,e,f,g,h,a,b);
 		sha512_scalar_round(wt[15],b,c,d,e,f,g,h,a);
 
+
 		for(std::uint_fast8_t i{16};i!=80;i+=16)
 		{
-			sha512_simd32_compute_message_4rounds(simd,w,wt,i);
-
+			sha512_simd16_compute_message_2rounds(simd,w,wt,i);
 			sha512_scalar_round(wt[i],a,b,c,d,e,f,g,h);
 			sha512_scalar_round(wt[i+1],h,a,b,c,d,e,f,g);
+			sha512_simd16_compute_message_2rounds(simd,w,wt,i+2);
+
 			sha512_scalar_round(wt[i+2],g,h,a,b,c,d,e,f);
 			sha512_scalar_round(wt[i+3],f,g,h,a,b,c,d,e);
-
-			sha512_simd32_compute_message_4rounds(simd,w,wt,i+4);
+			sha512_simd16_compute_message_2rounds(simd,w,wt,i+4);
 
 			sha512_scalar_round(wt[i+4],e,f,g,h,a,b,c,d);
 			sha512_scalar_round(wt[i+5],d,e,f,g,h,a,b,c);
+			sha512_simd16_compute_message_2rounds(simd,w,wt,i+6);
+
 			sha512_scalar_round(wt[i+6],c,d,e,f,g,h,a,b);
 			sha512_scalar_round(wt[i+7],b,c,d,e,f,g,h,a);
 
-			sha512_simd32_compute_message_4rounds(simd,w,wt,i+8);
+			sha512_simd16_compute_message_2rounds(simd,w,wt,i+8);
 
 			sha512_scalar_round(wt[i+8],a,b,c,d,e,f,g,h);
 			sha512_scalar_round(wt[i+9],h,a,b,c,d,e,f,g);
+			sha512_simd16_compute_message_2rounds(simd,w,wt,i+10);
+
 			sha512_scalar_round(wt[i+10],g,h,a,b,c,d,e,f);
 			sha512_scalar_round(wt[i+11],f,g,h,a,b,c,d,e);
-
-			sha512_simd32_compute_message_4rounds(simd,w,wt,i+16);
+			sha512_simd16_compute_message_2rounds(simd,w,wt,i+12);
 
 			sha512_scalar_round(wt[i+12],e,f,g,h,a,b,c,d);
 			sha512_scalar_round(wt[i+13],d,e,f,g,h,a,b,c);
+			sha512_simd16_compute_message_2rounds(simd,w,wt,i+14);
+
 			sha512_scalar_round(wt[i+14],c,d,e,f,g,h,a,b);
 			sha512_scalar_round(wt[i+15],b,c,d,e,f,g,h,a);
 		}
-
-
 		a=(*state+=a);
 		b=(state[1]+=b);
 		c=(state[2]+=c);
