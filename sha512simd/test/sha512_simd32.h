@@ -47,7 +47,7 @@ inline void sha512_simd32_compute_message_2rounds(
 {
 	using namespace ::fast_io::intrinsics;
 	simd_vector<std::uint_least64_t,4> simd_temp;
-	simd_temp.load(w+(round-30));
+	simd_temp.load(w+(round-28));
 	simd=(simd>>19)^(simd<<45)^(simd>>61)^(simd<<3)^(simd>>6);
 	simd_temp=(simd_temp>>1)^(simd_temp<<63)^(simd_temp>>8)^(simd_temp<<56)^(simd_temp>>7);
 	simd.wrap_add_assign(simd_temp);
@@ -59,6 +59,7 @@ inline void sha512_simd32_compute_message_2rounds(
 	simd_temp.load(k512x2.element+round);
 	simd_temp.wrap_add_assign(simd);
 	simd_temp.store(wt+round);
+	debug_println(simd," ",simd_temp);
 }
 
 #if __has_cpp_attribute(gnu::flatten)
@@ -115,7 +116,7 @@ inline void sha512_simd32(std::uint_least64_t* __restrict state,std::byte const*
 		sha512_scalar_round(wt[28],c,d,e,f,g,h,a,b);
 		sha512_scalar_round(wt[29],b,c,d,e,f,g,h,a);
 
-		for(std::uint_fast8_t i{32};i!=160;i+=32)
+		for(std::size_t i{32};i!=160;i+=32)
 		{
 			sha512_simd32_compute_message_2rounds(simd,w,wt,i);
 			sha512_scalar_round(wt[i],a,b,c,d,e,f,g,h);
