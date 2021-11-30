@@ -35,6 +35,8 @@ __imp_?GetHandleInformation@win32@fast_io@@YAHPAXPAI@Z __imp_GetHandleInformatio
 __imp_?SetHandleInformation@win32@fast_io@@YAHPAXII@Z __imp_SetHandleInformation
 __imp_?GetTempPathA@win32@fast_io@@YAIIPAD@Z __imp_GetTempPathA
 __imp_?GetTempPathW@win32@fast_io@@YAIIPA_W@Z __imp_GetTempPathW
+__imp_?GetTempFileNameA@win32@fast_io@@YAIPBD0IPAD@Z __imp_GetTempFileNameA
+__imp_?GetTempFileNameW@win32@fast_io@@YAIPB_W0IPA_W@Z __imp_GetTempFileNameW
 __imp_?CreateFileA@win32@fast_io@@YAPAXPBDIIPAUsecurity_attributes@12@IIPAX@Z __imp_CreateFileA
 __imp_?CreateFileW@win32@fast_io@@YAPAXPB_WIIPAUsecurity_attributes@12@IIPAX@Z __imp_CreateFileW
 __imp_?CreateIoCompletionPort@win32@fast_io@@YAPAXPAX0II@Z __imp_CreateIoCompletionPort

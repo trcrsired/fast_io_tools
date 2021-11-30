@@ -820,6 +820,50 @@
 	movq	__imp_GetTempPathW(%rip), %rax
 	retq
                                         # -- End function
+	.def	 "?get_GetTempFileNameA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_GetTempFileNameA@@YA?A?<auto>@@XZ" # -- Begin function ?get_GetTempFileNameA@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_GetTempFileNameA@@YA?A?<auto>@@XZ": # @"?get_GetTempFileNameA@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?GetTempFileNameA@win32@fast_io@@YAIPEBD0IPEAD@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?sys_GetTempFileNameA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_GetTempFileNameA@@YA?A?<auto>@@XZ" # -- Begin function ?sys_GetTempFileNameA@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_GetTempFileNameA@@YA?A?<auto>@@XZ": # @"?sys_GetTempFileNameA@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_GetTempFileNameA(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?get_GetTempFileNameW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_GetTempFileNameW@@YA?A?<auto>@@XZ" # -- Begin function ?get_GetTempFileNameW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_GetTempFileNameW@@YA?A?<auto>@@XZ": # @"?get_GetTempFileNameW@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?GetTempFileNameW@win32@fast_io@@YAIPEB_W0IPEA_W@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?sys_GetTempFileNameW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_GetTempFileNameW@@YA?A?<auto>@@XZ" # -- Begin function ?sys_GetTempFileNameW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_GetTempFileNameW@@YA?A?<auto>@@XZ": # @"?sys_GetTempFileNameW@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_GetTempFileNameW(%rip), %rax
+	retq
+                                        # -- End function
 	.def	 "?get_CreateFileA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;

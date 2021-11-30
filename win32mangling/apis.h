@@ -520,6 +520,44 @@ asm("GetTempPathW")
 #endif
 ;
 
+#if defined(_MSC_VER) && !defined(__clang__)
+__declspec(dllimport)
+#elif __has_cpp_attribute(gnu::dllimport)
+[[gnu::dllimport]]
+#endif
+extern std::uint32_t __stdcall GetTempFileNameA(char const*,char const*,std::uint32_t,char*) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+__asm__("GetTempFileNameA@16")
+#else
+__asm__("_GetTempFileNameA@16")
+#endif
+#else
+__asm__("GetTempFileNameA")
+#endif
+#endif
+;
+
+#if defined(_MSC_VER) && !defined(__clang__)
+__declspec(dllimport)
+#elif __has_cpp_attribute(gnu::dllimport)
+[[gnu::dllimport]]
+#endif
+extern std::uint32_t __stdcall GetTempFileNameW(wchar_t const*,wchar_t const*,std::uint32_t,wchar_t*) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+__asm__("GetTempFileNameW@16")
+#else
+__asm__("_GetTempFileNameW@16")
+#endif
+#else
+__asm__("GetTempFileNameW")
+#endif
+#endif
+;
+
 __declspec(dllimport) extern void* __stdcall CreateFileA(char const*,std::uint32_t,std::uint32_t,security_attributes*,std::uint32_t,std::uint32_t,void*) noexcept
 #if 0
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))

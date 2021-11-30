@@ -37,6 +37,8 @@
 #pragma comment(linker,"/alternatename:__imp_?SetHandleInformation@win32@fast_io@@YAHPEAXII@Z=__imp_SetHandleInformation")
 #pragma comment(linker,"/alternatename:__imp_?GetTempPathA@win32@fast_io@@YAIIPEAD@Z=__imp_GetTempPathA")
 #pragma comment(linker,"/alternatename:__imp_?GetTempPathW@win32@fast_io@@YAIIPEA_W@Z=__imp_GetTempPathW")
+#pragma comment(linker,"/alternatename:__imp_?GetTempFileNameA@win32@fast_io@@YAIPEBD0IPEAD@Z=__imp_GetTempFileNameA")
+#pragma comment(linker,"/alternatename:__imp_?GetTempFileNameW@win32@fast_io@@YAIPEB_W0IPEA_W@Z=__imp_GetTempFileNameW")
 #pragma comment(linker,"/alternatename:__imp_?CreateFileA@win32@fast_io@@YAPEAXPEBDIIPEAUsecurity_attributes@12@IIPEAX@Z=__imp_CreateFileA")
 #pragma comment(linker,"/alternatename:__imp_?CreateFileW@win32@fast_io@@YAPEAXPEB_WIIPEAUsecurity_attributes@12@IIPEAX@Z=__imp_CreateFileW")
 #pragma comment(linker,"/alternatename:__imp_?CreateIoCompletionPort@win32@fast_io@@YAPEAXPEAX0_KI@Z=__imp_CreateIoCompletionPort")

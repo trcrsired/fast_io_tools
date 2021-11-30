@@ -1111,6 +1111,66 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
+	.def	 "?get_GetTempFileNameA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_GetTempFileNameA@@YA?A?<auto>@@XZ" @ -- Begin function ?get_GetTempFileNameA@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_GetTempFileNameA@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_GetTempFileNameA@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?GetTempFileNameA@win32@fast_io@@YAIPBD0IPAD@Z"
+	movt	r0, :upper16:"__imp_?GetTempFileNameA@win32@fast_io@@YAIPBD0IPAD@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	 "?sys_GetTempFileNameA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_GetTempFileNameA@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_GetTempFileNameA@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_GetTempFileNameA@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_GetTempFileNameA@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_GetTempFileNameA
+	movt	r0, :upper16:__imp_GetTempFileNameA
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	 "?get_GetTempFileNameW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_GetTempFileNameW@@YA?A?<auto>@@XZ" @ -- Begin function ?get_GetTempFileNameW@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_GetTempFileNameW@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_GetTempFileNameW@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?GetTempFileNameW@win32@fast_io@@YAIPB_W0IPA_W@Z"
+	movt	r0, :upper16:"__imp_?GetTempFileNameW@win32@fast_io@@YAIPB_W0IPA_W@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	 "?sys_GetTempFileNameW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_GetTempFileNameW@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_GetTempFileNameW@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_GetTempFileNameW@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_GetTempFileNameW@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_GetTempFileNameW
+	movt	r0, :upper16:__imp_GetTempFileNameW
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
 	.def	 "?get_CreateFileA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
