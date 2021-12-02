@@ -32,7 +32,7 @@ w[i] = w[i-16] + w[i-7] + s0[i] + s1[i]
 wt[r,r+1,r+2,r+3]=wt[r-16,r-15,r-14,r-13]+wt[r-7,r-6,r-5,r-4]
 */
 	using namespace ::fast_io::intrinsics;
-	simd_vector<std::uint_least64_t,4> s10{s1[0],s1[1],0,0};
+	simd_vector<std::uint_least64_t,4> s10{s1[2],s1[3],0,0};
 	simd_vector<std::uint_least64_t,4> s0;
 	s0.load(w+(round-15));
 	s10=(s10>>19)^(s10<<45)^(s10>>61)^(s10<<3)^(s10>>6);
@@ -54,7 +54,7 @@ wt[r,r+1,r+2,r+3]=wt[r-16,r-15,r-14,r-13]+wt[r-7,r-6,r-5,r-4]
 #if __has_cpp_attribute(gnu::flatten)
 [[gnu::flatten]]
 #endif
-inline void sha512_simd32(std::uint_least64_t* __restrict state,std::byte const* __restrict blocks_start,std::byte const* __restrict blocks_last) noexcept
+inline void sha512_runtime_routine(std::uint_least64_t* __restrict state,std::byte const* __restrict blocks_start,std::byte const* __restrict blocks_last) noexcept
 {
 	using namespace fast_io::intrinsics;
 	using namespace fast_io::details::sha512;
@@ -99,6 +99,7 @@ inline void sha512_simd32(std::uint_least64_t* __restrict state,std::byte const*
 		{
 			std::uint_least64_t const* const p{wt+i};
 			sha512_simd32_compute_message_4rounds(simd,w,wt,i+4);
+//			debug_println("avx=",i," ",simd);
 			sha512_scalar_round(*p,e,f,g,h,a,b,c,d);
 			sha512_scalar_round(p[1],d,e,f,g,h,a,b,c);
 			sha512_scalar_round(p[2],c,d,e,f,g,h,a,b);
