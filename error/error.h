@@ -21,51 +21,58 @@ inline constexpr bool operator!=(error e1,error e2) noexcept
 }
 
 template<typename T>
-struct error_domain_type_t
+struct error_type_t
 {
-explicit constexpr error_domain_type_t() noexcept = default;
+explicit constexpr error_type_t() noexcept = default;
 };
 
 template<typename T>
-inline constexpr error_domain_type_t<T> error_domain_type{};
+inline constexpr error_type_t<T> error_type{};
 
 template<typename T>
 concept error_domain = std::is_trivially_copyable_v<T> && sizeof(T)<=sizeof(std::uintptr_t) &&
 	requires(error e,T t)
 {
-	{error_domain_define(error_domain_type<T>)}->std::same_as<std::uintptr_t>;
-	{error_equivalent_define(error_domain_type<T>,e,t)}->std::same_as<bool>;
+	{domain_define(error_type<T>)}->std::same_as<std::uintptr_t>;
+	{equivalent_define(error_type<T>,e,t)}->std::same_as<bool>;
+	{to_code_define(error_type<T>,e)}->std::same_as<T>;
 };
 
 template<error_domain D>
 inline constexpr bool is_domain(error e) noexcept
 {
-	constexpr std::uintptr_t v{error_domain_define(error_domain_type<D>)};
+	constexpr std::uintptr_t v{error_domain_define(error_type<D>)};
 	return v==e.domain;
+}
+
+template<error_domain D>
+inline constexpr D to_code(error e) noexcept
+{
+	return to_code_define(error_type<D>,e);
 }
 
 template<error_domain D>
 inline constexpr bool operator==(error e,D t) noexcept
 {
-	return is_domain<D>(e)&&(static_cast<std::uintptr_t>(t)==e.code);
+	return equivalent_define(error_type<D>,e,t);
 }
 
 template<error_domain D>
 inline constexpr bool operator==(D t,error e) noexcept
 {
-	return error_equivalent_define(error_domain_type<D>,e,t);
+	return equivalent_define(error_type<D>,e,t);
 }
 
 template<error_domain D>
 inline constexpr bool operator!=(error e,D t) noexcept
 {
-	return !error_equivalent_define(error_domain_type<D>,e,t);
+	return !equivalent_define(error_type<D>,e,t);
 }
 
 template<error_domain D>
 inline constexpr bool operator!=(D t,error e) noexcept
 {
-	return !error_equivalent_define(error_domain_type<D>,e,t);
+	return !equivalent_define(error_type<D>,e,t);
 }
 
 }
