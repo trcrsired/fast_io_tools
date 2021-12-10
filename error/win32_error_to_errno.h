@@ -1,6 +1,4 @@
 #pragma once
-switch(cd)
-{
 case 0: return 0;
 #if defined(EACCES)
 case 5:return EACCES;
@@ -131,10 +129,3 @@ case 127:return ESRCH;
 #if defined(EXDEV)
 case 17:return EXDEV;
 #endif
-default:
-#if defined(EOTHER)
-return EOTHER;
-#else
-return 131;
-#endif
-}
