@@ -35,7 +35,9 @@ concept error_domain = std::is_trivially_copyable_v<T> && sizeof(T)<=sizeof(std:
 {
 	{domain_define(error_type<T>)}->std::same_as<std::uintptr_t>;
 	{equivalent_define(error_type<T>,e,t)}->std::same_as<bool>;
+#if 0
 	{to_code_define(error_type<T>,e)}->std::same_as<T>;
+#endif
 };
 
 template<error_domain D>
