@@ -5,7 +5,7 @@ namespace fast_io
 
 struct error
 {
-	using value_type = std::common_type_t<std::uintptr_t,std::uint_least32_t>;
+	using value_type = std::uintptr_t;
 	value_type domain{};
 	value_type code{};
 };
