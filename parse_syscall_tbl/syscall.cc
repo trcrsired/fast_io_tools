@@ -12,7 +12,7 @@ int main()
 		if(str.empty()||str.front()==u8'#')
 			continue;
 		fast_io::u8ibuffer_view ibv(str);
-		scan(ibv,number,abi,name,entry_point);
-		print(obf,u8"inline constexpr std::size_t linux_nr_",name,u8"{",number,u8"};\n");
+		scan(ibv,number,abi,name);
+		print(obf,u8"inline constexpr auto nr_",name,u8"{",number,u8"};\n");
 	}
 }
