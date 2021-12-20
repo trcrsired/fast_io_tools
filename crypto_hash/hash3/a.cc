@@ -2,30 +2,6 @@
 #include<fast_io_crypto.h>
 #include"md5_sha_hash_context.h"
 
-#if 0
-template<std::endian end,std::unsigned_integral U>
-inline void sha256_512_do_final_to_ptr_simd16(U* digest,std::size_t n,std::byte* ptr) noexcept
-{
-	if constexpr(::std::endian::native==end)
-	{
-		::fast_io::details::my_memcpy(ptr,digest,n);
-	}
-	else
-	{
-		constexpr std::size_t ul64sz{sizeof(::std::uint_least64_t)};
-		constexpr std::size_t factor{16u/ul64sz};
-		::fast_io::details::intrinsics::simd_vector<U,factor> s;
-		std::size_t nd2{n/factor};
-		for(std::size_t i{};i!=nd2;++i)
-		{
-			s.load(digest);
-			s.swap_endian();
-			s.store(ptr);
-			ptr+=ul64sz;
-		}
-	}
-}
-#endif
 
 template<std::endian end,std::unsigned_integral U>
 inline constexpr void sha256_512_do_final_to_ptr(U* digest,std::size_t n,std::byte* ptr) noexcept
@@ -50,18 +26,33 @@ inline constexpr void sha256_512_do_final_to_ptr(U* digest,std::size_t n,std::by
 	}
 	else
 	{
+
 		if constexpr(::std::endian::native==end)
 		{
 			::fast_io::details::my_memcpy(ptr,digest,n);
 		}
 		else
 		{
+#if defined(__SSE4_2__) || defined(__wasm_simd128__)
+			constexpr std::size_t factor{16u/usz};
+			static_assert(16u%usz==0&&usz!=16u);
+			::fast_io::intrinsics::simd_vector<U,factor> s;
+			std::size_t nd2{n/factor};
+			for(std::size_t i{};i!=nd2;++i)
+			{
+				s.load(digest);
+				s.swap_endian();
+				s.store(ptr);
+				ptr+=usz;
+			}
+#else
 			for(std::size_t i{};i!=n;++i)
 			{
-				std::uint_least64_t v{::fast_io::byte_swap(digest[i])};
+				auto v{::fast_io::byte_swap(digest[i])};
 				::fast_io::details::my_memcpy(ptr,__builtin_addressof(v),usz);
 				ptr+=usz;
 			}
+#endif
 		}
 	}
 }
@@ -92,7 +83,13 @@ struct sha512_256_initializer
 	}
 };
 
-using sha512_ctx = ::fast_io::details::basic_md5_sha_context_impl<::fast_io::sha512,sha512_initializer,__uint128_t>;
+using sha512_ctx = ::fast_io::details::basic_md5_sha_context_impl<::fast_io::sha512,sha512_initializer,
+#if __SIZEOF_INT128__
+__uint128_t
+#else
+::fast_io::details::pesudo_uint_least128_t
+#endif
+>;
 
 #if 0
 int main()
