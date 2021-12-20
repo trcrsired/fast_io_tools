@@ -15,11 +15,19 @@ struct pesudo_uint_least128_big_endian_t
 
 using pesudo_uint_least128_t=std::conditional_t<::std::endian::native==::std::endian::big,pesudo_uint_least128_big_endian_t,pesudo_uint_least128_little_endian_t>;
 
-template<typename T,typename counter_type>
+template<typename T,std::size_t counterbits>
+requires (counterbits==64||counterbits==128)
 struct md5_sha_common_impl
 {
 	static inline constexpr std::size_t block_size{T::block_size};
 	static inline constexpr std::endian hash_endian{T::hash_endian};
+	using counter_type = std::conditional_t<counterbits==64,::std::uint_least64_t,
+#if __SIZEOF_INT128__
+	__uint128_t
+#else
+	::fast_io::details::pesudo_uint_least128_t
+#endif
+	>;
 	T hasher{};
 	counter_type counter{};
 	std::size_t buffer_offset{};
@@ -172,10 +180,10 @@ struct md5_sha_common_impl
 	}
 };
 
-template<typename T,typename initializer,typename counter_type>
+template<typename T,typename initializer,std::size_t counterbits>
 class basic_md5_sha_context_impl
 {
-	md5_sha_common_impl<T,counter_type> hasher{.hasher=initializer::initialize_value};
+	md5_sha_common_impl<T,counterbits> hasher{.hasher=initializer::initialize_value};
 public:
 	static inline constexpr std::size_t digest_size{initializer::digest_size};
 	constexpr void update(std::byte const* block_first,std::byte const* block_last) noexcept
@@ -188,6 +196,15 @@ public:
 		hasher.counter={};
 		hasher.buffer_offset=0;
 	}
+	constexpr void do_final() noexcept
+	{
+		hasher.do_final();
+	}
+	constexpr void digest_to_ptr(std::byte* digest) const noexcept
+	{
+		initializer::digest_to_ptr(hasher.hasher.state,digest);
+	}
+#if 0
 	constexpr void do_final_to_ptr(std::byte* digest) noexcept
 	{
 		hasher.do_final();
@@ -198,6 +215,7 @@ public:
 	{
 		do_final_to_ptr(digest.data());
 	}
+#endif
 #endif
 };
 
