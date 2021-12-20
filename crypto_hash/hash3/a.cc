@@ -1,5 +1,6 @@
-#include<fast_io_core.h>
+#include<fast_io.h>
 #include<fast_io_crypto.h>
+#include<fast_io_device.h>
 #include"md5_sha_hash_context.h"
 
 
@@ -42,7 +43,8 @@ void sha256_512_digest_to_ptr(U const* digest,std::size_t n,std::byte* ptr) noex
 		}
 		else
 		{
-#if (!defined(_MSC_VER) || defined(__clang__)) && (defined(__SSE4_2__) || defined(__wasm_simd128__))
+#if 0
+//(!defined(_MSC_VER) || defined(__clang__)) && (defined(__SSE4_2__) || defined(__wasm_simd128__))
 			constexpr std::size_t factor{16u/usz};
 			static_assert(16u%usz==0&&usz!=16u);
 			::fast_io::intrinsics::simd_vector<U,factor> s;
@@ -68,7 +70,7 @@ void sha256_512_digest_to_ptr(U const* digest,std::size_t n,std::byte* ptr) noex
 
 inline constexpr void sha512_digest_to_ptr(std::uint_least64_t const* digest,std::byte* ptr) noexcept
 {
-	constexpr std::size_t sz{8};
+	constexpr std::size_t sz{16};
 	sha256_512_digest_to_ptr<std::endian::big>(digest,sz,ptr);
 }
 
@@ -102,7 +104,7 @@ concept crypto_hash_context = requires(T t,std::byte* ptr)
 {
 	T::digest_size;
 	t.reset();
-	t.transform(ptr,ptr);
+	t.update(ptr,ptr);
 	t.do_final();
 	t.digest_to_ptr(ptr);
 };
@@ -228,7 +230,7 @@ inline constexpr Iter print_reserve_define(
 
 }
 
-void test_sha512_ctx(sha512_context* ctx,std::byte const* first,std::byte const* last,std::byte* digest) noexcept
+inline constexpr void test_sha512_ctx(sha512_context* ctx,std::byte const* first,std::byte const* last,std::byte* digest) noexcept
 {
 	ctx->update(first,last);
 	ctx->do_final();
@@ -236,9 +238,19 @@ void test_sha512_ctx(sha512_context* ctx,std::byte const* first,std::byte const*
 }
 
 
-#if 0
-int main()
+int main(int argc, char** argv)
 {
+	using namespace fast_io::mnp;
+	if(argc!=2)
+	{
+		perr("Usage: ",os_c_str(*argv)," <file>\n");
+		return 1;
+	}
+	auto t0{fast_io::posix_clock_gettime(fast_io::posix_clock_id::realtime)};
+	sha512_context ctx;
+	fast_io::ibuf_file ibf(os_c_str(argv[1]));
+	auto transmitted{transmit64(as_file(ctx),ibf)};
+	ctx.do_final();
+	println(hash_digest(ctx)," *",os_c_str(argv[1]),"\nTransmitted:",transmitted," bytes\tElapsed Time:",fast_io::posix_clock_gettime(fast_io::posix_clock_id::realtime)-t0);
 
 }
-#endif

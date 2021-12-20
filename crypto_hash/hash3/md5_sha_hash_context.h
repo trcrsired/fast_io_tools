@@ -28,9 +28,9 @@ struct md5_sha_common_impl
 	::fast_io::details::pesudo_uint_least128_t
 #endif
 	>;
-	T hasher{};
-	counter_type counter{};
-	std::size_t buffer_offset{};
+	T hasher;
+	counter_type counter;
+	std::size_t buffer_offset;
 	std::byte buffer[block_size];
 	constexpr void update_impl(std::byte const* first,std::size_t blocks_bytes) noexcept
 	{
@@ -183,8 +183,12 @@ struct md5_sha_common_impl
 template<typename T,typename initializer,std::size_t counterbits>
 class basic_md5_sha_context_impl
 {
-	md5_sha_common_impl<T,counterbits> hasher{.hasher=initializer::initialize_value};
+	md5_sha_common_impl<T,counterbits> hasher;
 public:
+	explicit constexpr basic_md5_sha_context_impl() noexcept
+	{
+		this->reset();
+	}
 	static inline constexpr std::size_t digest_size{initializer::digest_size};
 	constexpr void update(std::byte const* block_first,std::byte const* block_last) noexcept
 	{
@@ -204,19 +208,6 @@ public:
 	{
 		initializer::digest_to_ptr(hasher.hasher.state,digest);
 	}
-#if 0
-	constexpr void do_final_to_ptr(std::byte* digest) noexcept
-	{
-		hasher.do_final();
-		initializer::do_final_to_ptr(hasher.hasher.state,digest);
-	}
-#if __STDC_HOSTED__==1 && (!defined(_GLIBCXX_HOSTED) || _GLIBCXX_HOSTED==1) && __cpp_lib_span >= 202002L && (defined(_GLIBCXX_SPAN) || defined(_LIBCPP_SPAN) || defined(_SPAN_))
-	constexpr void do_final(std::span<std::byte,digest_size> digest) noexcept
-	{
-		do_final_to_ptr(digest.data());
-	}
-#endif
-#endif
 };
 
 template<typename T>
