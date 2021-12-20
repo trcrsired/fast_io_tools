@@ -191,7 +191,7 @@ public:
 	constexpr void do_final_to_ptr(std::byte* digest) noexcept
 	{
 		hasher.do_final();
-		initializer::do_final_to_ptr(hasher.hasher.digest);
+		initializer::do_final_to_ptr(hasher.hasher.state,digest);
 	}
 #if __STDC_HOSTED__==1 && (!defined(_GLIBCXX_HOSTED) || _GLIBCXX_HOSTED==1) && __cpp_lib_span >= 202002L && (defined(_GLIBCXX_SPAN) || defined(_LIBCPP_SPAN) || defined(_SPAN_))
 	constexpr void do_final(std::span<std::byte,digest_size> digest) noexcept
