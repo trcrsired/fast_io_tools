@@ -220,6 +220,78 @@ inline void update_multiple_blocks(T* __restrict ctx,io_scatter_t const* base,st
 	}
 }
 
+
+template<std::endian end,std::unsigned_integral U>
+inline
+#if __cpp_if_consteval >= 202106L || __cpp_lib_is_constant_evaluated >= 201811L
+constexpr
+#endif
+void hash_digest_to_ptr_common_impl(U const* digest,std::size_t n,std::byte* ptr) noexcept
+{
+	constexpr std::size_t usz{sizeof(U)};
+#if __cpp_if_consteval >= 202106L || __cpp_lib_is_constant_evaluated >= 201811L
+#if __cpp_if_consteval >= 202106L
+	if consteval
+#else
+	if(__builtin_is_constant_evaluated())
+#endif
+	{
+		for(std::size_t i{};i!=n;++i)
+		{
+			U v{digest[i]};
+			if constexpr(::std::endian::native==end)
+			{
+				v=::fast_io::byte_swap(v);
+			}
+			::fast_io::freestanding::array<::std::byte,usz> va{::fast_io::bit_cast<::fast_io::freestanding::array<::std::byte,usz>>(digest)};
+			for(std::size_t j{};j!=usz;++j)
+			{
+				*ptr=va[j];
+				++ptr;
+			}
+		}
+	}
+	else
+#endif
+	{
+		if constexpr(::std::endian::native==end)
+		{
+			::fast_io::details::my_memcpy(ptr,digest,n);
+		}
+		else
+		{
+#if (!defined(_MSC_VER) || defined(__clang__)) && (defined(__SSE4_2__) || defined(__wasm_simd128__))
+			constexpr std::size_t sixteen{16u};
+			constexpr std::size_t factor{sixteen/usz};
+			static_assert(sixteen%usz==0&&usz!=sixteen);
+			::fast_io::intrinsics::simd_vector<U,factor> s;
+			std::byte const* i{reinterpret_cast<std::byte const*>(digest)};
+			std::byte const* e{reinterpret_cast<std::byte const*>(digest+n)};
+			for(;i!=e;i+=sixteen)
+			{
+				s.load(i);
+				s.swap_endian();
+				s.store(ptr);
+				ptr+=sixteen;
+			}
+#else
+			for(std::size_t i{};i!=n;++i)
+			{
+				auto v{::fast_io::byte_swap(digest[i])};
+				::fast_io::details::my_memcpy(ptr,__builtin_addressof(v),usz);
+				ptr+=usz;
+			}
+#endif
+		}
+	}
+}
+template<std::unsigned_integral digest_value_type,std::size_t digest_size,std::endian end>
+inline constexpr void hash_digest_to_ptr_common(digest_value_type const* digest,std::byte* ptr) noexcept
+{
+	constexpr std::size_t sz{digest_size/8u};
+	hash_digest_to_ptr_common_impl<end>(digest,sz,ptr);
+}
+
 }
 
 namespace fast_io
@@ -311,6 +383,159 @@ inline constexpr ::fast_io::basic_crypto_hash_as_file<char32_t,T> u32as_file(T& 
 	return {__builtin_addressof(hashctx)};
 }
 
+}
+
+namespace manipulators
+{
+
+template<typename T>
+concept crypto_hash_context = requires(T t,std::byte* ptr)
+{
+	T::digest_size;
+	t.reset();
+	t.update(ptr,ptr);
+	t.do_final();
+	t.digest_to_ptr(ptr);
+};
+
+enum class digest_format
+{
+lower,
+upper,
+raw_bytes
+};
+
+template<digest_format d,typename T>
+struct hash_digest_t
+{
+	using manip_tag = manip_tag_t;
+	using reference_type = T;
+	reference_type reference;
+};
+
+template<crypto_hash_context ctx>
+inline constexpr hash_digest_t<digest_format::lower,ctx const&> hash_digest(ctx const& r) noexcept
+{
+	return {r};
+}
+
+template<crypto_hash_context ctx>
+inline constexpr hash_digest_t<digest_format::upper,ctx const&> hash_digest_upper(ctx const& r) noexcept
+{
+	return {r};
+}
+
+template<crypto_hash_context ctx>
+inline constexpr hash_digest_t<digest_format::raw_bytes,ctx const&> hash_digest_raw_bytes(ctx const& r) noexcept
+{
+	return {r};
+}
+}
+
+
+namespace details
+{
+template<::fast_io::manipulators::digest_format d,std::size_t digest_size>
+requires (static_cast<std::size_t>(d)<static_cast<std::size_t>(3))
+inline constexpr std::size_t cal_crypto_hash_resrv_size() noexcept
+{
+	static_assert(digest_size<=SIZE_MAX/2);
+	constexpr std::size_t v{d==::fast_io::manipulators::digest_format::raw_bytes?digest_size:(digest_size<<1u)};
+	return v;
+}
+
+template<::fast_io::manipulators::digest_format d,std::size_t digest_size>
+inline constexpr std::size_t crypto_hash_resrv_size_cache{cal_crypto_hash_resrv_size<d,digest_size>()};
+
+template<::fast_io::manipulators::digest_format d,typename T,::fast_io::freestanding::random_access_iterator Iter>
+inline constexpr Iter prv_srv_hash_df_common_impl(Iter iter,T const& t) noexcept
+{
+	constexpr std::size_t digest_size{std::remove_cvref_t<T>::digest_size};
+	std::byte buffer[digest_size];
+	t.digest_to_ptr(buffer);
+	if constexpr(d==::fast_io::manipulators::digest_format::raw_bytes)
+	{
+#if (__cpp_if_consteval >= 202106L || __cpp_lib_is_constant_evaluated >= 201811L) && __cpp_lib_bit_cast >= 201806L
+#if __cpp_if_consteval >= 202106L
+		if consteval
+#else
+		if(__builtin_is_constant_evaluated())
+#endif
+		{
+			::fast_io::freestanding::array<char8_t,digest_size> buffer1{__builtin_bit_cast(::fast_io::freestanding::array<char8_t,digest_size>,buffer)};
+			return ::fast_io::details::non_overlapped_copy_n(buffer1.data(),digest_size,iter);
+		}
+		else
+#endif
+		{
+			return ::fast_io::details::non_overlapped_copy_n(reinterpret_cast<char unsigned const*>(buffer),digest_size,iter);
+		}
+	}
+	else
+	{
+		return ::fast_io::details::crypto_hash_pr_df_impl<d==::fast_io::manipulators::digest_format::upper>(buffer,buffer+digest_size,iter);
+	}
+} 
+
+template<::fast_io::manipulators::digest_format d,typename T,::fast_io::freestanding::random_access_iterator Iter>
+inline constexpr Iter prv_srv_hash_df_impl(Iter iter,T const& t) noexcept
+{
+	if constexpr(::fast_io::freestanding::contiguous_iterator<Iter>&&!::std::is_pointer_v<Iter>)
+	{
+		return ::fast_io::details::prv_srv_hash_df_impl<d>(::fast_io::freestanding::to_address(iter),t)-::fast_io::freestanding::to_address(iter)+iter;
+	}
+	else
+	{
+		using char_type = ::fast_io::freestanding::iter_value_t<Iter>;
+		if constexpr(d==::fast_io::manipulators::digest_format::raw_bytes)
+		{
+#if __cpp_if_consteval >= 202106L || __cpp_lib_is_constant_evaluated >= 201811L
+#if __cpp_if_consteval >= 202106L
+			if consteval
+#else
+			if(__builtin_is_constant_evaluated())
+#endif
+			{
+				return ::fast_io::details::prv_srv_hash_df_common_impl<d>(iter,t);
+			}
+			else
+#endif
+			{
+				if constexpr(sizeof(char_type)==1&&::std::is_pointer_v<Iter>)
+				{
+					constexpr std::size_t digest_size{std::remove_cvref_t<T>::digest_size};
+					t.digest_to_ptr(reinterpret_cast<std::byte*>(iter));
+					return t+digest_size;
+				}
+				else
+				{
+					return ::fast_io::details::prv_srv_hash_df_common_impl<d>(iter,t);
+				}
+			}
+		}
+		else
+		{
+			return ::fast_io::details::prv_srv_hash_df_common_impl<d>(iter,t);
+		}
+	}
+}
+
+}
+
+template<std::integral char_type,::fast_io::manipulators::digest_format d,typename T>
+requires (static_cast<std::size_t>(d)<static_cast<std::size_t>(3))
+inline constexpr std::size_t print_reserve_size(io_reserve_type_t<char_type,::fast_io::manipulators::hash_digest_t<d,T>>) noexcept
+{
+	return ::fast_io::details::crypto_hash_resrv_size_cache<d,std::remove_cvref_t<T>::digest_size>;
+}
+
+template<::fast_io::manipulators::digest_format d,typename T,::fast_io::freestanding::random_access_iterator Iter>
+inline constexpr Iter print_reserve_define(
+	::fast_io::io_reserve_type_t<::fast_io::freestanding::iter_value_t<Iter>,
+	::fast_io::manipulators::hash_digest_t<d,T>>,
+	Iter iter,::fast_io::manipulators::hash_digest_t<d,T> t) noexcept
+{
+	return ::fast_io::details::prv_srv_hash_df_impl<d>(iter,t.reference);
 }
 
 }
