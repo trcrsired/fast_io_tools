@@ -35,8 +35,6 @@ __imp_?GetHandleInformation@win32@fast_io@@YGHPAXPAI@Z __imp__GetHandleInformati
 __imp_?SetHandleInformation@win32@fast_io@@YGHPAXII@Z __imp__SetHandleInformation@12
 __imp_?GetTempPathA@win32@fast_io@@YGIIPAD@Z __imp__GetTempPathA@8
 __imp_?GetTempPathW@win32@fast_io@@YGIIPA_W@Z __imp__GetTempPathW@8
-__imp_?GetTempFileNameA@win32@fast_io@@YGIPBD0IPAD@Z __imp__GetTempFileNameA@16
-__imp_?GetTempFileNameW@win32@fast_io@@YGIPB_W0IPA_W@Z __imp__GetTempFileNameW@16
 __imp_?CreateFileA@win32@fast_io@@YGPAXPBDIIPAUsecurity_attributes@12@IIPAX@Z __imp__CreateFileA@28
 __imp_?CreateFileW@win32@fast_io@@YGPAXPB_WIIPAUsecurity_attributes@12@IIPAX@Z __imp__CreateFileW@28
 __imp_?CreateIoCompletionPort@win32@fast_io@@YGPAXPAX0II@Z __imp__CreateIoCompletionPort@16
@@ -94,6 +92,10 @@ __imp_?freeaddrinfo@win32@fast_io@@YGXPAU?$win32_family_addrinfo@$0A@@12@@Z __im
 __imp_?FreeAddrInfoW@win32@fast_io@@YGXPAU?$win32_family_addrinfo@$00@12@@Z __imp__FreeAddrInfoW@4
 __imp_?getaddrinfo@win32@fast_io@@YGHPBD0PBU?$win32_family_addrinfo@$0A@@12@PAPAU312@@Z __imp__getaddrinfo@16
 __imp_?GetAddrInfoW@win32@fast_io@@YGHPB_W0PBU?$win32_family_addrinfo@$00@12@PAPAU312@@Z __imp__GetAddrInfoW@16
+__imp_?CryptAcquireContextA@win32@fast_io@@YGHPAIPB_Q1II@Z __imp__CryptAcquireContextA@20
+__imp_?CryptAcquireContextW@win32@fast_io@@YGHPAIPB_S1II@Z __imp__CryptAcquireContextW@20
+__imp_?CryptReleaseContext@win32@fast_io@@YGHII@Z __imp__CryptReleaseContext@8
+__imp_?CryptGenRandom@win32@fast_io@@YGHIIPAE@Z __imp__CryptGenRandom@12
 
 
 __imp_?rtl_nt_status_to_dos_error@nt@win32@fast_io@@YAII@Z __imp__RtlNtStatusToDosError@4

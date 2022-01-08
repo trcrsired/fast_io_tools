@@ -820,50 +820,6 @@
 	movl	__imp__GetTempPathW@8, %eax
 	retl
                                         # -- End function
-	.def	 "?get_GetTempFileNameA@@YA?A?<auto>@@XZ";
-	.scl	2;
-	.type	32;
-	.endef
-	.globl	"?get_GetTempFileNameA@@YA?A?<auto>@@XZ" # -- Begin function ?get_GetTempFileNameA@@YA?A?<auto>@@XZ
-	.p2align	4, 0x90
-"?get_GetTempFileNameA@@YA?A?<auto>@@XZ": # @"?get_GetTempFileNameA@@YA?A?<auto>@@XZ"
-# %bb.0:
-	movl	"__imp_?GetTempFileNameA@win32@fast_io@@YGIPBD0IPAD@Z", %eax
-	retl
-                                        # -- End function
-	.def	 "?sys_GetTempFileNameA@@YA?A?<auto>@@XZ";
-	.scl	2;
-	.type	32;
-	.endef
-	.globl	"?sys_GetTempFileNameA@@YA?A?<auto>@@XZ" # -- Begin function ?sys_GetTempFileNameA@@YA?A?<auto>@@XZ
-	.p2align	4, 0x90
-"?sys_GetTempFileNameA@@YA?A?<auto>@@XZ": # @"?sys_GetTempFileNameA@@YA?A?<auto>@@XZ"
-# %bb.0:
-	movl	__imp__GetTempFileNameA@16, %eax
-	retl
-                                        # -- End function
-	.def	 "?get_GetTempFileNameW@@YA?A?<auto>@@XZ";
-	.scl	2;
-	.type	32;
-	.endef
-	.globl	"?get_GetTempFileNameW@@YA?A?<auto>@@XZ" # -- Begin function ?get_GetTempFileNameW@@YA?A?<auto>@@XZ
-	.p2align	4, 0x90
-"?get_GetTempFileNameW@@YA?A?<auto>@@XZ": # @"?get_GetTempFileNameW@@YA?A?<auto>@@XZ"
-# %bb.0:
-	movl	"__imp_?GetTempFileNameW@win32@fast_io@@YGIPB_W0IPA_W@Z", %eax
-	retl
-                                        # -- End function
-	.def	 "?sys_GetTempFileNameW@@YA?A?<auto>@@XZ";
-	.scl	2;
-	.type	32;
-	.endef
-	.globl	"?sys_GetTempFileNameW@@YA?A?<auto>@@XZ" # -- Begin function ?sys_GetTempFileNameW@@YA?A?<auto>@@XZ
-	.p2align	4, 0x90
-"?sys_GetTempFileNameW@@YA?A?<auto>@@XZ": # @"?sys_GetTempFileNameW@@YA?A?<auto>@@XZ"
-# %bb.0:
-	movl	__imp__GetTempFileNameW@16, %eax
-	retl
-                                        # -- End function
 	.def	 "?get_CreateFileA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
@@ -2094,6 +2050,94 @@
 "?sys_GetAddrInfoW@@YA?A?<auto>@@XZ":   # @"?sys_GetAddrInfoW@@YA?A?<auto>@@XZ"
 # %bb.0:
 	movl	__imp__GetAddrInfoW@16, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_CryptAcquireContextA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_CryptAcquireContextA@@YA?A?<auto>@@XZ" # -- Begin function ?get_CryptAcquireContextA@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_CryptAcquireContextA@@YA?A?<auto>@@XZ": # @"?get_CryptAcquireContextA@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?CryptAcquireContextA@win32@fast_io@@YGHPAIPB_Q1II@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_CryptAcquireContextA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_CryptAcquireContextA@@YA?A?<auto>@@XZ" # -- Begin function ?sys_CryptAcquireContextA@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_CryptAcquireContextA@@YA?A?<auto>@@XZ": # @"?sys_CryptAcquireContextA@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__CryptAcquireContextA@20, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_CryptAcquireContextW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_CryptAcquireContextW@@YA?A?<auto>@@XZ" # -- Begin function ?get_CryptAcquireContextW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_CryptAcquireContextW@@YA?A?<auto>@@XZ": # @"?get_CryptAcquireContextW@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?CryptAcquireContextW@win32@fast_io@@YGHPAIPB_S1II@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_CryptAcquireContextW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_CryptAcquireContextW@@YA?A?<auto>@@XZ" # -- Begin function ?sys_CryptAcquireContextW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_CryptAcquireContextW@@YA?A?<auto>@@XZ": # @"?sys_CryptAcquireContextW@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__CryptAcquireContextW@20, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_CryptReleaseContext@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_CryptReleaseContext@@YA?A?<auto>@@XZ" # -- Begin function ?get_CryptReleaseContext@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_CryptReleaseContext@@YA?A?<auto>@@XZ": # @"?get_CryptReleaseContext@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?CryptReleaseContext@win32@fast_io@@YGHII@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_CryptReleaseContext@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_CryptReleaseContext@@YA?A?<auto>@@XZ" # -- Begin function ?sys_CryptReleaseContext@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_CryptReleaseContext@@YA?A?<auto>@@XZ": # @"?sys_CryptReleaseContext@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__CryptReleaseContext@8, %eax
+	retl
+                                        # -- End function
+	.def	 "?get_CryptGenRandom@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_CryptGenRandom@@YA?A?<auto>@@XZ" # -- Begin function ?get_CryptGenRandom@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_CryptGenRandom@@YA?A?<auto>@@XZ": # @"?get_CryptGenRandom@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?CryptGenRandom@win32@fast_io@@YGHIIPAE@Z", %eax
+	retl
+                                        # -- End function
+	.def	 "?sys_CryptGenRandom@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_CryptGenRandom@@YA?A?<auto>@@XZ" # -- Begin function ?sys_CryptGenRandom@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_CryptGenRandom@@YA?A?<auto>@@XZ": # @"?sys_CryptGenRandom@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__CryptGenRandom@12, %eax
 	retl
                                         # -- End function
 	.section	.drectve,"yn"

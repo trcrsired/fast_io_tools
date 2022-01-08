@@ -520,44 +520,6 @@ asm("GetTempPathW")
 #endif
 ;
 
-#if defined(_MSC_VER) && !defined(__clang__)
-__declspec(dllimport)
-#elif __has_cpp_attribute(gnu::dllimport)
-[[gnu::dllimport]]
-#endif
-extern std::uint32_t __stdcall GetTempFileNameA(char const*,char const*,std::uint32_t,char*) noexcept
-#if 0
-#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
-#if !defined(__clang__)
-__asm__("GetTempFileNameA@16")
-#else
-__asm__("_GetTempFileNameA@16")
-#endif
-#else
-__asm__("GetTempFileNameA")
-#endif
-#endif
-;
-
-#if defined(_MSC_VER) && !defined(__clang__)
-__declspec(dllimport)
-#elif __has_cpp_attribute(gnu::dllimport)
-[[gnu::dllimport]]
-#endif
-extern std::uint32_t __stdcall GetTempFileNameW(wchar_t const*,wchar_t const*,std::uint32_t,wchar_t*) noexcept
-#if 0
-#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
-#if !defined(__clang__)
-__asm__("GetTempFileNameW@16")
-#else
-__asm__("_GetTempFileNameW@16")
-#endif
-#else
-__asm__("GetTempFileNameW")
-#endif
-#endif
-;
-
 __declspec(dllimport) extern void* __stdcall CreateFileA(char const*,std::uint32_t,std::uint32_t,security_attributes*,std::uint32_t,std::uint32_t,void*) noexcept
 #if 0
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
@@ -1366,6 +1328,82 @@ asm("_GetAddrInfoW@16")
 #endif
 #else
 asm("GetAddrInfoW")
+#endif
+#endif
+;
+
+#if defined(_MSC_VER) && !defined(__clang__)
+__declspec(dllimport)
+#elif __has_cpp_attribute(gnu::dllimport)
+[[gnu::dllimport]]
+#endif
+extern int __stdcall CryptAcquireContextA(::std::uintptr_t*,char8_t const*,char8_t const*,::std::uint_least32_t,::std::uint_least32_t) noexcept;
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+__asm__("CryptAcquireContextA@20")
+#else
+__asm__("_CryptAcquireContextA@20")
+#endif
+#else
+__asm__("CryptAcquireContextA")
+#endif
+#endif
+;
+
+#if defined(_MSC_VER) && !defined(__clang__)
+__declspec(dllimport)
+#elif __has_cpp_attribute(gnu::dllimport)
+[[gnu::dllimport]]
+#endif
+extern int __stdcall CryptAcquireContextW(::std::uintptr_t*,char16_t const*,char16_t const*,::std::uint_least32_t,::std::uint_least32_t) noexcept;
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+__asm__("CryptAcquireContextW@20")
+#else
+__asm__("_CryptAcquireContextW@20")
+#endif
+#else
+__asm__("CryptAcquireContextW")
+#endif
+#endif
+;
+
+#if defined(_MSC_VER) && !defined(__clang__)
+__declspec(dllimport)
+#elif __has_cpp_attribute(gnu::dllimport)
+[[gnu::dllimport]]
+#endif
+extern int __stdcall CryptReleaseContext(::std::uintptr_t,::std::uint_least32_t) noexcept;
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+__asm__("CryptReleaseContext@8")
+#else
+__asm__("_CryptReleaseContext@8")
+#endif
+#else
+__asm__("CryptReleaseContext")
+#endif
+#endif
+;
+
+#if defined(_MSC_VER) && !defined(__clang__)
+__declspec(dllimport)
+#elif __has_cpp_attribute(gnu::dllimport)
+[[gnu::dllimport]]
+#endif
+extern int __stdcall CryptGenRandom(::std::uintptr_t,::std::uint_least32_t,char unsigned*) noexcept;
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+__asm__("CryptGenRandom@12")
+#else
+__asm__("_CryptGenRandom@12")
+#endif
+#else
+__asm__("CryptGenRandom")
 #endif
 #endif
 ;

@@ -8,6 +8,7 @@
 #include<windows.h>
 #include<winsock.h>
 #include<ws2tcpip.h>
+#include<wincrypt.h>
 
 #define DEF(x) auto get_##x() {return fast_io::win32::x;} auto sys_##x() {return x;}
 #define DEF_FROM(x,y) auto get_##x() {return fast_io::win32::x;} auto sys_##x() {return y;}
@@ -73,8 +74,6 @@ DEF(GetHandleInformation)
 DEF(SetHandleInformation)
 DEF(GetTempPathA)
 DEF(GetTempPathW)
-DEF(GetTempFileNameA)
-DEF(GetTempFileNameW)
 DEF(CreateFileA)
 DEF(CreateFileW)
 DEF(CreateIoCompletionPort)
@@ -131,3 +130,7 @@ DEF(freeaddrinfo)
 DEF(FreeAddrInfoW)
 DEF(getaddrinfo)
 DEF(GetAddrInfoW)
+DEF(CryptAcquireContextA)
+DEF(CryptAcquireContextW)
+DEF(CryptReleaseContext)
+DEF(CryptGenRandom)
