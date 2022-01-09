@@ -314,6 +314,28 @@
 	movq	__imp_ReadFile(%rip), %rax
 	retq
                                         # -- End function
+	.def	 "?get_SetFilePointer@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_SetFilePointer@@YA?A?<auto>@@XZ" # -- Begin function ?get_SetFilePointer@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_SetFilePointer@@YA?A?<auto>@@XZ": # @"?get_SetFilePointer@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?SetFilePointer@win32@fast_io@@YAHPEAXHPEAHI@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	 "?sys_SetFilePointer@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_SetFilePointer@@YA?A?<auto>@@XZ" # -- Begin function ?sys_SetFilePointer@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_SetFilePointer@@YA?A?<auto>@@XZ": # @"?sys_SetFilePointer@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_SetFilePointer(%rip), %rax
+	retq
+                                        # -- End function
 	.def	 "?get_SetFilePointerEx@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;

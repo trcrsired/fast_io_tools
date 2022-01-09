@@ -12,6 +12,7 @@ __imp_?SetEndOfFile@win32@fast_io@@YAHPAX@Z __imp_SetEndOfFile
 __imp_?UnmapViewOfFile@win32@fast_io@@YAHPBX@Z __imp_UnmapViewOfFile
 __imp_?WriteFile@win32@fast_io@@YAHPAXPBXIPAIPAUoverlapped@12@@Z __imp_WriteFile
 __imp_?ReadFile@win32@fast_io@@YAHPAXPBXIPAIPAUoverlapped@12@@Z __imp_ReadFile
+__imp_?SetFilePointer@win32@fast_io@@YAHPAXHPAHI@Z __imp_SetFilePointer
 __imp_?SetFilePointerEx@win32@fast_io@@YAHPAX_JPA_JI@Z __imp_SetFilePointerEx
 __imp_?DuplicateHandle@win32@fast_io@@YAHPAX00PAPAXIHI@Z __imp_DuplicateHandle
 __imp_?GetStdHandle@win32@fast_io@@YAPAXI@Z __imp_GetStdHandle

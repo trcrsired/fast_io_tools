@@ -14,6 +14,7 @@
 #pragma comment(linker,"/alternatename:__imp_?UnmapViewOfFile@win32@fast_io@@YGHPBX@Z=__imp__UnmapViewOfFile@4")
 #pragma comment(linker,"/alternatename:__imp_?WriteFile@win32@fast_io@@YGHPAXPBXIPAIPAUoverlapped@12@@Z=__imp__WriteFile@20")
 #pragma comment(linker,"/alternatename:__imp_?ReadFile@win32@fast_io@@YGHPAXPBXIPAIPAUoverlapped@12@@Z=__imp__ReadFile@20")
+#pragma comment(linker,"/alternatename:__imp_?SetFilePointer@win32@fast_io@@YGHPAXHPAHI@Z=__imp__SetFilePointer@16")
 #pragma comment(linker,"/alternatename:__imp_?SetFilePointerEx@win32@fast_io@@YGHPAX_JPA_JI@Z=__imp__SetFilePointerEx@20")
 #pragma comment(linker,"/alternatename:__imp_?DuplicateHandle@win32@fast_io@@YGHPAX00PAPAXIHI@Z=__imp__DuplicateHandle@28")
 #pragma comment(linker,"/alternatename:__imp_?GetStdHandle@win32@fast_io@@YGPAXI@Z=__imp__GetStdHandle@4")
