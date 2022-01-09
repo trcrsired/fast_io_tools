@@ -431,8 +431,8 @@
 	.thumb_func
 "?get_SetFilePointer@@YA?A?<auto>@@XZ":
 @ %bb.0:
-	movw	r0, :lower16:"__imp_?SetFilePointer@win32@fast_io@@YAHPAXHPAHI@Z"
-	movt	r0, :upper16:"__imp_?SetFilePointer@win32@fast_io@@YAHPAXHPAHI@Z"
+	movw	r0, :lower16:"__imp_?SetFilePointer@win32@fast_io@@YAIPAXHPAHI@Z"
+	movt	r0, :upper16:"__imp_?SetFilePointer@win32@fast_io@@YAIPAXHPAHI@Z"
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function

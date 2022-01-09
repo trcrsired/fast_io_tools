@@ -322,7 +322,7 @@
 	.p2align	4, 0x90
 "?get_SetFilePointer@@YA?A?<auto>@@XZ": # @"?get_SetFilePointer@@YA?A?<auto>@@XZ"
 # %bb.0:
-	movq	"__imp_?SetFilePointer@win32@fast_io@@YAHPEAXHPEAHI@Z"(%rip), %rax
+	movq	"__imp_?SetFilePointer@win32@fast_io@@YAIPEAXHPEAHI@Z"(%rip), %rax
 	retq
                                         # -- End function
 	.def	 "?sys_SetFilePointer@@YA?A?<auto>@@XZ";

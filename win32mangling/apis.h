@@ -196,7 +196,7 @@ asm("ReadFile")
 #endif
 ;
 
-__declspec(dllimport) extern int __stdcall SetFilePointer(void*,std::int_least32_t,std::int_least32_t*,std::uint_least32_t) noexcept
+__declspec(dllimport) extern std::uint_least32_t __stdcall SetFilePointer(void*,std::int_least32_t,std::int_least32_t*,std::uint_least32_t) noexcept
 #if 0
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
