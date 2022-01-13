@@ -65,7 +65,7 @@ try
 	}
 }
 #ifdef __cpp_exceptions
-catch(fast_io::win32_error ec)
+catch(fast_io::error ec)
 {
 	perrln(ec);
 	return 1;
