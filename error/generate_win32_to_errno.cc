@@ -176,7 +176,7 @@ case 0: return 0;
 				print(obf,"case ",e1,":");
 			print(obf,"return ",e.first,";\n#endif\n");
 
-			print(obf2,"#if defined(",e.first,")\nreturn ",e.second[0],";\n#endif\n");
+			print(obf2,"#if defined(",e.first,")\ncase ",e.first,": return ",e.second[0],";\n#endif\n");
 		}
 //		print(obf,u8"case ",e.win32_error,u8": return ",e.posix_code,u8";\n");
 	}
