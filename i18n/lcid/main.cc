@@ -1,12 +1,12 @@
 int main(int argc,char** argv)
 {
-	if(argc < 2)
+	if(argc < 3)
 	{
 		if(argc == 0)
 		{
 			return 1;
 		}
-		perrln("Usage:",fast_io::mnp::os_c_str(*argv)," <txt file>");
+		perrln("Usage:",fast_io::mnp::os_c_str(*argv)," <txt file> <output root dir>");
 		return 1;
 	}
 	fast_io::u8ibuf_file uf(fast_io::mnp::os_c_str(argv[1]));
@@ -36,7 +36,8 @@ int main(int argc,char** argv)
 		}
 		map.emplace(std::piecewise_construct,std::forward_as_tuple(start,fdp1),std::forward_as_tuple(fnd,ed));
 	}
-	fast_io::u8obuf_file obf(u8"win32_lcid_table.h");
+	fast_io::dir_file df(fast_io::mnp::os_c_str(argv[2]));
+	fast_io::u8obuf_file obf(at(df),u8"win32_lcid_table.h");
 	print(obf,
 u8R"abc(if constexpr(::std::same_as<char_type,char16_t>)
 {
@@ -46,9 +47,9 @@ switch(lcid)
 );
 	for(auto& [key,value]: map)
 	{
-		println(obf,u8"case ",key,u8":return copy_string_literal(u\"",value,u8"\",p);");
+		print(obf,u8"case ",key,u8":return copy_string_literal(u\"",value,u8"\",p);\n");
 	}
-	println(obf,
+	print(obf,
 u8R"az(default:*p=u'C';return p+1;
 }
 }
