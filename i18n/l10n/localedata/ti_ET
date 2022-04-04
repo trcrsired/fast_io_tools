@@ -969,7 +969,8 @@ LC_NAME
 %
 name_fmt    "%d%t%g%t%m%t%f"
 name_gen    ""
-name_mr     "<U12A0><U1276>"             % "<U12A0><U12ED><U1270>" is informal
+name_mr     "<U12A0><U1276>"
+% "<U12A0><U12ED><U1270>" is informal
 name_mrs    "<U12C8>//<U122E>"
 name_miss   "<U12C8>//<U122A><U1275>"
 name_ms     "<U12C8>//<U122A><U1275>"
