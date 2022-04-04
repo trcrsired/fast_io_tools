@@ -178,7 +178,7 @@ case 0x4C0A:return copy_string_literal(u"es_NI",p);
 case 0x500A:return copy_string_literal(u"es_PR",p);
 case 0x540A:return copy_string_literal(u"es_US",p);
 case 0x5C0A:return copy_string_literal(u"es_CU",p);
-default:*p=u"C";return p+1;
+default:*p=u'C';return p+1;
 }
 }
 else
@@ -362,6 +362,6 @@ case 0x4C0A:return copy_string_literal(u8"es_NI",p);
 case 0x500A:return copy_string_literal(u8"es_PR",p);
 case 0x540A:return copy_string_literal(u8"es_US",p);
 case 0x5C0A:return copy_string_literal(u8"es_CU",p);
-default:*p=u8"C";return p+1;
+default:*p=u8'C';return p+1;
 }
 }

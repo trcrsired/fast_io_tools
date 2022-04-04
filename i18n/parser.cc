@@ -55,7 +55,7 @@ switch(lcid)
 		println(obf,u8"case ",key,u8":return copy_string_literal(u\"",value,u8"\",p);");
 	}
 	println(obf,
-u8R"az(default:*p=u"C";return p+1;
+u8R"az(default:*p=u'C';return p+1;
 }
 }
 else
@@ -69,7 +69,7 @@ switch(lcid)
 		println(obf,u8"case ",key,u8":return copy_string_literal(u8\"",value,u8"\",p);");
 	}
 	print(obf,
-u8R"az(default:*p=u8"C";return p+1;
+u8R"az(default:*p=u8'C';return p+1;
 }
 }
 )az");
