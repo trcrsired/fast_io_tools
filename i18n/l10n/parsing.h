@@ -708,7 +708,7 @@ inline void output_identification(std::unordered_map<std::string,std::unordered_
 	bool local_first{true};
 	if(cat=="identification")
 	{
-		print(obf,".name=tsc(",string_prefix,"\"",name,"\")");
+		print(obf,".name=tsc(",string_prefix,"\"",name,"\"),.encoding=tsc(FAST_IO_LOCALE_",string_prefix,"ENCODING)");
 		local_first = false;
 	}
 	for(auto const& e : span)
