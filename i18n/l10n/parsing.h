@@ -579,7 +579,7 @@ inline void output_single_item(
 				{
 					if(split=="\"\"")
 					{
-						print(obf,"tsc(",string_prefix,"\"https://gitee.com/qabeowjbtkwb/fast_io\")");
+						print(obf,"tsc(",string_prefix,"\"https://gitee.com/qabeowjbtkwb/fast_io\\t\\t;\\t\\thttps://github.com/cppfastio/fast_io\")");
 					}
 					else
 					{
@@ -598,7 +598,7 @@ inline void output_single_item(
 							str.push_back(split[i]);
 							++i;
 						}
-						print(obf,"tsc(",string_prefix,"\"",str,"\\t\\t;\\t\\thttps://gitee.com/qabeowjbtkwb/fast_io\")");
+						print(obf,"tsc(",string_prefix,"\"",str,"\\t\\t;\\t\\thttps://gitee.com/qabeowjbtkwb/fast_io\\t\\t;\\t\\thttps://github.com/cppfastio/fast_io\")");
 					}
 					first=false;
 					return;
@@ -696,7 +696,7 @@ inline void output_identification(std::unordered_map<std::string,std::unordered_
 	fast_io::buffer_output_stream auto& storage,
 	std::string_view prefix,std::string_view string_prefix,std::string_view char_type_name,
 	std::string const& lc_cat,std::string_view cat,std::span<std::string_view const> span,
-	bool& first)
+	bool& first,std::string_view name)
 {
 	auto it(mp.find(lc_cat));
 	if(it==mp.cend())
@@ -706,6 +706,11 @@ inline void output_identification(std::unordered_map<std::string,std::unordered_
 	auto& second(it->second);
 	print(obf,".",cat,"={");
 	bool local_first{true};
+	if(cat=="identification")
+	{
+		print(obf,".name=tsc(",string_prefix,"\"",name,"\")");
+		local_first = false;
+	}
 	for(auto const& e : span)
 		output_single_item(cat,e,second,mp,obf,storage,prefix,string_prefix,char_type_name,local_first);
 	print(obf,"}");
@@ -714,7 +719,7 @@ inline void output_identification(std::unordered_map<std::string,std::unordered_
 
 inline void output_single_char_type(std::unordered_map<std::string,std::unordered_map<std::string,std::string>> const& mp,
 	fast_io::buffer_output_stream auto& obf,
-	std::string_view prefix,std::string_view string_prefix,std::string_view char_type_name)
+	std::string_view prefix,std::string_view string_prefix,std::string_view char_type_name,std::string_view name)
 {
 	std::string str;
 	str.reserve(100000);
@@ -725,7 +730,7 @@ inline void output_single_char_type(std::unordered_map<std::string,std::unordere
 		constexpr std::string_view array[]{"title","source","address",
 		"contact","email","tel","fax","language","territory","audience","application",
 		"abbreviation","revision","date"};
-		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_IDENTIFICATION","identification",std::span{array},first);
+		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_IDENTIFICATION","identification",std::span{array},first,name);
 	}
 	{
 		constexpr std::string_view array[]{"int_curr_symbol","currency_symbol",
@@ -734,44 +739,44 @@ inline void output_single_char_type(std::unordered_map<std::string,std::unordere
 		"n_cs_precedes","n_sep_by_space","int_p_cs_precedes","int_p_sep_by_space",
 		"int_n_cs_precedes","int_n_sep_by_space","p_sign_posn","n_sign_posn",
 		"int_p_sign_posn","int_n_sign_posn"};
-		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_MONETARY","monetary",std::span{array},first);
+		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_MONETARY","monetary",std::span{array},first,name);
 	}
 	{
 		constexpr std::string_view array[]{"decimal_point","thousands_sep","grouping"};
-		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_NUMERIC","numeric",std::span{array},first);
+		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_NUMERIC","numeric",std::span{array},first,name);
 	}
 	{
 		constexpr std::string_view array[]{"abday","day","abmon","ab_alt_mon","mon","d_t_fmt","d_fmt","t_fmt","t_fmt_ampm","date_fmt","am_pm","era","era_d_fmt","era_d_t_fmt","era_t_fmt","alt_digits","week","first_weekday","first_workday","cal_direction","timezone"};
-		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_TIME","time",std::span{array},first);
+		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_TIME","time",std::span{array},first,name);
 	}
 	{
 		constexpr std::string_view array[]{"yesexpr","noexpr","yesstr","nostr"};
-		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_MESSAGES","messages",std::span{array},first);
+		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_MESSAGES","messages",std::span{array},first,name);
 	}
 	{
 		constexpr std::string_view array[]{"width","height"};
-		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_PAPER","paper",std::span{array},first);
+		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_PAPER","paper",std::span{array},first,name);
 	}
 	{
 		constexpr std::string_view array[]{"tel_int_fmt","tel_dom_fmt","int_select","int_prefix"};
-		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_TELEPHONE","telephone",std::span{array},first);
+		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_TELEPHONE","telephone",std::span{array},first,name);
 	}
 	{
 		constexpr std::string_view array[]{"name_fmt","name_gen","name_miss","name_mr","name_mrs","name_ms"};
-		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_NAME","name",std::span{array},first);
+		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_NAME","name",std::span{array},first,name);
 	}
 	{
 		constexpr std::string_view array[]{"postal_fmt","country_name","country_post","country_ab2","country_ab3","country_num","country_car","country_isbn","lang_name","lang_ab","lang_term","lang_lib"};
-		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_ADDRESS","address",std::span{array},first);
+		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_ADDRESS","address",std::span{array},first,name);
 	}
 	{
 		constexpr std::string_view array[]{"measurement"};
-		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_MEASUREMENT","measurement",std::span{array},first);
+		output_identification(mp,ostrref,obf,prefix,string_prefix,char_type_name,"LC_MEASUREMENT","measurement",std::span{array},first,name);
 	}
 	print(obf,str,"};\n\n");
 }
 
-inline void output_result(std::unordered_map<std::string,std::unordered_map<std::string,std::string>> const& mp,fast_io::buffer_output_stream auto& obf)
+inline void output_result(std::unordered_map<std::string,std::unordered_map<std::string,std::string>> const& mp,fast_io::buffer_output_stream auto& obf,std::string_view name)
 {
 	print(obf,
 R"abc(#include"../localedef.h"
@@ -782,11 +787,11 @@ namespace
 {
 
 )abc");
-	output_single_char_type(mp,obf,"","","char");
-	output_single_char_type(mp,obf,"w","L","wchar_t");
-	output_single_char_type(mp,obf,"u8","u8","char8_t");
-	output_single_char_type(mp,obf,"u16","u","char16_t");
-	output_single_char_type(mp,obf,"u32","U","char32_t");
+	output_single_char_type(mp,obf,"","","char",name);
+	output_single_char_type(mp,obf,"w","L","wchar_t",name);
+	output_single_char_type(mp,obf,"u8","u8","char8_t",name);
+	output_single_char_type(mp,obf,"u16","u","char16_t",name);
+	output_single_char_type(mp,obf,"u32","U","char32_t",name);
 	print(obf,R"abc(
 }
 }

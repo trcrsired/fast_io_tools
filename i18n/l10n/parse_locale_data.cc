@@ -27,6 +27,6 @@ int main(int argc,char** argv)
 		auto& result{fast_io_i18n::parsing_file(df,fnm,cache)};
 		fast_io::obuf_file obf(at(resdf),fast_io::concat(fnm,".cc"));
 		print(obf,"\xEF\xBB\xBF");
-		fast_io_i18n::output_result(result,obf);
+		fast_io_i18n::output_result(result,obf,fnm);
 	}
 }
