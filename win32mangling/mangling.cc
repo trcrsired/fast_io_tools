@@ -35,6 +35,25 @@ asm("getenv_s")
 #endif
 #endif
 ;
+
+extern "C" __declspec(dllimport) errno_t my__wgetenv_s(
+   size_t *pReturnValue,
+   char16_t* buffer,
+   size_t numberOfElements,
+   char16_t const* varname
+) noexcept
+#if defined(__clang__) || defined(__GNUC__)
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if defined(__GNUC__)
+asm("_wgetenv_s")
+#else
+asm("__wgetenv_s")
+#endif
+#else
+asm("_wgetenv_s")
+#endif
+#endif
+;
 }
 
 DEF(GetLastError)
@@ -64,6 +83,7 @@ DEF(WaitForSingleObject)
 DEF(CancelIo)
 DEF(GetFileInformationByHandle)
 DEF(GetUserDefaultLocaleName)
+DEF(GetUserDefaultLCID)
 DEF(GetSystemTimePreciseAsFileTime)
 DEF(GetSystemTimeAsFileTime)
 DEF(QueryUnbiasedInterruptTime)
@@ -86,6 +106,7 @@ DEF(DeviceIoControl)
 DEF(GetFileType)
 DEF(GetACP)
 DEF_FROM_C_LINKER(getenv_s,my_getenv_s)
+DEF_FROM_C_LINKER(_wgetenv_s,my__wgetenv_s)
 DEF(MessageBoxA)
 DEF(MessageBoxW)
 DEF(GetConsoleMode)

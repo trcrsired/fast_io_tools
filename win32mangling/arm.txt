@@ -25,6 +25,7 @@ __imp_?WaitForSingleObject@win32@fast_io@@YAIPAXI@Z __imp_WaitForSingleObject
 __imp_?CancelIo@win32@fast_io@@YAIPAX@Z __imp_CancelIo
 __imp_?GetFileInformationByHandle@win32@fast_io@@YAHPIAXPIAUby_handle_file_information@12@@Z __imp_GetFileInformationByHandle
 __imp_?GetUserDefaultLocaleName@win32@fast_io@@YAHPA_WH@Z __imp_GetUserDefaultLocaleName
+__imp_?GetUserDefaultLCID@win32@fast_io@@YAIXZ __imp_GetUserDefaultLCID
 __imp_?GetSystemTimePreciseAsFileTime@win32@fast_io@@YAXPAUfiletime@12@@Z __imp_GetSystemTimePreciseAsFileTime
 __imp_?GetSystemTimeAsFileTime@win32@fast_io@@YAXPAUfiletime@12@@Z __imp_GetSystemTimeAsFileTime
 __imp_?QueryUnbiasedInterruptTime@win32@fast_io@@YAHPA_K@Z __imp_QueryUnbiasedInterruptTime
@@ -48,6 +49,8 @@ __imp_?GetFileType@win32@fast_io@@YAIPAX@Z __imp_GetFileType
 __imp_?GetACP@win32@fast_io@@YAIXZ __imp_GetACP
 __imp_?getenv_s@win32@fast_io@@YAHPAIPADIPBD@Z __imp_getenv_s
 ?getenv_s@win32@fast_io@@YAHPAIPADIPBD@Z getenv_s
+__imp_?_wgetenv_s@win32@fast_io@@YAHPAIPA_SIPB_S@Z __imp__wgetenv_s
+?_wgetenv_s@win32@fast_io@@YAHPAIPA_SIPB_S@Z _wgetenv_s
 __imp_?MessageBoxA@win32@fast_io@@YAIPAXPBD1I@Z __imp_MessageBoxA
 __imp_?MessageBoxW@win32@fast_io@@YAIPAXPB_W1I@Z __imp_MessageBoxW
 __imp_?GetConsoleMode@win32@fast_io@@YAHPAXPAI@Z __imp_GetConsoleMode

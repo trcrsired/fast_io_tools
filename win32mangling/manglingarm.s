@@ -1,7 +1,7 @@
 	.text
 	.syntax unified
 	.file	"mangling.cc"
-	.def	 "?get_GetLastError@@YA?A?<auto>@@XZ";
+	.def	"?get_GetLastError@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -16,7 +16,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetLastError@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetLastError@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -31,7 +31,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_LoadLibraryA@@YA?A?<auto>@@XZ";
+	.def	"?get_LoadLibraryA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -46,7 +46,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_LoadLibraryA@@YA?A?<auto>@@XZ";
+	.def	"?sys_LoadLibraryA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -61,7 +61,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_LoadLibraryW@@YA?A?<auto>@@XZ";
+	.def	"?get_LoadLibraryW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -76,7 +76,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_LoadLibraryW@@YA?A?<auto>@@XZ";
+	.def	"?sys_LoadLibraryW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -91,7 +91,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_LoadLibraryExA@@YA?A?<auto>@@XZ";
+	.def	"?get_LoadLibraryExA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -106,7 +106,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_LoadLibraryExA@@YA?A?<auto>@@XZ";
+	.def	"?sys_LoadLibraryExA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -121,7 +121,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_LoadLibraryExW@@YA?A?<auto>@@XZ";
+	.def	"?get_LoadLibraryExW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -136,7 +136,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_LoadLibraryExW@@YA?A?<auto>@@XZ";
+	.def	"?sys_LoadLibraryExW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -151,7 +151,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_FormatMessageA@@YA?A?<auto>@@XZ";
+	.def	"?get_FormatMessageA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -166,7 +166,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_FormatMessageA@@YA?A?<auto>@@XZ";
+	.def	"?sys_FormatMessageA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -181,7 +181,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_FormatMessageW@@YA?A?<auto>@@XZ";
+	.def	"?get_FormatMessageW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -196,7 +196,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_FormatMessageW@@YA?A?<auto>@@XZ";
+	.def	"?sys_FormatMessageW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -211,7 +211,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_CreateFileMappingA@@YA?A?<auto>@@XZ";
+	.def	"?get_CreateFileMappingA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -226,7 +226,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_CreateFileMappingA@@YA?A?<auto>@@XZ";
+	.def	"?sys_CreateFileMappingA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -241,7 +241,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_CreateFileMappingW@@YA?A?<auto>@@XZ";
+	.def	"?get_CreateFileMappingW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -256,7 +256,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_CreateFileMappingW@@YA?A?<auto>@@XZ";
+	.def	"?sys_CreateFileMappingW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -271,7 +271,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_MapViewOfFile@@YA?A?<auto>@@XZ";
+	.def	"?get_MapViewOfFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -286,7 +286,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_MapViewOfFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_MapViewOfFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -301,7 +301,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_SetEndOfFile@@YA?A?<auto>@@XZ";
+	.def	"?get_SetEndOfFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -316,7 +316,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_SetEndOfFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_SetEndOfFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -331,7 +331,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_UnmapViewOfFile@@YA?A?<auto>@@XZ";
+	.def	"?get_UnmapViewOfFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -346,7 +346,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_UnmapViewOfFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_UnmapViewOfFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -361,7 +361,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_WriteFile@@YA?A?<auto>@@XZ";
+	.def	"?get_WriteFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -376,7 +376,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_WriteFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_WriteFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -391,7 +391,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_ReadFile@@YA?A?<auto>@@XZ";
+	.def	"?get_ReadFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -406,7 +406,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_ReadFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_ReadFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -421,7 +421,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_SetFilePointer@@YA?A?<auto>@@XZ";
+	.def	"?get_SetFilePointer@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -436,7 +436,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_SetFilePointer@@YA?A?<auto>@@XZ";
+	.def	"?sys_SetFilePointer@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -451,7 +451,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_SetFilePointerEx@@YA?A?<auto>@@XZ";
+	.def	"?get_SetFilePointerEx@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -466,7 +466,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_SetFilePointerEx@@YA?A?<auto>@@XZ";
+	.def	"?sys_SetFilePointerEx@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -481,7 +481,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_DuplicateHandle@@YA?A?<auto>@@XZ";
+	.def	"?get_DuplicateHandle@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -496,7 +496,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_DuplicateHandle@@YA?A?<auto>@@XZ";
+	.def	"?sys_DuplicateHandle@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -511,7 +511,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetStdHandle@@YA?A?<auto>@@XZ";
+	.def	"?get_GetStdHandle@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -526,7 +526,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetStdHandle@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetStdHandle@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -541,7 +541,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_CreatePipe@@YA?A?<auto>@@XZ";
+	.def	"?get_CreatePipe@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -556,7 +556,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_CreatePipe@@YA?A?<auto>@@XZ";
+	.def	"?sys_CreatePipe@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -571,7 +571,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_FreeLibrary@@YA?A?<auto>@@XZ";
+	.def	"?get_FreeLibrary@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -586,7 +586,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_FreeLibrary@@YA?A?<auto>@@XZ";
+	.def	"?sys_FreeLibrary@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -601,7 +601,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetProcAddress@@YA?A?<auto>@@XZ";
+	.def	"?get_GetProcAddress@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -616,7 +616,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetProcAddress@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetProcAddress@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -631,7 +631,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetModuleHandleA@@YA?A?<auto>@@XZ";
+	.def	"?get_GetModuleHandleA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -646,7 +646,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetModuleHandleA@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetModuleHandleA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -661,7 +661,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetModuleHandleW@@YA?A?<auto>@@XZ";
+	.def	"?get_GetModuleHandleW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -676,7 +676,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetModuleHandleW@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetModuleHandleW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -691,7 +691,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_WaitForSingleObject@@YA?A?<auto>@@XZ";
+	.def	"?get_WaitForSingleObject@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -706,7 +706,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_WaitForSingleObject@@YA?A?<auto>@@XZ";
+	.def	"?sys_WaitForSingleObject@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -721,7 +721,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_CancelIo@@YA?A?<auto>@@XZ";
+	.def	"?get_CancelIo@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -736,7 +736,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_CancelIo@@YA?A?<auto>@@XZ";
+	.def	"?sys_CancelIo@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -751,7 +751,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetFileInformationByHandle@@YA?A?<auto>@@XZ";
+	.def	"?get_GetFileInformationByHandle@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -766,7 +766,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetFileInformationByHandle@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetFileInformationByHandle@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -781,7 +781,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetUserDefaultLocaleName@@YA?A?<auto>@@XZ";
+	.def	"?get_GetUserDefaultLocaleName@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -796,7 +796,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetUserDefaultLocaleName@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetUserDefaultLocaleName@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -811,7 +811,37 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetSystemTimePreciseAsFileTime@@YA?A?<auto>@@XZ";
+	.def	"?get_GetUserDefaultLCID@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_GetUserDefaultLCID@@YA?A?<auto>@@XZ" @ -- Begin function ?get_GetUserDefaultLCID@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_GetUserDefaultLCID@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_GetUserDefaultLCID@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?GetUserDefaultLCID@win32@fast_io@@YAIXZ"
+	movt	r0, :upper16:"__imp_?GetUserDefaultLCID@win32@fast_io@@YAIXZ"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_GetUserDefaultLCID@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_GetUserDefaultLCID@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_GetUserDefaultLCID@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_GetUserDefaultLCID@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_GetUserDefaultLCID@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_GetUserDefaultLCID
+	movt	r0, :upper16:__imp_GetUserDefaultLCID
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_GetSystemTimePreciseAsFileTime@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -826,7 +856,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetSystemTimePreciseAsFileTime@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetSystemTimePreciseAsFileTime@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -841,7 +871,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetSystemTimeAsFileTime@@YA?A?<auto>@@XZ";
+	.def	"?get_GetSystemTimeAsFileTime@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -856,7 +886,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetSystemTimeAsFileTime@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetSystemTimeAsFileTime@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -871,7 +901,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_QueryUnbiasedInterruptTime@@YA?A?<auto>@@XZ";
+	.def	"?get_QueryUnbiasedInterruptTime@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -886,7 +916,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_QueryUnbiasedInterruptTime@@YA?A?<auto>@@XZ";
+	.def	"?sys_QueryUnbiasedInterruptTime@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -901,7 +931,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_QueryPerformanceCounter@@YA?A?<auto>@@XZ";
+	.def	"?get_QueryPerformanceCounter@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -916,7 +946,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_QueryPerformanceCounter@@YA?A?<auto>@@XZ";
+	.def	"?sys_QueryPerformanceCounter@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -931,7 +961,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_QueryPerformanceFrequency@@YA?A?<auto>@@XZ";
+	.def	"?get_QueryPerformanceFrequency@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -946,7 +976,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_QueryPerformanceFrequency@@YA?A?<auto>@@XZ";
+	.def	"?sys_QueryPerformanceFrequency@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -961,7 +991,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetProcessTimes@@YA?A?<auto>@@XZ";
+	.def	"?get_GetProcessTimes@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -976,7 +1006,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetProcessTimes@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetProcessTimes@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -991,7 +1021,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetThreadTimes@@YA?A?<auto>@@XZ";
+	.def	"?get_GetThreadTimes@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1006,7 +1036,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetThreadTimes@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetThreadTimes@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1021,7 +1051,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetHandleInformation@@YA?A?<auto>@@XZ";
+	.def	"?get_GetHandleInformation@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1036,7 +1066,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetHandleInformation@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetHandleInformation@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1051,7 +1081,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_SetHandleInformation@@YA?A?<auto>@@XZ";
+	.def	"?get_SetHandleInformation@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1066,7 +1096,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_SetHandleInformation@@YA?A?<auto>@@XZ";
+	.def	"?sys_SetHandleInformation@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1081,7 +1111,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetTempPathA@@YA?A?<auto>@@XZ";
+	.def	"?get_GetTempPathA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1096,7 +1126,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetTempPathA@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetTempPathA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1111,7 +1141,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetTempPathW@@YA?A?<auto>@@XZ";
+	.def	"?get_GetTempPathW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1126,7 +1156,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetTempPathW@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetTempPathW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1141,7 +1171,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_CreateFileA@@YA?A?<auto>@@XZ";
+	.def	"?get_CreateFileA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1156,7 +1186,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_CreateFileA@@YA?A?<auto>@@XZ";
+	.def	"?sys_CreateFileA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1171,7 +1201,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_CreateFileW@@YA?A?<auto>@@XZ";
+	.def	"?get_CreateFileW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1186,7 +1216,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_CreateFileW@@YA?A?<auto>@@XZ";
+	.def	"?sys_CreateFileW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1201,7 +1231,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_CreateIoCompletionPort@@YA?A?<auto>@@XZ";
+	.def	"?get_CreateIoCompletionPort@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1216,7 +1246,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_CreateIoCompletionPort@@YA?A?<auto>@@XZ";
+	.def	"?sys_CreateIoCompletionPort@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1231,7 +1261,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_SystemFunction036@@YA?A?<auto>@@XZ";
+	.def	"?get_SystemFunction036@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1246,7 +1276,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_SystemFunction036@@YA?A?<auto>@@XZ";
+	.def	"?sys_SystemFunction036@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1261,7 +1291,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_CloseHandle@@YA?A?<auto>@@XZ";
+	.def	"?get_CloseHandle@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1276,7 +1306,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_CloseHandle@@YA?A?<auto>@@XZ";
+	.def	"?sys_CloseHandle@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1291,7 +1321,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_LockFileEx@@YA?A?<auto>@@XZ";
+	.def	"?get_LockFileEx@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1306,7 +1336,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_LockFileEx@@YA?A?<auto>@@XZ";
+	.def	"?sys_LockFileEx@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1321,7 +1351,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_UnlockFileEx@@YA?A?<auto>@@XZ";
+	.def	"?get_UnlockFileEx@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1336,7 +1366,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_UnlockFileEx@@YA?A?<auto>@@XZ";
+	.def	"?sys_UnlockFileEx@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1351,7 +1381,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_DeviceIoControl@@YA?A?<auto>@@XZ";
+	.def	"?get_DeviceIoControl@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1366,7 +1396,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_DeviceIoControl@@YA?A?<auto>@@XZ";
+	.def	"?sys_DeviceIoControl@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1381,7 +1411,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetFileType@@YA?A?<auto>@@XZ";
+	.def	"?get_GetFileType@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1396,7 +1426,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetFileType@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetFileType@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1411,7 +1441,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetACP@@YA?A?<auto>@@XZ";
+	.def	"?get_GetACP@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1426,7 +1456,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetACP@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetACP@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1441,7 +1471,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_getenv_s@@YA?A?<auto>@@XZ";
+	.def	"?get_getenv_s@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1456,7 +1486,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_getenv_s@@YA?A?<auto>@@XZ";
+	.def	"?sys_getenv_s@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1471,7 +1501,37 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_MessageBoxA@@YA?A?<auto>@@XZ";
+	.def	"?get__wgetenv_s@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get__wgetenv_s@@YA?A?<auto>@@XZ" @ -- Begin function ?get__wgetenv_s@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get__wgetenv_s@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get__wgetenv_s@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?_wgetenv_s@win32@fast_io@@YAHPAIPA_SIPB_S@Z"
+	movt	r0, :upper16:"__imp_?_wgetenv_s@win32@fast_io@@YAHPAIPA_SIPB_S@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys__wgetenv_s@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys__wgetenv_s@@YA?A?<auto>@@XZ" @ -- Begin function ?sys__wgetenv_s@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys__wgetenv_s@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys__wgetenv_s@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp__wgetenv_s
+	movt	r0, :upper16:__imp__wgetenv_s
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_MessageBoxA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1486,7 +1546,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_MessageBoxA@@YA?A?<auto>@@XZ";
+	.def	"?sys_MessageBoxA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1501,7 +1561,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_MessageBoxW@@YA?A?<auto>@@XZ";
+	.def	"?get_MessageBoxW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1516,7 +1576,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_MessageBoxW@@YA?A?<auto>@@XZ";
+	.def	"?sys_MessageBoxW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1531,7 +1591,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetConsoleMode@@YA?A?<auto>@@XZ";
+	.def	"?get_GetConsoleMode@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1546,7 +1606,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetConsoleMode@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetConsoleMode@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1561,7 +1621,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_SetConsoleMode@@YA?A?<auto>@@XZ";
+	.def	"?get_SetConsoleMode@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1576,7 +1636,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_SetConsoleMode@@YA?A?<auto>@@XZ";
+	.def	"?sys_SetConsoleMode@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1591,7 +1651,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_ReadConsoleA@@YA?A?<auto>@@XZ";
+	.def	"?get_ReadConsoleA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1606,7 +1666,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_ReadConsoleA@@YA?A?<auto>@@XZ";
+	.def	"?sys_ReadConsoleA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1621,7 +1681,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_ReadConsoleW@@YA?A?<auto>@@XZ";
+	.def	"?get_ReadConsoleW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1636,7 +1696,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_ReadConsoleW@@YA?A?<auto>@@XZ";
+	.def	"?sys_ReadConsoleW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1651,7 +1711,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_WriteConsoleA@@YA?A?<auto>@@XZ";
+	.def	"?get_WriteConsoleA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1666,7 +1726,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_WriteConsoleA@@YA?A?<auto>@@XZ";
+	.def	"?sys_WriteConsoleA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1681,7 +1741,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_WriteConsoleW@@YA?A?<auto>@@XZ";
+	.def	"?get_WriteConsoleW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1696,7 +1756,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_WriteConsoleW@@YA?A?<auto>@@XZ";
+	.def	"?sys_WriteConsoleW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1711,7 +1771,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetConsoleScreenBufferInfo@@YA?A?<auto>@@XZ";
+	.def	"?get_GetConsoleScreenBufferInfo@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1726,7 +1786,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetConsoleScreenBufferInfo@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetConsoleScreenBufferInfo@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1741,7 +1801,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_ScrollConsoleScreenBufferA@@YA?A?<auto>@@XZ";
+	.def	"?get_ScrollConsoleScreenBufferA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1756,7 +1816,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_ScrollConsoleScreenBufferA@@YA?A?<auto>@@XZ";
+	.def	"?sys_ScrollConsoleScreenBufferA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1771,7 +1831,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_ScrollConsoleScreenBufferW@@YA?A?<auto>@@XZ";
+	.def	"?get_ScrollConsoleScreenBufferW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1786,7 +1846,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_ScrollConsoleScreenBufferW@@YA?A?<auto>@@XZ";
+	.def	"?sys_ScrollConsoleScreenBufferW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1801,7 +1861,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_SetConsoleCursorPosition@@YA?A?<auto>@@XZ";
+	.def	"?get_SetConsoleCursorPosition@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1816,7 +1876,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_SetConsoleCursorPosition@@YA?A?<auto>@@XZ";
+	.def	"?sys_SetConsoleCursorPosition@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1831,7 +1891,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_InitializeCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?get_InitializeCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1846,7 +1906,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_InitializeCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?sys_InitializeCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1861,7 +1921,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_EnterCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?get_EnterCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1876,7 +1936,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_EnterCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?sys_EnterCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1891,7 +1951,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_TryEnterCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?get_TryEnterCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1906,7 +1966,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_TryEnterCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?sys_TryEnterCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1921,7 +1981,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_LeaveCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?get_LeaveCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1936,7 +1996,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_LeaveCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?sys_LeaveCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1951,7 +2011,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_DeleteCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?get_DeleteCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1966,7 +2026,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_DeleteCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?sys_DeleteCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1981,7 +2041,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_WSADuplicateSocketA@@YA?A?<auto>@@XZ";
+	.def	"?get_WSADuplicateSocketA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1996,7 +2056,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_WSADuplicateSocketA@@YA?A?<auto>@@XZ";
+	.def	"?sys_WSADuplicateSocketA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2011,7 +2071,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_WSADuplicateSocketW@@YA?A?<auto>@@XZ";
+	.def	"?get_WSADuplicateSocketW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2026,7 +2086,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_WSADuplicateSocketW@@YA?A?<auto>@@XZ";
+	.def	"?sys_WSADuplicateSocketW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2041,7 +2101,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_WSACleanup@@YA?A?<auto>@@XZ";
+	.def	"?get_WSACleanup@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2056,7 +2116,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_WSACleanup@@YA?A?<auto>@@XZ";
+	.def	"?sys_WSACleanup@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2071,7 +2131,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_WSAStartup@@YA?A?<auto>@@XZ";
+	.def	"?get_WSAStartup@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2086,7 +2146,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_WSAStartup@@YA?A?<auto>@@XZ";
+	.def	"?sys_WSAStartup@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2101,7 +2161,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_WSAGetLastError@@YA?A?<auto>@@XZ";
+	.def	"?get_WSAGetLastError@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2116,7 +2176,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_WSAGetLastError@@YA?A?<auto>@@XZ";
+	.def	"?sys_WSAGetLastError@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2131,7 +2191,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_closesocket@@YA?A?<auto>@@XZ";
+	.def	"?get_closesocket@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2146,7 +2206,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_closesocket@@YA?A?<auto>@@XZ";
+	.def	"?sys_closesocket@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2161,7 +2221,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_WSASocketW@@YA?A?<auto>@@XZ";
+	.def	"?get_WSASocketW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2176,7 +2236,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_WSASocketW@@YA?A?<auto>@@XZ";
+	.def	"?sys_WSASocketW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2191,7 +2251,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_WSASocketA@@YA?A?<auto>@@XZ";
+	.def	"?get_WSASocketA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2206,7 +2266,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_WSASocketA@@YA?A?<auto>@@XZ";
+	.def	"?sys_WSASocketA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2221,7 +2281,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_bind@@YA?A?<auto>@@XZ";
+	.def	"?get_bind@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2236,7 +2296,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_bind@@YA?A?<auto>@@XZ";
+	.def	"?sys_bind@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2251,7 +2311,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_listen@@YA?A?<auto>@@XZ";
+	.def	"?get_listen@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2266,7 +2326,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_listen@@YA?A?<auto>@@XZ";
+	.def	"?sys_listen@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2281,7 +2341,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_WSAAccept@@YA?A?<auto>@@XZ";
+	.def	"?get_WSAAccept@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2296,7 +2356,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_WSAAccept@@YA?A?<auto>@@XZ";
+	.def	"?sys_WSAAccept@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2311,7 +2371,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_ioctlsocket@@YA?A?<auto>@@XZ";
+	.def	"?get_ioctlsocket@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2326,7 +2386,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_ioctlsocket@@YA?A?<auto>@@XZ";
+	.def	"?sys_ioctlsocket@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2341,7 +2401,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_WSASend@@YA?A?<auto>@@XZ";
+	.def	"?get_WSASend@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2356,7 +2416,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_WSASend@@YA?A?<auto>@@XZ";
+	.def	"?sys_WSASend@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2371,7 +2431,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_WSASendMsg@@YA?A?<auto>@@XZ";
+	.def	"?get_WSASendMsg@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2386,7 +2446,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_WSASendMsg@@YA?A?<auto>@@XZ";
+	.def	"?sys_WSASendMsg@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2401,7 +2461,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_WSASendTo@@YA?A?<auto>@@XZ";
+	.def	"?get_WSASendTo@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2416,7 +2476,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_WSASendTo@@YA?A?<auto>@@XZ";
+	.def	"?sys_WSASendTo@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2431,7 +2491,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_recv@@YA?A?<auto>@@XZ";
+	.def	"?get_recv@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2446,7 +2506,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_recv@@YA?A?<auto>@@XZ";
+	.def	"?sys_recv@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2461,7 +2521,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_WSARecv@@YA?A?<auto>@@XZ";
+	.def	"?get_WSARecv@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2476,7 +2536,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_WSARecv@@YA?A?<auto>@@XZ";
+	.def	"?sys_WSARecv@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2491,7 +2551,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_WSARecvFrom@@YA?A?<auto>@@XZ";
+	.def	"?get_WSARecvFrom@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2506,7 +2566,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_WSARecvFrom@@YA?A?<auto>@@XZ";
+	.def	"?sys_WSARecvFrom@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2521,7 +2581,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_connect@@YA?A?<auto>@@XZ";
+	.def	"?get_connect@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2536,7 +2596,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_connect@@YA?A?<auto>@@XZ";
+	.def	"?sys_connect@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2551,7 +2611,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_WSAConnect@@YA?A?<auto>@@XZ";
+	.def	"?get_WSAConnect@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2566,7 +2626,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_WSAConnect@@YA?A?<auto>@@XZ";
+	.def	"?sys_WSAConnect@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2581,7 +2641,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_shutdown@@YA?A?<auto>@@XZ";
+	.def	"?get_shutdown@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2596,7 +2656,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_shutdown@@YA?A?<auto>@@XZ";
+	.def	"?sys_shutdown@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2611,7 +2671,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetCurrentProcessId@@YA?A?<auto>@@XZ";
+	.def	"?get_GetCurrentProcessId@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2626,7 +2686,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetCurrentProcessId@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetCurrentProcessId@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2641,7 +2701,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_FlushFileBuffers@@YA?A?<auto>@@XZ";
+	.def	"?get_FlushFileBuffers@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2656,7 +2716,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_FlushFileBuffers@@YA?A?<auto>@@XZ";
+	.def	"?sys_FlushFileBuffers@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2671,7 +2731,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetQueuedCompletionStatus@@YA?A?<auto>@@XZ";
+	.def	"?get_GetQueuedCompletionStatus@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2686,7 +2746,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetQueuedCompletionStatus@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetQueuedCompletionStatus@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2701,7 +2761,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_freeaddrinfo@@YA?A?<auto>@@XZ";
+	.def	"?get_freeaddrinfo@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2716,7 +2776,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_freeaddrinfo@@YA?A?<auto>@@XZ";
+	.def	"?sys_freeaddrinfo@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2731,7 +2791,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_FreeAddrInfoW@@YA?A?<auto>@@XZ";
+	.def	"?get_FreeAddrInfoW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2746,7 +2806,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_FreeAddrInfoW@@YA?A?<auto>@@XZ";
+	.def	"?sys_FreeAddrInfoW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2761,7 +2821,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_getaddrinfo@@YA?A?<auto>@@XZ";
+	.def	"?get_getaddrinfo@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2776,7 +2836,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_getaddrinfo@@YA?A?<auto>@@XZ";
+	.def	"?sys_getaddrinfo@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2791,7 +2851,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_GetAddrInfoW@@YA?A?<auto>@@XZ";
+	.def	"?get_GetAddrInfoW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2806,7 +2866,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_GetAddrInfoW@@YA?A?<auto>@@XZ";
+	.def	"?sys_GetAddrInfoW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2821,7 +2881,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_CryptAcquireContextA@@YA?A?<auto>@@XZ";
+	.def	"?get_CryptAcquireContextA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2836,7 +2896,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_CryptAcquireContextA@@YA?A?<auto>@@XZ";
+	.def	"?sys_CryptAcquireContextA@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2851,7 +2911,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_CryptAcquireContextW@@YA?A?<auto>@@XZ";
+	.def	"?get_CryptAcquireContextW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2866,7 +2926,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_CryptAcquireContextW@@YA?A?<auto>@@XZ";
+	.def	"?sys_CryptAcquireContextW@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2881,7 +2941,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_CryptReleaseContext@@YA?A?<auto>@@XZ";
+	.def	"?get_CryptReleaseContext@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2896,7 +2956,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_CryptReleaseContext@@YA?A?<auto>@@XZ";
+	.def	"?sys_CryptReleaseContext@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2911,7 +2971,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?get_CryptGenRandom@@YA?A?<auto>@@XZ";
+	.def	"?get_CryptGenRandom@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -2926,7 +2986,7 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
-	.def	 "?sys_CryptGenRandom@@YA?A?<auto>@@XZ";
+	.def	"?sys_CryptGenRandom@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef

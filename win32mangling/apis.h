@@ -380,6 +380,8 @@ asm("GetUserDefaultLocaleName")
 #endif
 ;
 
+__declspec(dllimport) extern ::std::uint_least32_t __stdcall GetUserDefaultLCID(void) noexcept;
+
 __declspec(dllimport) extern void __stdcall GetSystemTimePreciseAsFileTime(filetime*) noexcept
 #if 0
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
@@ -686,6 +688,8 @@ asm("getenv_s")
 #endif
 ;
 #endif
+
+__declspec(dllimport) extern errno_t __cdecl _wgetenv_s(std::size_t*,char16_t*,std::size_t,char16_t const *) noexcept;
 
 __declspec(dllimport) extern std::uint32_t __stdcall MessageBoxA(void*,char const*,char const*,std::uint32_t) noexcept
 #if 0
