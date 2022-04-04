@@ -95,6 +95,7 @@ case 0x0458:return copy_string_literal(u"mni_IN",p);
 case 0x0459:return copy_string_literal(u"sd_IN@devanagari",p);
 case 0x045B:return copy_string_literal(u"si_LK",p);
 case 0x045C:return copy_string_literal(u"chr_US",p);
+case 0x045D:return copy_string_literal(u"iu_CA",p);
 case 0x045E:return copy_string_literal(u"am_ET",p);
 case 0x0461:return copy_string_literal(u"ne_NP",p);
 case 0x0462:return copy_string_literal(u"fy_NL",p);
@@ -200,7 +201,6 @@ case 0x4C0A:return copy_string_literal(u"es_NI",p);
 case 0x500A:return copy_string_literal(u"es_PR",p);
 case 0x540A:return copy_string_literal(u"es_US",p);
 case 0x5C0A:return copy_string_literal(u"es_CU",p);
-case x045D:return copy_string_literal(u"iu_CA",p);
 default:*p=u'C';return p+1;
 }
 }
@@ -301,6 +301,7 @@ case 0x0458:return copy_string_literal(u8"mni_IN",p);
 case 0x0459:return copy_string_literal(u8"sd_IN@devanagari",p);
 case 0x045B:return copy_string_literal(u8"si_LK",p);
 case 0x045C:return copy_string_literal(u8"chr_US",p);
+case 0x045D:return copy_string_literal(u8"iu_CA",p);
 case 0x045E:return copy_string_literal(u8"am_ET",p);
 case 0x0461:return copy_string_literal(u8"ne_NP",p);
 case 0x0462:return copy_string_literal(u8"fy_NL",p);
@@ -406,7 +407,6 @@ case 0x4C0A:return copy_string_literal(u8"es_NI",p);
 case 0x500A:return copy_string_literal(u8"es_PR",p);
 case 0x540A:return copy_string_literal(u8"es_US",p);
 case 0x5C0A:return copy_string_literal(u8"es_CU",p);
-case x045D:return copy_string_literal(u8"iu_CA",p);
 default:*p=u8'C';return p+1;
 }
 }
