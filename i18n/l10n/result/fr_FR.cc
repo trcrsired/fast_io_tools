@@ -1,4 +1,4 @@
-#include"../localedef.h"
+﻿#include"../localedef.h"
 
 namespace fast_io_i18n
 {

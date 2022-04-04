@@ -12,6 +12,11 @@ escape_char /
 %
 % Tigrigna language locale for Eritrea.
 %
+% Prepared and contributed to glibc by Daniel Yacob <locales@geez.org>
+%
+% This locale data has been developed under the Yeha Project:
+%      http://yeha.sourceforge.net/
+%
 % build with: localedef -f UTF-8 -i ti_ER ti_ER
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -163,7 +168,7 @@ LC_NAME
 %
 name_fmt    "%d%t%g%t%m%t%f"
 name_gen    ""
-name_mr     "<U12A3><U1276>"
+name_mr     "<U12A3><U1276>"             % "<U12A0><U12ED><U1270>" is informal
 name_mrs    "<U12C8>//<U122E>"
 name_miss   "<U12C8>//<U122A><U1275>"
 name_ms     "<U12C8>//<U122A><U1275>"

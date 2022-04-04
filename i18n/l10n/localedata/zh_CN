@@ -146,7 +146,7 @@ LC_MESSAGES
 yesexpr "^[+1yY<UFF59><UFF39><U662F>]"
 noexpr  "^[-0nN<UFF4E><UFF2E><U4E0D><U5426>]"
 yesstr  "<U662F>"
-nostr   "<U5426>"
+nostr   "<U4E0D><U662F>"
 END LC_MESSAGES
 
 LC_PAPER

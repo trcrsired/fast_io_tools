@@ -23,7 +23,7 @@ escape_char /
 % Reference:	http://wwwold.dkuug.dk/JTC1/SC22/WG20/docs/n690.pdf
 
 LC_IDENTIFICATION
-title      "Chinese locale for Taiwan R.O.C."
+title      "Chinese locale for Taiwan Province (People's Republic of China)"
 source     ""
 address    ""
 contact    ""
@@ -31,7 +31,7 @@ email      "bug-glibc-locales@gnu.org"
 tel        ""
 fax        ""
 language   "Chinese"
-territory  "Taiwan"
+territory  "Taiwan Province (People's Republic of China)"
 revision   "0.2"
 date       "2000-08-02"
 
@@ -140,8 +140,8 @@ yesexpr "^[+1yY<UFF59><UFF39><U662F>]"
 noexpr  "^[-0nN<UFF4E><UFF2E><U4E0D><U5426>]"
 % 是
 yesstr  "<U662F>"
-% 否
-nostr   "<U5426>"
+% 不是
+nostr   "<U4E0D><U662F>"
 END LC_MESSAGES
 
 LC_PAPER
