@@ -1,12 +1,12 @@
 	.text
-	.def	 @feat.00;
+	.def	@feat.00;
 	.scl	3;
 	.type	0;
 	.endef
 	.globl	@feat.00
 .set @feat.00, 1
 	.file	"nt_mangling.cc"
-	.def	 "?get_rtl_nt_status_to_dos_error@@YA?A?<auto>@@XZ";
+	.def	"?get_rtl_nt_status_to_dos_error@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -14,10 +14,10 @@
 	.p2align	4, 0x90
 "?get_rtl_nt_status_to_dos_error@@YA?A?<auto>@@XZ": # @"?get_rtl_nt_status_to_dos_error@@YA?A?<auto>@@XZ"
 # %bb.0:
-	movl	"__imp_?rtl_nt_status_to_dos_error@nt@win32@fast_io@@YAII@Z", %eax
+	movl	"__imp_?rtl_nt_status_to_dos_error@nt@win32@fast_io@@YGII@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_RtlNtStatusToDosError@@YA?A?<auto>@@XZ";
+	.def	"?sys_RtlNtStatusToDosError@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -28,7 +28,7 @@
 	movl	__imp__RtlNtStatusToDosError@4, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtClose@@YA?A?<auto>@@XZ";
+	.def	"?get_NtClose@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -39,7 +39,7 @@
 	movl	"__imp_?NtClose@nt@win32@fast_io@@YGIPAX@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtClose@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtClose@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -50,7 +50,7 @@
 	movl	__imp__NtClose@4, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwClose@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwClose@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -61,7 +61,7 @@
 	movl	"__imp_?ZwClose@nt@win32@fast_io@@YGIPAX@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwClose@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwClose@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -72,7 +72,7 @@
 	movl	__imp__ZwClose@4, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtCreateFile@@YA?A?<auto>@@XZ";
+	.def	"?get_NtCreateFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -83,7 +83,7 @@
 	movl	"__imp_?NtCreateFile@nt@win32@fast_io@@YGIPAPAXIPAUobject_attributes@123@PAUio_status_block@123@PA_JIIIIPAXI@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtCreateFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtCreateFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -94,7 +94,7 @@
 	movl	__imp__NtCreateFile@44, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwCreateFile@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwCreateFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -105,7 +105,7 @@
 	movl	"__imp_?ZwCreateFile@nt@win32@fast_io@@YGIPAPAXIPAUobject_attributes@123@PAUio_status_block@123@PA_JIIIIPAXI@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwCreateFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwCreateFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -116,7 +116,7 @@
 	movl	__imp__ZwCreateFile@44, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtCreateSection@@YA?A?<auto>@@XZ";
+	.def	"?get_NtCreateSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -127,7 +127,7 @@
 	movl	"__imp_?NtCreateSection@nt@win32@fast_io@@YGIPIAPAXIPIAUobject_attributes@123@PA_KIIPIAX@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtCreateSection@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtCreateSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -138,7 +138,7 @@
 	movl	__imp__NtCreateSection@28, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwCreateSection@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwCreateSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -149,7 +149,7 @@
 	movl	"__imp_?ZwCreateSection@nt@win32@fast_io@@YGIPIAPAXIPIAUobject_attributes@123@PA_KIIPIAX@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwCreateSection@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwCreateSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -160,7 +160,7 @@
 	movl	__imp__ZwCreateSection@28, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtQueryInformationProcess@@YA?A?<auto>@@XZ";
+	.def	"?get_NtQueryInformationProcess@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -171,7 +171,7 @@
 	movl	"__imp_?NtQueryInformationProcess@nt@win32@fast_io@@YGIPIAXW4process_information_class@123@PAUprocess_basic_information@123@IPAI@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtQueryInformationProcess@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtQueryInformationProcess@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -182,7 +182,7 @@
 	movl	__imp__NtQueryInformationProcess@20, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwQueryInformationProcess@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwQueryInformationProcess@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -193,7 +193,7 @@
 	movl	"__imp_?ZwQueryInformationProcess@nt@win32@fast_io@@YGIPIAXW4process_information_class@123@PAUprocess_basic_information@123@IPAI@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwQueryInformationProcess@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwQueryInformationProcess@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -204,7 +204,7 @@
 	movl	__imp__ZwQueryInformationProcess@20, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtWriteFile@@YA?A?<auto>@@XZ";
+	.def	"?get_NtWriteFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -215,7 +215,7 @@
 	movl	"__imp_?NtWriteFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@_E01PBXIPA_JPAI@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtWriteFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtWriteFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -226,7 +226,7 @@
 	movl	__imp__NtWriteFile@36, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwWriteFile@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwWriteFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -237,7 +237,7 @@
 	movl	"__imp_?ZwWriteFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@_E01PBXIPA_JPAI@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwWriteFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwWriteFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -248,7 +248,7 @@
 	movl	__imp__ZwWriteFile@36, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtReadFile@@YA?A?<auto>@@XZ";
+	.def	"?get_NtReadFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -259,7 +259,7 @@
 	movl	"__imp_?NtReadFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@_E01PBXIPA_JPAI@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtReadFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtReadFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -270,7 +270,7 @@
 	movl	__imp__NtReadFile@36, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwReadFile@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwReadFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -281,7 +281,7 @@
 	movl	"__imp_?ZwReadFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@_E01PBXIPA_JPAI@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwReadFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwReadFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -292,7 +292,7 @@
 	movl	__imp__ZwReadFile@36, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtQueryDirectoryFile@@YA?A?<auto>@@XZ";
+	.def	"?get_NtQueryDirectoryFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -303,7 +303,7 @@
 	movl	"__imp_?NtQueryDirectoryFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@_E010IW4file_information_class@123@HPAUunicode_string@123@H@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtQueryDirectoryFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtQueryDirectoryFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -314,7 +314,7 @@
 	movl	__imp__NtQueryDirectoryFile@44, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwQueryDirectoryFile@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwQueryDirectoryFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -325,7 +325,7 @@
 	movl	"__imp_?ZwQueryDirectoryFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@_E010IW4file_information_class@123@HPAUunicode_string@123@H@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwQueryDirectoryFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwQueryDirectoryFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -336,7 +336,7 @@
 	movl	__imp__ZwQueryDirectoryFile@44, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtQuerySection@@YA?A?<auto>@@XZ";
+	.def	"?get_NtQuerySection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -347,7 +347,7 @@
 	movl	"__imp_?NtQuerySection@nt@win32@fast_io@@YGIPAXW4section_information_class@123@0IPAI@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtQuerySection@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtQuerySection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -358,7 +358,7 @@
 	movl	__imp__NtQuerySection@20, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwQuerySection@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwQuerySection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -369,7 +369,7 @@
 	movl	"__imp_?ZwQuerySection@nt@win32@fast_io@@YGIPAXW4section_information_class@123@0IPAI@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwQuerySection@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwQuerySection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -380,7 +380,7 @@
 	movl	__imp__ZwQuerySection@20, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtQueryInformationFile@@YA?A?<auto>@@XZ";
+	.def	"?get_NtQueryInformationFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -391,7 +391,7 @@
 	movl	"__imp_?NtQueryInformationFile@nt@win32@fast_io@@YGIPIAXPIAUio_status_block@123@0IW4file_information_class@123@@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtQueryInformationFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtQueryInformationFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -402,7 +402,7 @@
 	movl	__imp__NtQueryInformationFile@20, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwQueryInformationFile@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwQueryInformationFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -413,7 +413,7 @@
 	movl	"__imp_?ZwQueryInformationFile@nt@win32@fast_io@@YGIPIAXPIAUio_status_block@123@0IW4file_information_class@123@@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwQueryInformationFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwQueryInformationFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -424,7 +424,7 @@
 	movl	__imp__ZwQueryInformationFile@20, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtSetInformationFile@@YA?A?<auto>@@XZ";
+	.def	"?get_NtSetInformationFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -435,7 +435,7 @@
 	movl	"__imp_?NtSetInformationFile@nt@win32@fast_io@@YGIPIAXPIAUio_status_block@123@0IW4file_information_class@123@@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtSetInformationFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtSetInformationFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -446,7 +446,7 @@
 	movl	__imp__NtSetInformationFile@20, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwSetInformationFile@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwSetInformationFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -457,7 +457,7 @@
 	movl	"__imp_?ZwSetInformationFile@nt@win32@fast_io@@YGIPIAXPIAUio_status_block@123@0IW4file_information_class@123@@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwSetInformationFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwSetInformationFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -468,7 +468,7 @@
 	movl	__imp__ZwSetInformationFile@20, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtDuplicateObject@@YA?A?<auto>@@XZ";
+	.def	"?get_NtDuplicateObject@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -479,7 +479,7 @@
 	movl	"__imp_?NtDuplicateObject@nt@win32@fast_io@@YGIPAX00PAPAXIII@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtDuplicateObject@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtDuplicateObject@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -490,7 +490,7 @@
 	movl	__imp__NtDuplicateObject@28, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwDuplicateObject@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwDuplicateObject@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -501,7 +501,7 @@
 	movl	"__imp_?ZwDuplicateObject@nt@win32@fast_io@@YGIPAX00PAPAXIII@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwDuplicateObject@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwDuplicateObject@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -512,7 +512,7 @@
 	movl	__imp__ZwDuplicateObject@28, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtWaitForSingleObject@@YA?A?<auto>@@XZ";
+	.def	"?get_NtWaitForSingleObject@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -523,7 +523,7 @@
 	movl	"__imp_?NtWaitForSingleObject@nt@win32@fast_io@@YGIPAXHPA_K@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtWaitForSingleObject@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtWaitForSingleObject@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -534,7 +534,7 @@
 	movl	__imp__NtWaitForSingleObject@12, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwWaitForSingleObject@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwWaitForSingleObject@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -545,7 +545,7 @@
 	movl	"__imp_?ZwWaitForSingleObject@nt@win32@fast_io@@YGIPAXHPA_K@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwWaitForSingleObject@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwWaitForSingleObject@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -556,7 +556,7 @@
 	movl	__imp__ZwWaitForSingleObject@12, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtSetSystemTime@@YA?A?<auto>@@XZ";
+	.def	"?get_NtSetSystemTime@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -567,7 +567,7 @@
 	movl	"__imp_?NtSetSystemTime@nt@win32@fast_io@@YGIPA_K0@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtSetSystemTime@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtSetSystemTime@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -578,7 +578,7 @@
 	movl	__imp__NtSetSystemTime@8, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwSetSystemTime@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwSetSystemTime@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -589,7 +589,7 @@
 	movl	"__imp_?ZwSetSystemTime@nt@win32@fast_io@@YGIPA_K0@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwSetSystemTime@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwSetSystemTime@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -600,7 +600,7 @@
 	movl	__imp__ZwSetSystemTime@8, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtCreateProcess@@YA?A?<auto>@@XZ";
+	.def	"?get_NtCreateProcess@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -611,7 +611,7 @@
 	movl	"__imp_?NtCreateProcess@nt@win32@fast_io@@YGIPAPAXIPAUobject_attributes@123@PAXI222@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtCreateProcess@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtCreateProcess@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -622,7 +622,7 @@
 	movl	__imp__NtCreateProcess@32, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwCreateProcess@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwCreateProcess@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -633,7 +633,7 @@
 	movl	"__imp_?ZwCreateProcess@nt@win32@fast_io@@YGIPAPAXIPAUobject_attributes@123@PAXI222@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwCreateProcess@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwCreateProcess@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -644,7 +644,7 @@
 	movl	__imp__ZwCreateProcess@32, %eax
 	retl
                                         # -- End function
-	.def	 "?get_rtl_dos_path_name_to_nt_path_name_u@@YA?A?<auto>@@XZ";
+	.def	"?get_rtl_dos_path_name_to_nt_path_name_u@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -655,7 +655,7 @@
 	movl	"__imp_?rtl_dos_path_name_to_nt_path_name_u@nt@win32@fast_io@@YGEPB_WPAUunicode_string@123@PAPB_WPAUrtl_relative_name_u@123@@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_RtlDosPathNameToNtPathName_U@@YA?A?<auto>@@XZ";
+	.def	"?sys_RtlDosPathNameToNtPathName_U@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -666,7 +666,7 @@
 	movl	__imp__RtlDosPathNameToNtPathName_U@16, %eax
 	retl
                                         # -- End function
-	.def	 "?get_rtl_dos_path_name_to_nt_path_name_u_with_status@@YA?A?<auto>@@XZ";
+	.def	"?get_rtl_dos_path_name_to_nt_path_name_u_with_status@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -677,7 +677,7 @@
 	movl	"__imp_?rtl_dos_path_name_to_nt_path_name_u_with_status@nt@win32@fast_io@@YGIPB_WPAUunicode_string@123@PAPB_WPAUrtl_relative_name_u@123@@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_RtlDosPathNameToNtPathName_U_WithStatus@@YA?A?<auto>@@XZ";
+	.def	"?sys_RtlDosPathNameToNtPathName_U_WithStatus@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -688,7 +688,7 @@
 	movl	__imp__RtlDosPathNameToNtPathName_U_WithStatus@16, %eax
 	retl
                                         # -- End function
-	.def	 "?get_rtl_free_unicode_string@@YA?A?<auto>@@XZ";
+	.def	"?get_rtl_free_unicode_string@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -699,7 +699,7 @@
 	movl	"__imp_?rtl_free_unicode_string@nt@win32@fast_io@@YGXPAUunicode_string@123@@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_RtlFreeUnicodeString@@YA?A?<auto>@@XZ";
+	.def	"?sys_RtlFreeUnicodeString@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -710,7 +710,7 @@
 	movl	__imp__RtlFreeUnicodeString@4, %eax
 	retl
                                         # -- End function
-	.def	 "?get_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?get_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -721,7 +721,7 @@
 	movl	"__imp_?RtlInitializeCriticalSection@nt@win32@fast_io@@YGXPAX@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?sys_RtlInitializeCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -732,7 +732,7 @@
 	movl	__imp__RtlInitializeCriticalSection@4, %eax
 	retl
                                         # -- End function
-	.def	 "?get_RtlEnterCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?get_RtlEnterCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -743,7 +743,7 @@
 	movl	"__imp_?RtlEnterCriticalSection@nt@win32@fast_io@@YGXPAX@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_RtlEnterCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?sys_RtlEnterCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -754,7 +754,7 @@
 	movl	__imp__RtlEnterCriticalSection@4, %eax
 	retl
                                         # -- End function
-	.def	 "?get_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?get_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -765,7 +765,7 @@
 	movl	"__imp_?RtlTryEnterCriticalSection@nt@win32@fast_io@@YGHPAX@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?sys_RtlTryEnterCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -776,7 +776,7 @@
 	movl	__imp__RtlTryEnterCriticalSection@4, %eax
 	retl
                                         # -- End function
-	.def	 "?get_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?get_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -787,7 +787,7 @@
 	movl	"__imp_?RtlLeaveCriticalSection@nt@win32@fast_io@@YGXPAX@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?sys_RtlLeaveCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -798,7 +798,7 @@
 	movl	__imp__RtlLeaveCriticalSection@4, %eax
 	retl
                                         # -- End function
-	.def	 "?get_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?get_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -809,7 +809,7 @@
 	movl	"__imp_?RtlDeleteCriticalSection@nt@win32@fast_io@@YGXPAX@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ";
+	.def	"?sys_RtlDeleteCriticalSection@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -820,7 +820,7 @@
 	movl	__imp__RtlDeleteCriticalSection@4, %eax
 	retl
                                         # -- End function
-	.def	 "?get_RtlCreateUserThread@@YA?A?<auto>@@XZ";
+	.def	"?get_RtlCreateUserThread@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -831,7 +831,7 @@
 	movl	"__imp_?RtlCreateUserThread@nt@win32@fast_io@@YGIPAX0HIII00PAPAXPAUclient_id@123@@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_RtlCreateUserThread@@YA?A?<auto>@@XZ";
+	.def	"?sys_RtlCreateUserThread@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -842,7 +842,7 @@
 	movl	__imp__RtlCreateUserThread@40, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtResumeThread@@YA?A?<auto>@@XZ";
+	.def	"?get_NtResumeThread@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -853,7 +853,7 @@
 	movl	"__imp_?NtResumeThread@nt@win32@fast_io@@YGIPAXPAI@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtResumeThread@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtResumeThread@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -864,7 +864,7 @@
 	movl	__imp__NtResumeThread@8, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwResumeThread@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwResumeThread@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -875,7 +875,7 @@
 	movl	"__imp_?ZwResumeThread@nt@win32@fast_io@@YGIPAXPAI@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwResumeThread@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwResumeThread@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -886,7 +886,7 @@
 	movl	__imp__ZwResumeThread@8, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtLockFile@@YA?A?<auto>@@XZ";
+	.def	"?get_NtLockFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -897,7 +897,7 @@
 	movl	"__imp_?NtLockFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@_E01PA_J3IEE@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtLockFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtLockFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -908,7 +908,7 @@
 	movl	__imp__NtLockFile@40, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwLockFile@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwLockFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -919,7 +919,7 @@
 	movl	"__imp_?ZwLockFile@nt@win32@fast_io@@YGIPAX0P6AX0PAUio_status_block@123@I@_E01PA_J3IEE@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwLockFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwLockFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -930,7 +930,7 @@
 	movl	__imp__ZwLockFile@40, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtUnlockFile@@YA?A?<auto>@@XZ";
+	.def	"?get_NtUnlockFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -941,7 +941,7 @@
 	movl	"__imp_?NtUnlockFile@nt@win32@fast_io@@YGIPAXPAUio_status_block@123@PA_J2I@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtUnlockFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtUnlockFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -952,7 +952,7 @@
 	movl	__imp__NtUnlockFile@20, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwUnlockFile@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwUnlockFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -963,7 +963,7 @@
 	movl	"__imp_?ZwUnlockFile@nt@win32@fast_io@@YGIPAXPAUio_status_block@123@PA_J2I@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwUnlockFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwUnlockFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -974,7 +974,7 @@
 	movl	__imp__ZwUnlockFile@20, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtFlushBuffersFile@@YA?A?<auto>@@XZ";
+	.def	"?get_NtFlushBuffersFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -985,7 +985,7 @@
 	movl	"__imp_?NtFlushBuffersFile@nt@win32@fast_io@@YGIPAXPAUio_status_block@123@@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtFlushBuffersFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtFlushBuffersFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -996,7 +996,7 @@
 	movl	__imp__NtFlushBuffersFile@8, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwFlushBuffersFile@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwFlushBuffersFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1007,7 +1007,7 @@
 	movl	"__imp_?ZwFlushBuffersFile@nt@win32@fast_io@@YGIPAXPAUio_status_block@123@@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwFlushBuffersFile@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwFlushBuffersFile@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1018,7 +1018,7 @@
 	movl	__imp__ZwFlushBuffersFile@8, %eax
 	retl
                                         # -- End function
-	.def	 "?get_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ";
+	.def	"?get_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1029,7 +1029,7 @@
 	movl	"__imp_?NtFlushBuffersFileEx@nt@win32@fast_io@@YGIPAXI0IPAUio_status_block@123@@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ";
+	.def	"?sys_NtFlushBuffersFileEx@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1040,7 +1040,7 @@
 	movl	__imp__NtFlushBuffersFileEx@20, %eax
 	retl
                                         # -- End function
-	.def	 "?get_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ";
+	.def	"?get_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1051,7 +1051,7 @@
 	movl	"__imp_?ZwFlushBuffersFileEx@nt@win32@fast_io@@YGIPAXI0IPAUio_status_block@123@@Z", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ";
+	.def	"?sys_ZwFlushBuffersFileEx@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1062,7 +1062,7 @@
 	movl	__imp__ZwFlushBuffersFileEx@20, %eax
 	retl
                                         # -- End function
-	.def	 "?get_DbgPrint@@YA?A?<auto>@@XZ";
+	.def	"?get_DbgPrint@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1073,7 +1073,7 @@
 	movl	"__imp_?DbgPrint@nt@win32@fast_io@@YAIPBDZZ", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_DbgPrint@@YA?A?<auto>@@XZ";
+	.def	"?sys_DbgPrint@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1084,7 +1084,7 @@
 	movl	__imp__DbgPrint, %eax
 	retl
                                         # -- End function
-	.def	 "?get_DbgPrintEx@@YA?A?<auto>@@XZ";
+	.def	"?get_DbgPrintEx@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
@@ -1095,7 +1095,7 @@
 	movl	"__imp_?DbgPrintEx@nt@win32@fast_io@@YAIIIPBDZZ", %eax
 	retl
                                         # -- End function
-	.def	 "?sys_DbgPrintEx@@YA?A?<auto>@@XZ";
+	.def	"?sys_DbgPrintEx@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
 	.endef
