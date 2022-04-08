@@ -7,7 +7,7 @@
 namespace fast_io::win32::nt
 {
 
-__declspec(dllimport) extern std::uint32_t rtl_nt_status_to_dos_error(std::uint32_t status) noexcept
+__declspec(dllimport) extern std::uint32_t __stdcall rtl_nt_status_to_dos_error(std::uint32_t status) noexcept
 #if 0
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
