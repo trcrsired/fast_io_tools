@@ -70,8 +70,8 @@ struct basic_tz_iso3166_tab_entry
 
 struct tz_leap_seconds_list_entry
 {
-	intiso_t unix_timestamp{};
-	intiso_t offset{};
+	std::int_least64_t unix_timestamp{};
+	std::int_least64_t offset{};
 };
 
 template<typename char_type>
@@ -118,8 +118,8 @@ template<typename char_type>
 struct basic_tz_rule_entry
 {
 	basic_io_scatter_t<char_type> name{};
-	intiso_t from{};
-	intiso_t to{};
+	std::int_least64_t from{};
+	std::int_least64_t to{};
 	std::uint_least8_t in{};
 	tz_rule_on on{};
 	tz_stdoff_t at{};
@@ -156,13 +156,13 @@ struct basic_tz_all
 	basic_io_scatter_t<basic_tz_zone_tab_entry<char_type>> zone_tab{};
 	basic_io_scatter_t<basic_tz_zone1970_tab_entry<char_type>> zone1970_tab{};
 };
-#if 0
+
 using tz_all=basic_tz_all<char>;
 using wtz_all=basic_tz_all<wchar_t>;
 using u8tz_all=basic_tz_all<char8_t>;
 using u16tz_all=basic_tz_all<char16_t>;
 using u32tz_all=basic_tz_all<char32_t>;
-#endif
+
 struct tz_timezone
 {
 	basic_tz_all<char> const* all{};

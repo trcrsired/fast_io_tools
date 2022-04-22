@@ -10,3 +10,5 @@ target_precompile_headers(generate_tz_file PUBLIC pch.hpp)
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 target_link_libraries(generate_tz_file ntdll)
 endif()
+
+add_executable(tzmain tzmain.cc)
