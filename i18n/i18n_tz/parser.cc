@@ -98,7 +98,6 @@ inline auto read_general(fast_io::native_io_observer df,std::string_view filenam
 	std::vector<std::array<std::u8string,N>> data;
 	for(std::u8string_view strvw:line_scanner(u8ibf))
 	{
-#if 0
 		if(strvw.empty()||strvw.front()==u8'#')
 		{
 			if constexpr(special==1)
@@ -118,15 +117,14 @@ inline auto read_general(fast_io::native_io_observer df,std::string_view filenam
 			{
 				scan(istrvw,arr[i]);
 			}
-			using namespace fast_io::manipulators;
-			scan(istrvw,space_skipper{});
-			fast_io::ostring_ref ref{arr.back()};
-			transmit(ref,istrvw);
+			auto i{istrvw.curr_ptr};
+			auto e{istrvw.end_ptr};
+			auto f{fast_io::find_non_c_space(i,e)};
+			arr.back().assign(f,e);
 		}
 		else
 			for(auto& e : data.emplace_back())
 				scan(istrvw,e);
-#endif
 	}
 	return data;
 }
