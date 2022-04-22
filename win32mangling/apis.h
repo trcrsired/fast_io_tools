@@ -673,6 +673,45 @@ asm("GetACP")
 #endif
 #endif
 ;
+
+#if defined(_MSC_VER) && !defined(__clang__)
+__declspec(dllimport)
+#elif __has_cpp_attribute(__gnu__::__dllimport__)
+[[__gnu__::__dllimport__]]
+#endif
+extern ::std::uint_least32_t __stdcall GetEnvironmentVariableA(char const*,char*,::std::uint_least32_t) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+__asm__("GetEnvironmentVariableA@12")
+#else
+__asm__("_GetEnvironmentVariableA@12")
+#endif
+#else
+__asm__("GetEnvironmentVariableA")
+#endif
+#endif
+;
+
+#if defined(_MSC_VER) && !defined(__clang__)
+__declspec(dllimport)
+#elif __has_cpp_attribute(__gnu__::__dllimport__)
+[[__gnu__::__dllimport__]]
+#endif
+extern ::std::uint_least32_t __stdcall GetEnvironmentVariableW(char16_t const*,char16_t*,::std::uint_least32_t) noexcept
+#if 0
+#if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
+#if !defined(__clang__)
+__asm__("GetEnvironmentVariableW@12")
+#else
+__asm__("_GetEnvironmentVariableW@12")
+#endif
+#else
+__asm__("GetEnvironmentVariableW")
+#endif
+#endif
+;
+
 #if !defined(__CYGWIN__)
 __declspec(dllimport) extern errno_t __cdecl getenv_s(std::size_t *,char* buffer,std::size_t ,char const *) noexcept
 #if 0

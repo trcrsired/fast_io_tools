@@ -49,6 +49,8 @@
 #pragma comment(linker,"/alternatename:__imp_?DeviceIoControl@win32@fast_io@@YAHPEAXI0I0I0PEAUoverlapped@12@@Z=__imp_DeviceIoControl")
 #pragma comment(linker,"/alternatename:__imp_?GetFileType@win32@fast_io@@YAIPEAX@Z=__imp_GetFileType")
 #pragma comment(linker,"/alternatename:__imp_?GetACP@win32@fast_io@@YAIXZ=__imp_GetACP")
+#pragma comment(linker,"/alternatename:__imp_?GetEnvironmentVariableA@win32@fast_io@@YAIPEBDPEADI@Z=__imp_GetEnvironmentVariableA")
+#pragma comment(linker,"/alternatename:__imp_?GetEnvironmentVariableW@win32@fast_io@@YAIPEB_SPEA_SI@Z=__imp_GetEnvironmentVariableW")
 #pragma comment(linker,"/alternatename:__imp_?getenv_s@win32@fast_io@@YAHPEA_KPEAD_KPEBD@Z=__imp_getenv_s")
 #pragma comment(linker,"/alternatename:?getenv_s@win32@fast_io@@YAHPEA_KPEAD_KPEBD@Z=getenv_s")
 #pragma comment(linker,"/alternatename:__imp_?_wgetenv_s@win32@fast_io@@YAHPEA_KPEA_S_KPEB_S@Z=__imp__wgetenv_s")

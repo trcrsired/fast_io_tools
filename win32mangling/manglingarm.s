@@ -1471,6 +1471,66 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
+	.def	"?get_GetEnvironmentVariableA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_GetEnvironmentVariableA@@YA?A?<auto>@@XZ" @ -- Begin function ?get_GetEnvironmentVariableA@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_GetEnvironmentVariableA@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_GetEnvironmentVariableA@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?GetEnvironmentVariableA@win32@fast_io@@YAIPBDPADI@Z"
+	movt	r0, :upper16:"__imp_?GetEnvironmentVariableA@win32@fast_io@@YAIPBDPADI@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_GetEnvironmentVariableA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_GetEnvironmentVariableA@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_GetEnvironmentVariableA@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_GetEnvironmentVariableA@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_GetEnvironmentVariableA@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_GetEnvironmentVariableA
+	movt	r0, :upper16:__imp_GetEnvironmentVariableA
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_GetEnvironmentVariableW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_GetEnvironmentVariableW@@YA?A?<auto>@@XZ" @ -- Begin function ?get_GetEnvironmentVariableW@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_GetEnvironmentVariableW@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_GetEnvironmentVariableW@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?GetEnvironmentVariableW@win32@fast_io@@YAIPB_SPA_SI@Z"
+	movt	r0, :upper16:"__imp_?GetEnvironmentVariableW@win32@fast_io@@YAIPB_SPA_SI@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_GetEnvironmentVariableW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_GetEnvironmentVariableW@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_GetEnvironmentVariableW@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_GetEnvironmentVariableW@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_GetEnvironmentVariableW@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_GetEnvironmentVariableW
+	movt	r0, :upper16:__imp_GetEnvironmentVariableW
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
 	.def	"?get_getenv_s@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;

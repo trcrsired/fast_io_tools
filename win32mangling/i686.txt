@@ -47,6 +47,8 @@ __imp_?UnlockFileEx@win32@fast_io@@YGHPAXIIIPAUoverlapped@12@@Z __imp__UnlockFil
 __imp_?DeviceIoControl@win32@fast_io@@YGHPAXI0I0I0PAUoverlapped@12@@Z __imp__DeviceIoControl@32
 __imp_?GetFileType@win32@fast_io@@YGIPAX@Z __imp__GetFileType@4
 __imp_?GetACP@win32@fast_io@@YGIXZ __imp__GetACP@0
+__imp_?GetEnvironmentVariableA@win32@fast_io@@YGIPBDPADI@Z __imp__GetEnvironmentVariableA@12
+__imp_?GetEnvironmentVariableW@win32@fast_io@@YGIPB_SPA_SI@Z __imp__GetEnvironmentVariableW@12
 __imp_?getenv_s@win32@fast_io@@YAHPAIPADIPBD@Z __imp__getenv_s
 ?getenv_s@win32@fast_io@@YAHPAIPADIPBD@Z _getenv_s
 __imp_?_wgetenv_s@win32@fast_io@@YAHPAIPA_SIPB_S@Z __imp___wgetenv_s

@@ -1084,6 +1084,50 @@
 	movl	__imp__GetACP@0, %eax
 	retl
                                         # -- End function
+	.def	"?get_GetEnvironmentVariableA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_GetEnvironmentVariableA@@YA?A?<auto>@@XZ" # -- Begin function ?get_GetEnvironmentVariableA@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_GetEnvironmentVariableA@@YA?A?<auto>@@XZ": # @"?get_GetEnvironmentVariableA@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?GetEnvironmentVariableA@win32@fast_io@@YGIPBDPADI@Z", %eax
+	retl
+                                        # -- End function
+	.def	"?sys_GetEnvironmentVariableA@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_GetEnvironmentVariableA@@YA?A?<auto>@@XZ" # -- Begin function ?sys_GetEnvironmentVariableA@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_GetEnvironmentVariableA@@YA?A?<auto>@@XZ": # @"?sys_GetEnvironmentVariableA@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__GetEnvironmentVariableA@12, %eax
+	retl
+                                        # -- End function
+	.def	"?get_GetEnvironmentVariableW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_GetEnvironmentVariableW@@YA?A?<auto>@@XZ" # -- Begin function ?get_GetEnvironmentVariableW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_GetEnvironmentVariableW@@YA?A?<auto>@@XZ": # @"?get_GetEnvironmentVariableW@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	"__imp_?GetEnvironmentVariableW@win32@fast_io@@YGIPB_SPA_SI@Z", %eax
+	retl
+                                        # -- End function
+	.def	"?sys_GetEnvironmentVariableW@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_GetEnvironmentVariableW@@YA?A?<auto>@@XZ" # -- Begin function ?sys_GetEnvironmentVariableW@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_GetEnvironmentVariableW@@YA?A?<auto>@@XZ": # @"?sys_GetEnvironmentVariableW@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movl	__imp__GetEnvironmentVariableW@12, %eax
+	retl
+                                        # -- End function
 	.def	"?get_getenv_s@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
