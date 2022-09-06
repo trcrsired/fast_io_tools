@@ -47,7 +47,14 @@ inline constexpr void write_all_forward_iterator_impl(output out,Iter first,Iter
 	for(;first!=last;++first)
 	{
 		auto p{__builtin_addressof(*first)};
-		decay_write_all_impl(out,p,p+1);
+		if constexpr(buffer_output_stream<nocvref_output>)
+		{
+			write_all_define(io_ref(out),p,p+1);
+		}
+		else
+		{
+			decay_write_all_impl(out,p,p+1);
+		}
 	}
 }
 
@@ -83,9 +90,7 @@ inline constexpr void write_all(output&& out,Iter first,Iter last)
 	{
 		if constexpr(buffer_output_stream<nocvref_output>)
 		{
-			::fast_io::details::write_all_forward_iterator_impl(out,
-				::fast_io::freestanding::to_address(first),
-				::fast_io::freestanding::to_address(last));
+			::fast_io::details::write_all_forward_iterator_impl(io_ref(out),first,last);
 		}
 		else
 		{
