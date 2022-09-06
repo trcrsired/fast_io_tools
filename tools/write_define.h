@@ -111,8 +111,8 @@ inline constexpr void scatter_write_bytes_all(output&& out,io_scatters_t scatter
 	}
 }
 
-template<typename output>
-inline constexpr void scatter_write_all(output&& out,io_scatters_t scatters)
+template<typename output,std::integral char_type>
+inline constexpr void scatter_write_all(output&& out,basic_io_scatter_t<basic_io_scatter_t<char_type>> scatters)
 {
 	using nocvref_output = std::remove_cvref_t<output>;
 	if constexpr(write_some_bytes_stream<nocvref_output>)
