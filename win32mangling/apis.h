@@ -31,7 +31,7 @@ asm("LoadLibraryA")
 #endif
 ;
 
-__declspec(dllimport) extern void * __stdcall LoadLibraryW(wchar_t const*) noexcept
+__declspec(dllimport) extern void * __stdcall LoadLibraryW(char16_t const*) noexcept
 #if 0
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
@@ -59,7 +59,7 @@ asm("LoadLibraryExA")
 #endif
 ;
 
-__declspec(dllimport) extern void * __stdcall LoadLibraryExW(wchar_t const*,void*,std::uint32_t) noexcept
+__declspec(dllimport) extern void * __stdcall LoadLibraryExW(char16_t const*,void*,std::uint32_t) noexcept
 #if 0
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if !defined(__clang__)
@@ -88,7 +88,7 @@ asm("FormatMessageA")
 #endif
 ;
 
-__declspec(dllimport) extern std::uint32_t __stdcall FormatMessageW(std::uint32_t, wchar_t const*, std::uint32_t,std::uint32_t, wchar_t*, std::uint32_t, void /*va_list*/ *) noexcept
+__declspec(dllimport) extern std::uint32_t __stdcall FormatMessageW(std::uint32_t, char16_t const*, std::uint32_t,std::uint32_t, char16_t*, std::uint32_t, void /*va_list*/ *) noexcept
 #if 0
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
@@ -116,7 +116,7 @@ asm("CreateFileMappingA")
 #endif
 ;
 
-__declspec(dllimport) extern void* __stdcall CreateFileMappingW(void*,security_attributes*,std::uint32_t,std::uint32_t,std::uint32_t,wchar_t const*) noexcept
+__declspec(dllimport) extern void* __stdcall CreateFileMappingW(void*,security_attributes*,std::uint32_t,std::uint32_t,std::uint32_t,char16_t const*) noexcept
 #if 0
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
@@ -310,7 +310,7 @@ asm("GetModuleHandleA")
 #endif
 ;
 
-__declspec(dllimport) extern void* __stdcall GetModuleHandleW(wchar_t const*) noexcept
+__declspec(dllimport) extern void* __stdcall GetModuleHandleW(char16_t const*) noexcept
 #if 0
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
@@ -366,7 +366,7 @@ asm("GetFileInformationByHandle")
 #endif
 ;
 
-__declspec(dllimport) extern int __stdcall GetUserDefaultLocaleName(wchar_t*,int) noexcept
+__declspec(dllimport) extern int __stdcall GetUserDefaultLocaleName(char16_t*,int) noexcept
 #if 0
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
@@ -522,7 +522,7 @@ asm("GetTempPathA")
 #endif
 ;
 
-__declspec(dllimport) extern std::uint32_t __stdcall GetTempPathW(std::uint32_t,wchar_t* buffer) noexcept
+__declspec(dllimport) extern std::uint32_t __stdcall GetTempPathW(std::uint32_t,char16_t* buffer) noexcept
 #if 0
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
@@ -550,7 +550,7 @@ asm("CreateFileA")
 #endif
 ;
 
-__declspec(dllimport) extern void* __stdcall CreateFileW(wchar_t const*,std::uint32_t,std::uint32_t,security_attributes*,std::uint32_t,std::uint32_t,void*) noexcept
+__declspec(dllimport) extern void* __stdcall CreateFileW(char16_t const*,std::uint32_t,std::uint32_t,security_attributes*,std::uint32_t,std::uint32_t,void*) noexcept
 #if 0
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
@@ -744,7 +744,7 @@ asm("MessageBoxA")
 #endif
 ;
 
-__declspec(dllimport) extern std::uint32_t __stdcall MessageBoxW(void*,wchar_t const*,wchar_t const*,std::uint32_t) noexcept
+__declspec(dllimport) extern std::uint32_t __stdcall MessageBoxW(void*,char16_t const*,char16_t const*,std::uint32_t) noexcept
 #if 0
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
@@ -1375,7 +1375,7 @@ __declspec(dllimport)
 #elif __has_cpp_attribute(gnu::dllimport)
 [[gnu::dllimport]]
 #endif
-extern int __stdcall GetAddrInfoW(wchar_t const*,wchar_t const*,win32_addrinfo_ntw const*,win32_addrinfo_ntw**) noexcept
+extern int __stdcall GetAddrInfoW(char16_t const*,char16_t const*,win32_addrinfo_ntw const*,win32_addrinfo_ntw**) noexcept
 #if 0
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if !defined(__clang__)
