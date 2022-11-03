@@ -40,55 +40,52 @@ inline constexpr char_type const* find_simd_common_condition_impl(char_type cons
 {
 	constexpr unsigned N{vec_size/sizeof(char_type)};
 	using simd_vector_type = ::fast_io::intrinsics::simd_vector<char_type,N>;
+	simd_vector_type simdvec,simdvec2,simdvec3,simdvec4;
 
-	if constexpr(true)
+	constexpr std::ptrdiff_t n1{N};
+	constexpr std::ptrdiff_t n4{N*4};
+	constexpr unsigned N2{N+N},N3{N2+N};
+
+	std::size_t round{static_cast<std::size_t>(last-first)/N};
+	for(;3<round;round-=4)
 	{
-	simd_vector_type simdvec;
-	for(;N<=static_cast<std::size_t>(last-first);first+=N)
+		simdvec.load(first);
+		simdvec2.load(first+N);
+		simdvec3.load(first+N2);
+		simdvec4.load(first+N3);
+		bool v1{func(simdvec)};
+		bool v2{func(simdvec2)};
+		bool v3{func(simdvec3)};
+		bool v4{func(simdvec4)};
+		if(v1||v2||v3||v4)
+		{
+			if(!v1)
+			{
+			if(v2)
+			{
+				first+=N;
+			}
+			else if(v3)
+			{
+				first+=N2;
+			}
+			else if(v4)
+			{
+				first+=N3;
+			}
+			}
+			break;
+		}
+		first+=n4;
+	}
+	for(;round;--round)
 	{
 		simdvec.load(first);
 		if(func(simdvec))
 		{
 			break;
 		}
-	}
-	}
-	else
-	{
-		
-		#if 0
-		simd_vector_type simdvec,simdvec2,simdvec3,simdvec4;
-
-		constexpr std::ptrdiff_t n1{N};
-		constexpr std::ptrdiff_t n2{n1*2};
-		constexpr std::ptrdiff_t n3{n1*3};
-		constexpr std::ptrdiff_t n4{n1*4};
-		std::size_t round{static_cast<std::size_t>(last-first)/N};
-		for(;3<round;round-=4u)
-		{
-			simdvec.load(first);
-			simdvec2.load(first+n1);
-			simdvec3.load(first+n2);
-			simdvec4.load(first+n3);
-			bool v1{func(simdvec)};
-			bool v2{func(simdvec2)};
-			bool v3{func(simdvec3)};
-			bool v4{func(simdvec4)};
-			if(v1||v2||v3||v4)
-			{
-				break;
-			}
-			first+=n4;
-		}
-		if(round==1)
-		{
-			simdvec.load(first);
-			if(!func(simdvec))
-			{
-				first+=n1;
-			}
-		}
-		#endif
+		first+=n1;
 	}
 	return first;
 }
@@ -369,7 +366,7 @@ inline constexpr char_type const* find_simd_constant_common_impl(char_type const
 #if defined(__GLIBC__) && defined(__GLIBC_MINOR__)
 #if (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 26))
 //For glibc >= 2.26, we use glibc's memchr implementation under hosted environment
-	!findnot
+	!findnot && 0
 #endif
 #endif
 #endif
