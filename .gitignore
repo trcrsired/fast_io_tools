@@ -49,3 +49,4 @@ Thumbs.db
 *.wmv
 
 /win32mangling/*.s
+/i18n/i18n_tz/tzdata-latest
