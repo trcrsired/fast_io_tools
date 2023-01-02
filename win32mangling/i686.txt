@@ -1,12 +1,12 @@
 __imp_?GetLastError@win32@fast_io@@YGIXZ __imp__GetLastError@0
 __imp_?LoadLibraryA@win32@fast_io@@YGPAXPBD@Z __imp__LoadLibraryA@4
-__imp_?LoadLibraryW@win32@fast_io@@YGPAXPB_W@Z __imp__LoadLibraryW@4
+__imp_?LoadLibraryW@win32@fast_io@@YGPAXPB_S@Z __imp__LoadLibraryW@4
 __imp_?LoadLibraryExA@win32@fast_io@@YGPAXPBDPAXI@Z __imp__LoadLibraryExA@12
-__imp_?LoadLibraryExW@win32@fast_io@@YGPAXPB_WPAXI@Z __imp__LoadLibraryExW@12
+__imp_?LoadLibraryExW@win32@fast_io@@YGPAXPB_SPAXI@Z __imp__LoadLibraryExW@12
 __imp_?FormatMessageA@win32@fast_io@@YGIIPBDIIPADIPAX@Z __imp__FormatMessageA@28
-__imp_?FormatMessageW@win32@fast_io@@YGIIPB_WIIPA_WIPAX@Z __imp__FormatMessageW@28
+__imp_?FormatMessageW@win32@fast_io@@YGIIPB_SIIPA_SIPAX@Z __imp__FormatMessageW@28
 __imp_?CreateFileMappingA@win32@fast_io@@YGPAXPAXPAUsecurity_attributes@12@IIIPBD@Z __imp__CreateFileMappingA@24
-__imp_?CreateFileMappingW@win32@fast_io@@YGPAXPAXPAUsecurity_attributes@12@IIIPB_W@Z __imp__CreateFileMappingW@24
+__imp_?CreateFileMappingW@win32@fast_io@@YGPAXPAXPAUsecurity_attributes@12@IIIPB_S@Z __imp__CreateFileMappingW@24
 __imp_?MapViewOfFile@win32@fast_io@@YGPAXPAXIIII@Z __imp__MapViewOfFile@20
 __imp_?SetEndOfFile@win32@fast_io@@YGHPAX@Z __imp__SetEndOfFile@4
 __imp_?UnmapViewOfFile@win32@fast_io@@YGHPBX@Z __imp__UnmapViewOfFile@4
@@ -20,11 +20,11 @@ __imp_?CreatePipe@win32@fast_io@@YGHPAPAX0PAUsecurity_attributes@12@I@Z __imp__C
 __imp_?FreeLibrary@win32@fast_io@@YGHPAX@Z __imp__FreeLibrary@4
 __imp_?GetProcAddress@win32@fast_io@@YGP6GHX_EPAXPBD@Z __imp__GetProcAddress@8
 __imp_?GetModuleHandleA@win32@fast_io@@YGPAXPBD@Z __imp__GetModuleHandleA@4
-__imp_?GetModuleHandleW@win32@fast_io@@YGPAXPB_W@Z __imp__GetModuleHandleW@4
+__imp_?GetModuleHandleW@win32@fast_io@@YGPAXPB_S@Z __imp__GetModuleHandleW@4
 __imp_?WaitForSingleObject@win32@fast_io@@YGIPAXI@Z __imp__WaitForSingleObject@8
 __imp_?CancelIo@win32@fast_io@@YGIPAX@Z __imp__CancelIo@4
 __imp_?GetFileInformationByHandle@win32@fast_io@@YGHPIAXPIAUby_handle_file_information@12@@Z __imp__GetFileInformationByHandle@8
-__imp_?GetUserDefaultLocaleName@win32@fast_io@@YGHPA_WH@Z __imp__GetUserDefaultLocaleName@8
+__imp_?GetUserDefaultLocaleName@win32@fast_io@@YGHPA_SH@Z __imp__GetUserDefaultLocaleName@8
 __imp_?GetUserDefaultLCID@win32@fast_io@@YGIXZ __imp__GetUserDefaultLCID@0
 __imp_?GetSystemTimePreciseAsFileTime@win32@fast_io@@YGXPAUfiletime@12@@Z __imp__GetSystemTimePreciseAsFileTime@4
 __imp_?GetSystemTimeAsFileTime@win32@fast_io@@YGXPAUfiletime@12@@Z __imp__GetSystemTimeAsFileTime@4
@@ -36,9 +36,9 @@ __imp_?GetThreadTimes@win32@fast_io@@YGHPAXPAUfiletime@12@111@Z __imp__GetThread
 __imp_?GetHandleInformation@win32@fast_io@@YGHPAXPAI@Z __imp__GetHandleInformation@8
 __imp_?SetHandleInformation@win32@fast_io@@YGHPAXII@Z __imp__SetHandleInformation@12
 __imp_?GetTempPathA@win32@fast_io@@YGIIPAD@Z __imp__GetTempPathA@8
-__imp_?GetTempPathW@win32@fast_io@@YGIIPA_W@Z __imp__GetTempPathW@8
+__imp_?GetTempPathW@win32@fast_io@@YGIIPA_S@Z __imp__GetTempPathW@8
 __imp_?CreateFileA@win32@fast_io@@YGPAXPBDIIPAUsecurity_attributes@12@IIPAX@Z __imp__CreateFileA@28
-__imp_?CreateFileW@win32@fast_io@@YGPAXPB_WIIPAUsecurity_attributes@12@IIPAX@Z __imp__CreateFileW@28
+__imp_?CreateFileW@win32@fast_io@@YGPAXPB_SIIPAUsecurity_attributes@12@IIPAX@Z __imp__CreateFileW@28
 __imp_?CreateIoCompletionPort@win32@fast_io@@YGPAXPAX0II@Z __imp__CreateIoCompletionPort@16
 __imp_?SystemFunction036@win32@fast_io@@YGHPAXI@Z __imp__SystemFunction036@8
 __imp_?CloseHandle@win32@fast_io@@YGHPAX@Z __imp__CloseHandle@4
@@ -50,7 +50,7 @@ __imp_?GetACP@win32@fast_io@@YGIXZ __imp__GetACP@0
 __imp_?GetEnvironmentVariableA@win32@fast_io@@YGIPBDPADI@Z __imp__GetEnvironmentVariableA@12
 __imp_?GetEnvironmentVariableW@win32@fast_io@@YGIPB_SPA_SI@Z __imp__GetEnvironmentVariableW@12
 __imp_?MessageBoxA@win32@fast_io@@YGIPAXPBD1I@Z __imp__MessageBoxA@16
-__imp_?MessageBoxW@win32@fast_io@@YGIPAXPB_W1I@Z __imp__MessageBoxW@16
+__imp_?MessageBoxW@win32@fast_io@@YGIPAXPB_S1I@Z __imp__MessageBoxW@16
 __imp_?GetConsoleMode@win32@fast_io@@YGHPAXPAI@Z __imp__GetConsoleMode@8
 __imp_?SetConsoleMode@win32@fast_io@@YGHPAXI@Z __imp__SetConsoleMode@8
 __imp_?ReadConsoleA@win32@fast_io@@YGHPAX0IPAI0@Z __imp__ReadConsoleA@20
@@ -93,11 +93,16 @@ __imp_?GetQueuedCompletionStatus@win32@fast_io@@YGHPAXPAI1PAUoverlapped@12@I@Z _
 __imp_?freeaddrinfo@win32@fast_io@@YGXPAU?$win32_family_addrinfo@$0A@@12@@Z __imp__freeaddrinfo@4
 __imp_?FreeAddrInfoW@win32@fast_io@@YGXPAU?$win32_family_addrinfo@$00@12@@Z __imp__FreeAddrInfoW@4
 __imp_?getaddrinfo@win32@fast_io@@YGHPBD0PBU?$win32_family_addrinfo@$0A@@12@PAPAU312@@Z __imp__getaddrinfo@16
-__imp_?GetAddrInfoW@win32@fast_io@@YGHPB_W0PBU?$win32_family_addrinfo@$00@12@PAPAU312@@Z __imp__GetAddrInfoW@16
+__imp_?GetAddrInfoW@win32@fast_io@@YGHPB_S0PBU?$win32_family_addrinfo@$00@12@PAPAU312@@Z __imp__GetAddrInfoW@16
 __imp_?CryptAcquireContextA@win32@fast_io@@YGHPAIPB_Q1II@Z __imp__CryptAcquireContextA@20
 __imp_?CryptAcquireContextW@win32@fast_io@@YGHPAIPB_S1II@Z __imp__CryptAcquireContextW@20
 __imp_?CryptReleaseContext@win32@fast_io@@YGHII@Z __imp__CryptReleaseContext@8
 __imp_?CryptGenRandom@win32@fast_io@@YGHIIPAE@Z __imp__CryptGenRandom@12
+__imp_?RegOpenKeyA@win32@fast_io@@YGHIPB_QPAI@Z __imp__RegOpenKeyA
+__imp_?RegOpenKeyW@win32@fast_io@@YGHIPB_SPAI@Z __imp__RegOpenKeyW
+__imp_?RegQueryValueExA@win32@fast_io@@YGHIPB_QPAI1PAX1@Z __imp__RegQueryValueExA
+__imp_?RegQueryValueExW@win32@fast_io@@YGHIPB_SPAI1PAX1@Z __imp__RegQueryValueExW
+__imp_?RegCloseKey@win32@fast_io@@YGHI@Z __imp__RegCloseKey
 
 
 __imp_?rtl_nt_status_to_dos_error@nt@win32@fast_io@@YGII@Z __imp__RtlNtStatusToDosError@4
@@ -129,7 +134,7 @@ __imp_?NtSetSystemTime@nt@win32@fast_io@@YGIPA_K0@Z __imp__NtSetSystemTime@8
 __imp_?ZwSetSystemTime@nt@win32@fast_io@@YGIPA_K0@Z __imp__ZwSetSystemTime@8
 __imp_?NtCreateProcess@nt@win32@fast_io@@YGIPAPAXIPAUobject_attributes@123@PAXI222@Z __imp__NtCreateProcess@32
 __imp_?ZwCreateProcess@nt@win32@fast_io@@YGIPAPAXIPAUobject_attributes@123@PAXI222@Z __imp__ZwCreateProcess@32
-__imp_?rtl_dos_path_name_to_nt_path_name_u@nt@win32@fast_io@@YGIPB_WPAUunicode_string@123@PAPB_WPAUrtl_relative_name_u@123@@Z __imp__RtlDosPathNameToNtPathName_U@16
+__imp_?rtl_dos_path_name_to_nt_path_name_u@nt@win32@fast_io@@YGEPB_WPAUunicode_string@123@PAPB_WPAUrtl_relative_name_u@123@@Z __imp__RtlDosPathNameToNtPathName_U@16
 __imp_?rtl_dos_path_name_to_nt_path_name_u_with_status@nt@win32@fast_io@@YGIPB_WPAUunicode_string@123@PAPB_WPAUrtl_relative_name_u@123@@Z __imp__RtlDosPathNameToNtPathName_U_WithStatus@16
 __imp_?rtl_free_unicode_string@nt@win32@fast_io@@YGXPAUunicode_string@123@@Z __imp__RtlFreeUnicodeString@4
 __imp_?RtlInitializeCriticalSection@nt@win32@fast_io@@YGXPAX@Z __imp__RtlInitializeCriticalSection@4

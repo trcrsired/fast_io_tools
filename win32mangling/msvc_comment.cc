@@ -16,8 +16,9 @@ int main(int argc,char** argv)
 	fast_io::u8ibuf_file ibf(fast_io::mnp::os_c_str(argv[1]));
 	fast_io::u8obuf_file obf(fast_io::mnp::os_c_str(argv[2]));
 	print(obf,u8"#pragma once\n\n");
-	for(std::u8string_view line:line_scanner(ibf))
+	for(auto& linesc:line_scanner(ibf))
 	{
+		std::u8string_view line{linesc};
 		if(line.empty())
 			continue;
 		auto i{line.rfind(u8' ')};
