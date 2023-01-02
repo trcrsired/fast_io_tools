@@ -98,6 +98,11 @@ __imp_?CryptAcquireContextA@win32@fast_io@@YAHPEA_KPEB_Q1II@Z __imp_CryptAcquire
 __imp_?CryptAcquireContextW@win32@fast_io@@YAHPEA_KPEB_S1II@Z __imp_CryptAcquireContextW
 __imp_?CryptReleaseContext@win32@fast_io@@YAH_KI@Z __imp_CryptReleaseContext
 __imp_?CryptGenRandom@win32@fast_io@@YAH_KIPEAE@Z __imp_CryptGenRandom
+__imp_?RegOpenKeyA@win32@fast_io@@YAH_KPEB_QPEA_K@Z __imp_RegOpenKeyA
+__imp_?RegOpenKeyW@win32@fast_io@@YAH_KPEB_SPEA_K@Z __imp_RegOpenKeyW
+__imp_?RegQueryValueExA@win32@fast_io@@YAH_KPEB_QPEAI2PEAX2@Z __imp_RegQueryValueExA
+__imp_?RegQueryValueExW@win32@fast_io@@YAH_KPEB_SPEAI2PEAX2@Z __imp_RegQueryValueExW
+__imp_?RegCloseKey@win32@fast_io@@YAH_K@Z __imp_RegCloseKey
 
 
 __imp_?rtl_nt_status_to_dos_error@nt@win32@fast_io@@YAII@Z __imp_RtlNtStatusToDosError
