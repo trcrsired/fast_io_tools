@@ -7,7 +7,14 @@ namespace fast_io::win32
 
 extern ::std::int_least32_t RegOpenKeyW(::std::uintptr_t,char16_t const*,::std::uintptr_t*) noexcept __asm__("RegOpenKeyW");
 
-extern ::std::int_least32_t RegQueryValueExW(::std::uintptr_t,char16_t const*,::std::uint_least32_t*,::std::uint_least32_t*,void*,::std::uint_least32_t*) noexcept __asm__("RegQueryValueExW ");
+extern ::std::int_least32_t RegQueryValueExW(::std::uintptr_t,char16_t const*,::std::uint_least32_t*,::std::uint_least32_t*,void*,::std::uint_least32_t*) noexcept __asm__("RegQueryValueExW");
+
+extern ::std::int_least32_t RegOpenKeyA(::std::uintptr_t,char16_t const*,::std::uintptr_t*) noexcept __asm__("RegOpenKeyA");
+
+extern ::std::int_least32_t RegQueryValueExA(::std::uintptr_t,char16_t const*,::std::uint_least32_t*,::std::uint_least32_t*,void*,::std::uint_least32_t*) noexcept __asm__("RegQueryValueExA");
+
+extern ::std::int_least32_t RegCloseKey(::std::uintptr_t) noexcept __asm__("RegCloseKey");
+
 }
 
 int main()
