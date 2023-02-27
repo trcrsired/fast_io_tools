@@ -49,7 +49,8 @@ template<::std::integral char_type,::std::size_t base,bool upper>
 inline constexpr auto& get_digits_table() noexcept
 {
 	constexpr bool up{(base<=10u)?false:upper};
-	if constexpr(::fast_io::details::is_ebcdic<char_type>)
+	if constexpr(::fast_io::details::is_ebcdic<char_type>||
+		(::std::same_as<char_type,wchar_t>&&::fast_io::details::wide_is_none_utf_endian))
 	{
 		return ::fast_io::details::digits_table_impl<char_type,base,up>;
 	}
