@@ -48,7 +48,7 @@ inline constexpr auto digits_table_impl{generate_digits_table<char_type,base,upp
 template<::std::integral char_type,::std::size_t base,bool upper>
 inline constexpr auto& get_digits_table() noexcept
 {
-	constexpr bool up{(base<11u)?false:upper};
+	constexpr bool up{(base<=10u)?false:upper};
 	if constexpr(::fast_io::details::is_ebcdic<char_type>)
 	{
 		return ::fast_io::details::digits_table_impl<char_type,base,up>;
