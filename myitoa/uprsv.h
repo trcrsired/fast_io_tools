@@ -10,7 +10,7 @@ namespace fast_io::details
 {
 
 template<::std::integral char_type>
-inline constexpr char_type *uprsv32_impl(char_type *iter,::std::uint_least32_t value) noexcept
+inline constexpr char_type* uprsv32_impl(char_type *iter,::std::uint_least32_t value) noexcept
 {
 	constexpr
 		char_type *digitstb{digits_table<char_type,10,false>.data()};
@@ -103,7 +103,7 @@ inline constexpr char_type *uprsv32_impl(char_type *iter,::std::uint_least32_t v
 
 #if 0
 template<::std::integral char_type>
-inline constexpr char_type *uprsv64_impl(char_type *iter,::std::uint_least32_t value) noexcept
+inline constexpr char_type* uprsv64_impl(char_type *iter,::std::uint_least32_t value) noexcept
 {
 
 }
