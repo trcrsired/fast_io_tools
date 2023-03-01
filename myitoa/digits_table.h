@@ -3,13 +3,27 @@
 namespace fast_io::details
 {
 
-template<::std::integral char_type,::std::size_t base,bool upper>
-requires (2<=base&&base<=36)
+template<::std::integral char_type,bool upper>
 inline constexpr auto charliteralofnumber(char8_t v) noexcept
 {
 	if(v<10u)
 	{
 		return ::fast_io::char_literal_add<char_type>(v);
+	}
+	else if constexpr(::fast_io::details::is_ebcdic<char_type>)
+	{
+		if(v<19u)
+		{
+			return ::fast_io::char_literal_add<char_type,upper?u8'A':u8'a'>(static_cast<char8_t>(v-UINT8_C(10)));
+		}
+		else if(v<28u)
+		{
+			return ::fast_io::char_literal_add<char_type,upper?u8'J':u8'j'>(static_cast<char8_t>(v-UINT8_C(19)));
+		}
+		else
+		{
+			return ::fast_io::char_literal_add<char_type,upper?u8'S':u8's'>(static_cast<char8_t>(v-UINT8_C(28)));
+		}
 	}
 	else
 	{
@@ -30,13 +44,13 @@ inline constexpr auto generate_digits_table() noexcept
 	for(char8_t i{};i!=char8base;++i)
 	{
 		::std::size_t const ibase{static_cast<::std::size_t>(i)*base2};
-		auto ch0{::fast_io::details::charliteralofnumber<char_type,base,upper>(i)};
+		auto ch0{::fast_io::details::charliteralofnumber<char_type,upper>(i)};
 		for(char8_t j{};j!=char8base;++j)
 		{
 			::std::size_t const jsz{static_cast<::std::size_t>(j)};
 			::std::size_t const ibpjsz{ibase+(jsz<<1)};
 			tb[ibpjsz]=ch0;
-			tb[ibpjsz+1]=::fast_io::details::charliteralofnumber<char_type,base,upper>(j);
+			tb[ibpjsz+1]=::fast_io::details::charliteralofnumber<char_type,upper>(j);
 		}
 	}
 	return tb;
