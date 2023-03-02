@@ -13,7 +13,7 @@ template<::std::integral char_type>
 inline constexpr char_type* uprsv32_impl(char_type *iter,::std::uint_least32_t value) noexcept
 {
 	constexpr
-		auto const* digitstb{digits_table<char_type,10,false>.data()};
+		auto const *digitstb{digits_table<char_type,10,false>.data()};
 
 	constexpr
 		::std::uint_least32_t mask24{(UINT32_C(1)<<UINT32_C(24))-UINT32_C(1)};
