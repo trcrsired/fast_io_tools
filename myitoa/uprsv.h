@@ -13,7 +13,7 @@ template<::std::integral char_type>
 inline constexpr char_type* uprsv32_impl(char_type *iter,::std::uint_least32_t value) noexcept
 {
 	constexpr
-		char_type *digitstb{digits_table<char_type,10,false>.data()};
+		char_type const* digitstb{digits_table<char_type,10,false>.data()};
 
 	constexpr
 		::std::uint_least32_t mask24{UINT32_C(1)<<UINT32_C(24)-UINT32_C(1)};
@@ -25,8 +25,10 @@ inline constexpr char_type* uprsv32_impl(char_type *iter,::std::uint_least32_t v
 		::std::uint_least32_t onee8{UINT32_C(100000000)};
 
 	constexpr
-		::std::uint_least32_t magic32{UINT32_C(4295015706)};
+		::std::uint_least32_t magic32{UINT32_C(429497)};
 
+	constexpr
+		::std::uint_least64_t magic48{UINT32_C(281474977)};
 
 	bool const lessthan1e8{value<onee8};
 
@@ -55,50 +57,56 @@ inline constexpr char_type* uprsv32_impl(char_type *iter,::std::uint_least32_t v
 	}
 	else
 	{
+		::std::uint_least32_t low,high;
 		if(first8 < UINT32_C(1000000))
 		{
-			::std::uint_least32_t f0high;
-			::std::uint_least32_t const f0low
-			{
-				::fast_io::details::intrinsics::umul_least_32(first8,magic32,f0high)
-			};
-			bool const lessthan10{f0high < UINT32_C(10)};
+			low = ::fast_io::details::intrinsics::umul_least_32(first8,magic32,high);
+			bool const lessthan10{high < UINT32_C(10)};
 			::fast_io::details::non_overlapped_copy_n(digitstb+((first8+lessthan10)<<1),2u,iter);
 			iter+=!lessthan10;
-			::std::uint_least32_t f2high;
-			::std::uint_least32_t const f2low
-			{
-				::fast::details::intrinsics::umul_least_32(f0low,UINT32_C(100),f2high)
-			};
-			::fast_io::details::non_overlapped_copy_n(digitstb+(f2high<<1),2u,iter);
-			::std::uint_least32_t f4high;
-			::fast::details::intrinsics::umul_least_32(f2low,UINT32_C(100),f4high);
-			::fast_io::details::non_overlapped_copy_n(digitstb+(f4high<<1),2u,iter);
-			iter+=4;
 		}
 		else
 		{
-			::std::uint_least32_t f0high;
-			::std::uint_least32_t const f0low
-			{
-				::fast_io::details::intrinsics::umul_least_32(first8,magic32,f0high)
-			};
-			bool const lessthan10{f0high < UINT32_C(10)};
-			::fast_io::details::non_overlapped_copy_n(digitstb+((first8+lessthan10)<<1),2u,iter);
+			::std::uint_least64_t const temp{(magic48*first8)>>16};
+			low =::fast_io::details::intrinsics::unpack_ul64(temp,high);
+			bool const lessthan10{high < UINT32_C(10)};
+			::fast_io::details::non_overlapped_copy_n(digitstb+((high+lessthan10)<<1),2u,iter);
 			iter+=!lessthan10;
-			::std::uint_least32_t f2high;
-			::std::uint_least32_t const f2low
-			{
-				::fast::details::intrinsics::umul_least_32(f0low,UINT32_C(100),f2high)
-			};
-			::fast_io::details::non_overlapped_copy_n(digitstb+(f2high<<1),2u,iter);
-			::std::uint_least32_t f4high;
-			::fast::details::intrinsics::umul_least_32(f2low,UINT32_C(100),f4high);
-			::fast_io::details::non_overlapped_copy_n(digitstb+(f4high<<1),2u,iter);
-			iter+=6;
+			::std::uint_least32_t high;
+			low = ::fast_io::details::intrinsics::umul_least_32(low,magic32,high);
+			::fast_io::details::non_overlapped_copy_n(digitstb+(high<<1),2u,iter);
+			iter+=2;
 		}
+
+		low = ::fast_io::details::intrinsics::umul_least_32(low,UINT32_C(100),high);
+		::fast_io::details::non_overlapped_copy_n(digitstb+(high<<1),2u,iter);
+
+		low = ::fast_io::details::intrinsics::umul_least_32(low,UINT32_C(100),high);
+		::fast_io::details::non_overlapped_copy_n(digitstb+(high<<1),2u,iter+2);
+
+		iter+=4;
 	}
-//	if()
+	if(!lessthan1e8)
+	{
+		::std::uint_least32_t const f0{value-first8*onee8};
+		::std::uint_least32_t high;
+		::std::uint_least64_t low{(magic48*f0)>>16};
+
+		low = ::fast_io::details::intrinsics::unpack_ul64(low,high);
+		::fast_io::details::non_overlapped_copy_n(digitstb+(high<<1),2u,iter);
+
+		low = ::fast_io::details::intrinsics::umul_least_32(low,magic32,high);
+		::fast_io::details::non_overlapped_copy_n(digitstb+(high<<1),2u,iter+2);
+
+		low = ::fast_io::details::intrinsics::umul_least_32(low,magic32,high);
+		::fast_io::details::non_overlapped_copy_n(digitstb+(high<<1),2u,iter+4);
+
+		low = ::fast_io::details::intrinsics::umul_least_32(low,magic32,high);
+		::fast_io::details::non_overlapped_copy_n(digitstb+(high<<1),2u,iter+6);
+
+		iter+=8;
+	}
+	return iter;
 }
 
 #if 0
