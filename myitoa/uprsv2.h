@@ -202,4 +202,114 @@ inline constexpr char_type* uprsv64_impl(char_type *iter,::std::uint_least64_t v
 	return iter;
 }
 
+#ifdef __SIZEOF_INT128__
+
+template<::std::integral char_type>
+inline constexpr char_type* uprsv128_18digits_impl(char_type *iter,::std::uint_least64_t value) noexcept
+{
+	constexpr
+		auto const *digitstb{digits_table<char_type,10,false>.data()};
+
+	constexpr
+		::std::size_t tocopybytes{sizeof(char_type)*2u};
+
+	constexpr
+		::std::uint_least32_t onee8{UINT32_C(100000000)};
+
+	::std::uint_least64_t a12{value/onee8};
+	::std::uint_least32_t a3{static_cast<::std::uint_least32_t>(value%onee8)};
+
+	::std::uint_least64_t a1u64{static_cast<::std::uint_least32_t>(a12/onee8)};
+
+#if __has_cpp_attribute(assume)
+	[[assume(a1u64<UINT32_C(100))]];
+#endif
+
+	::std::uint_least32_t a1{static_cast<::std::uint_least32_t>(a1u64)};
+	::std::uint_least32_t a2{static_cast<::std::uint_least32_t>(a12%onee8)};
+
+	::fast_io::details::intrinsics::typed_memcpy(iter,digitstb+(a1<<1),tocopybytes);
+	iter += 2;
+	iter = uprsv_handle8_impl<false>(iter,a2);
+	return uprsv_handle8_impl<false>(iter,a3);
+}
+
+template<::std::integral char_type>
+inline constexpr char_type* uprsv128_impl(char_type *iter,__uint128_t value) noexcept
+{
+	::std::uint_least64_t high;
+	::std::uint_least64_t low{::fast_io::details::intrinsics::unpack_generic(value,high)};
+
+	if(!high)
+	{
+		return uprsv64_impl(iter,low);
+	}
+
+	constexpr
+		::std::uint_least64_t onee18{UINT64_C(1000000000000000000)};
+
+	constexpr
+		__uint128_t onee36{static_cast<__uint128_t>(onee18)*static_cast<__uint128_t>(onee18)};
+
+
+	if(value < onee36)
+	{
+		auto vdiv1_u128{value / onee18};
+#if __has_cpp_attribute(assume)
+		[[assume(vdiv1_u128<onee18)]];
+#endif
+		low=static_cast<::std::uint_least64_t>(value % onee18);
+		
+		iter=uprsv64_impl(iter,static_cast<::std::uint_least64_t>(vdiv1_u128));
+	}
+	else
+	{
+		auto vdiv{value / onee36};
+		auto vmod{value % onee36};
+#if __has_cpp_attribute(assume)
+		[[assume(vdiv<UINT32_C(1000))]];
+#endif
+		::std::uint_least32_t vvv{static_cast<::std::uint_least32_t>(vdiv)};
+		iter=uprsv32_impl(iter,vvv);
+
+		auto vdiv1_u128{vmod / onee18};
+#if __has_cpp_attribute(assume)
+		[[assume(vdiv1_u128<::fast_io::details::compile_pow10<::std::uint_least64_t,18>)]];
+#endif
+		
+		low=static_cast<::std::uint_least64_t>(vmod % onee18);
+		iter=uprsv128_18digits_impl(iter,static_cast<::std::uint_least64_t>(vdiv1_u128));
+	}
+	return uprsv128_18digits_impl(iter,low);
+}
+
+#endif
+
+template<::std::integral char_type,::fast_io::details::my_unsigned_integral uinttype>
+#if __has_cpp_attribute(__gnu__::__always_inline__)
+[[__gnu__::__always_inline__]]
+#elif __has_cpp_attribute(msvc::forceinline)
+[[msvc::forceinline]]
+#endif
+inline constexpr char_type* uprsv_main(char_type *iter,uinttype value) noexcept
+{
+	if constexpr(sizeof(uinttype)<=sizeof(::std::uint_least32_t))
+	{
+		return uprsv32_impl(iter,static_cast<::std::uint_least32_t>(value));
+	}
+	else
+#ifdef __SIZEOF_INT128__
+	if constexpr(sizeof(uinttype)<=sizeof(::std::uint_least64_t))
+#endif
+	{
+		return uprsv64_impl(iter,static_cast<::std::uint_least64_t>(value));
+	}
+#ifdef __SIZEOF_INT128__
+	else 
+	{
+		return uprsv64_impl(iter,static_cast<__uint128_t>(value));
+	}
+#endif
+}
+
 }
