@@ -51,7 +51,7 @@ inline constexpr char_type* uprsv32_impl(char_type *iter,::std::uint_least32_t v
 			::std::uint_least32_t const f2{static_cast<::std::uint_least32_t>(((f0&mask24)*UINT32_C(100))>>UINT32_C(24))};
 			::std::uint_least32_t const f01{static_cast<::std::uint_least32_t>(f0>>UINT32_C(24))};
 #if __has_cpp_attribute(assume)
-			[[assume(f01)<UINT32_C(100)]];
+			[[assume(f01<UINT32_C(100))]];
 #endif
 			bool const lessthan10{f01 < UINT32_C(10)};
 			::fast_io::details::intrinsics::typed_memcpy(iter,digitstb+lessthan10+(f01<<1),tocopybytes);
@@ -67,7 +67,7 @@ inline constexpr char_type* uprsv32_impl(char_type *iter,::std::uint_least32_t v
 		{
 			low = ::fast_io::details::intrinsics::umul_least_32(first8,magic32,high);
 #if __has_cpp_attribute(assume)
-			[[assume(high)<UINT32_C(100)]];
+			[[assume(high<UINT32_C(100))]];
 #endif
 			bool const lessthan10{high < UINT32_C(10)};
 			::fast_io::details::intrinsics::typed_memcpy(iter,digitstb+lessthan10+(high<<1),tocopybytes);
@@ -78,7 +78,7 @@ inline constexpr char_type* uprsv32_impl(char_type *iter,::std::uint_least32_t v
 			::std::uint_least64_t const temp{(magic48*first8)>>16};
 			low = ::fast_io::details::intrinsics::unpack_ul64(temp,high);
 #if __has_cpp_attribute(assume)
-			[[assume(high)<UINT32_C(100)]];
+			[[assume(high<UINT32_C(100))]];
 #endif
 			bool const lessthan10{high < UINT32_C(10)};
 			::fast_io::details::intrinsics::typed_memcpy(iter,digitstb+lessthan10+(high<<1),tocopybytes);
@@ -86,7 +86,7 @@ inline constexpr char_type* uprsv32_impl(char_type *iter,::std::uint_least32_t v
 			::std::uint_least32_t high;
 			low = ::fast_io::details::intrinsics::umul_least_32(low,UINT32_C(100),high);
 #if __has_cpp_attribute(assume)
-			[[assume(high)<UINT32_C(100)]];
+			[[assume(high<UINT32_C(100))]];
 #endif
 			::fast_io::details::intrinsics::typed_memcpy(iter,digitstb+(high<<1),tocopybytes);
 			iter+=2;
@@ -94,13 +94,13 @@ inline constexpr char_type* uprsv32_impl(char_type *iter,::std::uint_least32_t v
 
 		low = ::fast_io::details::intrinsics::umul_least_32(low,UINT32_C(100),high);
 #if __has_cpp_attribute(assume)
-		[[assume(high)<UINT32_C(100)]];
+		[[assume(high<UINT32_C(100))]];
 #endif
 		::fast_io::details::intrinsics::typed_memcpy(iter,digitstb+(high<<1),tocopybytes);
 
 		high = ::fast_io::details::intrinsics::umulh_least_32(low,UINT32_C(100));
 #if __has_cpp_attribute(assume)
-		[[assume(high)<UINT32_C(100)]];
+		[[assume(high<UINT32_C(100))]];
 #endif
 		::fast_io::details::intrinsics::typed_memcpy(iter+2,digitstb+(high<<1),tocopybytes);
 
@@ -109,32 +109,32 @@ inline constexpr char_type* uprsv32_impl(char_type *iter,::std::uint_least32_t v
 	if(!lessthan1e8)
 	{
 #if __has_cpp_attribute(assume)
-		[[assume(first8)<UINT32_C(4295)]];
+		[[assume(first8<UINT32_C(4295))]];
 #endif
 		::std::uint_least32_t const f0{value-first8*onee8};
 		::std::uint_least64_t temp{(magic48*f0)>>16};
 		::std::uint_least32_t high;
 		::std::uint_least32_t low{::fast_io::details::intrinsics::unpack_ul64(temp,high)};
 #if __has_cpp_attribute(assume)
-		[[assume(high)<UINT32_C(100)]];
+		[[assume(high<UINT32_C(100))]];
 #endif
 		::fast_io::details::intrinsics::typed_memcpy(iter,digitstb+(high<<1),tocopybytes);
 
 		low = ::fast_io::details::intrinsics::umul_least_32(low,UINT32_C(100),high);
 #if __has_cpp_attribute(assume)
-		[[assume(high)<UINT32_C(100)]];
+		[[assume(high<UINT32_C(100))]];
 #endif
 		::fast_io::details::intrinsics::typed_memcpy(iter+2,digitstb+(high<<1),tocopybytes);
 
 		low = ::fast_io::details::intrinsics::umul_least_32(low,UINT32_C(100),high);
 #if __has_cpp_attribute(assume)
-		[[assume(high)<UINT32_C(100)]];
+		[[assume(high<UINT32_C(100))]];
 #endif
 		::fast_io::details::intrinsics::typed_memcpy(iter+4,digitstb+(high<<1),tocopybytes);
 
 		high = ::fast_io::details::intrinsics::umulh_least_32(low,UINT32_C(100));
 #if __has_cpp_attribute(assume)
-		[[assume(high)<UINT32_C(100)]];
+		[[assume(high<UINT32_C(100))]];
 #endif
 		::fast_io::details::intrinsics::typed_memcpy(iter+6,digitstb+(high<<1),tocopybytes);
 
