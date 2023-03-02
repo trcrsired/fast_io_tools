@@ -98,10 +98,10 @@ inline constexpr char_type* uprsv32_impl(char_type *iter,::std::uint_least32_t v
 		low = ::fast_io::details::intrinsics::umul_least_32(low,UINT32_C(100),high);
 		::fast_io::details::non_overlapped_copy_n(digitstb+(high<<1),2u,iter+2);
 
-		low = ::fast_io::details::intrinsics::umul_least_32(low,,UINT32_C(100),high);
+		low = ::fast_io::details::intrinsics::umul_least_32(low,UINT32_C(100),high);
 		::fast_io::details::non_overlapped_copy_n(digitstb+(high<<1),2u,iter+4);
 
-		low = ::fast_io::details::intrinsics::umul_least_32(low,,UINT32_C(100),high);
+		low = ::fast_io::details::intrinsics::umul_least_32(low,UINT32_C(100),high);
 		::fast_io::details::non_overlapped_copy_n(digitstb+(high<<1),2u,iter+6);
 
 		iter+=8;
