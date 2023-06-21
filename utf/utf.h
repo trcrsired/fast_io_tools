@@ -40,8 +40,7 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 		::fast_io::intrinsics::simd_vector<::std::uint_least8_t,16> zeros{};
 	::fast_io::intrinsics::simd_vector<::std::uint_least8_t,16> simvec;
 	::fast_io::intrinsics::simd_vector<::std::uint_least8_t,16> ret;
-	for(;20<fromlast-fromfirst&&
-		16<tolast-tofirst;)
+	for(;fromfirst<fromlast;)
 	{
 		simvec.load(fromfirst);
 
@@ -101,44 +100,47 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 				++tofirst;
 			}
 		}
-		::std::uint_least32_t val;
-		__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
-		char unsigned v;
-		if constexpr(::std::endian::little==::std::endian::native)
+		for(;fromfirst<fromlast&&0x80u<=*fromfirst;)
 		{
-			v=static_cast<char unsigned>(val);
-			val=::std::byteswap(val);
-		}
-		else
-		{
-			v=static_cast<char unsigned>(val>>24u);
-		}
-		int length{::std::countl_one(v)};
-		if(4<length)
-		{
-			*tofirst=0xFFFD;
-			++fromfirst;
-			++tofirst;
-			continue;
-		}
-		auto lengthm2{length-2};
-		::std::uint_least32_t mask{utf8masks[lengthm2]};
-		::std::uint_least32_t maskcond{utf8maskscond[lengthm2]};
-		if((val&mask)!=maskcond)
-		{
-			*tofirst=0xFFFD;
+			::std::uint_least32_t val;
+			__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
+			char unsigned v;
+			if constexpr(::std::endian::little==::std::endian::native)
+			{
+				v=static_cast<char unsigned>(val);
+				val=::std::byteswap(val);
+			}
+			else
+			{
+				v=static_cast<char unsigned>(val>>24u);
+			}
+			int length{::std::countl_one(v)};
+			if(length==1||4<length)
+			{
+				*tofirst=0xFFFD;
+				++fromfirst;
+				++tofirst;
+				continue;
+			}
+			auto lengthm2{length-2};
+			::std::uint_least32_t mask{utf8masks[lengthm2]};
+			::std::uint_least32_t maskcond{utf8maskscond[lengthm2]};
+			if((val&mask)!=maskcond)
+			{
+				*tofirst=0xFFFD;
+				fromfirst+=length;
+				++tofirst;
+				continue;
+			}
+			val&=utf8masks2[lengthm2];
+			val>>=(static_cast<unsigned>(2-lengthm2)<<3);
+			*tofirst=(val&0xFF)|
+				((val&0xFF00)>>2)|
+				((val&0xFF0000)>>4)|
+				((val&0xFF000000)>>6);
 			fromfirst+=length;
 			++tofirst;
-			continue;
 		}
-		val&=utf8masks2[lengthm2];
-		val>>=(static_cast<unsigned>(2-lengthm2)<<3);
-		*tofirst=(val&0xFF)|
-			((val&0xFF00)>>2)|
-			((val&0xFF0000)>>4)|
-			((val&0xFF000000)>>6);
-		fromfirst+=length;
-		++tofirst;
 	}
 	return {fromfirst,tofirst};
 }
@@ -147,11 +149,64 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_impl(
 	char8_t const *fromfirst,char8_t const *fromlast,
 	char32_t *tofirst,char32_t *tolast) noexcept
 {
-//	::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
-	
-	return ::fast_io::details::utf8_to_utf32_simd_impl(fromfirst,fromlast,tofirst,tolast);
-}
+	::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
+	::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
 
+	::std::size_t mndiff{todiff};
+	if(fromdiff<frommn)
+	{
+		mndiff=fromdiff;
+	}
+	if(20<mndiff)
+	{
+		mndiff-=20;
+		auto [fromit,toit]=utf8_to_utf32_simd_impl(fromfirst,fromlast,tofirst,tolast);
+		fromfirst=fromit;
+		tofirst=toit;
+	}
+	for(;fromfirst!=fromlast&&tofirst!=tolast;)
+	{
+		char8_t v0{*fromfirst};
+		if(v0<0x80)
+		{
+			*to_last=v0;
+		}
+		int length{::std::countl_one(static_cast<char unsigned>(v0))};
+		if(length==1||4<length)
+		{
+			*tofirst=0xFFFD;
+			++fromfirst;
+			++tofirst;
+			continue;
+		}
+		if((fromlast-fromfirst)<length)
+#if __has_cpp_attribute(unlikely)
+		[[unlikely]]
+#endif
+		{
+			auto fromit{fromfirst};
+			for(;fromit!=fromlast&&((*fromit&0b11000000)==0b10000000);++fromit);
+			if(fromit!=fromlast)
+			{
+				*tofirst=0xFFFD;
+				fromfirst=fromit;
+				++tofirst;
+				continue;
+			}
+			return {fromfirst,tofirst};
+		}
+		for(;;)
+		{
+			++fromfirst;
+			if(fromfirst==fromlast)
+			{
+				char8_t v1{*fromfirst};
+				for(;fromfirst!=fromlast&&;);
+			}
+		}
+	}
+//	return ::fast_io::details::utf8_to_utf32_simd_impl(fromfirst,fromlast,tofirst,tolast);
+}
 
 }
 
