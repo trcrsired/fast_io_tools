@@ -149,6 +149,7 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_impl(
 	char8_t const *fromfirst,char8_t const *fromlast,
 	char32_t *tofirst,char32_t *tolast) noexcept
 {
+#if 0
 	::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
 	::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
 
@@ -164,10 +165,11 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_impl(
 		fromfirst=fromit;
 		tofirst=toit;
 	}
+#endif
 	for(;fromfirst!=fromlast&&tofirst!=tolast;++tofirst)
 	{
 		char8_t v0{*fromfirst};
-		if(v0<0x80)
+		if(v0<0x80u)
 		{
 			*tofirst=v0;
 			++fromfirst;
@@ -206,11 +208,14 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_impl(
 			char8_t vff{*fromfirst};
 			if((vff&0b11000000)==0b10000000)
 			{
-				break;
+				vff&=0b00111111;
 			}
 			else
+#if __has_cpp_attribute(unlikely)
+			[[unlikely]]
+#endif
 			{
-				vff&=0b00111111;
+				break;
 			}
 			val=(val<<6)|vff;
 			++fromfirst;
