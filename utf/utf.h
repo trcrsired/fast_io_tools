@@ -153,59 +153,75 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_impl(
 	::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
 
 	::std::size_t mndiff{todiff};
-	if(fromdiff<frommn)
+	if(fromdiff<mndiff)
 	{
 		mndiff=fromdiff;
 	}
-	if(20<mndiff)
+	if(24<mndiff)
 	{
-		mndiff-=20;
+		mndiff-=24;
 		auto [fromit,toit]=utf8_to_utf32_simd_impl(fromfirst,fromlast,tofirst,tolast);
 		fromfirst=fromit;
 		tofirst=toit;
 	}
-	for(;fromfirst!=fromlast&&tofirst!=tolast;)
+	for(;fromfirst!=fromlast&&tofirst!=tolast;++tofirst)
 	{
 		char8_t v0{*fromfirst};
 		if(v0<0x80)
 		{
-			*to_last=v0;
+			*tofirst=v0;
+			++fromfirst;
+			continue;
 		}
 		int length{::std::countl_one(static_cast<char unsigned>(v0))};
 		if(length==1||4<length)
 		{
 			*tofirst=0xFFFD;
 			++fromfirst;
-			++tofirst;
 			continue;
 		}
+		int lengthm1{length-1};
 		if((fromlast-fromfirst)<length)
 #if __has_cpp_attribute(unlikely)
 		[[unlikely]]
 #endif
 		{
 			auto fromit{fromfirst};
-			for(;fromit!=fromlast&&((*fromit&0b11000000)==0b10000000);++fromit);
-			if(fromit!=fromlast)
+			for(++fromit;lengthm1&&((*fromit&0b11000000)==0b10000000);--lengthm1)
+			{
+				++fromit;
+			}
+			if(lengthm1)
 			{
 				*tofirst=0xFFFD;
 				fromfirst=fromit;
-				++tofirst;
 				continue;
 			}
-			return {fromfirst,tofirst};
+			break;
 		}
-		for(;;)
+		char32_t val{v0&(0b11111111u>>length)};//length and length-1 should be the same here
+		auto ed{fromfirst+length};
+		for(++fromfirst;lengthm1;--lengthm1)
 		{
-			++fromfirst;
-			if(fromfirst==fromlast)
+			char8_t vff{*fromfirst};
+			if((vff&0b11000000)==0b10000000)
 			{
-				char8_t v1{*fromfirst};
-				for(;fromfirst!=fromlast&&;);
+				break;
 			}
+			else
+			{
+				vff&=0b00111111;
+			}
+			val=(val<<6)|vff;
+			++fromfirst;
 		}
+		if(lengthm1)
+		{
+			val=0xFFFD;
+		}
+		*tofirst=val;
 	}
-//	return ::fast_io::details::utf8_to_utf32_simd_impl(fromfirst,fromlast,tofirst,tolast);
+	return {fromfirst,tofirst};
 }
 
 }
