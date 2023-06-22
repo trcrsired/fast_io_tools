@@ -18,8 +18,6 @@ inline constexpr utf8mask utf8masks[3]
 {0b11111000'11000000'11000000'11000000u,0b11110000'10000000'10000000'10000000u,0b00000111'00111111'00111111'00111111u},
 };
 
-
-[[__gnu__::__noinline__]]
 inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 	char8_t const *fromfirst,char8_t const *fromlast,
 	char32_t *tofirst) noexcept
