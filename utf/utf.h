@@ -140,11 +140,11 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_nosimd_impl(
 	return {fromfirst,tofirst};
 }
 
+template<::std::size_t N>
 inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 	char8_t const *fromfirst,char8_t const *fromlast,
 	char32_t *tofirst) noexcept
 {
-	constexpr std::size_t N{::fast_io::details::optimal_simd_vector_run_with_cpu_instruction_size};
 	if constexpr(N!=16&&N!=32&&N!=64)
 	{
 		return utf8_to_utf32_nosimd_impl(fromfirst,fromlast,tofirst);
@@ -172,20 +172,7 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 		if(!(firstdigitmask&val))
 		{
 			::std::uint_least32_t valmask{val&0x80808080u};
-			if(valmask)
-			{
-				if constexpr(::std::endian::big==::std::endian::native)
-				{
-					val=::fast_io::byte_swap(val);
-				}
-				for(;!(val&0x80u);++tofirst)
-				{
-					*tofirst=val&0xFFu;
-					++fromfirst;
-					val>>=8u;
-				}
-			}
-			else
+			if(!valmask)
 			{
 				::std::uint_least32_t low{val&0xFFFFu};
 				::std::uint_least32_t high{val>>16u};
@@ -205,58 +192,93 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 				}
 				fromfirst+=4;
 				tofirst+=4;
-				::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
-				bool nmod{(fromdiff&0xFu)!=0u};
-				::std::size_t ndiff{(fromdiff>>4)+nmod};
-				do
 				{
-					simvec.load(fromfirst);
-					res=((simvec&cmp128)==cmp128);
-					if(!is_all_zeros(res))
+					::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
+					bool nmod{(fromdiff&0xFu)!=0u};
+					::std::size_t ndiff{(fromdiff>>4)+nmod};
+					do
+					{
+						simvec.load(fromfirst);
+						res=((simvec&cmp128)==cmp128);
+						if(!is_all_zeros(res))
+						{
+							break;
+						}
+						if constexpr(N==16)
+						{
+							ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,16,16,16,1,16,16,16,
+								2,16,16,16,3,16,16,16);
+							ret.store(tofirst);
+							ret.value=__builtin_shufflevector(simvec.value,zeros.value,4,16,16,16,5,16,16,16,
+								6,16,16,16,7,16,16,16);
+							ret.store(tofirst+4);
+							ret.value=__builtin_shufflevector(simvec.value,zeros.value,8,16,16,16,9,16,16,16,
+								10,16,16,16,11,16,16,16);
+							ret.store(tofirst+8);
+							ret.value=__builtin_shufflevector(simvec.value,zeros.value,12,16,16,16,13,16,16,16,
+								14,16,16,16,15,16,16,16);
+							ret.store(tofirst+12);
+						}
+						else if constexpr(N==32)
+						{
+							ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,32,32,32,1,32,32,32,2,32,32,32,3,32,32,32,4,32,32,32,5,32,32,32,6,32,32,32,7,32,32,32);
+							ret.store(tofirst);
+							ret.value=__builtin_shufflevector(simvec.value,zeros.value,8,32,32,32,9,32,32,32,10,32,32,32,11,32,32,32,12,32,32,32,13,32,32,32,14,32,32,32,15,32,32,32);
+							ret.store(tofirst+8);
+							ret.value=__builtin_shufflevector(simvec.value,zeros.value,16,32,32,32,17,32,32,32,18,32,32,32,19,32,32,32,20,32,32,32,21,32,32,32,22,32,32,32,23,32,32,32);
+							ret.store(tofirst+16);
+							ret.value=__builtin_shufflevector(simvec.value,zeros.value,24,32,32,32,25,32,32,32,26,32,32,32,27,32,32,32,28,32,32,32,29,32,32,32,30,32,32,32,31,32,32,32);
+							ret.store(tofirst+24);
+						}
+						else if constexpr(N==64)
+						{
+							ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,64,64,64,1,64,64,64,2,64,64,64,3,64,64,64,4,64,64,64,5,64,64,64,6,64,64,64,7,64,64,64,8,64,64,64,9,64,64,64,10,64,64,64,11,64,64,64,12,64,64,64,13,64,64,64,14,64,64,64,15,64,64,64);
+							ret.store(tofirst);
+							ret.value=__builtin_shufflevector(simvec.value,zeros.value,16,64,64,64,17,64,64,64,18,64,64,64,19,64,64,64,20,64,64,64,21,64,64,64,22,64,64,64,23,64,64,64,24,64,64,64,25,64,64,64,26,64,64,64,27,64,64,64,28,64,64,64,29,64,64,64,30,64,64,64,31,64,64,64);
+							ret.store(tofirst+16);
+							ret.value=__builtin_shufflevector(simvec.value,zeros.value,32,64,64,64,33,64,64,64,34,64,64,64,35,64,64,64,36,64,64,64,37,64,64,64,38,64,64,64,39,64,64,64,40,64,64,64,41,64,64,64,42,64,64,64,43,64,64,64,44,64,64,64,45,64,64,64,46,64,64,64,47,64,64,64);
+							ret.store(tofirst+32);
+							ret.value=__builtin_shufflevector(simvec.value,zeros.value,48,64,64,64,49,64,64,64,50,64,64,64,51,64,64,64,52,64,64,64,53,64,64,64,54,64,64,64,55,64,64,64,56,64,64,64,57,64,64,64,58,64,64,64,59,64,64,64,60,64,64,64,61,64,64,64,62,64,64,64,63,64,64,64);
+							ret.store(tofirst+48);
+						}
+						fromfirst+=N;
+						tofirst+=N;
+						--ndiff;
+					}
+					while(ndiff);
+					if(!ndiff)
 					{
 						break;
 					}
-					if constexpr(N==16)
+				}
+				::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
+				bool nmod{(fromdiff&0x3u)!=0u};
+				::std::size_t ndiff{(fromdiff>>2)+nmod};
+				do
+				{
+					__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
+					if((val&0x80808080u)!=0u)
 					{
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,16,16,16,1,16,16,16,
-							2,16,16,16,3,16,16,16);
-						ret.store(tofirst);
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value,4,16,16,16,5,16,16,16,
-							6,16,16,16,7,16,16,16);
-						ret.store(tofirst+4);
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value,8,16,16,16,9,16,16,16,
-							10,16,16,16,11,16,16,16);
-						ret.store(tofirst+8);
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value,12,16,16,16,13,16,16,16,
-							14,16,16,16,15,16,16,16);
-						ret.store(tofirst+12);
+						break;
 					}
-					else if constexpr(N==32)
+					low=val&0xFFFFu;
+					high=val>>16u;
+					if constexpr(::std::endian::big==::std::endian::native)
 					{
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,32,32,32,1,32,32,32,2,32,32,32,3,32,32,32,4,32,32,32,5,32,32,32,6,32,32,32,7,32,32,32);
-						ret.store(tofirst);
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value,8,32,32,32,9,32,32,32,10,32,32,32,11,32,32,32,12,32,32,32,13,32,32,32,14,32,32,32,15,32,32,32);
-						ret.store(tofirst+8);
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value,16,32,32,32,17,32,32,32,18,32,32,32,19,32,32,32,20,32,32,32,21,32,32,32,22,32,32,32,23,32,32,32);
-						ret.store(tofirst+16);
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value,24,32,32,32,25,32,32,32,26,32,32,32,27,32,32,32,28,32,32,32,29,32,32,32,30,32,32,32,31,32,32,32);
-						ret.store(tofirst+24);
+						*tofirst=(high&0xFF);
+						tofirst[1]=(high>>8u);
+						tofirst[2]=(low&0xFF);
+						tofirst[3]=(low>>8u);
 					}
-					else if constexpr(N==64)
+					else
 					{
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,64,64,64,1,64,64,64,2,64,64,64,3,64,64,64,4,64,64,64,5,64,64,64,6,64,64,64,7,64,64,64,8,64,64,64,9,64,64,64,10,64,64,64,11,64,64,64,12,64,64,64,13,64,64,64,14,64,64,64,15,64,64,64);
-						ret.store(tofirst);
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value,16,64,64,64,17,64,64,64,18,64,64,64,19,64,64,64,20,64,64,64,21,64,64,64,22,64,64,64,23,64,64,64,24,64,64,64,25,64,64,64,26,64,64,64,27,64,64,64,28,64,64,64,29,64,64,64,30,64,64,64,31,64,64,64);
-						ret.store(tofirst+16);
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value,32,64,64,64,33,64,64,64,34,64,64,64,35,64,64,64,36,64,64,64,37,64,64,64,38,64,64,64,39,64,64,64,40,64,64,64,41,64,64,64,42,64,64,64,43,64,64,64,44,64,64,64,45,64,64,64,46,64,64,64,47,64,64,64);
-						ret.store(tofirst+32);
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value,48,64,64,64,49,64,64,64,50,64,64,64,51,64,64,64,52,64,64,64,53,64,64,64,54,64,64,64,55,64,64,64,56,64,64,64,57,64,64,64,58,64,64,64,59,64,64,64,60,64,64,64,61,64,64,64,62,64,64,64,63,64,64,64);
-						ret.store(tofirst+48);
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value,64,64,64,64,65,64,64,64,66,64,64,64,67,64,64,64,68,64,64,64,69,64,64,64,70,64,64,64,71,64,64,64,72,64,64,64,73,64,64,64,74,64,64,64,75,64,64,64,76,64,64,64,77,64,64,64,78,64,64,64,79,64,64,64);
-						ret.store(tofirst+64);
+						*tofirst=(low&0xFF);
+						tofirst[1]=(low>>8u);
+						tofirst[2]=(high&0xFF);
+						tofirst[3]=(high>>8u);
 					}
-					fromfirst+=N;
-					tofirst+=N;
+					fromfirst+=4;
+					tofirst+=4;
 					--ndiff;
 				}
 				while(ndiff);
@@ -264,39 +286,16 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 				{
 					break;
 				}
-#if 0
-				unsigned czvorignal{vector_mask_countr_zero(res)};
-				unsigned czv{czvorignal};
-
-				ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,16,16,16,1,16,16,16,
-					2,16,16,16,3,16,16,16);
-				ret.store(tofirst);
-				if(czv>=4u)
-				{
-					czv-=4u;
-					ret.value=__builtin_shufflevector(simvec.value,zeros.value,4,16,16,16,5,16,16,16,
-						6,16,16,16,7,16,16,16);
-					ret.store(tofirst+4);
-					if(czv>=4u)
-					{
-						czv-=4u;
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value,8,16,16,16,9,16,16,16,
-							10,16,16,16,11,16,16,16);
-						ret.store(tofirst+8);
-						if(czv>=4u)
-						{
-							ret.value=__builtin_shufflevector(simvec.value,zeros.value,12,16,16,16,13,16,16,16,
-								14,16,16,16,15,16,16,16);
-							ret.store(tofirst+12);
-						}
-					}
-				}
-				tofirst+=czvorignal;
-				fromfirst+=czvorignal;
-#else
-				
-#endif
-
+			}
+			if constexpr(::std::endian::big==::std::endian::native)
+			{
+				val=::fast_io::byte_swap(val);
+			}
+			for(;!(val&0x80u);++tofirst)
+			{
+				*tofirst=val&0xFFu;
+				++fromfirst;
+				val>>=8u;
 			}
 			__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
 		}
@@ -359,7 +358,7 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_impl(
 	{
 		if constexpr(16<=N)
 		{
-			auto [fromit,toit]=utf8_to_utf32_simd_impl(fromfirst,fromlast,tofirst);
+			auto [fromit,toit]=utf8_to_utf32_simd_impl<N>(fromfirst,fromlast,tofirst);
 			fromfirst=fromit;
 			tofirst=toit;
 		}

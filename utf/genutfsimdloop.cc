@@ -19,7 +19,7 @@ int main(int argc,char** argv)
 
 	for(::std::size_t i{},in{n/8};i!=in;++i)
 	{
-		::std::size_t start{i*8};
+		::std::size_t start{i*(n/4)};
 		print(obf,
 u8R"(						ret.value=__builtin_shufflevector(simvec.value,zeros.value)");
 		for(::std::size_t j{};j!=n;++j)
