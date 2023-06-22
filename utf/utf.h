@@ -39,40 +39,38 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 			::std::uint_least32_t firstdigitmask{::std::endian::big==::std::endian::native?0x80000000u:0x00000080u};
 		if(!(firstdigitmask&val))
 		{
-			::std::uint_least32_t low{val&0xFFFFu};
-			::std::uint_least32_t high{val>>16u};
-			if constexpr(::std::endian::big==::std::endian::native)
-			{
-				*tofirst=(high&0xFF);
-				tofirst[1]=(high>>8u);
-				tofirst[2]=(low&0xFF);
-				tofirst[3]=(low>>8u);
-			}
-			else
-			{
-				*tofirst=(low&0xFF);
-				tofirst[1]=(low>>8u);
-				tofirst[2]=(high&0xFF);
-				tofirst[3]=(high>>8u);
-			}
 			::std::uint_least32_t valmask{val&0x80808080u};
 			if(valmask)
 			{
 				if constexpr(::std::endian::big==::std::endian::native)
 				{
-					valmask=::std::byteswap(valmask);
+					val=::std::byteswap(val);
 				}
-
-				valmask=((valmask>>7u)|(valmask>>14u)|(valmask>>21u)|(valmask>>28u))&0b1111;
-				int offst{::std::countr_zero(valmask)};
-#if __has_cpp_attribute(assume)
-				[[assume(0<offst&&offst<4)]];
-#endif
-				fromfirst+=offst;
-				tofirst+=offst;
+				for(;!(val&0x80u);++tofirst)
+				{
+					*tofirst=val&0xFFu;
+					++fromfirst;
+					val>>=8u;
+				}
 			}
 			else
 			{
+				::std::uint_least32_t low{val&0xFFFFu};
+				::std::uint_least32_t high{val>>16u};
+				if constexpr(::std::endian::big==::std::endian::native)
+				{
+					*tofirst=(high&0xFF);
+					tofirst[1]=(high>>8u);
+					tofirst[2]=(low&0xFF);
+					tofirst[3]=(low>>8u);
+				}
+				else
+				{
+					*tofirst=(low&0xFF);
+					tofirst[1]=(low>>8u);
+					tofirst[2]=(high&0xFF);
+					tofirst[3]=(high>>8u);
+				}
 				fromfirst+=4;
 				tofirst+=4;
 				::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
