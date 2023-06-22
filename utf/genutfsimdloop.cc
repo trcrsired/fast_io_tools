@@ -39,6 +39,6 @@ u8R"();
 		{
 			print(obf,u8"+",start);
 		}
-		print(obf,u8")\n");
+		print(obf,u8");\n");
 	}
 }
