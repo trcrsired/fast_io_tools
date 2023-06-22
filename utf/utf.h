@@ -27,10 +27,10 @@ inline constexpr ::std::uint_least32_t utf8masks2[3]
 0b00000111'00111111'00111111'00111111u,
 };
 
-
+[[__gnu__::__noinline__]]
 inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 	char8_t const *fromfirst,char8_t const *fromlast,
-	char32_t *tofirst,char32_t *tolast) noexcept
+	char32_t *tofirst) noexcept
 {
 	constexpr
 		::fast_io::intrinsics::simd_vector<::std::uint_least8_t,16> cmp128{
@@ -42,105 +42,85 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 	::fast_io::intrinsics::simd_vector<::std::uint_least8_t,16> ret;
 	for(;fromfirst<fromlast;)
 	{
-		simvec.load(fromfirst);
-
-		auto res{(simvec&cmp128)==cmp128};
-		if(is_all_zeros(res))
+		char32_t vf0{*fromfirst};
+		if(vf0<0x80)
 		{
-			ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,16,16,16,1,16,16,16,
-				2,16,16,16,3,16,16,16);
-			ret.store(tofirst);
-			ret.value=__builtin_shufflevector(simvec.value,zeros.value,4,16,16,16,5,16,16,16,
-				6,16,16,16,7,16,16,16);
-			ret.store(tofirst+4);
-			ret.value=__builtin_shufflevector(simvec.value,zeros.value,8,16,16,16,9,16,16,16,
-				10,16,16,16,11,16,16,16);
-			ret.store(tofirst+8);
-			ret.value=__builtin_shufflevector(simvec.value,zeros.value,12,16,16,16,13,16,16,16,
-				14,16,16,16,15,16,16,16);
-			ret.store(tofirst+12);
-			fromfirst+=16;
-			tofirst+=16;
-			continue;
-		}
-		unsigned czv{vector_mask_countr_zero(res)};
-#if __has_cpp_attribute(assume)
-		[[assume(czv<16)]];
+			simvec.load(fromfirst);
+			auto res{(simvec&cmp128)==cmp128};
+			if(is_all_zeros(res))
+#if __has_cpp_attribute(likely)
+			[[likely]]
 #endif
-		{
-			unsigned i{};
-			if(3<czv)
 			{
 				ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,16,16,16,1,16,16,16,
 					2,16,16,16,3,16,16,16);
 				ret.store(tofirst);
-				i=4;
-			}
-			if(7<czv)
-			{
 				ret.value=__builtin_shufflevector(simvec.value,zeros.value,4,16,16,16,5,16,16,16,
 					6,16,16,16,7,16,16,16);
 				ret.store(tofirst+4);
-				i=8;
-			}
-			if(11<czv)
-			{
 				ret.value=__builtin_shufflevector(simvec.value,zeros.value,8,16,16,16,9,16,16,16,
 					10,16,16,16,11,16,16,16);
 				ret.store(tofirst+8);
-				i=12;
+				ret.value=__builtin_shufflevector(simvec.value,zeros.value,12,16,16,16,13,16,16,16,
+					14,16,16,16,15,16,16,16);
+				ret.store(tofirst+12);
+				fromfirst+=16;
+				tofirst+=16;
+				continue;
 			}
+
+			unsigned czv{vector_mask_countr_zero(res)};
 #if __has_cpp_attribute(assume)
-			[[assume(czv-i<4)]];
+			[[assume(czv<16)]];
 #endif
-			for(;i!=czv;++i)
+			for(unsigned i{};i!=czv;++i)
 			{
 				*tofirst=*fromfirst;
 				++fromfirst;
 				++tofirst;
 			}
 		}
-		for(;fromfirst<fromlast&&0x80u<=*fromfirst;)
+
+		::std::uint_least32_t val;
+		__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
+		char unsigned v;
+		if constexpr(::std::endian::little==::std::endian::native)
 		{
-			::std::uint_least32_t val;
-			__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
-			char unsigned v;
-			if constexpr(::std::endian::little==::std::endian::native)
-			{
-				v=static_cast<char unsigned>(val);
-				val=::std::byteswap(val);
-			}
-			else
-			{
-				v=static_cast<char unsigned>(val>>24u);
-			}
-			int length{::std::countl_one(v)};
-			if(length==1||4<length)
-			{
-				*tofirst=0xFFFD;
-				++fromfirst;
-				++tofirst;
-				continue;
-			}
-			auto lengthm2{length-2};
-			::std::uint_least32_t mask{utf8masks[lengthm2]};
-			::std::uint_least32_t maskcond{utf8maskscond[lengthm2]};
-			if((val&mask)!=maskcond)
-			{
-				*tofirst=0xFFFD;
-				fromfirst+=length;
-				++tofirst;
-				continue;
-			}
+			v=static_cast<char unsigned>(val);
+			val=::std::byteswap(val);
+		}
+		else
+		{
+			v=static_cast<char unsigned>(val>>24u);
+		}
+		int length{::std::countl_one(v)};
+		if(length==1||4<length)
+		{
+			*tofirst=0xFFFD;
+			++fromfirst;
+			++tofirst;
+			continue;
+		}
+		auto lengthm2{length-2};
+
+		::std::uint_least32_t mask{utf8masks[lengthm2]};
+		::std::uint_least32_t maskcond{utf8maskscond[lengthm2]};
+		if((val&mask)==maskcond)
+		{
 			val&=utf8masks2[lengthm2];
 			val>>=(static_cast<unsigned>(2-lengthm2)<<3);
-			*tofirst=(val&0xFF)|
+			val=(val&0xFF)|
 				((val&0xFF00)>>2)|
 				((val&0xFF0000)>>4)|
 				((val&0xFF000000)>>6);
-			fromfirst+=length;
-			++tofirst;
 		}
+		else
+		{
+			val=0xFFFD;
+		}
+		*tofirst=val;
+		++tofirst;
+		fromfirst+=length;
 	}
 	return {fromfirst,tofirst};
 }
@@ -149,7 +129,6 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_impl(
 	char8_t const *fromfirst,char8_t const *fromlast,
 	char32_t *tofirst,char32_t *tolast) noexcept
 {
-#if 0
 	::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
 	::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
 
@@ -158,16 +137,16 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_impl(
 	{
 		mndiff=fromdiff;
 	}
-	if(24<mndiff)
+	if(20<mndiff)
 	{
-		mndiff-=24;
-		auto [fromit,toit]=utf8_to_utf32_simd_impl(fromfirst,fromlast,tofirst,tolast);
+		auto [fromit,toit]=utf8_to_utf32_simd_impl(fromfirst,fromlast,tofirst);
 		fromfirst=fromit;
 		tofirst=toit;
 	}
-#endif
 	for(;fromfirst!=fromlast&&tofirst!=tolast;++tofirst)
 	{
+		using namespace fast_io::mnp;
+		
 		char8_t v0{*fromfirst};
 		if(v0<0x80u)
 		{
