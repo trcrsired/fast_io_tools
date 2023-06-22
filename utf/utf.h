@@ -40,18 +40,21 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 		::fast_io::intrinsics::simd_vector<::std::uint_least8_t,16> zeros{};
 	::fast_io::intrinsics::simd_vector<::std::uint_least8_t,16> simvec;
 	::fast_io::intrinsics::simd_vector<::std::uint_least8_t,16> ret;
+	::fast_io::intrinsics::simd_vector<::std::uint_least8_t,16> res;
 	for(;fromfirst<fromlast;)
 	{
 		char32_t vf0{*fromfirst};
 		if(vf0<0x80)
 		{
-			simvec.load(fromfirst);
-			auto res{(simvec&cmp128)==cmp128};
-			if(is_all_zeros(res))
-#if __has_cpp_attribute(likely)
-			[[likely]]
-#endif
+			::std::size_t ndiff{static_cast<::std::size_t>(fromlast-fromfirst)>>4};
+			do
 			{
+				simvec.load(fromfirst);
+				res=((simvec&cmp128)==cmp128);
+				if(!is_all_zeros(res))
+				{
+					break;
+				}
 				ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,16,16,16,1,16,16,16,
 					2,16,16,16,3,16,16,16);
 				ret.store(tofirst);
@@ -66,12 +69,36 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 				ret.store(tofirst+12);
 				fromfirst+=16;
 				tofirst+=16;
+				--ndiff;
+			}
+			while(ndiff);
+			if(!ndiff)
+			{
 				continue;
 			}
-
 			unsigned czv{vector_mask_countr_zero(res)};
+			if(czv>=4u)
+			{
+				ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,16,16,16,1,16,16,16,
+					2,16,16,16,3,16,16,16);
+				ret.store(tofirst);
+				czv-=4u;
+				if(czv>=4u)
+				{
+					ret.value=__builtin_shufflevector(simvec.value,zeros.value,4,16,16,16,5,16,16,16,
+						6,16,16,16,7,16,16,16);
+					ret.store(tofirst+4);
+					czv-=4u;
+					if(czv>=4u)
+					{
+						ret.value=__builtin_shufflevector(simvec.value,zeros.value,8,16,16,16,9,16,16,16,
+							10,16,16,16,11,16,16,16);
+						ret.store(tofirst+8);
+					}
+				}
+			}
 #if __has_cpp_attribute(assume)
-			[[assume(czv<16)]];
+			[[assume(czv<4)]];
 #endif
 			for(unsigned i{};i!=czv;++i)
 			{
@@ -80,7 +107,6 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 				++tofirst;
 			}
 		}
-
 		::std::uint_least32_t val;
 		__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
 		char unsigned v;
@@ -102,7 +128,6 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 			continue;
 		}
 		auto lengthm2{length-2};
-
 		::std::uint_least32_t mask{utf8masks[lengthm2]};
 		::std::uint_least32_t maskcond{utf8maskscond[lengthm2]};
 		if((val&mask)==maskcond)
