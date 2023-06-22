@@ -49,8 +49,8 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_nosimd_impl(
 					tofirst[2]=(high&0xFF);
 					tofirst[3]=(high>>8u);
 				}
-				fromfirst+=4;
-				tofirst+=4;
+				fromfirst+=sizeof(val);
+				tofirst+=sizeof(val);
 				::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
 				bool nmod{(fromdiff&0x3u)!=0u};
 				::std::size_t ndiff{(fromdiff>>2)+nmod};
@@ -77,8 +77,8 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_nosimd_impl(
 						tofirst[2]=(high&0xFF);
 						tofirst[3]=(high>>8u);
 					}
-					fromfirst+=4;
-					tofirst+=4;
+					fromfirst+=sizeof(val);
+					tofirst+=sizeof(val);
 					--ndiff;
 				}
 				while(ndiff);
@@ -189,8 +189,8 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 					tofirst[2]=(high&0xFF);
 					tofirst[3]=(high>>8u);
 				}
-				fromfirst+=4;
-				tofirst+=4;
+				fromfirst+=sizeof(val);
+				tofirst+=sizeof(val);
 				::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
 				::std::size_t ndiff{(fromdiff>>4)+((fromdiff&0xFu)!=0u)};
 				do
@@ -272,8 +272,8 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 						tofirst[2]=(high&0xFF);
 						tofirst[3]=(high>>8u);
 					}
-					fromfirst+=4;
-					tofirst+=4;
+					fromfirst+=sizeof(val);
+					tofirst+=sizeof(val);
 					--ndiff;
 				}
 				while(ndiff);
