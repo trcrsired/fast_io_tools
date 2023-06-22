@@ -44,7 +44,7 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 			{
 				if constexpr(::std::endian::big==::std::endian::native)
 				{
-					val=::std::byteswap(val);
+					val=::fast_io::byte_swap(val);
 				}
 				for(;!(val&0x80u);++tofirst)
 				{
@@ -122,6 +122,12 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 						ret.value=__builtin_shufflevector(simvec.value,zeros.value,8,16,16,16,9,16,16,16,
 							10,16,16,16,11,16,16,16);
 						ret.store(tofirst+8);
+						if(czv>=4u)
+						{
+							ret.value=__builtin_shufflevector(simvec.value,zeros.value,12,16,16,16,13,16,16,16,
+								14,16,16,16,15,16,16,16);
+							ret.store(tofirst+12);
+						}
 					}
 				}
 				tofirst+=czvorignal;
@@ -133,7 +139,7 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 		if constexpr(::std::endian::little==::std::endian::native)
 		{
 			v=static_cast<char unsigned>(val);
-			val=::std::byteswap(val);
+			val=::fast_io::byte_swap(val);
 		}
 		else
 		{
