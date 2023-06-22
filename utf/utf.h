@@ -145,6 +145,10 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 	char32_t *tofirst) noexcept
 {
 	constexpr std::size_t N{::fast_io::details::optimal_simd_vector_run_with_cpu_instruction_size};
+	if constexpr(N!=16&&N!=32&&N!=64)
+	{
+		return utf8_to_utf32_nosimd_impl(fromfirst,fromlast,tofirst);
+	}
 	using simd_vector_type = ::fast_io::intrinsics::simd_vector<::std::uint_least8_t,N>;
 #if (__cpp_lib_bit_cast >= 201806L) && !defined(__clang__)
 	constexpr
@@ -229,34 +233,27 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 					}
 					else if constexpr(N==32)
 					{
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value,
-							0,32,32,32,1,32,32,32,
-							2,32,32,32,3,32,32,32,
-							4,32,32,32,5,32,32,32,
-							6,32,32,32,7,32,32,32);
+						ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,32,32,32,1,32,32,32,2,32,32,32,3,32,32,32,4,32,32,32,5,32,32,32,6,32,32,32,7,32,32,32);
 						ret.store(tofirst);
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value,
-							8,32,32,32,9,32,32,32,
-							10,32,32,32,11,32,32,32,
-							12,32,32,32,13,32,32,32,
-							14,32,32,32,15,32,32,32);
+						ret.value=__builtin_shufflevector(simvec.value,zeros.value,8,32,32,32,9,32,32,32,10,32,32,32,11,32,32,32,12,32,32,32,13,32,32,32,14,32,32,32,15,32,32,32);
 						ret.store(tofirst+8);
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value,
-							16,32,32,32,17,32,32,32,
-							18,32,32,32,19,32,32,32,
-							20,32,32,32,21,32,32,32,
-							22,32,32,32,23,32,32,32);
+						ret.value=__builtin_shufflevector(simvec.value,zeros.value,16,32,32,32,17,32,32,32,18,32,32,32,19,32,32,32,20,32,32,32,21,32,32,32,22,32,32,32,23,32,32,32);
 						ret.store(tofirst+16);
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value,
-							24,32,32,32,25,32,32,32,
-							26,32,32,32,27,32,32,32,
-							28,32,32,32,29,32,32,32,
-							30,32,32,32,31,32,32,32);
+						ret.value=__builtin_shufflevector(simvec.value,zeros.value,24,32,32,32,25,32,32,32,26,32,32,32,27,32,32,32,28,32,32,32,29,32,32,32,30,32,32,32,31,32,32,32);
 						ret.store(tofirst+24);
 					}
 					else if constexpr(N==64)
 					{
-
+						ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,64,64,64,1,64,64,64,2,64,64,64,3,64,64,64,4,64,64,64,5,64,64,64,6,64,64,64,7,64,64,64,8,64,64,64,9,64,64,64,10,64,64,64,11,64,64,64,12,64,64,64,13,64,64,64,14,64,64,64,15,64,64,64);
+						ret.store(tofirst);
+						ret.value=__builtin_shufflevector(simvec.value,zeros.value,16,64,64,64,17,64,64,64,18,64,64,64,19,64,64,64,20,64,64,64,21,64,64,64,22,64,64,64,23,64,64,64,24,64,64,64,25,64,64,64,26,64,64,64,27,64,64,64,28,64,64,64,29,64,64,64,30,64,64,64,31,64,64,64);
+						ret.store(tofirst+16);
+						ret.value=__builtin_shufflevector(simvec.value,zeros.value,32,64,64,64,33,64,64,64,34,64,64,64,35,64,64,64,36,64,64,64,37,64,64,64,38,64,64,64,39,64,64,64,40,64,64,64,41,64,64,64,42,64,64,64,43,64,64,64,44,64,64,64,45,64,64,64,46,64,64,64,47,64,64,64);
+						ret.store(tofirst+32);
+						ret.value=__builtin_shufflevector(simvec.value,zeros.value,48,64,64,64,49,64,64,64,50,64,64,64,51,64,64,64,52,64,64,64,53,64,64,64,54,64,64,64,55,64,64,64,56,64,64,64,57,64,64,64,58,64,64,64,59,64,64,64,60,64,64,64,61,64,64,64,62,64,64,64,63,64,64,64);
+						ret.store(tofirst+48);
+						ret.value=__builtin_shufflevector(simvec.value,zeros.value,64,64,64,64,65,64,64,64,66,64,64,64,67,64,64,64,68,64,64,64,69,64,64,64,70,64,64,64,71,64,64,64,72,64,64,64,73,64,64,64,74,64,64,64,75,64,64,64,76,64,64,64,77,64,64,64,78,64,64,64,79,64,64,64);
+						ret.store(tofirst+64);
 					}
 					fromfirst+=N;
 					tofirst+=N;
@@ -270,6 +267,7 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 #if 0
 				unsigned czvorignal{vector_mask_countr_zero(res)};
 				unsigned czv{czvorignal};
+
 				ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,16,16,16,1,16,16,16,
 					2,16,16,16,3,16,16,16);
 				ret.store(tofirst);
@@ -293,11 +291,12 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 						}
 					}
 				}
+				tofirst+=czvorignal;
+				fromfirst+=czvorignal;
 #else
 				
 #endif
-				tofirst+=czvorignal;
-				fromfirst+=czvorignal;
+
 			}
 			__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
 		}
