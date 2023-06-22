@@ -373,8 +373,6 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_impl(
 	}
 	for(;fromfirst!=fromlast&&tofirst!=tolast;++tofirst)
 	{
-		using namespace fast_io::mnp;
-		
 		char8_t v0{*fromfirst};
 		if(v0<0x80u)
 		{
