@@ -414,7 +414,6 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_impl(
 			break;
 		}
 		char32_t val{v0&(0b11111111u>>length)};//length and length-1 should be the same here
-		auto ed{fromfirst+length};
 		for(++fromfirst;lengthm1;--lengthm1)
 		{
 			char8_t vff{*fromfirst};
