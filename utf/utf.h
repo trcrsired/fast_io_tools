@@ -343,31 +343,39 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_impl(
 	char8_t const *fromfirst,char8_t const *fromlast,
 	char32_t *tofirst,char32_t *tolast) noexcept
 {
-	::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
-	::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
 
-	::std::size_t mndiff{todiff};
-	if(fromdiff<mndiff)
+#if __cpp_if_consteval >= 202106L
+	if !consteval
+#else
+	if(!__builtin_is_constant_evaluated())
+#endif
 	{
-		mndiff=fromdiff;
-	}
-	constexpr std::size_t N{::fast_io::details::optimal_simd_vector_run_with_cpu_instruction_size};
-	constexpr
-		::std::uint_least32_t decisiondiff{N+8};
-	if(decisiondiff<mndiff)
-	{
-		if constexpr(16<=N)
+		::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
+		::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
+
+		::std::size_t mndiff{todiff};
+		if(fromdiff<mndiff)
 		{
-			auto [fromit,toit]=utf8_to_utf32_simd_impl<N>(fromfirst,fromlast,tofirst);
-			fromfirst=fromit;
-			tofirst=toit;
+			mndiff=fromdiff;
 		}
-		else
+		constexpr std::size_t N{::fast_io::details::optimal_simd_vector_run_with_cpu_instruction_size};
+		constexpr
+			::std::uint_least32_t decisiondiff{N+8};
+		if(decisiondiff<mndiff)
 		{
-			auto [fromit,toit]=utf8_to_utf32_nosimd_impl(fromfirst,fromlast,tofirst);
-			fromfirst=fromit;
-			tofirst=toit;
-		}
+			if constexpr(16<=N)
+			{
+				auto [fromit,toit]=utf8_to_utf32_simd_impl<N>(fromfirst,fromlast,tofirst);
+				fromfirst=fromit;
+				tofirst=toit;
+			}
+			else
+			{
+				auto [fromit,toit]=utf8_to_utf32_nosimd_impl(fromfirst,fromlast,tofirst);
+				fromfirst=fromit;
+				tofirst=toit;
+			}
+		}	
 	}
 	for(;fromfirst!=fromlast&&tofirst!=tolast;++tofirst)
 	{
