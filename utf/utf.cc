@@ -11,5 +11,5 @@ int main()
 	char32_t buffer32[1000]{};
 	auto [it,dit]=::fast_io::details::utf8_to_utf32_impl(buffer,buffer+std::ranges::size(buffer)-1,buffer32,buffer32+std::ranges::size(buffer32));
 
-	::fast_io::io::println(dit-buffer32,"\t",::fast_io::mnp::code_cvt(::fast_io::mnp::strvw(buffer32,dit)));
+	::fast_io::io::println(dit-buffer32,"\n",::fast_io::mnp::code_cvt(::fast_io::mnp::strvw(buffer32,dit)));
 }
