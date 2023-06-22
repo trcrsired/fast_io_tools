@@ -43,72 +43,104 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 	::fast_io::intrinsics::simd_vector<::std::uint_least8_t,16> res;
 	for(;fromfirst<fromlast;)
 	{
-		char32_t vf0{*fromfirst};
-		if(vf0<0x80)
+		::std::uint_least32_t val;
+		__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
+		constexpr
+			::std::uint_least32_t firstdigitmask{::std::endian::big==::std::endian::native?0x80000000u:0x00000080u};
+		if(!(firstdigitmask&val))
 		{
-			::std::size_t ndiff{static_cast<::std::size_t>(fromlast-fromfirst)>>4};
-			do
+			::std::uint_least32_t low{val&0xFFFFu};
+			::std::uint_least32_t high{val>>16u};
+			if constexpr(::std::endian::big==::std::endian::native)
 			{
-				simvec.load(fromfirst);
-				res=((simvec&cmp128)==cmp128);
-				if(!is_all_zeros(res))
+				*tofirst=(high&0xFF);
+				tofirst[1]=(high>>8u);
+				tofirst[2]=(low&0xFF);
+				tofirst[3]=(low>>8u);
+			}
+			else
+			{
+				*tofirst=(low&0xFF);
+				tofirst[1]=(low>>8u);
+				tofirst[2]=(high&0xFF);
+				tofirst[3]=(high>>8u);
+			}
+			::std::uint_least32_t valmask{val&0x80808080u};
+			if(valmask)
+			{
+				if constexpr(::std::endian::big==::std::endian::native)
 				{
-					break;
+					valmask=::std::byteswap(valmask);
 				}
-				ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,16,16,16,1,16,16,16,
-					2,16,16,16,3,16,16,16);
-				ret.store(tofirst);
-				ret.value=__builtin_shufflevector(simvec.value,zeros.value,4,16,16,16,5,16,16,16,
-					6,16,16,16,7,16,16,16);
-				ret.store(tofirst+4);
-				ret.value=__builtin_shufflevector(simvec.value,zeros.value,8,16,16,16,9,16,16,16,
-					10,16,16,16,11,16,16,16);
-				ret.store(tofirst+8);
-				ret.value=__builtin_shufflevector(simvec.value,zeros.value,12,16,16,16,13,16,16,16,
-					14,16,16,16,15,16,16,16);
-				ret.store(tofirst+12);
-				fromfirst+=16;
-				tofirst+=16;
-				--ndiff;
+
+				valmask=((valmask>>7u)|(valmask>>14u)|(valmask>>21u)|(valmask>>28u))&0b1111;
+				int offst{::std::countr_zero(valmask)};
+#if __has_cpp_attribute(assume)
+				[[assume(0<offst&&offst<4)]];
+#endif
+				fromfirst+=offst;
+				tofirst+=offst;
 			}
-			while(ndiff);
-			if(!ndiff)
+			else
 			{
-				continue;
-			}
-			unsigned czv{vector_mask_countr_zero(res)};
-			if(czv>=4u)
-			{
-				ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,16,16,16,1,16,16,16,
-					2,16,16,16,3,16,16,16);
-				ret.store(tofirst);
-				czv-=4u;
-				if(czv>=4u)
+				fromfirst+=4;
+				tofirst+=4;
+				::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
+				bool nmod{(fromdiff&0xFu)!=0u};
+				::std::size_t ndiff{(fromdiff>>4)+nmod};
+				do
 				{
+					simvec.load(fromfirst);
+					res=((simvec&cmp128)==cmp128);
+					if(!is_all_zeros(res))
+					{
+						break;
+					}
+					ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,16,16,16,1,16,16,16,
+						2,16,16,16,3,16,16,16);
+					ret.store(tofirst);
 					ret.value=__builtin_shufflevector(simvec.value,zeros.value,4,16,16,16,5,16,16,16,
 						6,16,16,16,7,16,16,16);
 					ret.store(tofirst+4);
+					ret.value=__builtin_shufflevector(simvec.value,zeros.value,8,16,16,16,9,16,16,16,
+						10,16,16,16,11,16,16,16);
+					ret.store(tofirst+8);
+					ret.value=__builtin_shufflevector(simvec.value,zeros.value,12,16,16,16,13,16,16,16,
+						14,16,16,16,15,16,16,16);
+					ret.store(tofirst+12);
+					fromfirst+=16;
+					tofirst+=16;
+					--ndiff;
+				}
+				while(ndiff);
+				if(!ndiff)
+				{
+					break;
+				}
+				unsigned czvorignal{vector_mask_countr_zero(res)};
+				unsigned czv{czvorignal};
+				ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,16,16,16,1,16,16,16,
+					2,16,16,16,3,16,16,16);
+				ret.store(tofirst);
+				if(czv>=4u)
+				{
 					czv-=4u;
+					ret.value=__builtin_shufflevector(simvec.value,zeros.value,4,16,16,16,5,16,16,16,
+						6,16,16,16,7,16,16,16);
+					ret.store(tofirst+4);
 					if(czv>=4u)
 					{
+						czv-=4u;
 						ret.value=__builtin_shufflevector(simvec.value,zeros.value,8,16,16,16,9,16,16,16,
 							10,16,16,16,11,16,16,16);
 						ret.store(tofirst+8);
 					}
 				}
+				tofirst+=czvorignal;
+				fromfirst+=czvorignal;
 			}
-#if __has_cpp_attribute(assume)
-			[[assume(czv<4)]];
-#endif
-			for(unsigned i{};i!=czv;++i)
-			{
-				*tofirst=*fromfirst;
-				++fromfirst;
-				++tofirst;
-			}
+			__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
 		}
-		::std::uint_least32_t val;
-		__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
 		char unsigned v;
 		if constexpr(::std::endian::little==::std::endian::native)
 		{
