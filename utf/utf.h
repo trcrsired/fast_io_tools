@@ -6,26 +6,18 @@ namespace fast_io
 namespace details
 {
 
-inline constexpr ::std::uint_least32_t utf8masks[3]
+struct utf8mask
 {
-0b11100000'11000000'00000000'00000000u,
-0b11110000'11000000'11000000'00000000u,
-0b11111000'11000000'11000000'11000000u
+::std::uint_least32_t mask1,mask2,mask3;
 };
 
-inline constexpr ::std::uint_least32_t utf8maskscond[3]
+inline constexpr utf8mask utf8masks[3]
 {
-0b11000000'10000000'00000000'00000000u,
-0b11100000'10000000'10000000'00000000u,
-0b11110000'10000000'10000000'10000000u
+{0b11100000'11000000'00000000'00000000u,0b11000000'10000000'00000000'00000000u,0b00011111'00111111'00000000'00000000u},
+{0b11110000'11000000'11000000'00000000u,0b11100000'10000000'10000000'00000000u,0b00001111'00111111'00111111'00000000u},
+{0b11111000'11000000'11000000'11000000u,0b11110000'10000000'10000000'10000000u,0b00000111'00111111'00111111'00111111u},
 };
 
-inline constexpr ::std::uint_least32_t utf8masks2[3]
-{
-0b00011111'00111111'00000000'00000000u,
-0b00001111'00111111'00111111'00000000u,
-0b00000111'00111111'00111111'00111111u,
-};
 
 [[__gnu__::__noinline__]]
 inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
@@ -160,11 +152,10 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 			continue;
 		}
 		auto lengthm2{length-2};
-		::std::uint_least32_t mask{utf8masks[lengthm2]};
-		::std::uint_least32_t maskcond{utf8maskscond[lengthm2]};
-		if((val&mask)==maskcond)
+		auto [mask1,mask2,mask3]=utf8masks[lengthm2];
+		if((val&mask1)==mask2)
 		{
-			val&=utf8masks2[lengthm2];
+			val&=mask3;
 			val>>=(static_cast<unsigned>(2-lengthm2)<<3);
 			val=(val&0xFF)|
 				((val&0xFF00)>>2)|
