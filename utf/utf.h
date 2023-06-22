@@ -338,7 +338,6 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_impl(
 	char8_t const *fromfirst,char8_t const *fromlast,
 	char32_t *tofirst,char32_t *tolast) noexcept
 {
-
 #if __cpp_if_consteval >= 202106L
 	if !consteval
 #else
