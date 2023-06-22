@@ -21,14 +21,13 @@ int main(int argc,char** argv)
 	{
 		::std::size_t start{i*8};
 		print(obf,
-u8R"(
-						ret.value=__builtin_shufflevector(simvec.value,zeros.value)");
+u8R"(						ret.value=__builtin_shufflevector(simvec.value,zeros.value)");
 		for(::std::size_t j{};j!=n;++j)
 		{
 			::std::size_t toprval{n};
 			if((j%4)==0)
 			{
-				toprval=j/4;
+				toprval=start+j/4;
 			}
 			print(obf,u8",",toprval);
 		}
