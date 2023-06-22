@@ -18,19 +18,147 @@ inline constexpr utf8mask utf8masks[3]
 {0b11111000'11000000'11000000'11000000u,0b11110000'10000000'10000000'10000000u,0b00000111'00111111'00111111'00111111u},
 };
 
+[[__gnu__::__noinline__]]
+inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_nosimd_impl(
+	char8_t const *fromfirst,char8_t const *fromlast,
+	char32_t *tofirst) noexcept
+{
+	for(;fromfirst<fromlast;)
+	{
+		::std::uint_least32_t val;
+		__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
+		constexpr
+			::std::uint_least32_t firstdigitmask{::std::endian::big==::std::endian::native?0x80000000u:0x00000080u};
+		if(!(firstdigitmask&val))
+		{
+			::std::uint_least32_t valmask{val&0x80808080u};
+			if(!valmask)
+			{
+				::std::uint_least32_t low{val&0xFFFFu};
+				::std::uint_least32_t high{val>>16u};
+				if constexpr(::std::endian::big==::std::endian::native)
+				{
+					*tofirst=(high&0xFF);
+					tofirst[1]=(high>>8u);
+					tofirst[2]=(low&0xFF);
+					tofirst[3]=(low>>8u);
+				}
+				else
+				{
+					*tofirst=(low&0xFF);
+					tofirst[1]=(low>>8u);
+					tofirst[2]=(high&0xFF);
+					tofirst[3]=(high>>8u);
+				}
+				fromfirst+=4;
+				tofirst+=4;
+				::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
+				bool nmod{(fromdiff&0x3u)!=0u};
+				::std::size_t ndiff{(fromdiff>>2)+nmod};
+				do
+				{
+					__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
+					if((val&0x80808080u)!=0u)
+					{
+						break;
+					}
+					low=val&0xFFFFu;
+					high=val>>16u;
+					if constexpr(::std::endian::big==::std::endian::native)
+					{
+						*tofirst=(high&0xFF);
+						tofirst[1]=(high>>8u);
+						tofirst[2]=(low&0xFF);
+						tofirst[3]=(low>>8u);
+					}
+					else
+					{
+						*tofirst=(low&0xFF);
+						tofirst[1]=(low>>8u);
+						tofirst[2]=(high&0xFF);
+						tofirst[3]=(high>>8u);
+					}
+					fromfirst+=4;
+					tofirst+=4;
+					--ndiff;
+				}
+				while(ndiff);
+				if(!ndiff)
+				{
+					break;
+				}
+			}
+			if constexpr(::std::endian::big==::std::endian::native)
+			{
+				val=::fast_io::byte_swap(val);
+			}
+			for(;!(val&0x80u);++tofirst)
+			{
+				*tofirst=val&0xFFu;
+				++fromfirst;
+				val>>=8u;
+			}
+			__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
+		}
+		char unsigned v;
+		if constexpr(::std::endian::little==::std::endian::native)
+		{
+			v=static_cast<char unsigned>(val);
+			val=::fast_io::byte_swap(val);
+		}
+		else
+		{
+			v=static_cast<char unsigned>(val>>24u);
+		}
+		int length{::std::countl_one(v)};
+		if(length==1||4<length)
+		{
+			*tofirst=0xFFFD;
+			++fromfirst;
+			++tofirst;
+			continue;
+		}
+		auto lengthm2{length-2};
+		auto [mask1,mask2,mask3]=utf8masks[lengthm2];
+		if((val&mask1)==mask2)
+		{
+			val&=mask3;
+			val>>=(static_cast<unsigned>(2-lengthm2)<<3);
+			val=(val&0xFF)|
+				((val&0xFF00)>>2)|
+				((val&0xFF0000)>>4)|
+				((val&0xFF000000)>>6);
+		}
+		else
+		{
+			val=0xFFFD;
+		}
+		*tofirst=val;
+		++tofirst;
+		fromfirst+=length;
+	}
+	return {fromfirst,tofirst};
+}
+
 inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 	char8_t const *fromfirst,char8_t const *fromlast,
 	char32_t *tofirst) noexcept
 {
+	constexpr std::size_t N{::fast_io::details::optimal_simd_vector_run_with_cpu_instruction_size};
+	using simd_vector_type = ::fast_io::intrinsics::simd_vector<::std::uint_least8_t,N>;
+#if (__cpp_lib_bit_cast >= 201806L) && !defined(__clang__)
 	constexpr
-		::fast_io::intrinsics::simd_vector<::std::uint_least8_t,16> cmp128{
-		0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,
-		0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80};
+		::fast_io::intrinsics::simd_vector<::std::uint_least8_t,N> cmp128{
+		std::bit_cast<simd_vector_type>(characters_array_impl<0x80u,char8_t,N>)};
+#else
+	simd_vector_type cmp128;
+	cmp128.load(characters_array_impl<0x80u,char8_t,N>.data());
+#endif
 	constexpr
-		::fast_io::intrinsics::simd_vector<::std::uint_least8_t,16> zeros{};
-	::fast_io::intrinsics::simd_vector<::std::uint_least8_t,16> simvec;
-	::fast_io::intrinsics::simd_vector<::std::uint_least8_t,16> ret;
-	::fast_io::intrinsics::simd_vector<::std::uint_least8_t,16> res;
+		simd_vector_type zeros{};
+	simd_vector_type simvec;
+	simd_vector_type ret;
+	simd_vector_type res;
 	for(;fromfirst<fromlast;)
 	{
 		::std::uint_least32_t val;
@@ -84,20 +212,54 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 					{
 						break;
 					}
-					ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,16,16,16,1,16,16,16,
-						2,16,16,16,3,16,16,16);
-					ret.store(tofirst);
-					ret.value=__builtin_shufflevector(simvec.value,zeros.value,4,16,16,16,5,16,16,16,
-						6,16,16,16,7,16,16,16);
-					ret.store(tofirst+4);
-					ret.value=__builtin_shufflevector(simvec.value,zeros.value,8,16,16,16,9,16,16,16,
-						10,16,16,16,11,16,16,16);
-					ret.store(tofirst+8);
-					ret.value=__builtin_shufflevector(simvec.value,zeros.value,12,16,16,16,13,16,16,16,
-						14,16,16,16,15,16,16,16);
-					ret.store(tofirst+12);
-					fromfirst+=16;
-					tofirst+=16;
+					if constexpr(N==16)
+					{
+						ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,16,16,16,1,16,16,16,
+							2,16,16,16,3,16,16,16);
+						ret.store(tofirst);
+						ret.value=__builtin_shufflevector(simvec.value,zeros.value,4,16,16,16,5,16,16,16,
+							6,16,16,16,7,16,16,16);
+						ret.store(tofirst+4);
+						ret.value=__builtin_shufflevector(simvec.value,zeros.value,8,16,16,16,9,16,16,16,
+							10,16,16,16,11,16,16,16);
+						ret.store(tofirst+8);
+						ret.value=__builtin_shufflevector(simvec.value,zeros.value,12,16,16,16,13,16,16,16,
+							14,16,16,16,15,16,16,16);
+						ret.store(tofirst+12);
+					}
+					else if constexpr(N==32)
+					{
+						ret.value=__builtin_shufflevector(simvec.value,zeros.value,
+							0,32,32,32,1,32,32,32,
+							2,32,32,32,3,32,32,32,
+							4,32,32,32,5,32,32,32,
+							6,32,32,32,7,32,32,32);
+						ret.store(tofirst);
+						ret.value=__builtin_shufflevector(simvec.value,zeros.value,
+							8,32,32,32,9,32,32,32,
+							10,32,32,32,11,32,32,32,
+							12,32,32,32,13,32,32,32,
+							14,32,32,32,15,32,32,32);
+						ret.store(tofirst+8);
+						ret.value=__builtin_shufflevector(simvec.value,zeros.value,
+							16,32,32,32,17,32,32,32,
+							18,32,32,32,19,32,32,32,
+							20,32,32,32,21,32,32,32,
+							22,32,32,32,23,32,32,32);
+						ret.store(tofirst+16);
+						ret.value=__builtin_shufflevector(simvec.value,zeros.value,
+							24,32,32,32,25,32,32,32,
+							26,32,32,32,27,32,32,32,
+							28,32,32,32,29,32,32,32,
+							30,32,32,32,31,32,32,32);
+						ret.store(tofirst+24);
+					}
+					else if constexpr(N==64)
+					{
+
+					}
+					fromfirst+=N;
+					tofirst+=N;
 					--ndiff;
 				}
 				while(ndiff);
@@ -105,6 +267,7 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 				{
 					break;
 				}
+#if 0
 				unsigned czvorignal{vector_mask_countr_zero(res)};
 				unsigned czv{czvorignal};
 				ret.value=__builtin_shufflevector(simvec.value,zeros.value,0,16,16,16,1,16,16,16,
@@ -130,6 +293,9 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_simd_impl(
 						}
 					}
 				}
+#else
+				
+#endif
 				tofirst+=czvorignal;
 				fromfirst+=czvorignal;
 			}
@@ -187,11 +353,23 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_impl(
 	{
 		mndiff=fromdiff;
 	}
-	if(20<mndiff)
+	constexpr std::size_t N{::fast_io::details::optimal_simd_vector_run_with_cpu_instruction_size};
+	constexpr
+		::std::uint_least32_t decisiondiff{N+8};
+	if(decisiondiff<mndiff)
 	{
-		auto [fromit,toit]=utf8_to_utf32_simd_impl(fromfirst,fromlast,tofirst);
-		fromfirst=fromit;
-		tofirst=toit;
+		if constexpr(16<=N)
+		{
+			auto [fromit,toit]=utf8_to_utf32_simd_impl(fromfirst,fromlast,tofirst);
+			fromfirst=fromit;
+			tofirst=toit;
+		}
+		else
+		{
+			auto [fromit,toit]=utf8_to_utf32_nosimd_impl(fromfirst,fromlast,tofirst);
+			fromfirst=fromit;
+			tofirst=toit;
+		}
 	}
 	for(;fromfirst!=fromlast&&tofirst!=tolast;++tofirst)
 	{
