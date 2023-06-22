@@ -357,15 +357,16 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_impl(
 			::std::uint_least32_t decisiondiff{N+8};
 		if(decisiondiff<mndiff)
 		{
+			mndiff-=decisiondiff;
 			if constexpr(16<=N)
 			{
-				auto [fromit,toit]=utf8_to_utf32_simd_impl<N>(fromfirst,fromlast,tofirst);
+				auto [fromit,toit]=utf8_to_utf32_simd_impl<N>(fromfirst,fromfirst+mndiff,tofirst);
 				fromfirst=fromit;
 				tofirst=toit;
 			}
 			else
 			{
-				auto [fromit,toit]=utf8_to_utf32_nosimd_impl(fromfirst,fromlast,tofirst);
+				auto [fromit,toit]=utf8_to_utf32_nosimd_impl(fromfirst,fromfirst+mndiff,tofirst);
 				fromfirst=fromit;
 				tofirst=toit;
 			}
