@@ -103,9 +103,9 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 				v1.load(fromfirst+4);
 				v2.load(fromfirst+8);
 				v3.load(fromfirst+12);
-				res=((v0&cmp128)==cmp128)||
-					((v1&cmp128)==cmp128)||
-					((v2&cmp128)==cmp128)||
+				res=((v0&cmp128)==cmp128)|
+					((v1&cmp128)==cmp128)|
+					((v2&cmp128)==cmp128)|
 					((v3&cmp128)==cmp128);
 				if(!is_all_zeros(res))
 				{
@@ -180,13 +180,13 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 				break;
 			}
 		}
-		::std::size_t mvoff{T::get_code_point(tofirst,static_cast<std::size_t>(tolast-tofirst),v0)};
-		if(!mvoff)
+		auto ret{T::get_code_point(tofirst,static_cast<std::size_t>(tolast-tofirst),v0)};
+		if(tofirst==ret)
 		{
 			break;
 		}
-		tofirst+=mvoff;
-		fromfirst+=mvoff;
+		tofirst=ret;
+		++fromfirst;
 	}
 	return {fromfirst,tofirst};
 }
@@ -206,7 +206,7 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 #endif
 	{
 		constexpr std::size_t N{::fast_io::details::optimal_simd_vector_run_with_cpu_instruction_size};
-		if constexpr(N==16&&N==32&&N==64&&0)
+		if constexpr(N==16||N==32||N==64)
 		{
 			::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
 			::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
