@@ -5,6 +5,7 @@ if constexpr(::std::same_as<output_char_type,char32_t>)
 }
 else
 {
-	tofirst=T::get_invalid_code_points(tofirst);
+	T::get_invalid_code_points(tofirst);
+	tofirst+=invalidcodepointslen;
 }
 ++fromfirst;

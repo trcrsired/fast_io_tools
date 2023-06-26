@@ -25,6 +25,9 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 	typename T::output_char_type *tofirst) noexcept
 {
 	using output_char_type = typename T::output_char_type;
+	constexpr
+		::std::size_t
+		invalidcodepointslen{T::invalid_code_points_len};
 	while(fromfirst<fromlast)
 	{
 		::std::uint_least32_t val;
@@ -86,6 +89,9 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 	simd_vector_type ret;
 	simd_vector_type res;
 	using output_char_type = typename T::output_char_type;
+	constexpr
+		::std::size_t
+		invalidcodepointslen{T::invalid_code_points_len};
 	while(fromfirst<fromlast)
 	{
 		::std::uint_least32_t val;
@@ -348,6 +354,25 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 	}
 	return {fromfirst,tofirst};
 }
+
+struct utf8_to_utf32_simple
+{
+	using output_char_type = char32_t;
+	static inline constexpr ::std::size_t invalid_code_points_len = 1;
+	static inline constexpr ::std::size_t max_code_points_len = 1;
+};
+
+struct utf8_to_utf16_simple
+{
+	using output_char_type = char16_t;
+	static inline constexpr ::std::size_t invalid_code_points_len = 1;
+	static inline constexpr ::std::size_t max_code_points_len = 2;
+	static inline constexpr void get_invalid_code_points(char16_t* ptr) noexcept
+	{
+		*ptr=0xFFFD;
+	}
+
+};
 
 }
 
