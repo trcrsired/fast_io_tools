@@ -85,7 +85,6 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 	simd_vector_type simvec;
 	simd_vector_type ret;
 	simd_vector_type res;
-	constexpr bool issimd{true};
 	using output_char_type = typename T::output_char_type;
 	while(fromfirst<fromlast)
 	{
