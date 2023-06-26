@@ -1,9 +1,6 @@
 #pragma once
 
-namespace fast_io
-{
-
-namespace details
+namespace fast_io::details
 {
 
 inline constexpr ::std::size_t utf32_to_utf8_code_point_impl(char8_t *dst, ::std::size_t szdpt, char32_t cdpt) noexcept
@@ -14,8 +11,8 @@ inline constexpr ::std::size_t utf32_to_utf8_code_point_impl(char8_t *dst, ::std
 		{
 			return 0;
 		}
-		*dst = static_cast<T>(0xC0 | ((cdpt >> 6) & 0x1F));
-		dst[1] = static_cast<T>(0x80 | (cdpt        & 0x3F));
+		*dst = static_cast<char8_t>(0xC0 | ((cdpt >> 6) & 0x1F));
+		dst[1] = static_cast<char8_t>(0x80 | (cdpt        & 0x3F));
 		return 2;
 	}
 	else if (cdpt <= 0xFFFF)
@@ -24,9 +21,9 @@ inline constexpr ::std::size_t utf32_to_utf8_code_point_impl(char8_t *dst, ::std
 		{
 			return 0;
 		}
-		*dst = static_cast<T>(0xE0 | ((cdpt >> 12) & 0x0F));
-		dst[1] = static_cast<T>(0x80 | ((cdpt >> 6)  & 0x3F));
-		dst[2] = static_cast<T>(0x80 | (cdpt         & 0x3F));
+		*dst = static_cast<char8_t>(0xE0 | ((cdpt >> 12) & 0x0F));
+		dst[1] = static_cast<char8_t>(0x80 | ((cdpt >> 6)  & 0x3F));
+		dst[2] = static_cast<char8_t>(0x80 | (cdpt         & 0x3F));
 		return 3;
 	}
 	else if (cdpt <= 0x10FFFF)
@@ -35,10 +32,10 @@ inline constexpr ::std::size_t utf32_to_utf8_code_point_impl(char8_t *dst, ::std
 		{
 			return 0;
 		}
-		*dst = static_cast<T>(0xF0 | ((cdpt >> 18) & 0x07));
-		dst[1] = static_cast<T>(0x80 | ((cdpt >> 12) & 0x3F));
-		dst[2] = static_cast<T>(0x80 | ((cdpt >> 6)  & 0x3F));
-		dst[3] = static_cast<T>(0x80 | (cdpt         & 0x3F));
+		*dst = static_cast<char8_t>(0xF0 | ((cdpt >> 18) & 0x07));
+		dst[1] = static_cast<char8_t>(0x80 | ((cdpt >> 12) & 0x3F));
+		dst[2] = static_cast<char8_t>(0x80 | ((cdpt >> 6)  & 0x3F));
+		dst[3] = static_cast<char8_t>(0x80 | (cdpt         & 0x3F));
 		return 4;
 	}
 	else
@@ -47,9 +44,9 @@ inline constexpr ::std::size_t utf32_to_utf8_code_point_impl(char8_t *dst, ::std
 		{
 			return 0;
 		}
-		*dst = static_cast<T>(0xEF);
-		dst[1] = static_cast<T>(0xBF);
-		dst[2] = static_cast<T>(0xBD);
+		*dst = static_cast<char8_t>(0xEF);
+		dst[1] = static_cast<char8_t>(0xBF);
+		dst[2] = static_cast<char8_t>(0xBD);
 		return 3;
 	}
 }
@@ -98,7 +95,7 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 				::std::size_t ndiffmask{static_cast<::std::size_t>(N-1u)};
 			constexpr
 				int ndiffshift{::std::bit_width(ndiffmask)};
-			::std::size_t ndiff{(fromdiff>>ndiffshift)+((fromdiff&ndiffmask)!=0u)};
+			::std::size_t ndiff{(fromdiff2>>ndiffshift)+((fromdiff2&ndiffmask)!=0u)};
 			for(;ndiff;--ndiff)
 			{
 				simd_vector_type v0,v1,v2,v3;
@@ -195,8 +192,8 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 }
 
 template<typename T>
-inline constexpr deco_result<char8_t,typename T::output_char_type> utf32_to_other_impl(
-	char8_t const *fromfirst,char8_t const *fromlast,
+inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_other_impl(
+	char32_t const *fromfirst,char32_t const *fromlast,
 	typename T::output_char_type *tofirst,typename T::output_char_type *tolast) noexcept
 {
 	using char_type = typename T::output_char_type;
@@ -229,6 +226,7 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf32_to_othe
 				tofirst=toit;
 			}
 		}
+	}
 	}
 	constexpr
 		::std::size_t
@@ -268,17 +266,36 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf32_to_othe
 				break;
 			}
 		}
-		::std::size_t mvoff{T::get_code_point(tofirst,static_cast<std::size_t>(tolast-tofirst),v0)};
-		if(!mvoff)
+		auto ret{T::get_code_point(tofirst,static_cast<std::size_t>(tolast-tofirst),v0)};
+		if(ret==tofirst)
 		{
 			break;
 		}
-		tofirst+=mvoff;
-		fromfirst+=mvoff;
+		tofirst=ret;
+		++fromfirst;
 	}
 	return {fromfirst,tofirst};
 }
 
+struct utf32_to_utf8_simple
+{
+	using output_char_type = char8_t;
+	static inline constexpr ::std::size_t invalid_code_points_len = 3;
+	static inline constexpr ::std::size_t max_code_points_len = 4;
+	static inline constexpr void get_invalid_code_points(char8_t* ptr) noexcept
+	{
+		::fast_io::details::copy_string_literal(u8"\xEF\xBF\xBD",ptr);
+	}
+	static inline constexpr char8_t* get_code_point(char8_t *firstit,::std::size_t n,char32_t v0) noexcept
+	{
+		return firstit+utf32_to_utf8_code_point_impl(firstit,n,v0);
+	}
+};
+
+inline constexpr deco_result<char32_t,char8_t> utf32_to_utf8_impl(
+	char32_t const *fromfirst,char32_t const *fromlast,char8_t *tofirst,char8_t *tolast) noexcept
+{
+	return utf32_to_other_impl<utf32_to_utf8_simple>(fromfirst,fromlast,tofirst,tolast);
 }
 
 }
