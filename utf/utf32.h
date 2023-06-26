@@ -58,16 +58,16 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 {
 	using char_type = typename T::output_char_type;
 	using simd_vector_type = ::fast_io::intrinsics::simd_vector<::std::uint_least8_t,N>;
+	using temp_simd_vector_type = ::fast_io::intrinsics::simd_vector<::std::uint_least32_t,(N/sizeof(char32_t))>;
 #if (__cpp_lib_bit_cast >= 201806L) && !defined(__clang__)
 	constexpr
-		::fast_io::intrinsics::simd_vector<::std::uint_least8_t,N> cmp128{
-		std::bit_cast<simd_vector_type>(characters_array_impl<0x80u,char32_t,(N/sizeof(char32_t))>)};//tochange
+		temp_simd_vector_type cmp128{
+		std::bit_cast<temp_simd_vector_type>(characters_array_impl<0x80u,char32_t,(N/sizeof(char32_t))>)};
 #else
-	simd_vector_type cmp128;
-	cmp128.load(characters_array_impl<0x80u,char32_t,(N/sizeof(char32_t))>.data());//tochange
+	temp_simd_vector_type cmp128;
+	cmp128.load(characters_array_impl<0x80u,char32_t,(N/sizeof(char32_t))>.data());
 #endif
 	simd_vector_type svec0,svec1,svec2,svec3;
-	simd_vector_type svecres;
 	while(fromfirst<fromlast&&tofirst<tolast)
 	{
 		char32_t v0{*fromfirst};
@@ -86,18 +86,34 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 				::std::size_t ndiffmask{static_cast<::std::size_t>(N-1u)};
 			constexpr
 				int ndiffshift{::std::bit_width(ndiffmask)};
-			::std::size_t ndiff{(fromdiff2>>ndiffshift)+((fromdiff2&ndiffmask)!=0u)};
+			::std::size_t ndiff{(fromdiff2>>ndiffshift)};
 			for(;ndiff;--ndiff)
 			{
-				svec0.load(fromfirst);
-				svec1.load(fromfirst+4);
-				svec2.load(fromfirst+8);
-				svec3.load(fromfirst+12);
-				svecres=((svec0&cmp128)==cmp128)|
-					((svec1&cmp128)==cmp128)|
-					((svec2&cmp128)==cmp128)|
-					((svec3&cmp128)==cmp128);
-				if(!is_all_zeros(svecres))
+				if constexpr(N==16)
+				{
+					svec0.load(fromfirst);
+					svec1.load(fromfirst+4);
+					svec2.load(fromfirst+8);
+					svec3.load(fromfirst+12);
+				}
+				else if constexpr(N==32)
+				{
+					svec0.load(fromfirst);
+					svec1.load(fromfirst+8);
+					svec2.load(fromfirst+16);
+					svec3.load(fromfirst+24);
+				}
+				else
+				{
+					svec0.load(fromfirst);
+					svec1.load(fromfirst+16);
+					svec2.load(fromfirst+32);
+					svec3.load(fromfirst+48);
+				}
+				if(!is_all_zeros((static_cast<temp_simd_vector_type>(svec0)<cmp128)|
+					(static_cast<temp_simd_vector_type>(svec1)<cmp128)|
+					(static_cast<temp_simd_vector_type>(svec2)<cmp128)|
+					(static_cast<temp_simd_vector_type>(svec3)<cmp128)))
 				{
 					break;
 				}
