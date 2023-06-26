@@ -56,14 +56,7 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 	char32_t const *fromfirst,char32_t const *fromlast,
 	typename T::output_char_type *tofirst,typename T::output_char_type *tolast) noexcept
 {
-	constexpr
-		::std::size_t
-		invalidcodepointslen{T::invalid_code_points_len};
-	constexpr
-		::std::size_t invdcpm1{invalidcodepointslen-1u};
-	constexpr
-		::std::size_t
-		mxcodepointslen{T::max_code_points_len};
+	using char_type = typename T::output_char_type;
 	using simd_vector_type = ::fast_io::intrinsics::simd_vector<::std::uint_least8_t,N>;
 #if (__cpp_lib_bit_cast >= 201806L) && !defined(__clang__)
 	constexpr
@@ -73,16 +66,14 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 	simd_vector_type cmp128;
 	cmp128.load(characters_array_impl<0x80u,char32_t,(N/sizeof(char32_t))>.data());//tochange
 #endif
-	constexpr
-		simd_vector_type zeros{};
-	simd_vector_type ret;
-	simd_vector_type res;
+	simd_vector_type svec0,svec1,svec2,svec3;
+	simd_vector_type svecres;
 	while(fromfirst<fromlast&&tofirst<tolast)
 	{
 		char32_t v0{*fromfirst};
 		if(v0<0x80u)
 		{
-			*tofirst=static_cast<char8_t>(v0);
+			*tofirst=static_cast<char_type>(v0);
 			++tofirst;
 			++fromfirst;
 			::std::size_t fromdiff2{static_cast<::std::size_t>(fromlast-fromfirst)};
@@ -98,59 +89,58 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 			::std::size_t ndiff{(fromdiff2>>ndiffshift)+((fromdiff2&ndiffmask)!=0u)};
 			for(;ndiff;--ndiff)
 			{
-				simd_vector_type v0,v1,v2,v3;
-				v0.load(fromfirst);
-				v1.load(fromfirst+4);
-				v2.load(fromfirst+8);
-				v3.load(fromfirst+12);
-				res=((v0&cmp128)==cmp128)|
-					((v1&cmp128)==cmp128)|
-					((v2&cmp128)==cmp128)|
-					((v3&cmp128)==cmp128);
-				if(!is_all_zeros(res))
+				svec0.load(fromfirst);
+				svec1.load(fromfirst+4);
+				svec2.load(fromfirst+8);
+				svec3.load(fromfirst+12);
+				svecres=((svec0&cmp128)==cmp128)|
+					((svec1&cmp128)==cmp128)|
+					((svec2&cmp128)==cmp128)|
+					((svec3&cmp128)==cmp128);
+				if(!is_all_zeros(svecres))
 				{
 					break;
 				}
 				if constexpr(N==16)
 				{
-					v0.value=__builtin_shufflevector(v0.value,v1.value,
+					svec0.value=__builtin_shufflevector(svec0.value,svec1.value,
 					0,4,8,12,16,20,24,28,-1,-1,-1,-1,-1,-1,-1,-1);
-					v2.value=__builtin_shufflevector(v2.value,v3.value,
+					svec2.value=__builtin_shufflevector(svec2.value,svec3.value,
 					-1,-1,-1,-1,-1,-1,-1,-1,0,4,8,12,16,20,24,28);
-					v0.value=__builtin_shufflevector(v0.value,v2.value,
+					svec0.value=__builtin_shufflevector(svec0.value,svec2.value,
 					0,1,2,3,4,5,6,7,24,25,26,27,28,29,30,31);
 				}
 				else if constexpr(N==32)
 				{
-					v0.value=__builtin_shufflevector(v0.value,v1.value,
+					svec0.value=__builtin_shufflevector(svec0.value,svec1.value,
 					0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,
 					-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1);
-					v2.value=__builtin_shufflevector(v2.value,v3.value,
+					svec2.value=__builtin_shufflevector(svec2.value,svec3.value,
 					-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 					0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60);
-					v0.value=__builtin_shufflevector(v0.value,v2.value,
+					svec0.value=__builtin_shufflevector(svec0.value,svec2.value,
 					0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
 					48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63);
 				}
 				else if constexpr(N==64)
 				{
-					v0.value=__builtin_shufflevector(v0.value,v1.value,
+					svec0.value=__builtin_shufflevector(svec0.value,svec1.value,
 					0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,
 					64,68,72,76,80,84,88,92,96,100,104,108,112,116,120,
 					-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 					-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1);
-					v2.value=__builtin_shufflevector(v2.value,v3.value,
+					svec2.value=__builtin_shufflevector(svec2.value,svec3.value,
 					-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 					-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 					0,4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,
 					64,68,72,76,80,84,88,92,96,100,104,108,112,116,120);
-					v0.value=__builtin_shufflevector(v0.value,v2.value,
+					svec0.value=__builtin_shufflevector(svec0.value,svec2.value,
 					0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
 					16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,
 					96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,
 					112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127);
 				}
-				v0.store(tofirst);
+				svec0.store(tofirst);
 				fromfirst+=N;
 				tofirst+=N;
 			}
@@ -171,7 +161,7 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 				{
 					break;
 				}
-				*tofirst=v0;
+				*tofirst=static_cast<char_type>(v0);
 				++tofirst;
 				++fromfirst;
 			}
@@ -228,20 +218,12 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 		}
 	}
 	}
-	constexpr
-		::std::size_t
-		invalidcodepointslen{T::invalid_code_points_len};
-	constexpr
-		::std::size_t invdcpm1{invalidcodepointslen-1u};
-	constexpr
-		::std::size_t
-		mxcodepointslen{T::max_code_points_len};
 	while(fromfirst!=fromlast&&tofirst!=tolast)
 	{
 		char32_t v0{*fromfirst};
 		if(v0<0x80u)
 		{
-			*tofirst=static_cast<char8_t>(v0);
+			*tofirst=static_cast<char_type>(v0);
 			++tofirst;
 			++fromfirst;
 			::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
@@ -257,7 +239,7 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 				{
 					break;
 				}
-				*tofirst=v0;
+				*tofirst=static_cast<char_type>(v0);
 				++tofirst;
 				++fromfirst;
 			}
