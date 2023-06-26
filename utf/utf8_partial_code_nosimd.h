@@ -1,4 +1,3 @@
-::std::size_t fromdiff2{static_cast<::std::size_t>(fromlast-fromfirst)};
 ::std::size_t ndiff2{(fromdiff2>>2)+((fromdiff2&0x3u)!=0u)};
 do
 {

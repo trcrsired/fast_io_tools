@@ -40,6 +40,7 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 			if(!valmask)
 			{
 #include"utf8_partial_code_copyto4.h"
+				::std::size_t fromdiff2{static_cast<::std::size_t>(fromlast-fromfirst)};
 #include"utf8_partial_code_nosimd.h"
 			}
 #include"utf8_partial_code_remain_chars.h"
@@ -104,7 +105,9 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 			if(!valmask)
 			{
 #include"utf8_partial_code_copyto4.h"
+				::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
 #include"utf8_partial_code_simd.h"
+				::std::size_t fromdiff2{static_cast<::std::size_t>(fromlast-fromfirst)};
 #include"utf8_partial_code_nosimd.h"
 			}
 #include"utf8_partial_code_remain_chars.h"
@@ -157,6 +160,12 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 			if(!valmask)
 			{
 #include"utf8_partial_code_copyto4.h"
+				::std::size_t fromdiff2{static_cast<::std::size_t>(fromlast-fromfirst)};
+				::std::size_t todiff2{static_cast<::std::size_t>(tolast-tofirst)};
+				if(todiff2<fromdiff2)
+				{
+					fromdiff2=todiff2;
+				}
 #include"utf8_partial_code_nosimd.h"
 			}
 #include"utf8_partial_code_remain_chars.h"
@@ -226,7 +235,19 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 			if(!valmask)
 			{
 #include"utf8_partial_code_copyto4.h"
+				::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
+				::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
+				if(todiff<fromdiff)
+				{
+					fromdiff=todiff;
+				}
 #include"utf8_partial_code_simd.h"
+				::std::size_t fromdiff2{static_cast<::std::size_t>(fromlast-fromfirst)};
+				::std::size_t todiff2{static_cast<::std::size_t>(tolast-tofirst)};
+				if(todiff2<fromdiff2)
+				{
+					fromdiff2=todiff2;
+				}
 #include"utf8_partial_code_nosimd.h"
 			}
 #include"utf8_partial_code_remain_chars.h"

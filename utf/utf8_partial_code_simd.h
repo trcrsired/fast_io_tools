@@ -1,5 +1,8 @@
-::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
-::std::size_t ndiff{(fromdiff>>4)+((fromdiff&0xFu)!=0u)};
+constexpr
+	::std::size_t ndiffmask{static_cast<::std::size_t>(N-1u)};
+constexpr
+	int ndiffshift{::std::bit_width(ndiffmask)};
+::std::size_t ndiff{(fromdiff>>ndiffshift)+((fromdiff&ndiffmask)!=0u)};
 do
 {
 	simvec.load(fromfirst);
