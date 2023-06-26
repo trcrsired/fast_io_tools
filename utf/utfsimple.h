@@ -429,8 +429,7 @@ struct utf8_to_utf16_simple
 	}
 };
 
-#if 0
-namespace details::codecvt::gb18030
+namespace codecvt::gb18030
 {
 ::std::size_t get_gb18030_code_units_unhappy_pdstsz(char32_t, char*, ::std::size_t) noexcept;
 ::std::size_t get_gb18030_code_units_unhappy(char32_t, char*) noexcept;
@@ -454,7 +453,6 @@ struct utf8_to_gb18030_simple
 		return tofirst+::fast_io::details::codecvt::gb18030::get_gb18030_code_units_unhappy(codepoint,tofirst);
 	}
 };
-#endif
 
 inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_impl(
 	char8_t const *fromfirst,char8_t const *fromlast,
@@ -462,6 +460,21 @@ inline constexpr deco_result<char8_t,char32_t> utf8_to_utf32_impl(
 {
 	return utf8_to_other_impl<utf8_to_utf32_simple>(fromfirst,fromlast,tofirst,tolast);
 }
+
+inline constexpr deco_result<char8_t,char> utf8_to_gb18030_impl(
+	char8_t const *fromfirst,char8_t const *fromlast,
+	char *tofirst,char *tolast) noexcept
+{
+	return utf8_to_other_impl<utf8_to_gb18030_simple>(fromfirst,fromlast,tofirst,tolast);
+}
+
+inline constexpr deco_result<char8_t,char16_t> utf8_to_utf16_impl(
+	char8_t const *fromfirst,char8_t const *fromlast,
+	char16_t *tofirst,char16_t *tolast) noexcept
+{
+	return utf8_to_other_impl<utf8_to_utf16_simple>(fromfirst,fromlast,tofirst,tolast);
+}
+
 
 }
 
