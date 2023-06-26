@@ -203,172 +203,88 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 	}
 	}
 #endif
-	if constexpr(::std::same_as<output_char_type,char32_t>)
+	constexpr
+		::std::size_t
+		invalidcodepointslen{T::invalid_code_points_len};
+	constexpr
+		::std::size_t invdcpm1{invalidcodepointslen-1u};
+	constexpr
+		::std::size_t
+		mxcodepointslen{T::max_code_points_len};
+	for(;fromfirst!=fromlast&&tofirst!=tolast;)
 	{
-		for(;fromfirst!=fromlast&&tofirst!=tolast;++tofirst)
+		char8_t v0{*fromfirst};
+		if(v0<0x80u)
 		{
-			char8_t v0{*fromfirst};
-			if(v0<0x80u)
-			{
-				*tofirst=v0;
-				++fromfirst;
-				continue;
-			}
-			int length{::std::countl_one(static_cast<char unsigned>(v0))};
-			if(length==1||4<length)
+			*tofirst=v0;
+			++tofirst;
+			++fromfirst;
+			continue;
+		}
+		int length{::std::countl_one(static_cast<char unsigned>(v0))};
+		if(length==1||4<length)
+		{
+			++fromfirst;
+			if constexpr(::std::same_as<output_char_type,char32_t>)
 			{
 				*tofirst=0xFFFD;
-				++fromfirst;
-				continue;
-			}
-			int lengthm1{length-1};
-			if((fromlast-fromfirst)<length)
-#if __has_cpp_attribute(unlikely)
-				[[unlikely]]
-#endif
-			{
-				auto fromit{fromfirst};
-				for(++fromit;lengthm1&&((*fromit&0b11000000)==0b10000000);--lengthm1)
-				{
-					++fromit;
-				}
-				if(lengthm1)
-				{
-					*tofirst=0xFFFD;
-					fromfirst=fromit;
-					continue;
-				}
-				break;
-			}
-			char32_t val{v0&(0b11111111u>>length)};//length and length-1 should be the same here
-			for(++fromfirst;lengthm1;--lengthm1)
-			{
-				char8_t vff{*fromfirst};
-				if((vff&0b11000000)==0b10000000)
-				{
-					vff&=0b00111111;
-				}
-				else
-#if __has_cpp_attribute(unlikely)
-				[[unlikely]]
-#endif
-				{
-					break;
-				}
-				val=(val<<6)|vff;
-				++fromfirst;
-			}
-			if(lengthm1)
-			{
-				val=0xFFFD;
-			}
-			*tofirst=val;
-		}
-	}
-	else
-	{
-		constexpr
-			::std::size_t
-			invalidcodepointslen{T::invalid_code_points_len};
-		constexpr
-			::std::size_t invdcpm1{invalidcodepointslen-1u};
-		constexpr
-			::std::size_t
-			mxcodepointslen{T::max_code_points_len};
-		for(;fromfirst!=fromlast&&tofirst!=tolast;)
-		{
-			char8_t v0{*fromfirst};
-			if(v0<0x80u)
-			{
-				*tofirst=v0;
 				++tofirst;
-				++fromfirst;
-				continue;
-			}
-			int length{::std::countl_one(static_cast<char unsigned>(v0))};
-			if(length==1||4<length)
-			{
-				++fromfirst;
-				if constexpr(1<invalidcodepointslen)
-				{
-					::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
-					if(todiff<invdcpm1)
-					{
-						break;
-					}
-				}
-				tofirst=T::get_invalid_code_points(tofirst);
-				continue;
-			}
-			int lengthm1{length-1};
-			if((fromlast-fromfirst)<length)
-#if __has_cpp_attribute(unlikely)
-				[[unlikely]]
-#endif
-			{
-				auto fromit{fromfirst};
-				for(++fromit;lengthm1&&((*fromit&0b11000000)==0b10000000);--lengthm1)
-				{
-					++fromit;
-				}
-				if(lengthm1)
-				{
-					fromfirst=fromit;
-					if constexpr(1<invalidcodepointslen)
-					{
-						::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
-						if(todiff<invdcpm1)
-						{
-							break;
-						}
-					}
-					tofirst=T::get_invalid_code_points(tofirst);
-					continue;
-				}
-				break;
-			}
-			auto fromit{fromfirst};
-			char32_t val{v0&(0b11111111u>>length)};//length and length-1 should be the same here
-			for(++fromit;lengthm1;--lengthm1)
-			{
-				char8_t vff{*fromit};
-				if((vff&0b11000000)==0b10000000)
-				{
-					vff&=0b00111111;
-				}
-				else
-#if __has_cpp_attribute(unlikely)
-				[[unlikely]]
-#endif
-				{
-					break;
-				}
-				val=(val<<6)|vff;
-				++fromit;
-			}
-			if(lengthm1)
-			{
-				if constexpr(1<invalidcodepointslen)
-				{
-					::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
-					if(todiff<invdcpm1)
-					{
-						fromfirst=fromit;
-						break;
-					}
-				}
-				tofirst=T::get_invalid_code_points(tofirst);
 			}
 			else
 			{
-				auto tofrst{T::get_code_points(tofirst,tolast,val)};
-				if(tofrst==tofirst)
+				if constexpr(1<invalidcodepointslen)
 				{
-					break;
+					::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
+					if(todiff<invdcpm1)
+					{
+						break;
+					}
 				}
+				tofirst=T::get_invalid_code_points(tofirst);
 			}
-			fromfirst=fromit;
+			continue;
 		}
+		::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
+		if(fromdiff<static_cast<unsigned>(length))
+		{
+			break;
+		}
+		char32_t val;
+		__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
+		if constexpr(::std::endian::big!=::std::endian::native)
+		{
+			val=::fast_io::byte_swap(val);
+		}
+		auto lengthm2{length-2};
+		auto [mask1,mask2,mask3]=utf8masks[lengthm2];
+		if((val&mask1)==mask2)
+		{
+			val&=mask3;
+			val>>=(static_cast<unsigned>(2-lengthm2)<<3);
+			val=(val&0xFF)|
+				((val&0xFF00)>>2)|
+				((val&0xFF0000)>>4)|
+				((val&0xFF000000)>>6);
+		}
+		else
+		{
+			val=0xFFFD;
+		}
+		if constexpr(::std::same_as<output_char_type,char32_t>)
+		{
+			*tofirst=val;
+			++tofirst;
+		}
+		else
+		{
+			auto tofrst=T::get_code_point(tofirst,val);
+			if(tofrst==tofirst)
+			{
+				break;
+			}
+			tofrst=tofirst;
+		}
+		fromfirst+=length;
 	}
 	return {fromfirst,tofirst};
 }
