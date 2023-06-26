@@ -312,7 +312,7 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 				}
 				else
 				{
-					auto [fromit,toit]=utf8_to_other_simd_tolast_impl<N,T>(fromfirst,fromfirst+mndiff,tofirst,tolast);
+					auto [fromit,toit]=utf8_to_other_simd_tolast_impl<N,T>(fromfirst,fromfirst+mndiff,tofirst,tofirst+mndiff);
 					fromfirst=fromit;
 					tofirst=toit;
 				}
@@ -328,7 +328,7 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 				}
 				else
 				{
-					auto [fromit,toit]=utf8_to_other_nosimd_tolast_impl<T>(fromfirst,fromfirst+mndiff,tofirst,tolast);
+					auto [fromit,toit]=utf8_to_other_nosimd_tolast_impl<T>(fromfirst,fromfirst+mndiff,tofirst,tofirst+mndiff);
 					fromfirst=fromit;
 					tofirst=toit;
 				}
