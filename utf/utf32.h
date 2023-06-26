@@ -167,7 +167,7 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 			for(;fromdiff;--fromdiff)
 			{
 				v0=*fromfirst;
-				if(v0<0x80u)
+				if(0x80u<=v0)
 				{
 					break;
 				}
@@ -206,7 +206,7 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 #endif
 	{
 		constexpr std::size_t N{::fast_io::details::optimal_simd_vector_run_with_cpu_instruction_size};
-		if constexpr(N==16&&N==32&&N==64)
+		if constexpr(N==16&&N==32&&N==64&&0)
 		{
 			::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
 			::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
@@ -253,7 +253,7 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 			for(;fromdiff;--fromdiff)
 			{
 				v0=*fromfirst;
-				if(v0<0x80u)
+				if(0x80u<=v0)
 				{
 					break;
 				}
