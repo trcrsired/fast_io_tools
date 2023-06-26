@@ -25,14 +25,6 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 	typename T::output_char_type *tofirst) noexcept
 {
 	using output_char_type = typename T::output_char_type;
-	constexpr
-		::std::size_t
-		invalidcodepointslen{T::invalid_code_points_len};
-	constexpr
-		::std::size_t invdcpm1{invalidcodepointslen-1u};
-	constexpr
-		::std::size_t
-		mxcodepointslen{T::max_code_points_len};
 	while(fromfirst<fromlast)
 	{
 		::std::uint_least32_t val;
@@ -45,6 +37,69 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 			if(!valmask)
 			{
 #include"utf8_partial_code_copyto4.h"
+#include"utf8_partial_code_nosimd.h"
+			}
+#include"utf8_partial_code_remain_chars.h"
+		}
+		char unsigned v;
+		if constexpr(::std::endian::little==::std::endian::native)
+		{
+			v=static_cast<char unsigned>(val);
+			val=::fast_io::byte_swap(val);
+		}
+		else
+		{
+			v=static_cast<char unsigned>(val>>24u);
+		}
+		int length{::std::countl_one(v)};
+		if(length==1||4<length)
+		{
+#include"utf8_partial_code_invalid_code_point_unchecked.h"
+			continue;
+		}
+#include"utf8_partial_code_mask_code_unchecked.h"
+	}
+	return {fromfirst,tofirst};
+}
+
+template<::std::size_t N,typename T>
+inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other_simd_impl(
+	char8_t const *fromfirst,char8_t const *fromlast,
+	typename T::output_char_type *tofirst) noexcept
+{
+	if constexpr(N!=16&&N!=32&&N!=64)
+	{
+		return utf8_to_other_nosimd_impl<T>(fromfirst,fromlast,tofirst);
+	}
+	using simd_vector_type = ::fast_io::intrinsics::simd_vector<::std::uint_least8_t,N>;
+#if (__cpp_lib_bit_cast >= 201806L) && !defined(__clang__)
+	constexpr
+		::fast_io::intrinsics::simd_vector<::std::uint_least8_t,N> cmp128{
+		std::bit_cast<simd_vector_type>(characters_array_impl<0x80u,char8_t,N>)};
+#else
+	simd_vector_type cmp128;
+	cmp128.load(characters_array_impl<0x80u,char8_t,N>.data());
+#endif
+	constexpr
+		simd_vector_type zeros{};
+	simd_vector_type simvec;
+	simd_vector_type ret;
+	simd_vector_type res;
+	constexpr bool issimd{true};
+	using output_char_type = typename T::output_char_type;
+	while(fromfirst<fromlast)
+	{
+		::std::uint_least32_t val;
+		__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
+		constexpr
+			::std::uint_least32_t firstdigitmask{::std::endian::big==::std::endian::native?0x80000000u:0x00000080u};
+		if(!(firstdigitmask&val))
+		{
+			::std::uint_least32_t valmask{val&0x80808080u};
+			if(!valmask)
+			{
+#include"utf8_partial_code_copyto4.h"
+#include"utf8_partial_code_simd.h"
 #include"utf8_partial_code_nosimd.h"
 			}
 #include"utf8_partial_code_remain_chars.h"
@@ -123,85 +178,10 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 }
 
 template<::std::size_t N,typename T>
-inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other_simd_impl(
-	char8_t const *fromfirst,char8_t const *fromlast,
-	typename T::output_char_type *tofirst) noexcept
-{
-	if constexpr(N!=16&&N!=32&&N!=64)
-	{
-		return utf8_to_other_nosimd_impl<T>(fromfirst,fromlast,tofirst);
-	}
-	using simd_vector_type = ::fast_io::intrinsics::simd_vector<::std::uint_least8_t,N>;
-#if (__cpp_lib_bit_cast >= 201806L) && !defined(__clang__)
-	constexpr
-		::fast_io::intrinsics::simd_vector<::std::uint_least8_t,N> cmp128{
-		std::bit_cast<simd_vector_type>(characters_array_impl<0x80u,char8_t,N>)};
-#else
-	simd_vector_type cmp128;
-	cmp128.load(characters_array_impl<0x80u,char8_t,N>.data());
-#endif
-	constexpr
-		simd_vector_type zeros{};
-	simd_vector_type simvec;
-	simd_vector_type ret;
-	simd_vector_type res;
-	for(;fromfirst<fromlast;)
-	{
-		::std::uint_least32_t val;
-		__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
-		constexpr
-			::std::uint_least32_t firstdigitmask{::std::endian::big==::std::endian::native?0x80000000u:0x00000080u};
-		if(!(firstdigitmask&val))
-		{
-			::std::uint_least32_t valmask{val&0x80808080u};
-			if(!valmask)
-			{
-#include"utf8_partial_code_copyto4.h"
-#include"utf8_partial_code_simd.h"
-#include"utf8_partial_code_nosimd.h"
-			}
-#include"utf8_partial_code_remain_chars.h"
-		}
-		char unsigned v;
-		if constexpr(::std::endian::little==::std::endian::native)
-		{
-			v=static_cast<char unsigned>(val);
-			val=::fast_io::byte_swap(val);
-		}
-		else
-		{
-			v=static_cast<char unsigned>(val>>24u);
-		}
-		int length{::std::countl_one(v)};
-		if(length==1||4<length)
-		{
-			*tofirst=0xFFFD;
-			++fromfirst;
-			++tofirst;
-			continue;
-		}
-#include"utf8_partial_code_mask_common.h"
-		*tofirst=val;
-		++tofirst;
-		fromfirst+=length;
-	}
-	return {fromfirst,tofirst};
-}
-
-template<::std::size_t N,typename T>
 inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other_simd_tolast_impl(
 	char8_t const *fromfirst,char8_t const *fromlast,
 	typename T::output_char_type *tofirst,typename T::output_char_type *tolast) noexcept
 {
-	using output_char_type = typename T::output_char_type;
-	constexpr
-		::std::size_t
-		invalidcodepointslen{T::invalid_code_points_len};
-	constexpr
-		::std::size_t invdcpm1{invalidcodepointslen-1u};
-	constexpr
-		::std::size_t
-		mxcodepointslen{T::max_code_points_len};
 	if constexpr(N!=16&&N!=32&&N!=64)
 	{
 		return utf8_to_other_nosimd_last_impl<T>(fromfirst,fromlast,tofirst,tolast);
@@ -220,7 +200,16 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 	simd_vector_type simvec;
 	simd_vector_type ret;
 	simd_vector_type res;
-	for(;fromfirst<fromlast;)
+	using output_char_type = typename T::output_char_type;
+	constexpr
+		::std::size_t
+		invalidcodepointslen{T::invalid_code_points_len};
+	constexpr
+		::std::size_t invdcpm1{invalidcodepointslen-1u};
+	constexpr
+		::std::size_t
+		mxcodepointslen{T::max_code_points_len};
+	while(fromfirst<fromlast&&tofirst<tolast)
 	{
 		::std::uint_least32_t val;
 		__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
