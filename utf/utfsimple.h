@@ -327,11 +327,11 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 				}
 				break;
 			}
-			auto fmfirst{fromfirst};
+			auto fromit{fromfirst};
 			char32_t val{v0&(0b11111111u>>length)};//length and length-1 should be the same here
-			for(++fromfirst;lengthm1;--lengthm1)
+			for(++fromit;lengthm1;--lengthm1)
 			{
-				char8_t vff{*fromfirst};
+				char8_t vff{*fromit};
 				if((vff&0b11000000)==0b10000000)
 				{
 					vff&=0b00111111;
@@ -344,7 +344,7 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 					break;
 				}
 				val=(val<<6)|vff;
-				++fromfirst;
+				++fromit;
 			}
 			if(lengthm1)
 			{
@@ -353,6 +353,7 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 					::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
 					if(todiff<invdcpm1)
 					{
+						fromfirst=fromit;
 						break;
 					}
 				}
@@ -363,10 +364,10 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_to_other
 				auto tofrst{T::get_code_points(tofirst,tolast,val)};
 				if(tofrst==tofirst)
 				{
-					fromfirst=fmfirst;
 					break;
 				}
 			}
+			fromfirst=fromit;
 		}
 	}
 	return {fromfirst,tofirst};
