@@ -99,5 +99,18 @@ inline constexpr deco_result<char16_t,typename T::output_char_type> utf16_to_oth
 	return {fromfirst,tofirst};
 }
 
+inline constexpr deco_result<char16_t,char8_t> utf16_to_utf8_impl(
+	char16_t const *fromfirst,char16_t const *fromlast,
+	char8_t *tofirst,char8_t *tolast) noexcept
+{
+	return utf16_to_other_impl<utf32_to_utf8_simple>(fromfirst,fromlast,tofirst,tolast);
+}
+
+inline constexpr deco_result<char16_t,char32_t> utf16_to_utf32_impl(
+	char16_t const *fromfirst,char16_t const *fromlast,
+	char32_t *tofirst,char32_t *tolast) noexcept
+{
+	return utf16_to_other_impl<utf8_to_utf32_simple>(fromfirst,fromlast,tofirst,tolast);
+}
 
 }
