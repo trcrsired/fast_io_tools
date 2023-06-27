@@ -39,34 +39,80 @@ inline constexpr deco_result<char16_t,typename T::output_char_type> utf16_to_oth
 	while(fromfirst!=fromlast&&tofirst!=tolast)
 	{
 		char16_t v0{*fromfirst};
-		if(!is_utf16_surrogate(v0))
+		if constexpr(!::std::same_as<char_type,char32_t>)
 		{
-			*tofirst=static_cast<char_type>(v0);
-			++tofirst;
-			++fromfirst;
-			::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
-			::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
-			if(todiff<fromdiff)
+			if(v0<0x80u)
 			{
-				fromdiff=todiff;
-			}
-			for(;fromdiff;--fromdiff)
-			{
-				v0=*fromfirst;
-				if(is_utf16_surrogate(0x80u))
-				{
-					break;
-				}
 				*tofirst=static_cast<char_type>(v0);
 				++tofirst;
 				++fromfirst;
+				::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
+				::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
+				if(todiff<fromdiff)
+				{
+					fromdiff=todiff;
+				}
+				for(;fromdiff;--fromdiff)
+				{
+					v0=*fromfirst;
+					if(0x80u<=v0)
+					{
+						break;
+					}
+					*tofirst=static_cast<char_type>(v0);
+					++tofirst;
+					++fromfirst;
+				}
+				if(!fromdiff)
+				{
+					break;
+				}
 			}
-			if(!fromdiff)
+
+		}
+		if(!is_utf16_surrogate(v0))
+		{
+			if constexpr(::std::same_as<char_type,char32_t>)
 			{
-				break;
+				*tofirst=static_cast<char_type>(v0);
+				++tofirst;
+				++fromfirst;
+				::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
+				::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
+				if(todiff<fromdiff)
+				{
+					fromdiff=todiff;
+				}
+				for(;fromdiff;--fromdiff)
+				{
+					v0=*fromfirst;
+					if(is_utf16_surrogate(v0))
+					{
+						break;
+					}
+					*tofirst=static_cast<char_type>(v0);
+					++tofirst;
+					++fromfirst;
+				}
+				if(!fromdiff)
+				{
+					break;
+				}
+			}
+			else
+			{
+				auto ret{T::get_code_point(tofirst,static_cast<std::size_t>(tolast-tofirst),v0)};
+				if(!ret)
+				{
+					break;
+				}
+				tofirst+=ret;
+				++fromfirst;
+				continue;
 			}
 		}
 		char32_t codepoint{0xFFFD};
+		::std::size_t tomov{1};
 		if (is_utf16_high_surrogate(v0))
 		{
 			if (fromfirst+1 == fromlast )
@@ -77,13 +123,14 @@ inline constexpr deco_result<char16_t,typename T::output_char_type> utf16_to_oth
 			if (is_utf16_low_surrogate(v1))
 			{
 				codepoint = utf16_surrogate_to_utf32(v0,v1);
+				++tomov;
 			}
 		}
 		if constexpr(::std::same_as<char_type,char32_t>)
 		{
 			*tofirst=codepoint;
 			++tofirst;
-			++fromfirst;
+			fromfirst+=tomov;
 		}
 		else
 		{
@@ -93,7 +140,7 @@ inline constexpr deco_result<char16_t,typename T::output_char_type> utf16_to_oth
 				break;
 			}
 			tofirst+=ret;
-			++fromfirst;
+			fromfirst+=tomov;
 		}
 	}
 	return {fromfirst,tofirst};
