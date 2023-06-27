@@ -6,11 +6,11 @@ if constexpr(::std::same_as<output_char_type,char32_t>)
 }
 else
 {
-	auto toit=T::get_code_point(tofirst,tolast,val);
-	if(toit==tofirst)
+	auto ret=T::get_code_point(tofirst,static_cast<::std::size_t>(tolast-tofirst),val);
+	if(!ret)
 	{
 		break;
 	}
-	tofirst=toit;
+	tofirst+=ret;
 }
 fromfirst+=length;

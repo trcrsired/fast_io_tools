@@ -392,39 +392,39 @@ struct utf8_to_utf16_simple
 	{
 		*ptr=0xFFFD;
 	}
-	static inline constexpr char16_t* get_code_point(char16_t* tofirst,char16_t* tolast,char32_t codepoint) noexcept
+	static inline constexpr ::std::size_t get_code_point(char16_t* tofirst,::std::size_t dfsz,char32_t codepoint) noexcept
 	{
 		if(codepoint < 0xD800 || (codepoint > 0xDFFF && codepoint < 0x10000))
 		{
 			*tofirst=static_cast<char16_t>(codepoint);
-			return tofirst+1;
+			return 1;
 		}
-		if(tolast-tofirst<2)
+		if(dfsz<2)
 		{
-			return tofirst;
+			return 0;
 		}
 		codepoint-=0x010000;
 		*tofirst = char16_t(((0b1111'1111'1100'0000'0000 & codepoint) >> 10) + 0xD800);
 		tofirst[1] = char16_t(((0b0000'0000'0011'1111'1111 & codepoint) >> 00) + 0xDC00);
-		return tofirst+2;
+		return 2;
 	}
-	static inline constexpr char16_t* get_code_point_unchecked(char16_t* tofirst,char32_t codepoint) noexcept
+	static inline constexpr ::std::size_t get_code_point_unchecked(char16_t* tofirst,char32_t codepoint) noexcept
 	{
 		if constexpr(false)
 		{
-			return get_code_point(tofirst,tofirst+2,codepoint);
+			return get_code_point(tofirst,2,codepoint);
 		}
 		else
 		{
 			if(codepoint < 0xD800 || (codepoint > 0xDFFF && codepoint < 0x10000))
 			{
 				*tofirst=static_cast<char16_t>(codepoint);
-				return tofirst+1;
+				return 1;
 			}
 			codepoint-=0x010000;
 			*tofirst = char16_t(((0b1111'1111'1100'0000'0000 & codepoint) >> 10) + 0xD800);
 			tofirst[1] = char16_t(((0b0000'0000'0011'1111'1111 & codepoint) >> 00) + 0xDC00);
-			return tofirst+2;
+			return 2;
 		}
 	}
 };
@@ -444,13 +444,13 @@ struct utf8_to_gb18030_simple
 	{
 		::fast_io::details::copy_string_literal("\x84\x31\xA4\x37",ptr);
 	}
-	static inline constexpr char* get_code_point(char *tofirst,char *tolast,char32_t codepoint) noexcept
+	static inline constexpr ::std::size_t get_code_point(char *tofirst,::std::size_t dfsz,char32_t codepoint) noexcept
 	{
-		return tofirst+::fast_io::details::codecvt::gb18030::get_gb18030_code_units_unhappy_pdstsz(codepoint,tofirst,static_cast<::std::size_t>(tolast-tofirst));
+		return ::fast_io::details::codecvt::gb18030::get_gb18030_code_units_unhappy_pdstsz(codepoint,tofirst,dfsz);
 	}
-	static inline constexpr char* get_code_point_unchecked(char *tofirst,char32_t codepoint) noexcept
+	static inline constexpr ::std::size_t get_code_point_unchecked(char *tofirst,char32_t codepoint) noexcept
 	{
-		return tofirst+::fast_io::details::codecvt::gb18030::get_gb18030_code_units_unhappy(codepoint,tofirst);
+		return ::fast_io::details::codecvt::gb18030::get_gb18030_code_units_unhappy(codepoint,tofirst);
 	}
 };
 

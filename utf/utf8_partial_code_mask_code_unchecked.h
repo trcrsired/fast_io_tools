@@ -6,6 +6,6 @@ if constexpr(::std::same_as<output_char_type,char32_t>)
 }
 else
 {
-	tofirst=T::get_code_point_unchecked(tofirst,val);
+	tofirst+=T::get_code_point_unchecked(tofirst,val);
 }
 fromfirst+=length;

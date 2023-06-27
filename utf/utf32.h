@@ -187,11 +187,11 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 			}
 		}
 		auto ret{T::get_code_point(tofirst,static_cast<std::size_t>(tolast-tofirst),v0)};
-		if(tofirst==ret)
+		if(!ret)
 		{
 			break;
 		}
-		tofirst=ret;
+		tofirst+=ret;
 		++fromfirst;
 	}
 	return {fromfirst,tofirst};
@@ -251,11 +251,11 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 			}
 		}
 		auto ret{T::get_code_point(tofirst,static_cast<std::size_t>(tolast-tofirst),v0)};
-		if(ret==tofirst)
+		if(!ret)
 		{
 			break;
 		}
-		tofirst=ret;
+		tofirst+=ret;
 		++fromfirst;
 	}
 	return {fromfirst,tofirst};
@@ -270,9 +270,13 @@ struct utf32_to_utf8_simple
 	{
 		::fast_io::details::copy_string_literal(u8"\xEF\xBF\xBD",ptr);
 	}
-	static inline constexpr char8_t* get_code_point(char8_t *firstit,::std::size_t n,char32_t v0) noexcept
+	static inline constexpr ::std::size_t get_code_point(char8_t *firstit,::std::size_t n,char32_t v0) noexcept
 	{
-		return firstit+utf32_to_utf8_code_point_impl(firstit,n,v0);
+		return utf32_to_utf8_code_point_impl(firstit,n,v0);
+	}
+	static inline constexpr ::std::size_t get_code_point_unchecked(char8_t *firstit,char32_t v0) noexcept
+	{
+		return utf32_to_utf8_code_point_impl(firstit,4,v0);
 	}
 };
 
@@ -280,6 +284,13 @@ inline constexpr deco_result<char32_t,char8_t> utf32_to_utf8_impl(
 	char32_t const *fromfirst,char32_t const *fromlast,char8_t *tofirst,char8_t *tolast) noexcept
 {
 	return utf32_to_other_impl<utf32_to_utf8_simple>(fromfirst,fromlast,tofirst,tolast);
+}
+
+
+inline constexpr deco_result<char32_t,char16_t> utf32_to_utf16_impl(
+	char32_t const *fromfirst,char32_t const *fromlast,char16_t *tofirst,char16_t *tolast) noexcept
+{
+	return utf32_to_other_impl<utf8_to_utf16_simple>(fromfirst,fromlast,tofirst,tolast);
 }
 
 }
