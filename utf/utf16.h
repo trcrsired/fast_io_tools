@@ -29,7 +29,7 @@ inline constexpr deco_result<char16_t,typename T::output_char_type> utf16_to_oth
 		constexpr std::size_t N{::fast_io::details::optimal_simd_vector_run_with_cpu_instruction_size};
 		if constexpr(N==16||N==32||N==64)
 		{
-			auto [fromit,toit]=utf32_to_other_simd_tolast_impl<N,T>(fromfirst,fromlast,tofirst,tolast);
+			auto [fromit,toit]=utf16_to_other_simd_tolast_impl<N,T>(fromfirst,fromlast,tofirst,tolast);
 			fromfirst=fromit;
 			tofirst=toit;
 		}
