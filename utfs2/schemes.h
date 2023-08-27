@@ -391,9 +391,9 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::gb18030>
 	{
 		return ::fast_io::details::codecvt::gb18030::get_gb18030_code_units_unhappy_pdstsz(v0,firstit,n);
 	}
-	static inline constexpr ::std::size_t get_code_point_unchecked(output_char_type *firstit,::std::size_t n,char32_t v0) noexcept
+	static inline constexpr ::std::size_t get_code_point_unchecked(output_char_type *firstit,char32_t v0) noexcept
 	{
-		return ::fast_io::details::codecvt::gb18030::get_gb18030_code_units_unhappy_pdstsz(v0,firstit,n);
+		return ::fast_io::details::codecvt::gb18030::get_gb18030_code_units_unhappy_pdstsz(v0,firstit,max_code_points_len);
 	}
 };
 
