@@ -24,48 +24,37 @@ struct deco_result_simd
 	using input_char_type = inputchartype;
 	using output_char_type = outputchartype;
 	input_char_type const *fromit;
-	input_char_type const *toit;
+	output_char_type *toit;
 	bool done;
 };
+
+#if !defined(_MSC_VER) || defined(__clang__)
 
 template<typename T,::std::size_t N>
 inline constexpr deco_result_simd<char8_t,typename T::output_char_type> utf8_simd_case_impl(
 	char8_t const *fromfirst,char8_t const *fromlast,
-	typename T::output_char_type *tofirst,typename T::output_char_type *tolast) noexcept
+	typename T::output_char_type *tofirst) noexcept
 {
 	using output_char_type = typename T::output_char_type;
 	using simd_vector_type = ::fast_io::intrinsics::simd_vector<::std::uint_least8_t,N>;
 #if (__cpp_lib_bit_cast >= 201806L) && !defined(__clang__)
 	constexpr
 #endif
-		auto cmp128{::fast_io::details::utfconstantsimd_impl<0x80u,char8_t,N>};
+		auto cmp128{::fast_io::details::utfconstantsimd_impl<0x80u,char8_t,N,false>()};
 	constexpr
 		simd_vector_type zeros{};
-	simd_vector_type simvec,res,ret;
+	simd_vector_type simvec,ret;
 	constexpr
 		::std::size_t ndiffmask{static_cast<::std::size_t>(N-1u)};
 	constexpr
 		int ndiffshift{::std::bit_width(ndiffmask)};
-
 	::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
-	::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
-	
-	if(todiff<fromdiff)
-	{
-		fromdiff=todiff;
-	}
 	::std::size_t ndiff{(fromdiff>>ndiffshift)};
-	for(;ndiff;--ndiff)
+	do
 	{
 		simvec.load(fromfirst);
-		res=((simvec&cmp128)==cmp128);
-		if(!::fast_io::intrinsics::is_all_zeros(res))
+		if(!::fast_io::intrinsics::is_all_zeros((simvec&cmp128)==cmp128))
 		{
-			#if 0
-			auto count{::fast_io::intrinsics::vector_mask_countr_zero(simvec)};
-			fromfirst+=count;
-			tofirst+=count;
-			#endif
 			break;
 		}
 		if constexpr(sizeof(output_char_type)==4)
@@ -156,31 +145,35 @@ inline constexpr deco_result_simd<char8_t,typename T::output_char_type> utf8_sim
 		tofirst+=N;
 		--ndiff;
 	}
+	while(ndiff);
 	return {fromfirst,tofirst,ndiff==0u};
 }
 
+#endif
+
 template<typename T>
-inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_impl(
+inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_unchecked_impl(
 	char8_t const *fromfirst,char8_t const *fromlast,
-	typename T::output_char_type *tofirst,typename T::output_char_type *tolast) noexcept
+	typename T::output_char_type *tofirst) noexcept
 {
 	using output_char_type = typename T::output_char_type;
 	constexpr
-		::std::size_t N{::fast_io::intrinsics::optimal_simd_vector_run_with_cpu_instruction_size};
-
-	constexpr
 		::std::size_t
 		invalidcodepointslen{T::invalid_code_points_len};
-	constexpr
-		::std::size_t invdcpm1{invalidcodepointslen-1u};
-	constexpr
-		::std::size_t
-		mxcodepointslen{T::max_code_points_len};
 	using output_char_type = typename T::output_char_type;
-	while(fromfirst!=fromlast&&tofirst!=tolast)
+	while(fromfirst<fromlast)
 	{
 		::std::uint_least32_t val;
-		__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
+#ifdef __has_builtin
+#if __has_builtin(__builtin_memcpy)
+		__builtin_memcpy
+#else
+		::std::memcpy
+#endif
+#else
+		::std::memcpy
+#endif
+		(__builtin_addressof(val),fromfirst,sizeof(val));
 		constexpr
 			::std::uint_least32_t firstdigitmask{::std::endian::big==::std::endian::native?0x80000000u:0x00000080u};
 		if(!(firstdigitmask&val))
@@ -188,23 +181,34 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 			::std::uint_least32_t valmask{val&0x80808080u};
 			if(!valmask)
 			{
+#if !defined(_MSC_VER) || defined(__clang__)
+				constexpr
+				::std::size_t N{::fast_io::intrinsics::optimal_simd_vector_run_with_cpu_instruction_size};
 				if constexpr(N!=0)
 				{
-					auto [fromit,toit,done]=utf8_simd_case_impl<T,N>(fromfirst,fromlast,tofirst,tolast);
+					auto [fromit,toit,done]=utf8_simd_case_impl<T,N>(fromfirst,fromlast,tofirst);
 					fromfirst=fromit;
 					tofirst=toit;
 					if(done)
 					{
-						break;
+						continue;
 					}
 				}
-
+#endif
 				::std::size_t fromdiff2{static_cast<::std::size_t>(fromlast-fromfirst)};
-				::std::size_t todiff2{static_cast<::std::size_t>(tolast-tofirst)};
-				::std::size_t ndiff2{(fromdiff2>>2)+((fromdiff2&0x3u)!=0u)};
+				::std::size_t ndiff2{(fromdiff2>>2u)};
 				do
 				{
-					__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
+#ifdef __has_builtin
+#if __has_builtin(__builtin_memcpy)
+					__builtin_memcpy
+#else
+					::std::memcpy
+#endif
+#else
+					::std::memcpy
+#endif
+					(__builtin_addressof(val),fromfirst,sizeof(val));
 					if((val&0x80808080u)!=0u)
 					{
 						break;
@@ -245,7 +249,16 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 				++fromfirst;
 				val>>=8u;
 			}
-			__builtin_memcpy(__builtin_addressof(val),fromfirst,sizeof(val));
+#ifdef __has_builtin
+#if __has_builtin(__builtin_memcpy)
+			__builtin_memcpy
+#else
+			::std::memcpy
+#endif
+#else
+			::std::memcpy
+#endif
+			(__builtin_addressof(val),fromfirst,sizeof(val));
 		}
 		char unsigned v;
 		if constexpr(::std::endian::little==::std::endian::native)
@@ -267,11 +280,6 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 			}
 			else
 			{
-				::std::size_t diff{static_cast<::std::size_t>(tolast-tofirst)};
-				if(diff<invalidcodepointslen)
-				{
-					break;
-				}
 				T::get_invalid_code_points(tofirst);
 				tofirst+=invalidcodepointslen;
 			}
@@ -300,14 +308,170 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 		}
 		else
 		{
-			auto ret=T::get_code_point(tofirst,static_cast<::std::size_t>(tolast-tofirst),val);
-			if(!ret)
-			{
-				break;
-			}
+			auto ret=T::get_code_point_unchecked(tofirst,val);
 			tofirst+=ret;
 		}
 		fromfirst+=length;
+	}
+	return {fromfirst,tofirst};
+}
+
+template<typename T>
+inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_impl(
+	char8_t const *fromfirst,char8_t const *fromlast,
+	typename T::output_char_type *tofirst,typename T::output_char_type *tolast) noexcept
+{
+	if constexpr(::std::numeric_limits<::std::uint_least8_t>::digits==8)
+	{
+#if __cpp_if_consteval >= 202106L
+	if !consteval
+#else
+	if(!__builtin_is_constant_evaluated())
+#endif
+	{
+		::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
+		::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
+		::std::size_t mndiff{todiff};
+		if(fromdiff<mndiff)
+		{
+			mndiff=fromdiff;
+		}
+		constexpr std::size_t N{
+#if !defined(_MSC_VER) || defined(__clang__)
+			::fast_io::details::optimal_simd_vector_run_with_cpu_instruction_size
+#endif
+		};
+		constexpr
+			::std::uint_least32_t decisiondiff{N+8};
+		if(decisiondiff<mndiff)
+		{
+			mndiff-=decisiondiff;
+			if constexpr(16<=N)
+			{
+				auto [fromit,toit]=utf8_generic_unchecked_impl<T>(fromfirst,fromfirst+mndiff,tofirst);
+				fromfirst=fromit;
+				tofirst=toit;
+			}
+			else
+			{
+				auto [fromit,toit]=utf8_generic_unchecked_impl<T>(fromfirst,fromfirst+mndiff,tofirst);
+				fromfirst=fromit;
+				tofirst=toit;
+			}
+		}	
+	}
+	}
+	constexpr
+		::std::size_t
+		invalidcodepointslen{T::invalid_code_points_len};
+	constexpr
+		::std::size_t invdcpm1{invalidcodepointslen-1u};
+	constexpr
+		::std::size_t
+		mxcodepointslen{T::max_code_points_len};
+	constexpr
+		auto encode{T::encode};
+	for(;fromfirst!=fromlast&&tofirst!=tolast;++tofirst)
+	{
+		char8_t v0{*fromfirst};
+		if(v0<0x80u)
+		{
+			*tofirst=v0;
+			++fromfirst;
+			continue;
+		}
+		int length{::std::countl_one(static_cast<char unsigned>(v0))};
+		if(length==1||4<length)
+		{
+			if constexpr(invalidcodepointslen==1)
+			{
+				T::get_invalid_code_points(tofirst);
+			}
+			else
+			{
+				::std::size_t diff{static_cast<::std::size_t>(tolast-tofirst)};
+				if(diff < length)
+				{
+					break;
+				}
+				T::get_invalid_code_points(tofirst);
+				tofirst+=invdcpm1;
+			}
+			++fromfirst;
+			continue;
+		}
+		int lengthm1{length-1};
+		if((fromlast-fromfirst)<length)
+#if __has_cpp_attribute(unlikely)
+		[[unlikely]]
+#endif
+		{
+			auto fromit{fromfirst};
+			for(++fromit;lengthm1&&((*fromit&0b11000000)==0b10000000);--lengthm1)
+			{
+				++fromit;
+			}
+			if(lengthm1)
+			{
+				if constexpr(invalidcodepointslen==1)
+				{
+					T::get_invalid_code_points(tofirst);
+				}
+				else
+				{
+					::std::size_t diff{static_cast<::std::size_t>(tolast-tofirst)};
+					if(diff < length)
+					{
+						break;
+					}
+					T::get_invalid_code_points(tofirst);
+					tofirst+=invdcpm1;
+				}
+				fromfirst=fromit;
+				continue;
+			}
+			break;
+		}
+		char32_t val{v0&(0b11111111u>>length)};//length and length-1 should be the same here
+		for(++fromfirst;lengthm1;--lengthm1)
+		{
+			char8_t vff{*fromfirst};
+			if((vff&0b11000000)==0b10000000)
+			{
+				vff&=0b00111111;
+			}
+			else
+#if __has_cpp_attribute(unlikely)
+			[[unlikely]]
+#endif
+			{
+				break;
+			}
+			val=(val<<6)|vff;
+			++fromfirst;
+		}
+		if(lengthm1)
+		{
+			val=0xFFFD;
+		}
+
+		if constexpr(T::encode==::fast_io::manipulators::encoding::utf32)
+		{
+			*tofirst=val;
+		}
+		else if constexpr(T::encode==::fast_io::manipulators::encoding::utf32_be)
+		{
+			*tofirst=::fast_io::byte_swap(val);
+		}
+		else
+		{
+			auto ret=T::get_code_point(tofirst,static_cast<::std::size_t>(tolast-tofirst),val);
+			if(ret==0)
+			{
+				break;
+			}
+			tofirst+=ret-1;
+		}
 	}
 	return {fromfirst,tofirst};
 }

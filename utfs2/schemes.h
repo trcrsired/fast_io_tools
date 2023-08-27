@@ -125,13 +125,17 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf8>
 	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::utf8};
 	static inline constexpr ::std::size_t invalid_code_points_len = 3;
 	static inline constexpr ::std::size_t max_code_points_len = 4;
-	inline constexpr void get_invalid_code_points(output_char_type* tofirst) noexcept
+	static inline constexpr void get_invalid_code_points(output_char_type* tofirst) noexcept
 	{
 		::fast_io::details::copy_string_literal(u8"\xEF\xBF\xBD",tofirst);
 	}
-	inline constexpr ::std::size_t get_code_point(output_char_type *firstit,::std::size_t n,char32_t v0) noexcept
+	static inline constexpr ::std::size_t get_code_point(output_char_type *firstit,::std::size_t n,char32_t v0) noexcept
 	{
 		return ::fast_io::details::utf32_to_utf8_code_point_impl(firstit,n,v0);
+	}
+	static inline constexpr ::std::size_t get_code_point_unchecked(output_char_type *firstit,char32_t v0) noexcept
+	{
+		return ::fast_io::details::utf32_to_utf8_code_point_impl(firstit,max_code_points_len,v0);
 	}
 };
 
@@ -142,7 +146,7 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf16_le>
 	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::utf16_le};
 	static inline constexpr ::std::size_t invalid_code_points_len = 1;
 	static inline constexpr ::std::size_t max_code_points_len = 2;
-	inline constexpr void get_invalid_code_points(output_char_type* tofirst) noexcept
+	static inline constexpr void get_invalid_code_points(output_char_type* tofirst) noexcept
 	{
 		if constexpr(::std::endian::little==::std::endian::native)
 		{
@@ -153,9 +157,13 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf16_le>
 			*tofirst=0xFDFF;
 		}
 	}
-	inline constexpr ::std::size_t get_code_point(output_char_type *firstit,::std::size_t n,char32_t v0) noexcept
+	static inline constexpr ::std::size_t get_code_point(output_char_type *firstit,::std::size_t n,char32_t v0) noexcept
 	{
 		return ::fast_io::details::utf32_to_utf16_code_point_impl<::std::endian::little==::std::endian::native>(firstit,n,v0);
+	}
+	static inline constexpr ::std::size_t get_code_point_unchecked(output_char_type *firstit,char32_t v0) noexcept
+	{
+		return ::fast_io::details::utf32_to_utf16_code_point_impl<::std::endian::little==::std::endian::native>(firstit,max_code_points_len,v0);
 	}
 };
 
@@ -166,7 +174,7 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf16_be>
 	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::utf16_be};
 	static inline constexpr ::std::size_t invalid_code_points_len = 1;
 	static inline constexpr ::std::size_t max_code_points_len = 2;
-	inline constexpr void get_invalid_code_points(output_char_type* tofirst) noexcept
+	static inline constexpr void get_invalid_code_points(output_char_type* tofirst) noexcept
 	{
 		if constexpr(::std::endian::big==::std::endian::native)
 		{
@@ -177,9 +185,13 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf16_be>
 			*tofirst=0xFDFF;
 		}
 	}
-	inline constexpr ::std::size_t get_code_point(output_char_type *firstit,::std::size_t n,char32_t v0) noexcept
+	static inline constexpr ::std::size_t get_code_point(output_char_type *firstit,::std::size_t n,char32_t v0) noexcept
 	{
 		return ::fast_io::details::utf32_to_utf16_code_point_impl<::std::endian::big==::std::endian::native>(firstit,n,v0);
+	}
+	static inline constexpr ::std::size_t get_code_point_unchecked(output_char_type *firstit,char32_t v0) noexcept
+	{
+		return ::fast_io::details::utf32_to_utf16_code_point_impl<::std::endian::big==::std::endian::native>(firstit,max_code_points_len,v0);
 	}
 };
 
@@ -190,6 +202,41 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf32_le>
 	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::utf32_le};
 	static inline constexpr ::std::size_t invalid_code_points_len = 1;
 	static inline constexpr ::std::size_t max_code_points_len = 1;
+	static inline constexpr void get_invalid_code_points(output_char_type* tofirst) noexcept
+	{
+		if constexpr(::std::endian::big==::std::endian::native)
+		{
+			*tofirst=0xFDFF;
+		}
+		else
+		{
+			*tofirst=0xFFFD;
+		}
+	}
+	static inline constexpr ::std::size_t get_code_point(output_char_type *firstit,::std::size_t n,char32_t v0) noexcept
+	{
+		if constexpr(::std::endian::big==::std::endian::native)
+		{
+			*firstit=v0;
+		}
+		else
+		{
+			*firstit=::fast_io::byte_swap(v0);
+		}
+		return 1;
+	}
+	static inline constexpr ::std::size_t get_code_point_unchecked(output_char_type *firstit,char32_t v0) noexcept
+	{
+		if constexpr(::std::endian::big==::std::endian::native)
+		{
+			*firstit=v0;
+		}
+		else
+		{
+			*firstit=::fast_io::byte_swap(v0);
+		}
+		return 1;
+	}
 };
 
 template<>
@@ -199,6 +246,41 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf32_be>
 	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::utf32_be};
 	static inline constexpr ::std::size_t invalid_code_points_len = 1;
 	static inline constexpr ::std::size_t max_code_points_len = 1;
+	static inline constexpr void get_invalid_code_points(output_char_type* tofirst) noexcept
+	{
+		if constexpr(::std::endian::little==::std::endian::native)
+		{
+			*tofirst=0xFDFF;
+		}
+		else
+		{
+			*tofirst=0xFFFD;
+		}
+	}
+	static inline constexpr ::std::size_t get_code_point(output_char_type *firstit,::std::size_t n,char32_t v0) noexcept
+	{
+		if constexpr(::std::endian::little==::std::endian::native)
+		{
+			*firstit=v0;
+		}
+		else
+		{
+			*firstit=::fast_io::byte_swap(v0);
+		}
+		return 1;
+	}
+	static inline constexpr ::std::size_t get_code_point_unchecked(output_char_type *firstit,char32_t v0) noexcept
+	{
+		if constexpr(::std::endian::little==::std::endian::native)
+		{
+			*firstit=v0;
+		}
+		else
+		{
+			*firstit=::fast_io::byte_swap(v0);
+		}
+		return 1;
+	}
 };
 #if 0
 template<>
