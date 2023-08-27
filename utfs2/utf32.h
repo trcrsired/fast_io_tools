@@ -201,7 +201,6 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 	return {fromfirst,tofirst};
 }
 
-
 }
 
 }

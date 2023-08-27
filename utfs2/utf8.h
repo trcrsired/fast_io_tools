@@ -258,6 +258,11 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 			}
 			else
 			{
+				::std::size_t diff{static_cast<::std::size_t>(tolast-tofirst)};
+				if(diff<invalidcodepointslen)
+				{
+					break;
+				}
 				T::get_invalid_code_points(tofirst);
 				tofirst+=invalidcodepointslen;
 			}
@@ -297,8 +302,6 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 	}
 	return {fromfirst,tofirst};
 }
-
-inline constexpr 
 
 }
 
