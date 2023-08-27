@@ -49,7 +49,7 @@ inline constexpr deco_result_simd<char8_t,typename T::output_char_type> utf8_sim
 	constexpr
 		int ndiffshift{::std::bit_width(ndiffmask)};
 	::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
-	::std::size_t ndiff{(fromdiff>>ndiffshift)};
+	::std::size_t ndiff{(fromdiff>>ndiffshift)+((fromdiff&ndiffmask)!=0u)};
 	do
 	{
 		simvec.load(fromfirst);
@@ -196,7 +196,7 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 				}
 #endif
 				::std::size_t fromdiff2{static_cast<::std::size_t>(fromlast-fromfirst)};
-				::std::size_t ndiff2{(fromdiff2>>2u)};
+				::std::size_t ndiff2{(fromdiff2>>2u)+((fromdiff2&0x3u)!=0u)};
 				do
 				{
 #ifdef __has_builtin
@@ -346,18 +346,9 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 		if(decisiondiff<mndiff)
 		{
 			mndiff-=decisiondiff;
-			if constexpr(16<=N)
-			{
-				auto [fromit,toit]=utf8_generic_unchecked_impl<T>(fromfirst,fromfirst+mndiff,tofirst);
-				fromfirst=fromit;
-				tofirst=toit;
-			}
-			else
-			{
-				auto [fromit,toit]=utf8_generic_unchecked_impl<T>(fromfirst,fromfirst+mndiff,tofirst);
-				fromfirst=fromit;
-				tofirst=toit;
-			}
+			auto [fromit,toit]=utf8_generic_unchecked_impl<T>(fromfirst,fromfirst+mndiff,tofirst);
+			fromfirst=fromit;
+			tofirst=toit;
 		}	
 	}
 	}
@@ -454,14 +445,9 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 		{
 			val=0xFFFD;
 		}
-
 		if constexpr(T::encode==::fast_io::manipulators::encoding::utf32)
 		{
 			*tofirst=val;
-		}
-		else if constexpr(T::encode==::fast_io::manipulators::encoding::utf32_be)
-		{
-			*tofirst=::fast_io::byte_swap(val);
 		}
 		else
 		{

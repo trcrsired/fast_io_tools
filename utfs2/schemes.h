@@ -125,6 +125,7 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf8>
 	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::utf8};
 	static inline constexpr ::std::size_t invalid_code_points_len = 3;
 	static inline constexpr ::std::size_t max_code_points_len = 4;
+	static inline constexpr bool encoding_is_ebcdic{};
 	static inline constexpr void get_invalid_code_points(output_char_type* tofirst) noexcept
 	{
 		::fast_io::details::copy_string_literal(u8"\xEF\xBF\xBD",tofirst);
@@ -146,6 +147,7 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf16_le>
 	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::utf16_le};
 	static inline constexpr ::std::size_t invalid_code_points_len = 1;
 	static inline constexpr ::std::size_t max_code_points_len = 2;
+	static inline constexpr bool encoding_is_ebcdic{};
 	static inline constexpr void get_invalid_code_points(output_char_type* tofirst) noexcept
 	{
 		if constexpr(::std::endian::little==::std::endian::native)
@@ -174,6 +176,7 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf16_be>
 	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::utf16_be};
 	static inline constexpr ::std::size_t invalid_code_points_len = 1;
 	static inline constexpr ::std::size_t max_code_points_len = 2;
+	static inline constexpr bool encoding_is_ebcdic{};
 	static inline constexpr void get_invalid_code_points(output_char_type* tofirst) noexcept
 	{
 		if constexpr(::std::endian::big==::std::endian::native)
@@ -202,6 +205,7 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf32_le>
 	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::utf32_le};
 	static inline constexpr ::std::size_t invalid_code_points_len = 1;
 	static inline constexpr ::std::size_t max_code_points_len = 1;
+	static inline constexpr bool encoding_is_ebcdic{};
 	static inline constexpr void get_invalid_code_points(output_char_type* tofirst) noexcept
 	{
 		if constexpr(::std::endian::big==::std::endian::native)
@@ -246,6 +250,7 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf32_be>
 	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::utf32_be};
 	static inline constexpr ::std::size_t invalid_code_points_len = 1;
 	static inline constexpr ::std::size_t max_code_points_len = 1;
+	static inline constexpr bool encoding_is_ebcdic{};
 	static inline constexpr void get_invalid_code_points(output_char_type* tofirst) noexcept
 	{
 		if constexpr(::std::endian::little==::std::endian::native)
@@ -287,12 +292,14 @@ template<>
 struct schemecodeconverter<::fast_io::manipulators::encoding::utf_ebcdic>
 {
 	using output_char_type = char;
+	static inline constexpr bool encoding_is_ebcdic{true};
 };
 
 template<>
 struct schemecodeconverter<::fast_io::manipulators::encoding::gb18030>
 {
 	using output_char_type = char;
+	static inline constexpr bool encoding_is_ebcdic{};
 	inline constexpr ::std::size_t get_code_point() noexcept
 	{
 
