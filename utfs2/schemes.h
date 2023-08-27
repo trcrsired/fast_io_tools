@@ -127,7 +127,7 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf8>
 	static inline constexpr ::std::size_t max_code_points_len = 4;
 	inline constexpr void get_invalid_code_points(output_char_type* tofirst) noexcept
 	{
-		::fast_io::details::copy_string_literal(u8"\xEF\xBF\xBD",ptr);
+		::fast_io::details::copy_string_literal(u8"\xEF\xBF\xBD",tofirst);
 	}
 	inline constexpr ::std::size_t get_code_point(output_char_type *firstit,::std::size_t n,char32_t v0) noexcept
 	{
