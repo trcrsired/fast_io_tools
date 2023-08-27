@@ -24,6 +24,70 @@ gb18030
 namespace details
 {
 
+inline constexpr std::size_t get_utf_ebcdic_code_units(char* dst,::std::size_t n,char32_t code) noexcept
+{
+	if(code<0xA0)
+	{
+		if(n<1)
+		{
+			return 0;
+		}
+		*dst=static_cast<char>(bm_i8_to_ebcdic[code]);
+		return 1;
+	}
+	else if(code<0x400)
+	{
+		if(n<2)
+		{
+			return 0;
+		}
+		*dst=static_cast<char>(bm_i8_to_ebcdic[static_cast<char32_t>(0b11000000)|(code>>5)]);
+		dst[1]=static_cast<char>(bm_i8_to_ebcdic[static_cast<char32_t>(0b10100000)|(code&static_cast<char32_t>(0b11111))]);
+		return 2;
+	}
+	else if(code<0x4000)
+	{
+		if(n<3)
+		{
+			return 0;
+		}
+		*dst=static_cast<char>(bm_i8_to_ebcdic[static_cast<char32_t>(0b11100000)|(code>>10)]);
+		dst[1]=static_cast<char>(bm_i8_to_ebcdic[static_cast<char32_t>(0b10100000)|((code>>5)&static_cast<char32_t>(0b11111))]);
+		dst[2]=static_cast<char>(bm_i8_to_ebcdic[static_cast<char32_t>(0b10100000)|(code&static_cast<char32_t>(0b11111))]);
+		return 3;
+	}
+	else if(code<0x40000)
+	{
+		if(n<4)
+		{
+			return 0;
+		}
+		*dst=static_cast<char>(bm_i8_to_ebcdic[static_cast<char32_t>(0b11110000)|(code>>15)]);
+		dst[1]=static_cast<char>(bm_i8_to_ebcdic[static_cast<char32_t>(0b10100000)|((code>>10)&static_cast<char32_t>(0b11111))]);
+		dst[2]=static_cast<char>(bm_i8_to_ebcdic[static_cast<char32_t>(0b10100000)|((code>>5)&static_cast<char32_t>(0b11111))]);
+		dst[3]=static_cast<char>(bm_i8_to_ebcdic[static_cast<char32_t>(0b10100000)|(code&static_cast<char32_t>(0b11111))]);
+		return 4;
+	}
+	else if(code<0x110000)
+	{
+		if(n<5)
+		{
+			return 0;
+		}
+		*dst=static_cast<char>(bm_i8_to_ebcdic[static_cast<char32_t>(0b11111000)|(code>>20)]);
+		dst[1]=static_cast<char>(bm_i8_to_ebcdic[static_cast<char32_t>(0b10100000)|((code>>15)&static_cast<char32_t>(0b11111))]);
+		dst[2]=static_cast<char>(bm_i8_to_ebcdic[static_cast<char32_t>(0b10100000)|((code>>10)&static_cast<char32_t>(0b11111))]);
+		dst[3]=static_cast<char>(bm_i8_to_ebcdic[static_cast<char32_t>(0b10100000)|((code>>5)&static_cast<char32_t>(0b11111))]);
+		dst[4]=static_cast<char>(bm_i8_to_ebcdic[static_cast<char32_t>(0b10100000)|(code&static_cast<char32_t>(0b11111))]);
+		return 5;
+	}
+	if(n<5)
+	{
+		return 0;
+	}
+	return get_utf_ebcdic_invalid_code_units(dst);
+}
+
 template<::fast_io::manipulators::encoding>
 struct schemecodeconverter
 {
@@ -287,13 +351,30 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf32_be>
 		return 1;
 	}
 };
-#if 0
+
+
 template<>
 struct schemecodeconverter<::fast_io::manipulators::encoding::utf_ebcdic>
 {
 	using output_char_type = char;
 	static inline constexpr bool encoding_is_ebcdic{true};
+	static inline constexpr ::std::size_t invalid_code_points_len = 5;
+	static inline constexpr ::std::size_t max_code_points_len = 5;
+	static inline constexpr void get_invalid_code_points(output_char_type* tofirst) noexcept
+	{
+		::fast_io::details::get_utf_ebcdic_invalid_code_units(tofirst);
+	}
+	static inline constexpr ::std::size_t get_code_point(output_char_type *firstit,::std::size_t n,char32_t v0) noexcept
+	{
+		return ::fast_io::details::get_utf_ebcdic_code_units(firstit,n,v0);
+	}
+	static inline constexpr ::std::size_t get_code_point_unchecked(output_char_type *firstit,char32_t v0) noexcept
+	{
+		return ::fast_io::details::get_utf_ebcdic_code_units(firstit,max_code_points_len,v0);
+	}
 };
+
+#if 0
 
 template<>
 struct schemecodeconverter<::fast_io::manipulators::encoding::gb18030>
