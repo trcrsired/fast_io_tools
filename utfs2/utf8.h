@@ -449,6 +449,10 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 		{
 			*tofirst=val;
 		}
+		else if constexpr(T::max_code_points_len==1)
+		{
+			T::get_code_point_unchecked(tofirst,val);
+		}
 		else
 		{
 			auto ret=T::get_code_point(tofirst,static_cast<::std::size_t>(tolast-tofirst),val);
