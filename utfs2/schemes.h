@@ -375,6 +375,11 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf_ebcdic>
 	}
 };
 
+namespace codecvt::gb18030
+{
+constexpr ::std::size_t get_gb18030_code_units_unhappy_pdstsz(char32_t, char*, ::std::size_t) noexcept;
+}
+
 template<>
 struct schemecodeconverter<::fast_io::manipulators::encoding::gb18030>
 {
