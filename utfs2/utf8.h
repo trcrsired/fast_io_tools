@@ -338,7 +338,7 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 		}
 		constexpr std::size_t N{
 #if !defined(_MSC_VER) || defined(__clang__)
-			::fast_io::details::optimal_simd_vector_run_with_cpu_instruction_size
+			::fast_io::intrinsics::optimal_simd_vector_run_with_cpu_instruction_size
 #endif
 		};
 		constexpr
