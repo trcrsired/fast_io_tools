@@ -9,12 +9,12 @@ namespace manipulators
 enum class encoding
 {
 utf8,
-utf16_be,
-utf16_le,
-utf16=(::std::endian::big==::std::endian::native?utf16_be:utf16_le),
-utf32_be,
-utf32_le,
-utf32=(::std::endian::big==::std::endian::native?utf32_be:utf32_le),
+utf16be,
+utf16le,
+utf16=(::std::endian::big==::std::endian::native?utf16be:utf16le),
+utf32be,
+utf32le,
+utf32=(::std::endian::big==::std::endian::native?utf32be:utf32le),
 utf_ebcdic,
 gb18030
 };
@@ -205,10 +205,10 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf8>
 };
 
 template<>
-struct schemecodeconverter<::fast_io::manipulators::encoding::utf16_le>
+struct schemecodeconverter<::fast_io::manipulators::encoding::utf16le>
 {
 	using output_char_type = char16_t;
-	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::utf16_le};
+	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::utf16le};
 	static inline constexpr ::std::size_t invalid_code_points_len = 1;
 	static inline constexpr ::std::size_t max_code_points_len = 2;
 	static inline constexpr bool encoding_is_ebcdic{};
@@ -234,10 +234,10 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf16_le>
 };
 
 template<>
-struct schemecodeconverter<::fast_io::manipulators::encoding::utf16_be>
+struct schemecodeconverter<::fast_io::manipulators::encoding::utf16be>
 {
 	using output_char_type = char16_t;
-	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::utf16_be};
+	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::utf16be};
 	static inline constexpr ::std::size_t invalid_code_points_len = 1;
 	static inline constexpr ::std::size_t max_code_points_len = 2;
 	static inline constexpr bool encoding_is_ebcdic{};
@@ -263,10 +263,10 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf16_be>
 };
 
 template<>
-struct schemecodeconverter<::fast_io::manipulators::encoding::utf32_le>
+struct schemecodeconverter<::fast_io::manipulators::encoding::utf32le>
 {
 	using output_char_type = char32_t;
-	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::utf32_le};
+	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::utf32le};
 	static inline constexpr ::std::size_t invalid_code_points_len = 1;
 	static inline constexpr ::std::size_t max_code_points_len = 1;
 	static inline constexpr bool encoding_is_ebcdic{};
@@ -308,10 +308,10 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf32_le>
 };
 
 template<>
-struct schemecodeconverter<::fast_io::manipulators::encoding::utf32_be>
+struct schemecodeconverter<::fast_io::manipulators::encoding::utf32be>
 {
 	using output_char_type = char32_t;
-	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::utf32_be};
+	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::utf32be};
 	static inline constexpr ::std::size_t invalid_code_points_len = 1;
 	static inline constexpr ::std::size_t max_code_points_len = 1;
 	static inline constexpr bool encoding_is_ebcdic{};
@@ -374,11 +374,6 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf_ebcdic>
 		return ::fast_io::details::get_utf_ebcdic_code_units(firstit,max_code_points_len,v0);
 	}
 };
-#if 0
-namespace codecvt::gb18030
-{
-constexpr ::std::size_t get_gb18030_code_units_unhappy_pdstsz(char32_t, char*, ::std::size_t) noexcept;
-}
 
 template<>
 struct schemecodeconverter<::fast_io::manipulators::encoding::gb18030>
@@ -388,20 +383,10 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::gb18030>
 	static inline constexpr ::fast_io::manipulators::encoding encode{::fast_io::manipulators::encoding::gb18030};
 	static inline constexpr ::std::size_t invalid_code_points_len = 4;
 	static inline constexpr ::std::size_t max_code_points_len = 4;
-	static inline constexpr void get_invalid_code_points(output_char_type* tofirst) noexcept
-	{
-		::fast_io::details::codecvt::gb18030::get_gb18030_invalid_code_units(tofirst);
-	}
-	static inline constexpr ::std::size_t get_code_point(output_char_type *firstit,::std::size_t n,char32_t v0) noexcept
-	{
-		return ::fast_io::details::codecvt::gb18030::get_gb18030_code_units_unhappy_pdstsz(v0,firstit,n);
-	}
-	static inline constexpr ::std::size_t get_code_point_unchecked(output_char_type *firstit,char32_t v0) noexcept
-	{
-		return ::fast_io::details::codecvt::gb18030::get_gb18030_code_units_unhappy_pdstsz(v0,firstit,max_code_points_len);
-	}
+	static inline constexpr void get_invalid_code_points(output_char_type*) noexcept;
+	static inline constexpr ::std::size_t get_code_point(output_char_type*,::std::size_t,char32_t) noexcept;
+	static inline constexpr ::std::size_t get_code_point_unchecked(output_char_type*,char32_t) noexcept;
 };
-#endif
 }
 
 }

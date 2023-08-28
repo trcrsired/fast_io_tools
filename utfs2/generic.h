@@ -16,4 +16,42 @@ inline constexpr deco_result<fromchartype,tochartype> code_cvt_api(
 	}
 }
 
+
+namespace decorators
+{
+
+template<::fast_io::manipulators::encoding fromencoding,
+	::fast_io::manipulators::encoding toencoding>
+struct basic_code_cvt_decorator_model
+{
+	using input_char_type = typename ::fast_io::details::schemecodeconverter<fromencoding>::output_char_type;
+	using output_char_type = typename ::fast_io::details::schemecodeconverter<toencoding>::output_char_type;
+	
+	static inline constexpr ::std::size_t remained_max = 8u;
+	static inline constexpr ::std::size_t output_final_max = ::fast_io::details::schemecodeconverter<toencoding>::invalid_code_points_len;
+
+	constexpr auto process_chars(input_char_type const* fromfirst,input_char_type const* fromlast,
+					output_char_type* tofirst,output_char_type* tolast) noexcept
+	{
+		return ::fast_io::code_cvt_api(fromfirst,fromlast,tofirst,tolast);
+	}
+};
+
+template<::fast_io::manipulators::encoding fromencoding,
+	::fast_io::manipulators::encoding toencoding>
+using basic_code_cvt_decorator = ::fast_io::deco_partial_adapter<::fast_io::decorators::basic_code_cvt_decorator_model<fromencoding,toencoding>>;
+
+
+using utf8_to_utf32 = basic_code_cvt_decorator<::fast_io::manipulators::encoding::utf8,::fast_io::manipulators::encoding::utf32>;
+using utf8_to_utf32le = basic_code_cvt_decorator<::fast_io::manipulators::encoding::utf8,::fast_io::manipulators::encoding::utf32le>;
+using utf8_to_utf32be = basic_code_cvt_decorator<::fast_io::manipulators::encoding::utf8,::fast_io::manipulators::encoding::utf32be>;
+using utf8_to_utf16 = basic_code_cvt_decorator<::fast_io::manipulators::encoding::utf8,::fast_io::manipulators::encoding::utf16>;
+using utf8_to_utf16le = basic_code_cvt_decorator<::fast_io::manipulators::encoding::utf8,::fast_io::manipulators::encoding::utf16le>;
+using utf8_to_utf16be = basic_code_cvt_decorator<::fast_io::manipulators::encoding::utf8,::fast_io::manipulators::encoding::utf16be>;
+using utf8_to_utf_ebcdic = basic_code_cvt_decorator<::fast_io::manipulators::encoding::utf8,::fast_io::manipulators::encoding::utf_ebcdic>;
+using utf8_to_gb18030 = basic_code_cvt_decorator<::fast_io::manipulators::encoding::utf8,::fast_io::manipulators::encoding::gb18030>;
+
 }
+
+}
+
