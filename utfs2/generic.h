@@ -7,7 +7,7 @@ template<::fast_io::manipulators::encoding fromencoding,
 	::fast_io::manipulators::encoding toencoding,typename fromchartype,
 	typename tochartype>
 inline constexpr deco_result<fromchartype,tochartype> code_cvt_api(
-	fromchartype *fromfirst,fromchartype *fromlast,
+	fromchartype const *fromfirst,fromchartype const *fromlast,
 	tochartype *tofirst,tochartype *tolast) noexcept
 {
 	if constexpr(fromencoding==::fast_io::manipulators::encoding::utf8)
@@ -30,10 +30,10 @@ struct basic_code_cvt_decorator_model
 	static inline constexpr ::std::size_t remained_max = 8u;
 	static inline constexpr ::std::size_t output_final_max = ::fast_io::details::schemecodeconverter<toencoding>::invalid_code_points_len;
 
-	constexpr auto process_chars(input_char_type const* fromfirst,input_char_type const* fromlast,
+	static inline constexpr auto process_chars(input_char_type const* fromfirst,input_char_type const* fromlast,
 					output_char_type* tofirst,output_char_type* tolast) noexcept
 	{
-		return ::fast_io::code_cvt_api(fromfirst,fromlast,tofirst,tolast);
+		return ::fast_io::code_cvt_api<fromencoding,toencoding>(fromfirst,fromlast,tofirst,tolast);
 	}
 };
 
@@ -50,6 +50,9 @@ using utf8_to_utf16le = basic_code_cvt_decorator<::fast_io::manipulators::encodi
 using utf8_to_utf16be = basic_code_cvt_decorator<::fast_io::manipulators::encoding::utf8,::fast_io::manipulators::encoding::utf16be>;
 using utf8_to_utf_ebcdic = basic_code_cvt_decorator<::fast_io::manipulators::encoding::utf8,::fast_io::manipulators::encoding::utf_ebcdic>;
 using utf8_to_gb18030 = basic_code_cvt_decorator<::fast_io::manipulators::encoding::utf8,::fast_io::manipulators::encoding::gb18030>;
+
+
+using utf8_gb18030 = ::fast_io::basic_bidirectional_decorator_adaptor<utf8_to_gb18030,utf8_to_gb18030>;
 
 }
 
