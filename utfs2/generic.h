@@ -35,6 +35,15 @@ struct basic_code_cvt_decorator_model
 	{
 		return ::fast_io::code_cvt_api<fromencoding,toencoding>(fromfirst,fromlast,tofirst,tolast);
 	}
+	static inline constexpr output_char_type* do_final(input_char_type const* fromfirst,input_char_type const* fromlast,output_char_type *tofirst) noexcept
+	{
+		if(fromfirst==fromlast)
+		{
+			return tofirst;
+		}
+		::fast_io::details::schemecodeconverter<toencoding>::get_invalid_code_points(tofirst);
+		return tofirst+output_final_max;
+	}
 };
 
 template<::fast_io::manipulators::encoding fromencoding,
