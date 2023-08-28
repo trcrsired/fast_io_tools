@@ -374,7 +374,7 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::utf_ebcdic>
 		return ::fast_io::details::get_utf_ebcdic_code_units(firstit,max_code_points_len,v0);
 	}
 };
-
+#if 0
 namespace codecvt::gb18030
 {
 constexpr ::std::size_t get_gb18030_code_units_unhappy_pdstsz(char32_t, char*, ::std::size_t) noexcept;
@@ -401,7 +401,7 @@ struct schemecodeconverter<::fast_io::manipulators::encoding::gb18030>
 		return ::fast_io::details::codecvt::gb18030::get_gb18030_code_units_unhappy_pdstsz(v0,firstit,max_code_points_len);
 	}
 };
-
+#endif
 }
 
 }
