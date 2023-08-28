@@ -139,7 +139,7 @@ inline constexpr deco_result_simd<char8_t,typename T::output_char_type> utf8_sim
 		}
 		else if constexpr(sizeof(output_char_type)==1)
 		{
-			ret.store(tofirst);
+			simvec.store(tofirst);
 		}
 		fromfirst+=N;
 		tofirst+=N;
