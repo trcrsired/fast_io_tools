@@ -160,6 +160,8 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 	constexpr
 		::std::size_t
 		invalidcodepointslen{T::invalid_code_points_len};
+	constexpr
+		bool ecisebcdic{T::encoding_is_ebcdic};
 	using output_char_type = typename T::output_char_type;
 	while(fromfirst<fromlast)
 	{
@@ -184,7 +186,7 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 #if !defined(_MSC_VER) || defined(__clang__)
 				constexpr
 				::std::size_t N{::fast_io::intrinsics::optimal_simd_vector_run_with_cpu_instruction_size};
-				if constexpr(N!=0)
+				if constexpr(N!=0&&!ecisebcdic)
 				{
 					auto [fromit,toit,done]=utf8_simd_case_impl<T,N>(fromfirst,fromlast,tofirst);
 					fromfirst=fromit;
@@ -215,19 +217,39 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 					}
 					::std::uint_least32_t low{val&0xFFFFu};
 					::std::uint_least32_t high{val>>16u};
-					if constexpr(::std::endian::big==::std::endian::native)
+					if constexpr(ecisebcdic)
 					{
-						*tofirst=(high&0xFF);
-						tofirst[1]=(high>>8u);
-						tofirst[2]=(low&0xFF);
-						tofirst[3]=(low>>8u);
+						if constexpr(::std::endian::big==::std::endian::native)
+						{
+							*tofirst=::fast_io::details::bm_i8_to_ebcdic[(high&0xFF)];
+							tofirst[1]=::fast_io::details::bm_i8_to_ebcdic[(high>>8u)];
+							tofirst[2]=::fast_io::details::bm_i8_to_ebcdic[(low&0xFF)];
+							tofirst[3]=::fast_io::details::bm_i8_to_ebcdic[(low>>8u)];
+						}
+						else
+						{
+							*tofirst=::fast_io::details::bm_i8_to_ebcdic[(low&0xFF)];
+							tofirst[1]=::fast_io::details::bm_i8_to_ebcdic[(low>>8u)];
+							tofirst[2]=::fast_io::details::bm_i8_to_ebcdic[(high&0xFF)];
+							tofirst[3]=::fast_io::details::bm_i8_to_ebcdic[(high>>8u)];
+						}						
 					}
 					else
 					{
-						*tofirst=(low&0xFF);
-						tofirst[1]=(low>>8u);
-						tofirst[2]=(high&0xFF);
-						tofirst[3]=(high>>8u);
+						if constexpr(::std::endian::big==::std::endian::native)
+						{
+							*tofirst=(high&0xFF);
+							tofirst[1]=(high>>8u);
+							tofirst[2]=(low&0xFF);
+							tofirst[3]=(low>>8u);
+						}
+						else
+						{
+							*tofirst=(low&0xFF);
+							tofirst[1]=(low>>8u);
+							tofirst[2]=(high&0xFF);
+							tofirst[3]=(high>>8u);
+						}
 					}
 					fromfirst+=sizeof(val);
 					tofirst+=sizeof(val);
@@ -245,7 +267,14 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 			}
 			for(;!(val&0x80u);++tofirst)
 			{
-				*tofirst=val&0xFFu;
+				if constexpr(ecisebcdic)
+				{
+					*tofirst=::fast_io::details::bm_i8_to_ebcdic[val&0xFFu];
+				}
+				else
+				{
+					*tofirst=val&0xFFu;
+				}
 				++fromfirst;
 				val>>=8u;
 			}
@@ -321,6 +350,7 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 	char8_t const *fromfirst,char8_t const *fromlast,
 	typename T::output_char_type *tofirst,typename T::output_char_type *tolast) noexcept
 {
+	constexpr bool ecisebcdic{T::encoding_is_ebcdic};
 	if constexpr(::std::numeric_limits<::std::uint_least8_t>::digits==8)
 	{
 #if __cpp_if_consteval >= 202106L
@@ -338,7 +368,7 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 		}
 		constexpr std::size_t N{
 #if !defined(_MSC_VER) || defined(__clang__)
-			::fast_io::intrinsics::optimal_simd_vector_run_with_cpu_instruction_size
+			ecisebcdic?::fast_io::intrinsics::optimal_simd_vector_run_with_cpu_instruction_size:0u
 #endif
 		};
 		constexpr
@@ -367,7 +397,14 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 		char8_t v0{*fromfirst};
 		if(v0<0x80u)
 		{
-			*tofirst=v0;
+			if constexpr(ecisebcdic)
+			{
+				*tofirst=::fast_io::details::bm_i8_to_ebcdic[v0];
+			}
+			else
+			{
+				*tofirst=v0;
+			}
 			++fromfirst;
 			continue;
 		}
