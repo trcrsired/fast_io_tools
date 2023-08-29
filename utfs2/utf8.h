@@ -158,9 +158,10 @@ inline deco_result_simd<char8_t,typename T::output_char_type> utf8_simd_case_imp
 
 template<typename T>
 inline deco_result<char8_t,typename T::output_char_type> utf8_generic_unchecked_impl(
-	char8_t const *fromfirst,char8_t const *fromlast,
-	typename T::output_char_type *tofirst,typename T::output_char_type *tolast) noexcept
+	char8_t const *fromfirst,typename T::output_char_type *tofirst,::std::size_t fromn) noexcept
 {
+	char8_t const *fromlast{fromfirst+fromn};
+	typename T::output_char_type *tolast{tofirst+fromn};
 	using output_char_type = typename T::output_char_type;
 	constexpr
 		::std::size_t
@@ -426,7 +427,7 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 	typename T::output_char_type *tofirst,typename T::output_char_type *tolast) noexcept
 {
 	constexpr bool ecisebcdic{T::encoding_is_ebcdic};
-	if constexpr(::std::numeric_limits<::std::uint_least8_t>::digits==8)
+	if constexpr(::std::numeric_limits<::std::uint_least8_t>::digits==8&&0)
 	{
 #if __cpp_if_consteval >= 202106L
 	if !consteval
@@ -451,7 +452,7 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 		if(decisiondiff<mndiff)
 		{
 			mndiff-=decisiondiff;
-			auto [fromit,toit]=utf8_generic_unchecked_impl<T>(fromfirst,fromfirst+mndiff,tofirst,tofirst+mndiff);
+			auto [fromit,toit]=utf8_generic_unchecked_impl<T>(fromfirst,tofirst,mndiff);
 			fromfirst=fromit;
 			tofirst=toit;
 		}	
