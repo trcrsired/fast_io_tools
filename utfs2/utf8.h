@@ -55,7 +55,7 @@ inline deco_result_simd<char8_t,typename T::output_char_type> utf8_simd_case_imp
 		fromdiff=todiff;
 	}
 	::std::size_t ndiff{(fromdiff>>ndiffshift)};
-	do
+	for(;ndiff;--ndiff)
 	{
 		simvec.load(fromfirst);
 		if(!::fast_io::intrinsics::is_all_zeros((simvec&cmp128)==cmp128))
@@ -148,9 +148,7 @@ inline deco_result_simd<char8_t,typename T::output_char_type> utf8_simd_case_imp
 		}
 		fromfirst+=N;
 		tofirst+=N;
-		--ndiff;
 	}
-	while(ndiff);
 	return {fromfirst,tofirst,ndiff==0u};
 }
 
@@ -240,7 +238,6 @@ inline deco_result<char8_t,typename T::output_char_type> utf8_generic_unchecked_
 				}
 				fromfirst+=sizeof(val);
 				tofirst+=sizeof(val);
-
 #if !defined(_MSC_VER) || defined(__clang__)
 				constexpr
 				::std::size_t N{::fast_io::intrinsics::optimal_simd_vector_run_with_cpu_instruction_size};
@@ -427,7 +424,7 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 	typename T::output_char_type *tofirst,typename T::output_char_type *tolast) noexcept
 {
 	constexpr bool ecisebcdic{T::encoding_is_ebcdic};
-	if constexpr(::std::numeric_limits<::std::uint_least8_t>::digits==8&&0)
+	if constexpr(::std::numeric_limits<::std::uint_least8_t>::digits==8)
 	{
 #if __cpp_if_consteval >= 202106L
 	if !consteval
@@ -449,13 +446,17 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 		};
 		constexpr
 			::std::uint_least32_t decisiondiff{N+8};
+		//__builtin_printf("LINE451:fromfirst:%p fromlast:%p %zd\ntofirst:%p tolast:%p %zd\n",fromfirst,fromlast,fromlast-fromfirst,
+		//									tofirst,tolast,tolast-tofirst);
 		if(decisiondiff<mndiff)
 		{
 			mndiff-=decisiondiff;
 			auto [fromit,toit]=utf8_generic_unchecked_impl<T>(fromfirst,tofirst,mndiff);
 			fromfirst=fromit;
 			tofirst=toit;
-		}	
+		}
+		//__builtin_printf("LINE461:fromfirst:%p fromlast:%p %zd\ntofirst:%p tolast:%p %zd\n",fromfirst,fromlast,fromlast-fromfirst,
+		//									tofirst,tolast,tolast-tofirst);
 	}
 	}
 	constexpr
