@@ -446,8 +446,6 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 		};
 		constexpr
 			::std::uint_least32_t decisiondiff{N+8};
-		//__builtin_printf("LINE451:fromfirst:%p fromlast:%p %zd\ntofirst:%p tolast:%p %zd\n",fromfirst,fromlast,fromlast-fromfirst,
-		//									tofirst,tolast,tolast-tofirst);
 		if(decisiondiff<mndiff)
 		{
 			mndiff-=decisiondiff;
@@ -455,8 +453,6 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 			fromfirst=fromit;
 			tofirst=toit;
 		}
-		//__builtin_printf("LINE461:fromfirst:%p fromlast:%p %zd\ntofirst:%p tolast:%p %zd\n",fromfirst,fromlast,fromlast-fromfirst,
-		//									tofirst,tolast,tolast-tofirst);
 	}
 	}
 	constexpr
