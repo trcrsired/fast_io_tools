@@ -31,9 +31,9 @@ struct deco_result_simd
 #if !defined(_MSC_VER) || defined(__clang__)
 
 template<typename T,::std::size_t N>
-inline constexpr deco_result_simd<char8_t,typename T::output_char_type> utf8_simd_case_impl(
+inline deco_result_simd<char8_t,typename T::output_char_type> utf8_simd_case_impl(
 	char8_t const *fromfirst,char8_t const *fromlast,
-	typename T::output_char_type *tofirst) noexcept
+	typename T::output_char_type *tofirst,typename T::output_char_type *tolast) noexcept
 {
 	using output_char_type = typename T::output_char_type;
 	using simd_vector_type = ::fast_io::intrinsics::simd_vector<::std::uint_least8_t,N>;
@@ -49,7 +49,12 @@ inline constexpr deco_result_simd<char8_t,typename T::output_char_type> utf8_sim
 	constexpr
 		int ndiffshift{::std::bit_width(ndiffmask)};
 	::std::size_t fromdiff{static_cast<::std::size_t>(fromlast-fromfirst)};
-	::std::size_t ndiff{(fromdiff>>ndiffshift)+((fromdiff&ndiffmask)!=0u)};
+	::std::size_t todiff{static_cast<::std::size_t>(tolast-tofirst)};
+	if(todiff<fromdiff)
+	{
+		fromdiff=todiff;
+	}
+	::std::size_t ndiff{(fromdiff>>ndiffshift)};
 	do
 	{
 		simvec.load(fromfirst);
@@ -152,9 +157,9 @@ inline constexpr deco_result_simd<char8_t,typename T::output_char_type> utf8_sim
 #endif
 
 template<typename T>
-inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_unchecked_impl(
+inline deco_result<char8_t,typename T::output_char_type> utf8_generic_unchecked_impl(
 	char8_t const *fromfirst,char8_t const *fromlast,
-	typename T::output_char_type *tofirst) noexcept
+	typename T::output_char_type *tofirst,typename T::output_char_type *tolast) noexcept
 {
 	using output_char_type = typename T::output_char_type;
 	constexpr
@@ -163,7 +168,7 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 	constexpr
 		bool ecisebcdic{T::encoding_is_ebcdic};
 	using output_char_type = typename T::output_char_type;
-	while(fromfirst<fromlast)
+	while(fromfirst<fromlast&&tofirst<tolast)
 	{
 		::std::uint_least32_t val;
 #ifdef __has_builtin
@@ -183,22 +188,79 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 			::std::uint_least32_t valmask{val&0x80808080u};
 			if(!valmask)
 			{
+				::std::uint_least32_t low{val&0xFFFFu};
+				::std::uint_least32_t high{val>>16u};
+				if constexpr(ecisebcdic)
+				{
+					if constexpr(::std::endian::big==::std::endian::native)
+					{
+						*tofirst=::fast_io::details::bm_i8_to_ebcdic[(high&0xFF)];
+						tofirst[1]=::fast_io::details::bm_i8_to_ebcdic[(high>>8u)];
+						tofirst[2]=::fast_io::details::bm_i8_to_ebcdic[(low&0xFF)];
+						tofirst[3]=::fast_io::details::bm_i8_to_ebcdic[(low>>8u)];
+					}
+					else
+					{
+						*tofirst=::fast_io::details::bm_i8_to_ebcdic[(low&0xFF)];
+						tofirst[1]=::fast_io::details::bm_i8_to_ebcdic[(low>>8u)];
+						tofirst[2]=::fast_io::details::bm_i8_to_ebcdic[(high&0xFF)];
+						tofirst[3]=::fast_io::details::bm_i8_to_ebcdic[(high>>8u)];
+					}						
+				}
+				else if constexpr(sizeof(output_char_type)==1u)
+				{
+#ifdef __has_builtin
+#if __has_builtin(__builtin_memcpy)
+					__builtin_memcpy
+#else
+					::std::memcpy
+#endif
+#else
+					::std::memcpy
+#endif
+					(tofirst,__builtin_addressof(val),sizeof(val));
+				}
+				else
+				{
+					if constexpr(::std::endian::big==::std::endian::native)
+					{
+						*tofirst=(high&0xFF);
+						tofirst[1]=(high>>8u);
+						tofirst[2]=(low&0xFF);
+						tofirst[3]=(low>>8u);
+					}
+					else
+					{
+						*tofirst=(low&0xFF);
+						tofirst[1]=(low>>8u);
+						tofirst[2]=(high&0xFF);
+						tofirst[3]=(high>>8u);
+					}
+				}
+				fromfirst+=sizeof(val);
+				tofirst+=sizeof(val);
+
 #if !defined(_MSC_VER) || defined(__clang__)
 				constexpr
 				::std::size_t N{::fast_io::intrinsics::optimal_simd_vector_run_with_cpu_instruction_size};
 				if constexpr(N!=0&&!ecisebcdic)
 				{
-					auto [fromit,toit,done]=utf8_simd_case_impl<T,N>(fromfirst,fromlast,tofirst);
+					auto [fromit,toit,done]=utf8_simd_case_impl<T,N>(fromfirst,fromlast,tofirst,tolast);
 					fromfirst=fromit;
 					tofirst=toit;
 					if(done)
 					{
-						continue;
+						break;
 					}
 				}
 #endif
 				::std::size_t fromdiff2{static_cast<::std::size_t>(fromlast-fromfirst)};
-				::std::size_t ndiff2{(fromdiff2>>2u)+((fromdiff2&0x3u)!=0u)};
+				::std::size_t todiff2{static_cast<::std::size_t>(tolast-tofirst)};
+				if(todiff2<fromdiff2)
+				{
+					fromdiff2=todiff2;
+				}
+				::std::size_t ndiff2{(fromdiff2>>2u)};
 				do
 				{
 #ifdef __has_builtin
@@ -233,6 +295,19 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 							tofirst[2]=::fast_io::details::bm_i8_to_ebcdic[(high&0xFF)];
 							tofirst[3]=::fast_io::details::bm_i8_to_ebcdic[(high>>8u)];
 						}						
+					}
+					else if constexpr(sizeof(output_char_type)==1u)
+					{
+#ifdef __has_builtin
+#if __has_builtin(__builtin_memcpy)
+						__builtin_memcpy
+#else
+						::std::memcpy
+#endif
+#else
+						::std::memcpy
+#endif
+						(tofirst,__builtin_addressof(val),sizeof(val));
 					}
 					else
 					{
@@ -376,7 +451,7 @@ inline constexpr deco_result<char8_t,typename T::output_char_type> utf8_generic_
 		if(decisiondiff<mndiff)
 		{
 			mndiff-=decisiondiff;
-			auto [fromit,toit]=utf8_generic_unchecked_impl<T>(fromfirst,fromfirst+mndiff,tofirst);
+			auto [fromit,toit]=utf8_generic_unchecked_impl<T>(fromfirst,fromfirst+mndiff,tofirst,tofirst+mndiff);
 			fromfirst=fromit;
 			tofirst=toit;
 		}	
