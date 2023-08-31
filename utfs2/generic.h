@@ -67,8 +67,9 @@ using utf8_to_gb18030 = basic_code_cvt_decorator<::fast_io::manipulators::encodi
 
 using utf32_to_utf8 = basic_code_cvt_decorator<::fast_io::manipulators::encoding::utf32,::fast_io::manipulators::encoding::utf8>;
 
-using utf8_utf32 = ::fast_io::basic_bidirectional_decorator_adaptor<utf32_to_utf8,utf8_to_utf32>;
 using utf8_gb18030 = ::fast_io::basic_bidirectional_decorator_adaptor<utf8_to_gb18030,utf8_to_gb18030>;
+
+using utf32_utf8 = ::fast_io::basic_bidirectional_decorator_adaptor<utf32_to_utf8,utf8_to_utf32>;
 
 }
 
