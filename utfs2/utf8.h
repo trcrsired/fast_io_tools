@@ -18,16 +18,6 @@ inline constexpr utf8mask utf8masks[3]
 {0b11111000'11000000'11000000'11000000u,0b11110000'10000000'10000000'10000000u,0b00000111'00111111'00111111'00111111u},
 };
 
-template<typename inputchartype,typename outputchartype>
-struct deco_result_simd
-{
-	using input_char_type = inputchartype;
-	using output_char_type = outputchartype;
-	input_char_type const *fromit;
-	output_char_type *toit;
-	bool done;
-};
-
 #if !defined(_MSC_VER) || defined(__clang__)
 
 template<typename T,::std::size_t N>

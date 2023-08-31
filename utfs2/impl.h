@@ -7,7 +7,6 @@ namespace fast_io
 namespace details
 {
 
-
 template<char8_t lfch,::std::integral char_type,::std::size_t N,bool signed_disposition>
 inline constexpr auto utfconstantsimd_impl() noexcept
 {
@@ -29,6 +28,16 @@ inline constexpr auto utfconstantsimd_impl() noexcept
 		return cmp;
 	}
 }
+
+template<typename inputchartype,typename outputchartype>
+struct deco_result_simd
+{
+	using input_char_type = inputchartype;
+	using output_char_type = outputchartype;
+	input_char_type const *fromit;
+	output_char_type *toit;
+	bool done;
+};
 
 }
 
