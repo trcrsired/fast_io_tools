@@ -14,6 +14,10 @@ inline constexpr deco_result<fromchartype,tochartype> code_cvt_api(
 	{
 		return ::fast_io::details::utf8_generic_impl<::fast_io::details::schemecodeconverter<toencoding>>(fromfirst,fromlast,tofirst,tolast);
 	}
+	else if constexpr(fromencoding==::fast_io::manipulators::encoding::utf32)
+	{
+		return ::fast_io::details::utf32_generic_impl<::fast_io::details::schemecodeconverter<toencoding>>(fromfirst,fromlast,tofirst,tolast);
+	}
 }
 
 
@@ -61,6 +65,9 @@ using utf8_to_utf_ebcdic = basic_code_cvt_decorator<::fast_io::manipulators::enc
 using utf8_to_gb18030 = basic_code_cvt_decorator<::fast_io::manipulators::encoding::utf8,::fast_io::manipulators::encoding::gb18030>;
 
 
+using utf32_to_utf8 = basic_code_cvt_decorator<::fast_io::manipulators::encoding::utf32,::fast_io::manipulators::encoding::utf8>;
+
+using utf8_utf32 = ::fast_io::basic_bidirectional_decorator_adaptor<utf32_to_utf8,utf8_to_utf32>;
 using utf8_gb18030 = ::fast_io::basic_bidirectional_decorator_adaptor<utf8_to_gb18030,utf8_to_gb18030>;
 
 }

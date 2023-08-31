@@ -45,4 +45,5 @@ struct deco_result_simd
 
 #include"schemes.h"
 #include"utf8.h"
+#include"utf32.h"
 #include"generic.h"

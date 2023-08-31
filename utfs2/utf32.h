@@ -5,7 +5,7 @@ namespace fast_io
 
 namespace details
 {
-
+#if 0
 inline constexpr ::std::size_t utf32_to_utf8_code_point_impl(char8_t *dst, ::std::size_t szdpt, char32_t cdpt) noexcept
 {
 	if (cdpt <= 0x7FF)
@@ -53,6 +53,7 @@ inline constexpr ::std::size_t utf32_to_utf8_code_point_impl(char8_t *dst, ::std
 		return 3;
 	}
 }
+#endif
 
 #if !defined(_MSC_VER) || defined(__clang__)
 
@@ -63,6 +64,11 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 {
 	using temp_simd_vector_type = ::fast_io::intrinsics::simd_vector<::std::uint_least32_t,(N/sizeof(char32_t))>;
 	using simd_vector_type = ::fast_io::intrinsics::simd_vector<::std::uint_least8_t,N>;
+
+#if (__cpp_lib_bit_cast >= 201806L) && !defined(__clang__)
+	constexpr
+#endif
+		auto cmp128{::fast_io::details::utfconstantsimd_impl<0x80u,char32_t,N/sizeof(char32_t)>};
 	simd_vector_type svec0,svec1,svec2,svec3;
 	::std::size_t fromdiff2{static_cast<::std::size_t>(fromlast-fromfirst)};
 	::std::size_t todiff2{static_cast<::std::size_t>(tolast-tofirst)};
@@ -154,7 +160,7 @@ inline constexpr deco_result<char32_t,typename T::output_char_type> utf32_to_oth
 #endif
 
 template<typename T>
-inline constexpr deco_result_simd<char32_t,typename T::output_char_type> utf32_to_generic_impl(
+inline constexpr deco_result_simd<char32_t,typename T::output_char_type> utf32_generic_impl(
 	char32_t const *fromfirst,char32_t const *fromlast,
 	typename T::output_char_type *tofirst,typename T::output_char_type *tolast) noexcept
 {
@@ -162,17 +168,20 @@ inline constexpr deco_result_simd<char32_t,typename T::output_char_type> utf32_t
 
 	constexpr
 		bool ecisebcdic{T::encoding_is_ebcdic};
-#if (__cpp_lib_bit_cast >= 201806L) && !defined(__clang__)
-	constexpr
-#endif
-		auto cmp128{::fast_io::details::utfconstantsimd_impl<0x80u,char32_t,N/sizeof(char32_t)>};
 
 	while(fromfirst!=fromlast&&tofirst!=tolast)
 	{
 		char32_t v0{*fromfirst};
 		if(v0<0x80u)
 		{
-			*tofirst=static_cast<char_type>(v0);
+			if constexpr(ecisebcdic)
+			{
+				*tofirst=::fast_io::details::bm_i8_to_ebcdic[v0];
+			}
+			else
+			{
+				*tofirst=static_cast<output_char_type>(v0);
+			}
 			++tofirst;
 			++fromfirst;
 #if !defined(_MSC_VER) || defined(__clang__)
@@ -208,7 +217,7 @@ inline constexpr deco_result_simd<char32_t,typename T::output_char_type> utf32_t
 				}
 				else
 				{
-					*tofirst=static_cast<char_type>(v0);
+					*tofirst=static_cast<output_char_type>(v0);
 				}
 				++tofirst;
 				++fromfirst;
