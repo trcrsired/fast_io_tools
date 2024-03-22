@@ -15,7 +15,7 @@ int main(int argc,char** argv)
 	}
 	fast_io::u8ibuf_file ibf(fast_io::mnp::os_c_str(argv[1]));
 	fast_io::u8obuf_file obf(fast_io::mnp::os_c_str(argv[2]));
-	print(obf,u8"#pragma once\n\n");
+	print(obf,u8"#pragma once\n\n// clang-format off");
 	for(auto& linesc:line_scanner(ibf))
 	{
 		std::u8string_view line{linesc};
@@ -29,4 +29,5 @@ int main(int argc,char** argv)
 		}
 		print(obf,u8"#pragma comment(linker,\"/alternatename:",line.substr(0,i),u8"=",line.substr(i+1),u8"\")\n");
 	}
+	print(obf,u8"// clang-format on\n");
 }
