@@ -4,6 +4,7 @@
 
 int main(int argc,char** argv)
 {
+	using namespace ::fast_io::io;
 	if(argc<3)
 	{
 		if(argc==0)
