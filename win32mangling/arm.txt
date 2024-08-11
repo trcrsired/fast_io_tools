@@ -103,6 +103,14 @@ __imp_?RegOpenKeyW@win32@fast_io@@YAHIPB_SPAI@Z __imp_RegOpenKeyW
 __imp_?RegQueryValueExA@win32@fast_io@@YAHIPB_QPAI1PAX1@Z __imp_RegQueryValueExA
 __imp_?RegQueryValueExW@win32@fast_io@@YAHIPB_SPAI1PAX1@Z __imp_RegQueryValueExW
 __imp_?RegCloseKey@win32@fast_io@@YAHI@Z __imp_RegCloseKey
+__imp_?GetTimeZoneInformation@win32@fast_io@@YAIPAUtime_zone_information@12@@Z __imp_GetTimeZoneInformation
+__imp_?SetConsoleCP@win32@fast_io@@YAHI@Z __imp_SetConsoleCP
+__imp_?SetConsoleOutputCP@win32@fast_io@@YAHI@Z __imp_SetConsoleOutputCP
+__imp_?GetConsoleCP@win32@fast_io@@YAIXZ __imp_GetConsoleCP
+__imp_?GetConsoleOutputCP@win32@fast_io@@YAIXZ __imp_GetConsoleOutputCP
+__imp_?AcquireSRWLockExclusive@win32@fast_io@@YAXPAX@Z __imp_AcquireSRWLockExclusive
+__imp_?TryAcquireSRWLockExclusive@win32@fast_io@@YAIPAX@Z __imp_TryAcquireSRWLockExclusive
+__imp_?ReleaseSRWLockExclusive@win32@fast_io@@YAXPAX@Z __imp_ReleaseSRWLockExclusive
 
 
 __imp_?rtl_nt_status_to_dos_error@nt@win32@fast_io@@YAII@Z __imp_RtlNtStatusToDosError
@@ -155,3 +163,6 @@ __imp_?NtFlushBuffersFileEx@nt@win32@fast_io@@YAIPAXI0IPAUio_status_block@123@@Z
 __imp_?ZwFlushBuffersFileEx@nt@win32@fast_io@@YAIPAXI0IPAUio_status_block@123@@Z __imp_ZwFlushBuffersFileEx
 __imp_?DbgPrint@nt@win32@fast_io@@YAIPBDZZ __imp_DbgPrint
 __imp_?DbgPrintEx@nt@win32@fast_io@@YAIIIPBDZZ __imp_DbgPrintEx
+__imp_?RtlAcquireSRWLockExclusive@nt@win32@fast_io@@YAXPAX@Z __imp_RtlAcquireSRWLockExclusive
+__imp_?RtlTryAcquireSRWLockExclusive@nt@win32@fast_io@@YAIPAX@Z __imp_RtlTryAcquireSRWLockExclusive
+__imp_?RtlReleaseSRWLockExclusive@nt@win32@fast_io@@YAXPAX@Z __imp_RtlReleaseSRWLockExclusive

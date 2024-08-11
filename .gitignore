@@ -49,5 +49,5 @@ Thumbs.db
 *.wmv
 
 .vs
-/win32mangling/*.s
+/win32mangling/msvc_comment
 /i18n/i18n_tz/tzdata-latest

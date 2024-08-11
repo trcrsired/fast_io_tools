@@ -1,14 +1,12 @@
-#pragma once
-
-#if defined(_MSC_VER)
-#pragma comment(lib,"ntdll.lib")
-#endif
-
+#ifdef RENAME
+namespace fast_io_nt_c_linkers
+#else
 namespace fast_io::win32::nt
+#endif
 {
 
 __declspec(dllimport) extern std::uint32_t __stdcall rtl_nt_status_to_dos_error(std::uint32_t status) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("RtlNtStatusToDosError@4")
@@ -22,7 +20,7 @@ asm("RtlNtStatusToDosError")
 ;
 
 __declspec(dllimport) extern std::uint32_t __stdcall NtClose(void*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("NtClose@4")
@@ -35,7 +33,7 @@ asm("NtClose")
 #endif
 ;
 __declspec(dllimport) extern std::uint32_t __stdcall ZwClose(void*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("ZwClose@4")
@@ -59,7 +57,7 @@ inline std::uint32_t nt_close(void* handle) noexcept
 
 __declspec(dllimport) extern std::uint32_t __stdcall NtCreateFile(void**,std::uint32_t,object_attributes*,io_status_block*,std::int64_t*,
 			std::uint32_t,std::uint32_t,std::uint32_t,std::uint32_t,void*,std::uint32_t) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("NtCreateFile@44")
@@ -73,7 +71,7 @@ asm("NtCreateFile")
 ;
 __declspec(dllimport) extern std::uint32_t __stdcall ZwCreateFile(void**,std::uint32_t,object_attributes*,io_status_block*,std::int64_t*,
 			std::uint32_t,std::uint32_t,std::uint32_t,std::uint32_t,void*,std::uint32_t) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("ZwCreateFile@44")
@@ -98,7 +96,7 @@ inline std::uint32_t nt_create_file(Args... args) noexcept
 
 __declspec(dllimport) extern std::uint32_t __stdcall NtCreateSection(void** __restrict,std::uint32_t,object_attributes* __restrict,
 		std::uint64_t*,std::uint32_t,std::uint32_t,void* __restrict) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("NtCreateSection@28")
@@ -112,7 +110,7 @@ asm("NtCreateSection")
 ;
 __declspec(dllimport) extern std::uint32_t __stdcall ZwCreateSection(void** __restrict,std::uint32_t,object_attributes* __restrict,
 		std::uint64_t*,std::uint32_t,std::uint32_t,void* __restrict) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("ZwCreateSection@28")
@@ -138,7 +136,7 @@ inline std::uint32_t nt_create_section(Args... args) noexcept
 __declspec(dllimport) extern std::uint32_t __stdcall NtQueryInformationProcess(void* __restrict,
 		process_information_class,process_basic_information*,
 		std::uint32_t,std::uint32_t*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("NtQueryInformationProcess@20")
@@ -154,7 +152,7 @@ asm("NtQueryInformationProcess")
 __declspec(dllimport) extern std::uint32_t __stdcall ZwQueryInformationProcess(void* __restrict,
 		process_information_class,process_basic_information*,
 		std::uint32_t,std::uint32_t*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("ZwQueryInformationProcess@20")
@@ -179,7 +177,7 @@ inline std::uint32_t nt_query_information_process(Args... args) noexcept
 
 __declspec(dllimport) extern std::uint32_t __stdcall NtWriteFile(void*,void*,pio_apc_routine,void*,io_status_block*,
 				void const*,std::uint32_t,std::int64_t*,std::uint32_t*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("NtWriteFile@36")
@@ -193,7 +191,7 @@ asm("NtWriteFile")
 ;
 __declspec(dllimport) extern std::uint32_t __stdcall ZwWriteFile(void*,void*,pio_apc_routine,void*,io_status_block*,
 				void const*,std::uint32_t,std::int64_t*,std::uint32_t*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("ZwWriteFile@36")
@@ -218,7 +216,7 @@ inline std::uint32_t nt_write_file(Args... args) noexcept
 
 __declspec(dllimport) extern std::uint32_t __stdcall NtReadFile(void*,void*,pio_apc_routine,void*,io_status_block*,
 				void const*,std::uint32_t,std::int64_t*,std::uint32_t*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("NtReadFile@36")
@@ -232,7 +230,7 @@ asm("NtReadFile")
 ;
 __declspec(dllimport) extern std::uint32_t __stdcall ZwReadFile(void*,void*,pio_apc_routine,void*,io_status_block*,
 				void const*,std::uint32_t,std::int64_t*,std::uint32_t*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("ZwReadFile@36")
@@ -257,7 +255,7 @@ inline std::uint32_t nt_read_file(Args... args) noexcept
 
 __declspec(dllimport) extern std::uint32_t __stdcall NtQueryDirectoryFile(void*,void*,pio_apc_routine,void*,io_status_block*,
 				void*,std::uint32_t,file_information_class,int,unicode_string*,int) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("NtQueryDirectoryFile@44")
@@ -271,7 +269,7 @@ asm("NtQueryDirectoryFile")
 ;
 __declspec(dllimport) extern std::uint32_t __stdcall ZwQueryDirectoryFile(void*,void*,pio_apc_routine,void*,io_status_block*,
 				void*,std::uint32_t,file_information_class,int,unicode_string*,int) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("ZwQueryDirectoryFile@44")
@@ -295,7 +293,7 @@ inline std::uint32_t nt_query_directory_file(Args... args) noexcept
 }
 
 __declspec(dllimport) extern std::uint32_t __stdcall NtQuerySection(void*,section_information_class,void*,std::size_t,std::size_t*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("NtQuerySection@20")
@@ -309,7 +307,7 @@ asm("NtQuerySection")
 ;
 
 __declspec(dllimport) extern std::uint32_t __stdcall ZwQuerySection(void*,section_information_class,void*,std::size_t,std::size_t*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("ZwQuerySection@20")
@@ -334,7 +332,7 @@ inline std::uint32_t nt_query_section(Args... args) noexcept
 
 
 __declspec(dllimport) extern std::uint32_t __stdcall NtQueryInformationFile(void* __restrict,io_status_block* __restrict,void* __restrict,std::uint32_t,file_information_class) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("NtQueryInformationFile@20")
@@ -347,7 +345,7 @@ asm("NtQueryInformationFile")
 #endif
 ;
 __declspec(dllimport) extern std::uint32_t __stdcall ZwQueryInformationFile(void* __restrict,io_status_block* __restrict,void* __restrict,std::uint32_t,file_information_class) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("ZwQueryInformationFile@20")
@@ -372,7 +370,7 @@ inline std::uint32_t nt_query_information_file(Args... args) noexcept
 
 
 __declspec(dllimport) extern std::uint32_t __stdcall NtSetInformationFile(void* __restrict,io_status_block* __restrict,void* __restrict,std::uint32_t,file_information_class) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("NtSetInformationFile@28")
@@ -385,7 +383,7 @@ asm("NtSetInformationFile")
 #endif
 ;
 __declspec(dllimport) extern std::uint32_t __stdcall ZwSetInformationFile(void* __restrict,io_status_block* __restrict,void* __restrict,std::uint32_t,file_information_class) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("ZwSetInformationFile@28")
@@ -409,7 +407,7 @@ inline std::uint32_t nt_set_information_file(Args... args) noexcept
 }
 
 __declspec(dllimport) extern std::uint32_t __stdcall NtDuplicateObject(void*,void*,void*,void**,std::uint32_t,std::uint32_t,std::uint32_t) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("NtDuplicateObject@28")
@@ -422,7 +420,7 @@ asm("NtDuplicateObject")
 #endif
 ;
 __declspec(dllimport) extern std::uint32_t __stdcall ZwDuplicateObject(void*,void*,void*,void**,std::uint32_t,std::uint32_t,std::uint32_t) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("ZwDuplicateObject@28")
@@ -446,7 +444,7 @@ inline std::uint32_t nt_duplicate_object(Args... args) noexcept
 }
 
 __declspec(dllimport) extern std::uint32_t __stdcall NtWaitForSingleObject(void*,int,std::uint64_t*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("NtWaitForSingleObject@12")
@@ -460,7 +458,7 @@ asm("NtWaitForSingleObject")
 ;
 
 __declspec(dllimport) extern std::uint32_t __stdcall ZwWaitForSingleObject(void*,int,std::uint64_t*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("ZwWaitForSingleObject@12")
@@ -484,7 +482,7 @@ inline std::uint32_t nt_wait_for_single_object(Args... args) noexcept
 }
 
 __declspec(dllimport) extern std::uint32_t __stdcall NtSetSystemTime(std::uint64_t*,std::uint64_t*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("NtSetSystemTime@8")
@@ -497,7 +495,7 @@ asm("NtSetSystemTime")
 #endif
 ;
 __declspec(dllimport) extern std::uint32_t __stdcall ZwSetSystemTime(std::uint64_t*,std::uint64_t*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("ZwSetSystemTime@8")
@@ -521,7 +519,7 @@ inline std::uint32_t nt_set_system_time(Args... args) noexcept
 }
 
 __declspec(dllimport) std::uint32_t __stdcall NtCreateProcess(void**,std::uint32_t,object_attributes*,void*,std::uint32_t,void*,void*,void*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("NtCreateProcess@32")
@@ -535,7 +533,7 @@ asm("NtCreateProcess")
 ;
 
 __declspec(dllimport) std::uint32_t __stdcall ZwCreateProcess(void**,std::uint32_t,object_attributes*,void*,std::uint32_t,void*,void*,void*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("ZwCreateProcess@32")
@@ -559,7 +557,7 @@ inline std::uint32_t nt_create_process(Args... args) noexcept
 }
 
 __declspec(dllimport) extern char unsigned __stdcall rtl_dos_path_name_to_nt_path_name_u(wchar_t const*,unicode_string*,wchar_t const**,rtl_relative_name_u*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("RtlDosPathNameToNtPathName_U@16")
@@ -573,7 +571,7 @@ asm("RtlDosPathNameToNtPathName_U")
 ;
 
 __declspec(dllimport) extern std::uint32_t __stdcall rtl_dos_path_name_to_nt_path_name_u_with_status(wchar_t const*,unicode_string*,wchar_t const**,rtl_relative_name_u*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("RtlDosPathNameToNtPathName_U_WithStatus@16")
@@ -587,7 +585,7 @@ asm("RtlDosPathNameToNtPathName_U_WithStatus")
 ;
 
 __declspec(dllimport) extern void __stdcall rtl_free_unicode_string(unicode_string*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("RtlFreeUnicodeString@4")
@@ -602,7 +600,7 @@ asm("RtlFreeUnicodeString")
 
 
 __declspec(dllimport) extern void __stdcall RtlInitializeCriticalSection(void*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("RtlInitializeCriticalSection@4")
@@ -616,7 +614,7 @@ asm("RtlInitializeCriticalSection")
 ;
 
 __declspec(dllimport) extern void __stdcall RtlEnterCriticalSection(void*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("RtlEnterCriticalSection@4")
@@ -630,7 +628,7 @@ asm("RtlEnterCriticalSection")
 ;
 
 __declspec(dllimport) extern int __stdcall RtlTryEnterCriticalSection(void*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("RtlTryEnterCriticalSection@4")
@@ -644,7 +642,7 @@ asm("RtlTryEnterCriticalSection")
 ;
 
 __declspec(dllimport) extern void __stdcall RtlLeaveCriticalSection(void*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("RtlLeaveCriticalSection@4")
@@ -658,7 +656,7 @@ asm("RtlLeaveCriticalSection")
 ;
 
 __declspec(dllimport) extern void __stdcall RtlDeleteCriticalSection(void*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("RtlDeleteCriticalSection@4")
@@ -672,7 +670,7 @@ asm("RtlDeleteCriticalSection")
 ;
 
 __declspec(dllimport) extern std::uint32_t __stdcall RtlCreateUserThread(void*,void*,int,std::uint32_t,std::size_t,std::size_t,void*,void*,void**,client_id*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if defined(__GNUC__)
 asm("RtlCreateUserThread@40")
@@ -686,7 +684,7 @@ asm("RtlCreateUserThread")
 ;
 
 __declspec(dllimport) extern std::uint32_t __stdcall NtResumeThread(void*,std::uint32_t*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if !defined(__clang__)
 asm("NtResumeThread@8")
@@ -700,7 +698,7 @@ asm("NtResumeThread")
 ;
 
 __declspec(dllimport) extern std::uint32_t __stdcall ZwResumeThread(void*,std::uint32_t*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if !defined(__clang__)
 asm("ZwResumeThread@8")
@@ -714,7 +712,7 @@ asm("ZwResumeThread")
 ;
 
 __declspec(dllimport) extern std::uint32_t __stdcall NtLockFile(void*,void*,pio_apc_routine,void*,io_status_block*,std::int64_t*,std::int64_t*,std::uint32_t,char unsigned,char unsigned) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if !defined(__clang__)
 asm("NtLockFile@40")
@@ -728,7 +726,7 @@ asm("NtLockFile")
 ;
 
 __declspec(dllimport) extern std::uint32_t __stdcall ZwLockFile(void*,void*,pio_apc_routine,void*,io_status_block*,std::int64_t*,std::int64_t*,std::uint32_t,char unsigned,char unsigned) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if !defined(__clang__)
 asm("ZwLockFile@40")
@@ -742,7 +740,7 @@ asm("ZwLockFile")
 ;
 
 __declspec(dllimport) extern std::uint32_t __stdcall NtUnlockFile(void*,io_status_block*,std::int64_t*,std::int64_t*,std::uint32_t) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if !defined(__clang__)
 asm("NtUnlockFile@20")
@@ -756,7 +754,7 @@ asm("NtUnlockFile")
 ;
 
 __declspec(dllimport) extern std::uint32_t __stdcall ZwUnlockFile(void*,io_status_block*,std::int64_t*,std::int64_t*,std::uint32_t) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if !defined(__clang__)
 asm("ZwUnlockFile@20")
@@ -770,7 +768,7 @@ asm("ZwUnlockFile")
 ;
 
 __declspec(dllimport) extern std::uint32_t __stdcall NtFlushBuffersFile(void*,io_status_block*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if !defined(__clang__)
 asm("NtFlushBuffersFile@8")
@@ -784,7 +782,7 @@ asm("NtFlushBuffersFile")
 ;
 
 __declspec(dllimport) extern std::uint32_t __stdcall ZwFlushBuffersFile(void*,io_status_block*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if !defined(__clang__)
 asm("ZwFlushBuffersFile@8")
@@ -798,7 +796,7 @@ asm("ZwFlushBuffersFile")
 ;
 
 __declspec(dllimport) extern std::uint32_t __stdcall NtFlushBuffersFileEx(void*,std::uint32_t,void*,std::uint32_t,io_status_block*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if !defined(__clang__)
 asm("NtFlushBuffersFileEx@20")
@@ -812,7 +810,7 @@ asm("NtFlushBuffersFileEx")
 ;
 
 __declspec(dllimport) extern std::uint32_t __stdcall ZwFlushBuffersFileEx(void*,std::uint32_t,void*,std::uint32_t,io_status_block*) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if !defined(__clang__)
 asm("ZwFlushBuffersFileEx@20")
@@ -831,7 +829,7 @@ __declspec(dllimport)
 [[gnu::dllimport]]
 #endif
 extern std::uint32_t __cdecl DbgPrint(char const*,...) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if !defined(__clang__)
 asm("DbgPrint")
@@ -850,7 +848,7 @@ __declspec(dllimport)
 [[gnu::dllimport]]
 #endif
 extern std::uint32_t __cdecl DbgPrintEx(std::uint32_t,std::uint32_t,char const*,...) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX<=UINT32_MAX &&(defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if !defined(__clang__)
 asm("DbgPrintEx")
@@ -876,7 +874,7 @@ extern void
 	__stdcall
 #endif
 	RtlAcquireSRWLockExclusive(void *) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX <= UINT_LEAST32_MAX && (defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if !defined(__clang__)
 	__asm__("RtlAcquireSRWLockExclusive@4")
@@ -902,7 +900,7 @@ extern ::std::uint_least32_t
 	__stdcall
 #endif
 	RtlTryAcquireSRWLockExclusive(void *) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX <= UINT_LEAST32_MAX && (defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if !defined(__clang__)
 	__asm__("RtlTryAcquireSRWLockExclusive@4")
@@ -928,7 +926,7 @@ extern void
 	__stdcall
 #endif
 	RtlReleaseSRWLockExclusive(void *) noexcept
-#if 0
+#ifdef RENAME
 #if SIZE_MAX <= UINT_LEAST32_MAX && (defined(__x86__) || defined(_M_IX86) || defined(__i386__))
 #if !defined(__clang__)
 	__asm__("RtlReleaseSRWLockExclusive@4")
