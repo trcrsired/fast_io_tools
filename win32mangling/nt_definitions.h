@@ -1,8 +1,8 @@
 namespace
-#if defined(FAST_IO_NT_C_LINKER)
-fast_io_nt_c_linkers
-#else
+#if defined(RENAME)
 fast_io::win32::nt
+#else
+fast_io_nt_c_linkers
 #endif
 {
 

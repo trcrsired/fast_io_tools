@@ -1,6 +1,6 @@
 #pragma once
 
-#pragma comment(linker,"/alternatename:__imp_?GetLastError@win32@fast_io@@YAIXZ=__imp_GetLastError")
+// clang-format off#pragma comment(linker,"/alternatename:__imp_?GetLastError@win32@fast_io@@YAIXZ=__imp_GetLastError")
 #pragma comment(linker,"/alternatename:__imp_?LoadLibraryA@win32@fast_io@@YAPEAXPEBD@Z=__imp_LoadLibraryA")
 #pragma comment(linker,"/alternatename:__imp_?LoadLibraryW@win32@fast_io@@YAPEAXPEB_S@Z=__imp_LoadLibraryW")
 #pragma comment(linker,"/alternatename:__imp_?LoadLibraryExA@win32@fast_io@@YAPEAXPEBDPEAXI@Z=__imp_LoadLibraryExA")
@@ -155,3 +155,4 @@
 #pragma comment(linker,"/alternatename:__imp_?ZwFlushBuffersFileEx@nt@win32@fast_io@@YAIPEAXI0IPEAUio_status_block@123@@Z=__imp_ZwFlushBuffersFileEx")
 #pragma comment(linker,"/alternatename:__imp_?DbgPrint@nt@win32@fast_io@@YAIPEBDZZ=__imp_DbgPrint")
 #pragma comment(linker,"/alternatename:__imp_?DbgPrintEx@nt@win32@fast_io@@YAIIIPEBDZZ=__imp_DbgPrintEx")
+// clang-format on
