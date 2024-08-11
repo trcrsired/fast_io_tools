@@ -78,12 +78,14 @@ __imp_?bind@win32@fast_io@@YAHIPBXH@Z __imp_bind
 __imp_?listen@win32@fast_io@@YAHIH@Z __imp_listen
 __imp_?WSAAccept@win32@fast_io@@YAIIPBXPAHP6AXPAUwsabuf@12@2PAUqualityofservice@12@322PAII@_EI@Z __imp_WSAAccept
 __imp_?ioctlsocket@win32@fast_io@@YAHIJPAI@Z __imp_ioctlsocket
+__imp_?sendto@win32@fast_io@@YAHIPBDHHPBXH@Z __imp_sendto
 __imp_?WSASend@win32@fast_io@@YAHIPAUwsabuf@12@IPAIIPAUoverlapped@12@P6AXII2I@_E@Z __imp_WSASend
 __imp_?WSASendMsg@win32@fast_io@@YAHIPAUwsamsg@12@IPAIPAUoverlapped@12@P6AXII2I@_E@Z __imp_WSASendMsg
 __imp_?WSASendTo@win32@fast_io@@YAHIPAUwsabuf@12@IPAIIPBXHPAUoverlapped@12@P6AXII3I@_E@Z __imp_WSASendTo
 __imp_?recv@win32@fast_io@@YAHIPADHH@Z __imp_recv
+__imp_?recvfrom@win32@fast_io@@YAHIPADHHPAXPAH@Z __imp_recvfrom
 __imp_?WSARecv@win32@fast_io@@YAHIPAUwsabuf@12@IPAI1PAUoverlapped@12@P6AXII2I@_E@Z __imp_WSARecv
-__imp_?WSARecvFrom@win32@fast_io@@YAHIPAUwsabuf@12@IPAI1PBXPAHPAUoverlapped@12@P6AXII4I@_E@Z __imp_WSARecvFrom
+__imp_?WSARecvFrom@win32@fast_io@@YAHIPAUwsabuf@12@IPAI1PAXPAHPAUoverlapped@12@P6AXII4I@_E@Z __imp_WSARecvFrom
 __imp_?connect@win32@fast_io@@YAHIPBXH@Z __imp_connect
 __imp_?WSAConnect@win32@fast_io@@YAHIPBXHPAUwsabuf@12@1PAUqualityofservice@12@2@Z __imp_WSAConnect
 __imp_?shutdown@win32@fast_io@@YAHIPBXH@Z __imp_shutdown
