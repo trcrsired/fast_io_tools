@@ -13,7 +13,7 @@ nt_manglingi686.s:nt_mangling.cc
 nt_manglingarm.s:nt_mangling.cc
 	clang++ --target=arm-windows-msvc -S nt_mangling.cc -O3 -std=c++26 -o nt_manglingarm.s -Wno-deprecated-declarations -Wall -Wextra -Wpedantic --sysroot=${SYSROOT}
 msvc_comment:msvc_comment.cc
-	clang++ -o msvc_comment msvc_comment.cc -O3 -std=c++26 -Wno-deprecated-declarations -Wall -Wextra -Wpedantic -I{FAST_IO_DIR}\include
+	clang++ -o msvc_comment msvc_comment.cc -O3 -std=c++26 -Wno-deprecated-declarations -Wall -Wextra -Wpedantic -I${FAST_IO_DIR}\include
 
 msvc_linker_64.h:msvc_comment x86_64.txt
 	./msvc_comment x86_64.txt msvc_linker_64.h
