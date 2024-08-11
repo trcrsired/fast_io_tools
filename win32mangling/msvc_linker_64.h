@@ -1,6 +1,7 @@
 #pragma once
 
-// clang-format off#pragma comment(linker,"/alternatename:__imp_?GetLastError@win32@fast_io@@YAIXZ=__imp_GetLastError")
+// clang-format off
+#pragma comment(linker,"/alternatename:__imp_?GetLastError@win32@fast_io@@YAIXZ=__imp_GetLastError")
 #pragma comment(linker,"/alternatename:__imp_?LoadLibraryA@win32@fast_io@@YAPEAXPEBD@Z=__imp_LoadLibraryA")
 #pragma comment(linker,"/alternatename:__imp_?LoadLibraryW@win32@fast_io@@YAPEAXPEB_S@Z=__imp_LoadLibraryW")
 #pragma comment(linker,"/alternatename:__imp_?LoadLibraryExA@win32@fast_io@@YAPEAXPEBDPEAXI@Z=__imp_LoadLibraryExA")

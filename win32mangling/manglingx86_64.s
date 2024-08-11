@@ -1810,6 +1810,28 @@
 	movq	__imp_ioctlsocket(%rip), %rax
 	retq
                                         # -- End function
+	.def	"?get_sendto@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_sendto@@YA?A?<auto>@@XZ"  # -- Begin function ?get_sendto@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_sendto@@YA?A?<auto>@@XZ":         # @"?get_sendto@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?sendto@win32@fast_io@@YAH_KPEBDHHPEBXH@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_sendto@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_sendto@@YA?A?<auto>@@XZ"  # -- Begin function ?sys_sendto@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_sendto@@YA?A?<auto>@@XZ":         # @"?sys_sendto@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_sendto(%rip), %rax
+	retq
+                                        # -- End function
 	.def	"?get_WSASend@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
@@ -1898,6 +1920,28 @@
 	movq	__imp_recv(%rip), %rax
 	retq
                                         # -- End function
+	.def	"?get_recvfrom@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_recvfrom@@YA?A?<auto>@@XZ" # -- Begin function ?get_recvfrom@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_recvfrom@@YA?A?<auto>@@XZ":       # @"?get_recvfrom@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?recvfrom@win32@fast_io@@YAH_KPEADHHPEAXPEAH@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_recvfrom@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_recvfrom@@YA?A?<auto>@@XZ" # -- Begin function ?sys_recvfrom@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_recvfrom@@YA?A?<auto>@@XZ":       # @"?sys_recvfrom@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_recvfrom(%rip), %rax
+	retq
+                                        # -- End function
 	.def	"?get_WSARecv@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
@@ -1928,7 +1972,7 @@
 	.p2align	4, 0x90
 "?get_WSARecvFrom@@YA?A?<auto>@@XZ":    # @"?get_WSARecvFrom@@YA?A?<auto>@@XZ"
 # %bb.0:
-	movq	"__imp_?WSARecvFrom@win32@fast_io@@YAH_KPEAUwsabuf@12@IPEAI2PEBXPEAHPEAUoverlapped@12@P6AXII5I@_E@Z"(%rip), %rax
+	movq	"__imp_?WSARecvFrom@win32@fast_io@@YAH_KPEAUwsabuf@12@IPEAI2PEAXPEAHPEAUoverlapped@12@P6AXII5I@_E@Z"(%rip), %rax
 	retq
                                         # -- End function
 	.def	"?sys_WSARecvFrom@@YA?A?<auto>@@XZ";

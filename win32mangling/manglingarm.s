@@ -2461,6 +2461,36 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
+	.def	"?get_sendto@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_sendto@@YA?A?<auto>@@XZ"  @ -- Begin function ?get_sendto@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_sendto@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_sendto@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?sendto@win32@fast_io@@YAHIPBDHHPBXH@Z"
+	movt	r0, :upper16:"__imp_?sendto@win32@fast_io@@YAHIPBDHHPBXH@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_sendto@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_sendto@@YA?A?<auto>@@XZ"  @ -- Begin function ?sys_sendto@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_sendto@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_sendto@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_sendto
+	movt	r0, :upper16:__imp_sendto
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
 	.def	"?get_WSASend@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
@@ -2581,6 +2611,36 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
+	.def	"?get_recvfrom@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_recvfrom@@YA?A?<auto>@@XZ" @ -- Begin function ?get_recvfrom@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_recvfrom@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_recvfrom@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?recvfrom@win32@fast_io@@YAHIPADHHPAXPAH@Z"
+	movt	r0, :upper16:"__imp_?recvfrom@win32@fast_io@@YAHIPADHHPAXPAH@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_recvfrom@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_recvfrom@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_recvfrom@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_recvfrom@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_recvfrom@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_recvfrom
+	movt	r0, :upper16:__imp_recvfrom
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
 	.def	"?get_WSARecv@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;
@@ -2621,8 +2681,8 @@
 	.thumb_func
 "?get_WSARecvFrom@@YA?A?<auto>@@XZ":
 @ %bb.0:
-	movw	r0, :lower16:"__imp_?WSARecvFrom@win32@fast_io@@YAHIPAUwsabuf@12@IPAI1PBXPAHPAUoverlapped@12@P6AXII4I@_E@Z"
-	movt	r0, :upper16:"__imp_?WSARecvFrom@win32@fast_io@@YAHIPAUwsabuf@12@IPAI1PBXPAHPAUoverlapped@12@P6AXII4I@_E@Z"
+	movw	r0, :lower16:"__imp_?WSARecvFrom@win32@fast_io@@YAHIPAUwsabuf@12@IPAI1PAXPAHPAUoverlapped@12@P6AXII4I@_E@Z"
+	movt	r0, :upper16:"__imp_?WSARecvFrom@win32@fast_io@@YAHIPAUwsabuf@12@IPAI1PAXPAHPAUoverlapped@12@P6AXII4I@_E@Z"
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
