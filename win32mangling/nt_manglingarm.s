@@ -1501,6 +1501,606 @@
 	ldr	r0, [r0]
 	bx	lr
                                         @ -- End function
+	.def	"?get_RtlCreateProcessParameters@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlCreateProcessParameters@@YA?A?<auto>@@XZ" @ -- Begin function ?get_RtlCreateProcessParameters@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_RtlCreateProcessParameters@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_RtlCreateProcessParameters@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?RtlCreateProcessParameters@nt@win32@fast_io@@YAIPAPAUrtl_user_process_parameters@123@PAUunicode_string@123@111PAX1111@Z"
+	movt	r0, :upper16:"__imp_?RtlCreateProcessParameters@nt@win32@fast_io@@YAIPAPAUrtl_user_process_parameters@123@PAUunicode_string@123@111PAX1111@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_RtlCreateProcessParameters@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlCreateProcessParameters@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_RtlCreateProcessParameters@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_RtlCreateProcessParameters@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_RtlCreateProcessParameters@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_RtlCreateProcessParameters
+	movt	r0, :upper16:__imp_RtlCreateProcessParameters
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ" @ -- Begin function ?get_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?RtlCreateProcessParametersEx@nt@win32@fast_io@@YAIPAPAUrtl_user_process_parameters@123@PAUunicode_string@123@111PAX1111I@Z"
+	movt	r0, :upper16:"__imp_?RtlCreateProcessParametersEx@nt@win32@fast_io@@YAIPAPAUrtl_user_process_parameters@123@PAUunicode_string@123@111PAX1111I@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_RtlCreateProcessParametersEx
+	movt	r0, :upper16:__imp_RtlCreateProcessParametersEx
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ" @ -- Begin function ?get_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?RtlDestroyProcessParameters@nt@win32@fast_io@@YAIPAUrtl_user_process_parameters@123@@Z"
+	movt	r0, :upper16:"__imp_?RtlDestroyProcessParameters@nt@win32@fast_io@@YAIPAUrtl_user_process_parameters@123@@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_RtlDestroyProcessParameters
+	movt	r0, :upper16:__imp_RtlDestroyProcessParameters
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_NtCreateUserProcess@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtCreateUserProcess@@YA?A?<auto>@@XZ" @ -- Begin function ?get_NtCreateUserProcess@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_NtCreateUserProcess@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_NtCreateUserProcess@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?NtCreateUserProcess@nt@win32@fast_io@@YAIPAX0IIPAUobject_attributes@123@1IIPAUrtl_user_process_parameters@123@PAUps_create_info@123@PAUps_attribute_list@123@@Z"
+	movt	r0, :upper16:"__imp_?NtCreateUserProcess@nt@win32@fast_io@@YAIPAX0IIPAUobject_attributes@123@1IIPAUrtl_user_process_parameters@123@PAUps_create_info@123@PAUps_attribute_list@123@@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_NtCreateUserProcess@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtCreateUserProcess@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_NtCreateUserProcess@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_NtCreateUserProcess@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_NtCreateUserProcess@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_NtCreateUserProcess
+	movt	r0, :upper16:__imp_NtCreateUserProcess
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_ZwCreateUserProcess@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwCreateUserProcess@@YA?A?<auto>@@XZ" @ -- Begin function ?get_ZwCreateUserProcess@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_ZwCreateUserProcess@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_ZwCreateUserProcess@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?ZwCreateUserProcess@nt@win32@fast_io@@YAIPAX0IIPAUobject_attributes@123@1IIPAUrtl_user_process_parameters@123@PAUps_create_info@123@PAUps_attribute_list@123@@Z"
+	movt	r0, :upper16:"__imp_?ZwCreateUserProcess@nt@win32@fast_io@@YAIPAX0IIPAUobject_attributes@123@1IIPAUrtl_user_process_parameters@123@PAUps_create_info@123@PAUps_attribute_list@123@@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_ZwCreateUserProcess@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwCreateUserProcess@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_ZwCreateUserProcess@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_ZwCreateUserProcess@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_ZwCreateUserProcess@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_ZwCreateUserProcess
+	movt	r0, :upper16:__imp_ZwCreateUserProcess
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_RtlCreateUserProcess@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlCreateUserProcess@@YA?A?<auto>@@XZ" @ -- Begin function ?get_RtlCreateUserProcess@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_RtlCreateUserProcess@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_RtlCreateUserProcess@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?RtlCreateUserProcess@nt@win32@fast_io@@YAIPAUunicode_string@123@IPAUrtl_user_process_parameters@123@PAUsecurity_descriptor@123@2PAXE33PAUrtl_user_process_information@123@@Z"
+	movt	r0, :upper16:"__imp_?RtlCreateUserProcess@nt@win32@fast_io@@YAIPAUunicode_string@123@IPAUrtl_user_process_parameters@123@PAUsecurity_descriptor@123@2PAXE33PAUrtl_user_process_information@123@@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_RtlCreateUserProcess@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlCreateUserProcess@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_RtlCreateUserProcess@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_RtlCreateUserProcess@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_RtlCreateUserProcess@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_RtlCreateUserProcess
+	movt	r0, :upper16:__imp_RtlCreateUserProcess
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_NtMapViewOfSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtMapViewOfSection@@YA?A?<auto>@@XZ" @ -- Begin function ?get_NtMapViewOfSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_NtMapViewOfSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_NtMapViewOfSection@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?NtMapViewOfSection@nt@win32@fast_io@@YAIPAX0PAPAXIIPBTlarge_integer@123@PAIW4section_inherit@123@II@Z"
+	movt	r0, :upper16:"__imp_?NtMapViewOfSection@nt@win32@fast_io@@YAIPAX0PAPAXIIPBTlarge_integer@123@PAIW4section_inherit@123@II@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_NtMapViewOfSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtMapViewOfSection@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_NtMapViewOfSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_NtMapViewOfSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_NtMapViewOfSection@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_NtMapViewOfSection
+	movt	r0, :upper16:__imp_NtMapViewOfSection
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_ZwMapViewOfSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwMapViewOfSection@@YA?A?<auto>@@XZ" @ -- Begin function ?get_ZwMapViewOfSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_ZwMapViewOfSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_ZwMapViewOfSection@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?ZwMapViewOfSection@nt@win32@fast_io@@YAIPAX0PAPAXIIPBTlarge_integer@123@PAIW4section_inherit@123@II@Z"
+	movt	r0, :upper16:"__imp_?ZwMapViewOfSection@nt@win32@fast_io@@YAIPAX0PAPAXIIPBTlarge_integer@123@PAIW4section_inherit@123@II@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_ZwMapViewOfSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwMapViewOfSection@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_ZwMapViewOfSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_ZwMapViewOfSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_ZwMapViewOfSection@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_ZwMapViewOfSection
+	movt	r0, :upper16:__imp_ZwMapViewOfSection
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_NtUnmapViewOfSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtUnmapViewOfSection@@YA?A?<auto>@@XZ" @ -- Begin function ?get_NtUnmapViewOfSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_NtUnmapViewOfSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_NtUnmapViewOfSection@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?NtUnmapViewOfSection@nt@win32@fast_io@@YAIPAX0@Z"
+	movt	r0, :upper16:"__imp_?NtUnmapViewOfSection@nt@win32@fast_io@@YAIPAX0@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_NtUnmapViewOfSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtUnmapViewOfSection@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_NtUnmapViewOfSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_NtUnmapViewOfSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_NtUnmapViewOfSection@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_NtUnmapViewOfSection
+	movt	r0, :upper16:__imp_NtUnmapViewOfSection
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ" @ -- Begin function ?get_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?ZwUnmapViewOfSection@nt@win32@fast_io@@YAIPAX0@Z"
+	movt	r0, :upper16:"__imp_?ZwUnmapViewOfSection@nt@win32@fast_io@@YAIPAX0@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_ZwUnmapViewOfSection
+	movt	r0, :upper16:__imp_ZwUnmapViewOfSection
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_NtReadVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtReadVirtualMemory@@YA?A?<auto>@@XZ" @ -- Begin function ?get_NtReadVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_NtReadVirtualMemory@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_NtReadVirtualMemory@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?NtReadVirtualMemory@nt@win32@fast_io@@YAIPAX00IPAI@Z"
+	movt	r0, :upper16:"__imp_?NtReadVirtualMemory@nt@win32@fast_io@@YAIPAX00IPAI@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_NtReadVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtReadVirtualMemory@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_NtReadVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_NtReadVirtualMemory@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_NtReadVirtualMemory@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_NtReadVirtualMemory
+	movt	r0, :upper16:__imp_NtReadVirtualMemory
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_ZwReadVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwReadVirtualMemory@@YA?A?<auto>@@XZ" @ -- Begin function ?get_ZwReadVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_ZwReadVirtualMemory@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_ZwReadVirtualMemory@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?ZwReadVirtualMemory@nt@win32@fast_io@@YAIPAX00IPAI@Z"
+	movt	r0, :upper16:"__imp_?ZwReadVirtualMemory@nt@win32@fast_io@@YAIPAX00IPAI@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_ZwReadVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwReadVirtualMemory@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_ZwReadVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_ZwReadVirtualMemory@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_ZwReadVirtualMemory@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_ZwReadVirtualMemory
+	movt	r0, :upper16:__imp_ZwReadVirtualMemory
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_NtWriteVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtWriteVirtualMemory@@YA?A?<auto>@@XZ" @ -- Begin function ?get_NtWriteVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_NtWriteVirtualMemory@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_NtWriteVirtualMemory@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?NtWriteVirtualMemory@nt@win32@fast_io@@YAIPAX00IPAI@Z"
+	movt	r0, :upper16:"__imp_?NtWriteVirtualMemory@nt@win32@fast_io@@YAIPAX00IPAI@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_NtWriteVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtWriteVirtualMemory@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_NtWriteVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_NtWriteVirtualMemory@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_NtWriteVirtualMemory@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_NtWriteVirtualMemory
+	movt	r0, :upper16:__imp_NtWriteVirtualMemory
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ" @ -- Begin function ?get_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?ZwWriteVirtualMemory@nt@win32@fast_io@@YAIPAX00IPAI@Z"
+	movt	r0, :upper16:"__imp_?ZwWriteVirtualMemory@nt@win32@fast_io@@YAIPAX00IPAI@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_ZwWriteVirtualMemory
+	movt	r0, :upper16:__imp_ZwWriteVirtualMemory
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_RtlAcquirePebLock@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlAcquirePebLock@@YA?A?<auto>@@XZ" @ -- Begin function ?get_RtlAcquirePebLock@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_RtlAcquirePebLock@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_RtlAcquirePebLock@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?RtlAcquirePebLock@nt@win32@fast_io@@YAIXZ"
+	movt	r0, :upper16:"__imp_?RtlAcquirePebLock@nt@win32@fast_io@@YAIXZ"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_RtlAcquirePebLock@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlAcquirePebLock@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_RtlAcquirePebLock@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_RtlAcquirePebLock@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_RtlAcquirePebLock@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_RtlAcquirePebLock
+	movt	r0, :upper16:__imp_RtlAcquirePebLock
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_RtlReleasePebLock@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlReleasePebLock@@YA?A?<auto>@@XZ" @ -- Begin function ?get_RtlReleasePebLock@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_RtlReleasePebLock@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_RtlReleasePebLock@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?RtlReleasePebLock@nt@win32@fast_io@@YAIXZ"
+	movt	r0, :upper16:"__imp_?RtlReleasePebLock@nt@win32@fast_io@@YAIXZ"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_RtlReleasePebLock@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlReleasePebLock@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_RtlReleasePebLock@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_RtlReleasePebLock@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_RtlReleasePebLock@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_RtlReleasePebLock
+	movt	r0, :upper16:__imp_RtlReleasePebLock
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ" @ -- Begin function ?get_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?NtAllocateVirtualMemory@nt@win32@fast_io@@YAIPAXPAPAXIPAIII@Z"
+	movt	r0, :upper16:"__imp_?NtAllocateVirtualMemory@nt@win32@fast_io@@YAIPAXPAPAXIPAIII@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_NtAllocateVirtualMemory
+	movt	r0, :upper16:__imp_NtAllocateVirtualMemory
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ" @ -- Begin function ?get_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?ZwAllocateVirtualMemory@nt@win32@fast_io@@YAIPAXPAPAXIPAIII@Z"
+	movt	r0, :upper16:"__imp_?ZwAllocateVirtualMemory@nt@win32@fast_io@@YAIPAXPAPAXIPAIII@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_ZwAllocateVirtualMemory
+	movt	r0, :upper16:__imp_ZwAllocateVirtualMemory
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_RtlInitUnicodeString@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlInitUnicodeString@@YA?A?<auto>@@XZ" @ -- Begin function ?get_RtlInitUnicodeString@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_RtlInitUnicodeString@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_RtlInitUnicodeString@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?RtlInitUnicodeString@nt@win32@fast_io@@YAIPAUunicode_string@123@PA_S@Z"
+	movt	r0, :upper16:"__imp_?RtlInitUnicodeString@nt@win32@fast_io@@YAIPAUunicode_string@123@PA_S@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_RtlInitUnicodeString@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlInitUnicodeString@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_RtlInitUnicodeString@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_RtlInitUnicodeString@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_RtlInitUnicodeString@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_RtlInitUnicodeString
+	movt	r0, :upper16:__imp_RtlInitUnicodeString
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?get_CsrClientCallServer@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_CsrClientCallServer@@YA?A?<auto>@@XZ" @ -- Begin function ?get_CsrClientCallServer@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?get_CsrClientCallServer@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?get_CsrClientCallServer@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:"__imp_?CsrClientCallServer@nt@win32@fast_io@@YAIPAX0II@Z"
+	movt	r0, :upper16:"__imp_?CsrClientCallServer@nt@win32@fast_io@@YAIPAX0II@Z"
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
+	.def	"?sys_CsrClientCallServer@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_CsrClientCallServer@@YA?A?<auto>@@XZ" @ -- Begin function ?sys_CsrClientCallServer@@YA?A?<auto>@@XZ
+	.p2align	1
+	.code16                                 @ @"?sys_CsrClientCallServer@@YA?A?<auto>@@XZ"
+	.thumb_func
+"?sys_CsrClientCallServer@@YA?A?<auto>@@XZ":
+@ %bb.0:
+	movw	r0, :lower16:__imp_CsrClientCallServer
+	movt	r0, :upper16:__imp_CsrClientCallServer
+	ldr	r0, [r0]
+	bx	lr
+                                        @ -- End function
 	.def	"?get_RtlAcquireSRWLockExclusive@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;

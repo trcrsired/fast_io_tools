@@ -1106,6 +1106,446 @@
 	movq	__imp_DbgPrintEx(%rip), %rax
 	retq
                                         # -- End function
+	.def	"?get_RtlCreateProcessParameters@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlCreateProcessParameters@@YA?A?<auto>@@XZ" # -- Begin function ?get_RtlCreateProcessParameters@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_RtlCreateProcessParameters@@YA?A?<auto>@@XZ": # @"?get_RtlCreateProcessParameters@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?RtlCreateProcessParameters@nt@win32@fast_io@@YAIPEAPEAUrtl_user_process_parameters@123@PEAUunicode_string@123@111PEAX1111@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_RtlCreateProcessParameters@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlCreateProcessParameters@@YA?A?<auto>@@XZ" # -- Begin function ?sys_RtlCreateProcessParameters@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_RtlCreateProcessParameters@@YA?A?<auto>@@XZ": # @"?sys_RtlCreateProcessParameters@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_RtlCreateProcessParameters(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ" # -- Begin function ?get_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ": # @"?get_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?RtlCreateProcessParametersEx@nt@win32@fast_io@@YAIPEAPEAUrtl_user_process_parameters@123@PEAUunicode_string@123@111PEAX1111I@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ" # -- Begin function ?sys_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ": # @"?sys_RtlCreateProcessParametersEx@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_RtlCreateProcessParametersEx(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ" # -- Begin function ?get_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ": # @"?get_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?RtlDestroyProcessParameters@nt@win32@fast_io@@YAIPEAUrtl_user_process_parameters@123@@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ" # -- Begin function ?sys_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ": # @"?sys_RtlDestroyProcessParameters@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_RtlDestroyProcessParameters(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_NtCreateUserProcess@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtCreateUserProcess@@YA?A?<auto>@@XZ" # -- Begin function ?get_NtCreateUserProcess@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_NtCreateUserProcess@@YA?A?<auto>@@XZ": # @"?get_NtCreateUserProcess@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?NtCreateUserProcess@nt@win32@fast_io@@YAIPEAX0IIPEAUobject_attributes@123@1IIPEAUrtl_user_process_parameters@123@PEAUps_create_info@123@PEAUps_attribute_list@123@@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_NtCreateUserProcess@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtCreateUserProcess@@YA?A?<auto>@@XZ" # -- Begin function ?sys_NtCreateUserProcess@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_NtCreateUserProcess@@YA?A?<auto>@@XZ": # @"?sys_NtCreateUserProcess@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_NtCreateUserProcess(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_ZwCreateUserProcess@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwCreateUserProcess@@YA?A?<auto>@@XZ" # -- Begin function ?get_ZwCreateUserProcess@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_ZwCreateUserProcess@@YA?A?<auto>@@XZ": # @"?get_ZwCreateUserProcess@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?ZwCreateUserProcess@nt@win32@fast_io@@YAIPEAX0IIPEAUobject_attributes@123@1IIPEAUrtl_user_process_parameters@123@PEAUps_create_info@123@PEAUps_attribute_list@123@@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_ZwCreateUserProcess@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwCreateUserProcess@@YA?A?<auto>@@XZ" # -- Begin function ?sys_ZwCreateUserProcess@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_ZwCreateUserProcess@@YA?A?<auto>@@XZ": # @"?sys_ZwCreateUserProcess@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_ZwCreateUserProcess(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_RtlCreateUserProcess@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlCreateUserProcess@@YA?A?<auto>@@XZ" # -- Begin function ?get_RtlCreateUserProcess@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_RtlCreateUserProcess@@YA?A?<auto>@@XZ": # @"?get_RtlCreateUserProcess@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?RtlCreateUserProcess@nt@win32@fast_io@@YAIPEAUunicode_string@123@IPEAUrtl_user_process_parameters@123@PEAUsecurity_descriptor@123@2PEAXE33PEAUrtl_user_process_information@123@@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_RtlCreateUserProcess@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlCreateUserProcess@@YA?A?<auto>@@XZ" # -- Begin function ?sys_RtlCreateUserProcess@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_RtlCreateUserProcess@@YA?A?<auto>@@XZ": # @"?sys_RtlCreateUserProcess@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_RtlCreateUserProcess(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_NtMapViewOfSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtMapViewOfSection@@YA?A?<auto>@@XZ" # -- Begin function ?get_NtMapViewOfSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_NtMapViewOfSection@@YA?A?<auto>@@XZ": # @"?get_NtMapViewOfSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?NtMapViewOfSection@nt@win32@fast_io@@YAIPEAX0PEAPEAX_K2PEBTlarge_integer@123@PEA_KW4section_inherit@123@II@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_NtMapViewOfSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtMapViewOfSection@@YA?A?<auto>@@XZ" # -- Begin function ?sys_NtMapViewOfSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_NtMapViewOfSection@@YA?A?<auto>@@XZ": # @"?sys_NtMapViewOfSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_NtMapViewOfSection(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_ZwMapViewOfSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwMapViewOfSection@@YA?A?<auto>@@XZ" # -- Begin function ?get_ZwMapViewOfSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_ZwMapViewOfSection@@YA?A?<auto>@@XZ": # @"?get_ZwMapViewOfSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?ZwMapViewOfSection@nt@win32@fast_io@@YAIPEAX0PEAPEAX_K2PEBTlarge_integer@123@PEA_KW4section_inherit@123@II@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_ZwMapViewOfSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwMapViewOfSection@@YA?A?<auto>@@XZ" # -- Begin function ?sys_ZwMapViewOfSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_ZwMapViewOfSection@@YA?A?<auto>@@XZ": # @"?sys_ZwMapViewOfSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_ZwMapViewOfSection(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_NtUnmapViewOfSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtUnmapViewOfSection@@YA?A?<auto>@@XZ" # -- Begin function ?get_NtUnmapViewOfSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_NtUnmapViewOfSection@@YA?A?<auto>@@XZ": # @"?get_NtUnmapViewOfSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?NtUnmapViewOfSection@nt@win32@fast_io@@YAIPEAX0@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_NtUnmapViewOfSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtUnmapViewOfSection@@YA?A?<auto>@@XZ" # -- Begin function ?sys_NtUnmapViewOfSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_NtUnmapViewOfSection@@YA?A?<auto>@@XZ": # @"?sys_NtUnmapViewOfSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_NtUnmapViewOfSection(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ" # -- Begin function ?get_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ": # @"?get_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?ZwUnmapViewOfSection@nt@win32@fast_io@@YAIPEAX0@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ" # -- Begin function ?sys_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ": # @"?sys_ZwUnmapViewOfSection@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_ZwUnmapViewOfSection(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_NtReadVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtReadVirtualMemory@@YA?A?<auto>@@XZ" # -- Begin function ?get_NtReadVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_NtReadVirtualMemory@@YA?A?<auto>@@XZ": # @"?get_NtReadVirtualMemory@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?NtReadVirtualMemory@nt@win32@fast_io@@YAIPEAX00_KPEA_K@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_NtReadVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtReadVirtualMemory@@YA?A?<auto>@@XZ" # -- Begin function ?sys_NtReadVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_NtReadVirtualMemory@@YA?A?<auto>@@XZ": # @"?sys_NtReadVirtualMemory@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_NtReadVirtualMemory(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_ZwReadVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwReadVirtualMemory@@YA?A?<auto>@@XZ" # -- Begin function ?get_ZwReadVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_ZwReadVirtualMemory@@YA?A?<auto>@@XZ": # @"?get_ZwReadVirtualMemory@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?ZwReadVirtualMemory@nt@win32@fast_io@@YAIPEAX00_KPEA_K@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_ZwReadVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwReadVirtualMemory@@YA?A?<auto>@@XZ" # -- Begin function ?sys_ZwReadVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_ZwReadVirtualMemory@@YA?A?<auto>@@XZ": # @"?sys_ZwReadVirtualMemory@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_ZwReadVirtualMemory(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_NtWriteVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtWriteVirtualMemory@@YA?A?<auto>@@XZ" # -- Begin function ?get_NtWriteVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_NtWriteVirtualMemory@@YA?A?<auto>@@XZ": # @"?get_NtWriteVirtualMemory@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?NtWriteVirtualMemory@nt@win32@fast_io@@YAIPEAX00_KPEA_K@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_NtWriteVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtWriteVirtualMemory@@YA?A?<auto>@@XZ" # -- Begin function ?sys_NtWriteVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_NtWriteVirtualMemory@@YA?A?<auto>@@XZ": # @"?sys_NtWriteVirtualMemory@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_NtWriteVirtualMemory(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ" # -- Begin function ?get_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ": # @"?get_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?ZwWriteVirtualMemory@nt@win32@fast_io@@YAIPEAX00_KPEA_K@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ" # -- Begin function ?sys_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ": # @"?sys_ZwWriteVirtualMemory@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_ZwWriteVirtualMemory(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_RtlAcquirePebLock@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlAcquirePebLock@@YA?A?<auto>@@XZ" # -- Begin function ?get_RtlAcquirePebLock@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_RtlAcquirePebLock@@YA?A?<auto>@@XZ": # @"?get_RtlAcquirePebLock@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?RtlAcquirePebLock@nt@win32@fast_io@@YAIXZ"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_RtlAcquirePebLock@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlAcquirePebLock@@YA?A?<auto>@@XZ" # -- Begin function ?sys_RtlAcquirePebLock@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_RtlAcquirePebLock@@YA?A?<auto>@@XZ": # @"?sys_RtlAcquirePebLock@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_RtlAcquirePebLock(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_RtlReleasePebLock@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlReleasePebLock@@YA?A?<auto>@@XZ" # -- Begin function ?get_RtlReleasePebLock@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_RtlReleasePebLock@@YA?A?<auto>@@XZ": # @"?get_RtlReleasePebLock@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?RtlReleasePebLock@nt@win32@fast_io@@YAIXZ"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_RtlReleasePebLock@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlReleasePebLock@@YA?A?<auto>@@XZ" # -- Begin function ?sys_RtlReleasePebLock@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_RtlReleasePebLock@@YA?A?<auto>@@XZ": # @"?sys_RtlReleasePebLock@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_RtlReleasePebLock(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ" # -- Begin function ?get_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ": # @"?get_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?NtAllocateVirtualMemory@nt@win32@fast_io@@YAIPEAXPEAPEAX_KPEA_KII@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ" # -- Begin function ?sys_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ": # @"?sys_NtAllocateVirtualMemory@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_NtAllocateVirtualMemory(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ" # -- Begin function ?get_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ": # @"?get_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?ZwAllocateVirtualMemory@nt@win32@fast_io@@YAIPEAXPEAPEAX_KPEA_KII@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ" # -- Begin function ?sys_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ": # @"?sys_ZwAllocateVirtualMemory@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_ZwAllocateVirtualMemory(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_RtlInitUnicodeString@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_RtlInitUnicodeString@@YA?A?<auto>@@XZ" # -- Begin function ?get_RtlInitUnicodeString@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_RtlInitUnicodeString@@YA?A?<auto>@@XZ": # @"?get_RtlInitUnicodeString@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?RtlInitUnicodeString@nt@win32@fast_io@@YAIPEAUunicode_string@123@PEA_S@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_RtlInitUnicodeString@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_RtlInitUnicodeString@@YA?A?<auto>@@XZ" # -- Begin function ?sys_RtlInitUnicodeString@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_RtlInitUnicodeString@@YA?A?<auto>@@XZ": # @"?sys_RtlInitUnicodeString@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_RtlInitUnicodeString(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?get_CsrClientCallServer@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?get_CsrClientCallServer@@YA?A?<auto>@@XZ" # -- Begin function ?get_CsrClientCallServer@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?get_CsrClientCallServer@@YA?A?<auto>@@XZ": # @"?get_CsrClientCallServer@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	"__imp_?CsrClientCallServer@nt@win32@fast_io@@YAIPEAX0II@Z"(%rip), %rax
+	retq
+                                        # -- End function
+	.def	"?sys_CsrClientCallServer@@YA?A?<auto>@@XZ";
+	.scl	2;
+	.type	32;
+	.endef
+	.globl	"?sys_CsrClientCallServer@@YA?A?<auto>@@XZ" # -- Begin function ?sys_CsrClientCallServer@@YA?A?<auto>@@XZ
+	.p2align	4, 0x90
+"?sys_CsrClientCallServer@@YA?A?<auto>@@XZ": # @"?sys_CsrClientCallServer@@YA?A?<auto>@@XZ"
+# %bb.0:
+	movq	__imp_CsrClientCallServer(%rip), %rax
+	retq
+                                        # -- End function
 	.def	"?get_RtlAcquireSRWLockExclusive@@YA?A?<auto>@@XZ";
 	.scl	2;
 	.type	32;

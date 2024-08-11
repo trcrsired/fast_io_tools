@@ -438,4 +438,233 @@ struct rtl_user_process_parameters
 	std::uint32_t LoaderThreads;
 };
 
+enum class ps_create_state
+{
+	PsCreateInitialState,
+	PsCreateFailOnFileOpen,
+	PsCreateFailOnSectionCreate,
+	PsCreateFailExeFormat,
+	PsCreateFailMachineMismatch,
+	PsCreateFailExeName, // Debugger specified
+	PsCreateSuccess,
+	PsCreateMaximumStates
+};
+
+struct ps_create_info
+{
+	::std::size_t Size;
+	ps_create_state State;
+	union
+	{
+		// PsCreateInitialState
+		struct
+		{
+			union u1union
+			{
+				::std::uint_least32_t InitFlags;
+				struct
+				{
+					::std::uint_least8_t WriteOutputOnExit : 1;
+					::std::uint_least8_t DetectManifest : 1;
+					::std::uint_least8_t IFEOSkipDebugger : 1;
+					::std::uint_least8_t IFEODoNotPropagateKeyState : 1;
+					::std::uint_least8_t SpareBits1 : 4;
+					::std::uint_least8_t SpareBits2 : 8;
+					::std::uint_least16_t ProhibitedImageCharacteristics : 16;
+				} s1;
+			} u1;
+			::std::uint_least32_t AdditionalFileAccess;
+		} InitState;
+
+		// PsCreateFailOnSectionCreate
+		struct
+		{
+			void *FileHandle;
+		} FailSection;
+
+		// PsCreateFailExeFormat
+		struct
+		{
+			::std::uint_least16_t DllCharacteristics;
+		} ExeFormat;
+
+		// PsCreateFailExeName
+		struct
+		{
+			void *IFEOKey;
+		} ExeName;
+
+		// PsCreateSuccess
+		struct
+		{
+			union u2union
+			{
+				::std::uint_least32_t OutputFlags;
+				struct
+				{
+					::std::uint_least8_t ProtectedProcess : 1;
+					::std::uint_least8_t AddressSpaceOverride : 1;
+					::std::uint_least8_t DevOverrideEnabled : 1; // From Image File Execution Options
+					::std::uint_least8_t ManifestDetected : 1;
+					::std::uint_least8_t ProtectedProcessLight : 1;
+					::std::uint_least8_t SpareBits1 : 3;
+					::std::uint_least8_t SpareBits2 : 8;
+					::std::uint_least16_t SpareBits3 : 16;
+				} s2;
+			} u2;
+			void *FileHandle;
+			void *SectionHandle;
+			::std::uint_least64_t UserProcessParametersNative;
+			::std::uint_least32_t UserProcessParametersWow64;
+			::std::uint_least32_t CurrentParameterFlags;
+			::std::uint_least64_t PebAddressNative;
+			::std::uint_least32_t PebAddressWow64;
+			::std::uint_least64_t ManifestAddress;
+			::std::uint_least32_t ManifestSize;
+		} SuccessState;
+	} stateunion;
+};
+
+struct ps_attribute
+{
+	::std::size_t Attribute; // PROC_THREAD_ATTRIBUTE_XXX | PROC_THREAD_ATTRIBUTE_XXX modifiers, see
+							 // ProcThreadAttributeValue macro and Windows Internals 6 (372)
+	::std::size_t Size;      // Size of Value or *ValuePtr
+	union
+	{
+		::std::size_t Value; // Reserve 8 bytes for data (such as a Handle or a data pointer)
+		void *ValuePtr;      // data pointer
+	};
+	::std::size_t *ReturnLength; // Either 0 or specifies size of data returned to caller via "ValuePtr"
+};
+
+struct
+#if __has_cpp_attribute(__gnu__::__may_alias__)
+	[[__gnu__::__may_alias__]]
+#endif
+	ps_attribute_list
+{
+	::std::size_t TotalLength;  // sizeof(PS_ATTRIBUTE_LIST)
+	ps_attribute Attributes[2]; // Depends on how many attribute entries should be supplied to NtCreateUserProcess
+};
+
+template <::std::size_t n>
+	requires(n != 0)
+struct ps_attribute_list_array
+{
+	::std::size_t TotalLength{sizeof(ps_attribute_list_array<n>)}; // sizeof(PS_ATTRIBUTE_LIST)
+	ps_attribute Attributes[n]{};                                  // Depends on how many attribute entries should be supplied to NtCreateUserProcess
+	ps_attribute_list const *list_ptr() const noexcept
+	{
+		return reinterpret_cast<ps_attribute_list const *>(this);
+	}
+	ps_attribute_list *list_ptr() noexcept
+	{
+		return reinterpret_cast<ps_attribute_list *>(this);
+	}
+};
+
+struct rtl_user_process_information
+{
+	::std::uint_least32_t Length;
+	void *Process;
+	void *Thread;
+	client_id ClientId;
+	section_image_information ImageInformation;
+};
+
+struct acl
+{
+	char unsigned AclRevision;
+	char unsigned Sbz1;
+	::std::uint_least16_t AclSize;
+	::std::uint_least16_t AceCount;
+	::std::uint_least16_t Sbz2;
+};
+
+struct security_descriptor
+{
+	char unsigned Revision;
+	char unsigned Sbz1;
+	::std::uint_least16_t Control;
+	void *Owner;
+	void *Group;
+	acl *Sacl;
+	acl *Dacl;
+};
+
+enum class object_information_class
+{
+	ObjectBasicInformation = 0,
+	ObjectNameInformation = 1,
+	ObjectTypeInformation = 2,
+	ObjectAllTypesInformation = 3,
+	ObjectHandleInformation = 4
+};
+
+union large_integer
+{
+	struct DUMMYSTRUCTNAMETYPE
+	{
+		::std::uint_least32_t LowPart;
+		::std::int_least32_t HighPart;
+	} DUMMYSTRUCTNAME;
+	struct uTYPE
+	{
+		::std::uint_least32_t LowPart;
+		::std::int_least32_t HighPart;
+	} u;
+	::std::int_least64_t QuadPart;
+};
+
+enum class section_inherit
+{
+	ViewShare = 1,
+	ViewUnmap = 2
+};
+
+enum priority_class : ::std::uint_least8_t
+{
+	Undefined,
+	Idle,
+	Normal,
+	High,
+	Realtime,
+	BelowNormal,
+	AboveNormal
+};
+
+struct process_priority_class
+{
+	bool Foreground;
+	priority_class PriorityClass;
+};
+
+struct object_name_information
+{
+	unicode_string Name;
+};
+
+struct rtl_buffer
+{
+	::std::uint_least8_t *Buffer;
+	::std::uint_least8_t *StaticBuffer;
+	::std::size_t Size;
+	::std::size_t StaticSize;
+	::std::size_t ReservedForAllocatedSize;
+	void *ReservedForIMalloc;
+};
+
+struct rtl_unicode_string_buffer
+{
+	unicode_string String;
+	rtl_buffer ByteBuffer;
+	char16_t MinimumStaticBufferForTerminalNul;
+};
+
+struct rtl_srwlock
+{
+	void *Ptr;
+};
+
 }
