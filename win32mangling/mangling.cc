@@ -1,5 +1,6 @@
 #include<cstdint>
 #include<type_traits>
+#include<cerrno>
 #include"rtl_api.h"
 #include"win32_definitions.h"
 #include"apis.h"
