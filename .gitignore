@@ -50,4 +50,5 @@ Thumbs.db
 
 .vs
 /win32mangling/msvc_comment
+/win32mangling_bcrypt/msvc_comment
 /i18n/i18n_tz/tzdata-latest

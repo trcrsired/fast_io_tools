@@ -17,7 +17,7 @@ int main(int argc,char** argv)
 	}
 	fast_io::u8ibuf_file ibf(fast_io::mnp::os_c_str(argv[1]));
 	fast_io::u8obuf_file obf(fast_io::mnp::os_c_str(argv[2]));
-	print(obf,u8"#pragma once\n\n// clang-format off\n");
+	print(obf,u8"\xEF\xBB\xBF#pragma once\n\n// clang-format off\n");
 	for(::std::u8string linesc;scan<true>(ibf, ::fast_io::mnp::line_get(linesc));)
 	{
 		std::u8string_view line{linesc};
