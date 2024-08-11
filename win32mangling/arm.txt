@@ -166,3 +166,6 @@ __imp_?DbgPrintEx@nt@win32@fast_io@@YAIIIPBDZZ __imp_DbgPrintEx
 __imp_?RtlAcquireSRWLockExclusive@nt@win32@fast_io@@YAXPAX@Z __imp_RtlAcquireSRWLockExclusive
 __imp_?RtlTryAcquireSRWLockExclusive@nt@win32@fast_io@@YAIPAX@Z __imp_RtlTryAcquireSRWLockExclusive
 __imp_?RtlReleaseSRWLockExclusive@nt@win32@fast_io@@YAXPAX@Z __imp_RtlReleaseSRWLockExclusive
+
+__imp_?msvc__RTtypeid@msvc@fast_io@@YAPAXPAX@Z __imp___RTtypeid
+?msvc__RTtypeid@msvc@fast_io@@YAPAXPAX@Z __RTtypeid
