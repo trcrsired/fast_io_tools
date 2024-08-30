@@ -45,7 +45,7 @@ category "i18n:2012";LC_MONETARY
 END LC_IDENTIFICATION
 
 LC_CTYPE
-copy "tl_PH"
+copy "en_US"
 END LC_CTYPE
 
 LC_COLLATE
@@ -92,10 +92,10 @@ END LC_COLLATE
 
 LC_MONETARY
 int_curr_symbol         "PHP "
-currency_symbol         "<U20B1>"
+currency_symbol         "₱"
 mon_decimal_point       "."
 mon_thousands_sep       ","
-mon_grouping            3;3
+mon_grouping            3
 positive_sign           ""
 negative_sign           "-"
 int_frac_digits         2
@@ -109,7 +109,7 @@ n_sign_posn             1
 END LC_MONETARY
 
 LC_NUMERIC
-copy "tl_PH"
+copy "en_US"
 END LC_NUMERIC
 
 LC_TIME
@@ -160,11 +160,11 @@ nostr	"hindi"
 END LC_MESSAGES
 
 LC_PAPER
-copy "tl_PH"
+copy "en_US"
 END LC_PAPER
 
 LC_MEASUREMENT
-copy "tl_PH"
+copy "i18n"
 END LC_MEASUREMENT
 
 LC_NAME
