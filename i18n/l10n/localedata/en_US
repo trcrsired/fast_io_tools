@@ -9,7 +9,6 @@ escape_char /
 % otherwise be governed by that license.
 
 % Locale for English locale in the USA
-% Contributed by Ulrich Drepper <drepper@redhat.com>, 2000
 
 LC_IDENTIFICATION
 title      "English locale for the USA"
@@ -39,7 +38,11 @@ category "i18n:2012";LC_MEASUREMENT
 END LC_IDENTIFICATION
 
 LC_CTYPE
-copy "en_GB"
+copy "i18n"
+
+translit_start
+include "translit_combining";""
+translit_end
 END LC_CTYPE
 
 LC_COLLATE
@@ -54,7 +57,7 @@ int_curr_symbol     "USD "
 currency_symbol     "$"
 mon_decimal_point   "."
 mon_thousands_sep   ","
-mon_grouping        3;3
+mon_grouping        3
 positive_sign       ""
 negative_sign       "-"
 int_frac_digits     2
@@ -73,7 +76,7 @@ END LC_MONETARY
 LC_NUMERIC
 decimal_point   "."
 thousands_sep   ","
-grouping        3;3
+grouping        3
 END LC_NUMERIC
 
 LC_TIME

@@ -12,14 +12,6 @@ escape_char /
 %
 % Haitian Kreyol (Kreyòl Ayisyen) language locale for Haiti
 %
-% Prepared and contributed to glibc by Bastien Guerry <bzg@laptop.org> and
-% Chris Leonard <cjl@sugarlabs.org>
-% This locale data has been developed in collaboration between:
-% Sugar Labs,  http://www.sugarlabs.org/
-% One Laptop Per Child, http://one.laptop.org/
-% OLPC France, http://olpc-france.org
-% and members of the OLPC Haiti volunteer team
-%
 % build with: localedef -f UTF-8 -i ht_HT ht_HT
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -65,20 +57,18 @@ copy "iso14651_t1"
 END LC_COLLATE
 
 LC_TIME
-% janvye, fevriye, mas, avril, me, jen, jiyè, out, septanm, oktòb, novanm, desanm
 mon           "janvye";/
      "fevriye";/
      "mas";/
      "avril";/
      "me";/
      "jen";/
-     "jiy<U00E8>";/
+     "jiyè";/
      "out";/
      "septanm";/
-     "okt<U00F2>b";/
+     "oktòb";/
      "novanm";/
      "desanm"
-% jan, fev, mas, avr, me, jen, jiy, out, sep, okt, nov, des
 abmon         "jan";/
        "fev";/
        "mas";/
@@ -91,19 +81,17 @@ abmon         "jan";/
        "okt";/
        "nov";/
        "des"
-% dimanch, lendi, madi, mèkredi, jedi, vandredi, samdi
 day           "dimanch";/
      "lendi";/
      "madi";/
-     "m<U00E8>kredi";/
+     "mèkredi";/
      "jedi";/
      "vandredi";/
      "samdi"
-% dim, len, mad, mèk, jed, van, sam
 abday         "dim";/
        "len";/
        "mad";/
-       "m<U00E8>k";/
+       "mèk";/
        "jed";/
        "van";/
        "sam"
@@ -119,7 +107,7 @@ END LC_TIME
 
 LC_NUMERIC
 decimal_point ","
-thousands_sep "<U202F>"
+thousands_sep " "
 grouping      3
 END LC_NUMERIC
 
@@ -127,7 +115,7 @@ LC_MONETARY
 int_curr_symbol           "HTG "
 currency_symbol           "g"
 mon_decimal_point         ","
-mon_thousands_sep         "<U202F>"
+mon_thousands_sep         " "
 mon_grouping              3
 positive_sign             ""
 negative_sign             "-"
@@ -169,9 +157,7 @@ country_ab3  "HTI"
 country_num  332
 country_isbn 99935
 country_car  "RH"
-%
-% Kreyòl ayisyen
-lang_name    "Krey<U00F2>l ayisyen"
+lang_name    "Kreyòl ayisyen"
 lang_ab      "ht"
 lang_term    "hat"
 lang_lib    "hat"

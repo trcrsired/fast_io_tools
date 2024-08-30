@@ -9,7 +9,6 @@ escape_char /
 % otherwise be governed by that license.
 
 % Locale for Morisyen locale in the Mauritius
-% Contributed by Akhilesh Kumar <akhilesh.k@samsung.com>
 
 LC_IDENTIFICATION
 title      "Morisyen locale for Mauritius"
@@ -116,10 +115,10 @@ END LC_COLLATE
 LC_MONETARY
 % https://en.wikipedia.org/wiki/Mauritian_rupee
 int_curr_symbol     "MUR "
-currency_symbol     "<U20A8>"
+currency_symbol     "₨"
 mon_decimal_point   "."
-mon_thousands_sep   "<U202F>"
-mon_grouping        3;3
+mon_thousands_sep   " "
+mon_grouping        3
 positive_sign       ""
 negative_sign       "-"
 int_frac_digits     2
@@ -137,7 +136,7 @@ END LC_MONETARY
 
 LC_NUMERIC
 decimal_point          "."
-thousands_sep          "<U202F>"
+thousands_sep          " "
 grouping               3
 END LC_NUMERIC
 
