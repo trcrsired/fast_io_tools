@@ -12,38 +12,48 @@ struct parser {
 	using locale_entry_t = typename lexer::locale_entry_t;
 	using locale_content_t = typename lexer::locale_content_t;
 
-	template <std::output_iterator<char8_t> Iter>
-	static char8_t const* parse_escaped_string(char8_t const* begin, char8_t const* end, Iter out) {
+	static char8_t const* parse_escaped_string_content(char8_t const* begin, char8_t const* end, char8_t* __restrict out) {
 		constexpr auto escape_char{u8'/'};
-		auto itr{begin};
-		if (itr == end || *itr != u8'\"')
+		if (begin == end)
 			return begin;
-		++itr;
-		for (; itr != end; ++itr, ++out) {
-			if (*itr == escape_char) {
-				++itr;
-				if (itr == end)
-					return begin;
-				switch (*itr) {
-				case 'n': *out = u8'\n'; break;
-				case 't': *out = u8'\t'; break;
-				case 'r': *out = u8'\r'; break;
-				case 'v': *out = u8'\v'; break;
-				case 'b': *out = u8'\b'; break;
-				case 'f': *out = u8'\f'; break;
-				case 'a': *out = u8'\a'; break;
-				case 'e': *out = u8'\033'; break;
-				default: *out = *itr; break;
-				}
-				continue;
-			} else if (*itr == '"')
-				return ++itr;
-			else
+		for (auto itr{begin}; itr != end; ++itr, ++out) {
+			if (*itr != escape_char) {
 				*out = *itr;
+				continue;
+			}
+			++itr;
+			if (itr == end)
+				return begin;
+			switch (*itr) {
+			case 'n': *out = u8'\n'; break;
+			case 't': *out = u8'\t'; break;
+			case 'r': *out = u8'\r'; break;
+			case 'v': *out = u8'\v'; break;
+			case 'b': *out = u8'\b'; break;
+			case 'f': *out = u8'\f'; break;
+			case 'a': *out = u8'\a'; break;
+			case 'e': *out = u8'\033'; break;
+			default: *out = *itr; break;
+			}
 		}
-		return begin;
+		return end;
 	}
-
+	template <fast_io::encoding_scheme encoding, my_locale_char_type char_type>
+	static char8_t const* parse_era_string_content(char8_t const* begin, char8_t const* end, basic_scatter<char_type>& member) {
+		if (begin == end)
+			return begin;
+		std::u8string tmp(end - begin, u8'\0');
+		auto itr{parse_escaped_string_content(begin, end, tmp.data())};
+		if (itr != end)
+			return begin;
+		std::basic_string<char_type> result;
+		print(fast_io::basic_ostring_ref<char_type>{std::addressof(result)},
+			fast_io::mnp::code_cvt<fast_io::encoding_scheme::utf, encoding>(tmp));
+		member.rva = member.buffer_size();
+		member.buffer.append_range(result);
+		member.length = member.buffer_size() - member.rva;
+		return end;
+	}
 	template <bool end_date, std::integral char_type>
 	static bool parse_era_date(char8_t const* begin, char8_t const* end, basic_lc_time_era<char_type>& member) {
 		if (!fast_io::char_category::is_c_digit(*begin)) {
@@ -105,22 +115,42 @@ struct parser {
 			return std::addressof(itr2->second);
 	}
 
-	template <my_locale_char_type char_type>
-	static consteval fast_io::encoding_scheme get_encoding() noexcept {
-		if constexpr (std::same_as<char_type, char>)
-			return fast_io::encoding_scheme::execution_charset;
-		else if constexpr (std::same_as<char_type, wchar_t>)
-			return fast_io::encoding_scheme::gb18030;
-		else if constexpr (std::same_as<char_type, char8_t> || std::same_as<char_type, char16_t> || std::same_as<char_type, char32_t>)
-			return fast_io::encoding_scheme::utf;
+	static char8_t const* parse_escaped_string(char8_t const* begin, char8_t const* end, char8_t* __restrict out) {
+		constexpr auto escape_char{u8'/'};
+		auto itr{begin};
+		if (itr == end || *itr != u8'\"')
+			return begin;
+		++itr;
+		for (; itr != end; ++itr, ++out) {
+			if (*itr == escape_char) {
+				++itr;
+				if (itr == end)
+					return begin;
+				switch (*itr) {
+				case 'n': *out = u8'\n'; break;
+				case 't': *out = u8'\t'; break;
+				case 'r': *out = u8'\r'; break;
+				case 'v': *out = u8'\v'; break;
+				case 'b': *out = u8'\b'; break;
+				case 'f': *out = u8'\f'; break;
+				case 'a': *out = u8'\a'; break;
+				case 'e': *out = u8'\033'; break;
+				default: *out = *itr; break;
+				}
+				continue;
+			} else if (*itr == '"')
+				return ++itr;
+			else
+				*out = *itr;
+		}
+		return begin;
 	}
-
-	template <my_locale_char_type char_type>
+	template <fast_io::encoding_scheme encoding, my_locale_char_type char_type>
 	char8_t const* parse_member_partial(char8_t const* begin, char8_t const* end, basic_scatter<char_type>& member) {
 		if (begin == end)
 			return begin;
-		std::u8string tmp;
-		auto itr{parse_escaped_string(begin, end, std::back_inserter(tmp))};
+		std::u8string tmp(end - begin, u8'\0');
+		auto itr{parse_escaped_string(begin, end, tmp.data())};
 		if (itr == end);
 		else if (*itr == u8';')
 			++itr;
@@ -128,13 +158,13 @@ struct parser {
 			return begin;
 		std::basic_string<char_type> result;
 		print(fast_io::basic_ostring_ref<char_type>{std::addressof(result)},
-			fast_io::mnp::code_cvt<fast_io::encoding_scheme::utf, get_encoding<char_type>()>(tmp));
+			fast_io::mnp::code_cvt<fast_io::encoding_scheme::utf, encoding>(tmp));
 		member.rva = member.buffer_size();
 		member.buffer.append_range(result);
 		member.length = member.buffer_size() - member.rva;
 		return itr;
 	}
-	template <typename T>
+	template <fast_io::encoding_scheme encoding, typename T>
 	char8_t const* parse_member_partial(char8_t const* begin, char8_t const* end, basic_scatter<T>& member) {
 		if (begin == end)
 			return begin;
@@ -142,7 +172,7 @@ struct parser {
 		auto itr{begin};
 		member.rva = member.buffer_size();
 		while (true) {
-			auto itr1{parse_member_partial(itr, end, tmp)};
+			auto itr1{parse_member_partial<encoding>(itr, end, tmp)};
 			if (itr1 == itr)
 				return begin;
 			itr = itr1;
@@ -155,25 +185,25 @@ struct parser {
 			return begin;
 		return end;
 	}
-	template <typename T, std::size_t N>
+	template <fast_io::encoding_scheme encoding, typename T, std::size_t N>
 	char8_t const* parse_member_partial(char8_t const* begin, char8_t const* end, T(&member)[N]) {
 		if (begin == end)
 			return begin;
 		auto itr{begin};
 		if constexpr (N > 1) {
 			for (std::size_t i{}; i != N - 1; ++i) {
-				auto itr1{parse_member_partial(itr, end, member[i])};
+				auto itr1{parse_member_partial<encoding>(itr, end, member[i])};
 				if (itr1 == itr || itr1 == end)
 					return begin;
 				itr = itr1;
 			}
 		}
-		auto itr1{parse_member_partial(itr, end, member[N - 1])};
+		auto itr1{parse_member_partial<encoding>(itr, end, member[N - 1])};
 		if (itr1 == itr || itr1 != end)
 			return begin;
 		return end;
 	}
-	template <std::integral T>
+	template <fast_io::encoding_scheme encoding, std::integral T>
 	char8_t const* parse_member_partial(char8_t const* begin, char8_t const* end, T& member) {
 		if (begin == end)
 			return begin;
@@ -194,10 +224,10 @@ struct parser {
 			return begin;
 		return ++itr;
 	}
-	template <std::integral char_type>
+	template <fast_io::encoding_scheme encoding, std::integral char_type>
 	char8_t const* parse_member_partial(char8_t const* begin, char8_t const* end, basic_lc_time_era<char_type>& member) {
 		std::u8string tmp(end - begin, u8'\0');
-		auto itr{parse_escaped_string(begin, end, tmp.begin())};
+		auto itr{parse_escaped_string(begin, end, tmp.data())};
 		if (itr == begin || tmp.size() < 5)
 			return begin;
 		if (itr == end);
@@ -226,15 +256,15 @@ struct parser {
 			return begin;
 		if (!parse_era_date<true>(tmp.data() + colon_positions[2] + 1, tmp.data() + colon_positions[3], member))
 			return begin;
-		member.era_name.rva = member.era_name.buffer_size();
-		member.era_name.buffer.append_range(std::u8string_view{tmp.data() + colon_positions[3] + 1, tmp.data() + colon_positions[4]});
-		member.era_name.length = member.era_name.buffer_size() - member.era_name.rva;
-		member.era_format.rva = member.era_format.buffer_size();
-		member.era_format.buffer.append_range(std::u8string_view{tmp.data() + colon_positions[4] + 1, std::to_address(tmp.end())});
-		member.era_format.length = member.era_format.buffer_size() - member.era_format.rva;
+		if (parse_era_string_content<encoding>(tmp.data() + colon_positions[3] + 1, tmp.data() + colon_positions[4], member.era_name)
+			== tmp.data() + colon_positions[3] + 1)
+			return begin;
+		if (parse_era_string_content<encoding>(tmp.data() + colon_positions[4] + 1, std::to_address(tmp.end()), member.era_format)
+			== tmp.data() + colon_positions[4] + 1)
+			return begin;
 		return itr;
 	}
-	template <typename T>
+	template <fast_io::encoding_scheme encoding, typename T>
 	char8_t const* parse_member_partial(char8_t const* begin, char8_t const* end, T& member) {
 		if constexpr (requires (T t) {
 			{ t.ndays } -> std::same_as<std::size_t&>;
@@ -243,13 +273,13 @@ struct parser {
 		}) {
 			if (begin == end)
 				return begin;
-			auto itr{parse_member_partial(begin, end, member.ndays)};
+			auto itr{parse_member_partial<encoding>(begin, end, member.ndays)};
 			if (itr == begin)
 				return begin;
-			itr = parse_member_partial(itr, end, member.first_day);
+			itr = parse_member_partial<encoding>(itr, end, member.first_day);
 			if (itr == begin)
 				return begin;
-			itr = parse_member_partial(itr, end, member.first_week);
+			itr = parse_member_partial<encoding>(itr, end, member.first_week);
 			if (itr == end)
 				return end;
 			if (*itr != u8';')
@@ -259,21 +289,21 @@ struct parser {
 			return begin;
 	}
 
-	template <typename T>
+	template <fast_io::encoding_scheme encoding, typename T>
 	bool parse_member(std::u8string const& content, T& member) {
-		if (parse_member_partial(std::to_address(content.begin()), std::to_address(content.end()), member) == std::to_address(content.begin()))
+		if (parse_member_partial<encoding>(std::to_address(content.begin()), std::to_address(content.end()), member) == std::to_address(content.begin()))
 			return false;
 		return true;
 	}
 
-	template <std::integral char_type>
+	template <fast_io::encoding_scheme encoding, std::integral char_type>
 	basic_lc_all<char_type> parse_file(locale_content_t const& content) {
 		basic_lc_all<char_type> retval;
 		std::u8string const* tmp;
 #define FAST_IO_I18N_PARSE_MEMBER(tier1, tier2)																		\
 		do {																										\
 			if (tmp = get_raw(content, u8""#tier1, u8""#tier2); tmp == nullptr) break;								\
-			if (!parse_member(*tmp, retval.tier1.tier2)) /*panic("parsing failed. invalid grammar")*/__debugbreak();					\
+			if (!parse_member<encoding>(*tmp, retval.tier1.tier2)) panic("parsing failed. invalid grammar");		\
 		} while(0)
 		FAST_IO_I18N_PARSE_MEMBER(identification, title);
 		FAST_IO_I18N_PARSE_MEMBER(identification, source);
