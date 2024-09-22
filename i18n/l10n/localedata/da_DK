@@ -178,7 +178,7 @@ int_curr_symbol         "DKK "
 currency_symbol         "kr."
 mon_decimal_point       ","
 mon_thousands_sep       "."
-mon_grouping            3;3
+mon_grouping            3
 positive_sign           ""
 negative_sign           "-"
 int_frac_digits         2
@@ -194,21 +194,21 @@ END LC_MONETARY
 LC_NUMERIC
 decimal_point           ","
 thousands_sep           "."
-grouping                3;3
+grouping                3
 END LC_NUMERIC
 
 LC_TIME
-abday       "s<U00F8>n";"man";/
+abday       "søn";"man";/
             "tir";"ons";/
             "tor";"fre";/
-            "l<U00F8>r"
-day         "s<U00F8>ndag";/
+            "lør"
+day         "søndag";/
             "mandag";/
             "tirsdag";/
             "onsdag";/
             "torsdag";/
             "fredag";/
-            "l<U00F8>rdag"
+            "lørdag"
 abmon       "jan";"feb";/
             "mar";"apr";/
             "maj";"jun";/

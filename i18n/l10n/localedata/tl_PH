@@ -45,7 +45,7 @@ category "i18n:2012";LC_MONETARY
 END LC_IDENTIFICATION
 
 LC_CTYPE
-copy "en_DK"
+copy "en_US"
 END LC_CTYPE
 
 LC_COLLATE
@@ -54,10 +54,10 @@ END LC_COLLATE
 
 LC_MONETARY
 int_curr_symbol         "PHP "
-currency_symbol         "<U20B1>"
+currency_symbol         "₱"
 mon_decimal_point       "."
 mon_thousands_sep       ","
-mon_grouping            3;3
+mon_grouping            3
 positive_sign           ""
 negative_sign           "-"
 int_frac_digits         2

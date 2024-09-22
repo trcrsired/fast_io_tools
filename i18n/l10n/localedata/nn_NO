@@ -9,8 +9,6 @@ escape_char /
 % otherwise be governed by that license.
 
 % Nynorsk language locale for Norway.
-% Contributed by Kentaroh Noji <knoji@jp.ibm.com> and
-% Tetsuji Orita <orita@jp.ibm.com>.
 
 LC_IDENTIFICATION
 title      "Nynorsk language locale for Norway"
@@ -56,7 +54,7 @@ LC_MONETARY
 int_curr_symbol       "NOK "
 currency_symbol       "kr"
 mon_decimal_point     ","
-mon_thousands_sep     "<U202F>"
+mon_thousands_sep     " "
 mon_grouping          3
 positive_sign         ""
 negative_sign         "-"
@@ -83,19 +81,19 @@ LC_TIME
 % for IBM Class for Unicode/Java
 %
 % Abbreviated weekday names (%a)
-abday       "su.";"m<U00E5>.";/
+abday       "su.";"må.";/
             "ty.";"on.";/
             "to.";"fr.";/
             "la."
 %
 % Full weekday names (%A)
-day         "sundag ";/
-            "m<U00E5>ndag ";/
-            "tysdag ";/
-            "onsdag ";/
-            "torsdag ";/
-            "fredag ";/
-            "laurdag "
+day         "sundag";/
+            "måndag";/
+            "tysdag";/
+            "onsdag";/
+            "torsdag";/
+            "fredag";/
+            "laurdag"
 %
 % Abbreviated month names (%b)
 abmon       "jan.";"feb.";/
