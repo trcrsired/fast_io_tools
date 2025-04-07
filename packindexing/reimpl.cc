@@ -19,7 +19,7 @@ constexpr void print_controls_impl(T outsm, Args... args) {
   using chtype = typename T::output_char_type; // Extract the output character
                                                // type from the output stream
   // Determine if the output stream supports basic obuffer operations
-  __builtin_fprintf(stderr,"LINE %d:%s\n",__LINE__,__PRETTY_FUNCTION__);
+//  __builtin_fprintf(stderr,"LINE %d:%s\n",__LINE__,__PRETTY_FUNCTION__);
   constexpr bool has_obuffer_ops{
       ::fast_io::operations::decay::defines::has_obuffer_basic_operations<T>};
 
@@ -62,12 +62,11 @@ constexpr void print_controls_impl(T outsm, Args... args) {
             }
 
             // Process the printable argument
-//            print_define(::fast_io::io_reserve_type<chtype, decltype(args...[Middle])>,outsm, args...[Middle]);
+            print_define(::fast_io::io_reserve_type<chtype, decltype(args...[Middle])>,outsm, args...[Middle]);
 
             if constexpr (sizeof...(After) != 0) {
-              __builtin_fprintf(stderr,"LINE %d:%s\n",__LINE__,__PRETTY_FUNCTION__);
                 // Recursively process arguments after the printable
-//                print_controls_impl<line>(outsm, args...[After]...);
+                print_controls_impl<line>(outsm, args...[Middle+1+After]...);
             }
             else if constexpr(line)
             {
@@ -77,7 +76,6 @@ constexpr void print_controls_impl(T outsm, Args... args) {
         };
         // Create compile-time indices for splitting the pack
         constexpr std::size_t num_args{sizeof...(Args)};
-        __builtin_fprintf(stderr,"first_printable_index:%zu\tdf:%zu\n",first_printable_index,num_args - first_printable_index - 1);
         split_pack(
             ::std::make_index_sequence<first_printable_index>{},     // Before indices
             ::std::index_sequence<first_printable_index>{},          // Middle index
@@ -191,7 +189,7 @@ struct foo
 template<::std::integral chtype, typename outsm>
 inline constexpr void print_define(::fast_io::io_reserve_type_t<chtype, foo>, outsm, foo t) noexcept
 {
-  __builtin_fprintf(stderr,"helloworld\n");
+//  __builtin_fprintf(stderr,"helloworld\n");
 }
 
 static_assert(::fast_io::printable<char, foo>);
