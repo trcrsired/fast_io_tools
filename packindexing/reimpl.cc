@@ -52,7 +52,7 @@ constexpr void print_controls_impl(T outsm, Args... args) {
             }
 
             // Process the printable argument
-            print_define(outsm, args...[Middle]);
+            print_define(::fast_io::io_reserve_type<chtype, decltype(args...[Middle])>,outsm, args...[Middle]);
 
             if constexpr (sizeof...(After) != 0) {
                 // Recursively process arguments after the printable
@@ -174,9 +174,19 @@ constexpr void print_controls_impl(T outsm, Args... args) {
   }
 }
 
+struct foo
+{};
+template<::std::integral chtype, typename outsm>
+inline constexpr void print_define(::fast_io::io_reserve_type_t<chtype, foo>, outsm, foo t) noexcept
+{
+  __builtin_fprintf(stderr,"helloworld\n");
+}
+
+static_assert(::fast_io::printable<char, foo>);
+
 int main() {
   constexpr ::fast_io::basic_io_scatter_t<char> bis{"Hello", 5};
   constexpr ::fast_io::basic_io_scatter_t<char> bis2{"Hello6", 6};
   constexpr ::fast_io::basic_io_scatter_t<char> bis3{"Hello8f", 7};
-  print_controls_impl<false>(::fast_io::c_stdout(), bis, bis2, bis3, ::fast_io::io_print_alias(30));
+  print_controls_impl<false>(::fast_io::c_stdout(), bis, bis2, bis3, ::fast_io::io_print_alias(30), foo{});
 }
