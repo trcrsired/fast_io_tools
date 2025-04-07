@@ -56,7 +56,7 @@ constexpr void print_controls_impl(T outsm, Args... args) {
     }
 
     // Scenario 2: Reserve-printable arguments
-    else if constexpr ((::fast_io::reserver_printable<chtype, Args> && ...)) {
+    else if constexpr ((::fast_io::reserve_printable<chtype, Args> && ...)) {
       // Calculate the total size of the buffer needed for all arguments
       constexpr ::std::size_t total_buffer_size{
           (print_reserve_size(::fast_io::io_reserve_type<chtype, Args>) + ...) +
@@ -116,5 +116,5 @@ int main() {
   constexpr ::fast_io::basic_io_scatter_t<char> bis{"Hello", 5};
   constexpr ::fast_io::basic_io_scatter_t<char> bis2{"Hello6", 6};
   constexpr ::fast_io::basic_io_scatter_t<char> bis3{"Hello8f", 7};
-  print_controls_impl<false>(::fast_io::c_stdout(), bis, bis2, bis3);
+  print_controls_impl<false>(::fast_io::c_stdout(), bis, bis2, bis3, ::fast_io::io_print_alias(30));
 }
