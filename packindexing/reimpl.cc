@@ -41,7 +41,7 @@ constexpr void print_controls_impl(T outsm, Args... args) {
 
                 // Write all scatter elements to the output stream
                 ::fast_io::operations::decay::scatter_write_all_decay(
-                    outsm, scatters, scatters + n
+                    outsm, scatters, n
                 );
             }
         }
@@ -52,5 +52,7 @@ constexpr void print_controls_impl(T outsm, Args... args) {
 int main()
 {
     ::fast_io::c_io_observer_unlocked ciobulk{stdout};
-	print_controls_impl<true>(ciobulk, "Hello");
+    ::fast_io::basic_io_scatter_t<char> bis{"Hello",5};
+    ::fast_io::basic_io_scatter_t<char> bis2{"Hello6",6};
+	print_controls_impl<true>(ciobulk, bis, bis2);
 }
