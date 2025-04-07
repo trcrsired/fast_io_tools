@@ -21,8 +21,60 @@ constexpr void print_controls_impl(T outsm, Args... args) {
 
   // Case 2: Arguments are provided in the pack
   else {
+    if constexpr((::fast_io::printable<chtype, Args>|| ...))
+    {
+      // Special handling for locked streams
+      if constexpr (::fast_io::operations::decay::defines::has_output_or_io_stream_mutex_ref_define<T>) {
+          ::fast_io::operations::decay::stream_ref_decay_lock_guard lock_guard{
+              ::fast_io::operations::decay::output_stream_mutex_ref_decay(outsm)}; // Acquire lock
+
+          // Recursively call with the unlocked stream
+          return print_controls_impl<line>(
+              ::fast_io::operations::decay::output_stream_unlocked_ref_decay(outsm), args...);
+      }
+      else
+      {
+        // Find the index of the first printable argument
+        constexpr std::size_t first_printable_index = []() constexpr {
+          std::size_t index = 0;
+          ((::fast_io::printable<chtype, Args> ? index : ++index), ...);
+          return index;
+        }();
+        // Divide the argument pack into three parts:
+        // Before: Arguments before the printable
+        // Middle: The printable argument itself
+        // After: Arguments after the printable
+        auto split_pack = [&]<std::size_t... Before, std::size_t Middle, std::size_t... After>(
+                              ::std::index_sequence<Before...>, ::std::index_sequence<Middle>, ::std::index_sequence<After...>) {
+            if constexpr (sizeof...(Before) != 0) {
+                // Recursively process arguments before the printable
+                print_controls_impl<false>(outsm, args...[Before]...);
+            }
+
+            // Process the printable argument
+            print_define(outsm, args...[Middle]);
+
+            if constexpr (sizeof...(After) != 0) {
+                // Recursively process arguments after the printable
+                print_controls_impl<line>(outsm, args...[After]...);
+            }
+            else if constexpr(line)
+            {
+              ::fast_io::operations::decay::char_put_decay(
+                outsm, ::fast_io::char_literal_v<u8'\n', chtype>);
+            }
+        };
+        // Create compile-time indices for splitting the pack
+        constexpr std::size_t num_args{sizeof...(Args)};
+        split_pack(
+            ::std::make_index_sequence<first_printable_index>{},     // Before indices
+            ::std::index_sequence<first_printable_index>{},          // Middle index
+            ::std::make_index_sequence<num_args - first_printable_index - 1>{} // After indices
+        );
+      }
+    }
     // Scenario 1: Scatter-printable arguments
-    if constexpr ((::fast_io::scatter_printable<chtype, Args> && ...)) {
+    else if constexpr ((::fast_io::scatter_printable<chtype, Args> && ...)) {
       // If only one argument is provided and no newline is needed
       if constexpr (sizeof...(args) == 1 && !line) {
         // Directly write the single argument
@@ -108,6 +160,16 @@ constexpr void print_controls_impl(T outsm, Args... args) {
 
       // Write the entire buffer to the output stream
       ::fast_io::operations::decay::write_all_decay(outsm, buffer, current_ptr);
+    }
+#if 0
+    else if constexpr (((::fast_io::reserve_printable<chtype, Args>|| ::fast_io::dynamic_reserve_printable<chtype, Args>)&& ...)) {
+
+    }
+#endif
+    else if constexpr(((::fast_io::reserve_printable<chtype, Args>|| ::fast_io::scatter_printable<chtype, Args>)&&...))
+    {
+      constexpr ::std::size_t scatters_count{(static_cast<::std::size_t>(::fast_io::scatter_printable<chtype,Args>)+...)};
+      
     }
   }
 }
