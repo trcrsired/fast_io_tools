@@ -2,7 +2,7 @@
 
 template<bool line, typename T, typename... Args>
 constexpr void print_controls_impl(T outsm, Args... args) {
-    using chtype = typename T::char_type; // Extract the character type from the output stream
+    using chtype = typename T::output_char_type; // Extract the output character type from the output stream
 
     // Case 1: No arguments in the pack
     if constexpr (sizeof...(args) == 0) {
