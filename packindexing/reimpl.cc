@@ -1,11 +1,25 @@
 #include <fast_io.h>
 
+
+template<::std::integral chtype, ::std::size_t idx, typename... Args>
+constexpr ::std::size_t print_find_first_printable_index() noexcept
+{
+  if constexpr(idx==sizeof...(Args)||::fast_io::printable<chtype,Args...[idx]>)
+  {
+    return idx;
+  }
+  else
+  {
+    return print_find_first_printable_index<chtype,idx+1, Args...>();
+  }
+}
+
 template <bool line, typename T, typename... Args>
 constexpr void print_controls_impl(T outsm, Args... args) {
   using chtype = typename T::output_char_type; // Extract the output character
                                                // type from the output stream
-
   // Determine if the output stream supports basic obuffer operations
+  __builtin_fprintf(stderr,"LINE %d:%s\n",__LINE__,__PRETTY_FUNCTION__);
   constexpr bool has_obuffer_ops{
       ::fast_io::operations::decay::defines::has_obuffer_basic_operations<T>};
 
@@ -35,11 +49,7 @@ constexpr void print_controls_impl(T outsm, Args... args) {
       else
       {
         // Find the index of the first printable argument
-        constexpr std::size_t first_printable_index = []() constexpr {
-          std::size_t index = 0;
-          ((::fast_io::printable<chtype, Args> ? index : ++index), ...);
-          return index;
-        }();
+        constexpr std::size_t first_printable_index{print_find_first_printable_index<chtype,0,Args...>()};
         // Divide the argument pack into three parts:
         // Before: Arguments before the printable
         // Middle: The printable argument itself
@@ -52,11 +62,12 @@ constexpr void print_controls_impl(T outsm, Args... args) {
             }
 
             // Process the printable argument
-            print_define(::fast_io::io_reserve_type<chtype, decltype(args...[Middle])>,outsm, args...[Middle]);
+//            print_define(::fast_io::io_reserve_type<chtype, decltype(args...[Middle])>,outsm, args...[Middle]);
 
             if constexpr (sizeof...(After) != 0) {
+              __builtin_fprintf(stderr,"LINE %d:%s\n",__LINE__,__PRETTY_FUNCTION__);
                 // Recursively process arguments after the printable
-                print_controls_impl<line>(outsm, args...[After]...);
+//                print_controls_impl<line>(outsm, args...[After]...);
             }
             else if constexpr(line)
             {
@@ -66,6 +77,7 @@ constexpr void print_controls_impl(T outsm, Args... args) {
         };
         // Create compile-time indices for splitting the pack
         constexpr std::size_t num_args{sizeof...(Args)};
+        __builtin_fprintf(stderr,"first_printable_index:%zu\tdf:%zu\n",first_printable_index,num_args - first_printable_index - 1);
         split_pack(
             ::std::make_index_sequence<first_printable_index>{},     // Before indices
             ::std::index_sequence<first_printable_index>{},          // Middle index
@@ -188,5 +200,5 @@ int main() {
   constexpr ::fast_io::basic_io_scatter_t<char> bis{"Hello", 5};
   constexpr ::fast_io::basic_io_scatter_t<char> bis2{"Hello6", 6};
   constexpr ::fast_io::basic_io_scatter_t<char> bis3{"Hello8f", 7};
-  print_controls_impl<false>(::fast_io::c_stdout(), bis, bis2, bis3, ::fast_io::io_print_alias(30), foo{});
+  print_controls_impl<false>(::fast_io::c_stdout(), bis, bis2, bis3, foo{}, bis, bis, bis, bis, bis, bis, bis);
 }
