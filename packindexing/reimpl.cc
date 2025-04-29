@@ -1,25 +1,63 @@
 #include <fast_io.h>
 
-
-template<::std::integral chtype, ::std::size_t idx, typename... Args>
-constexpr ::std::size_t print_find_first_printable_index() noexcept
-{
-  if constexpr(idx==sizeof...(Args)||::fast_io::printable<chtype,Args...[idx]>)
-  {
+template <::std::integral chtype, ::std::size_t idx, typename... Args>
+constexpr ::std::size_t print_find_first_printable_index() noexcept {
+  if constexpr (idx == sizeof...(Args) ||
+                ::fast_io::printable<chtype, Args...[idx]>) {
     return idx;
-  }
-  else
-  {
-    return print_find_first_printable_index<chtype,idx+1, Args...>();
+  } else {
+    return print_find_first_printable_index<chtype, idx + 1, Args...>();
   }
 }
 
+struct reserve_scatter_sizes
+{
+	::std::size_t scatter_counts;
+	::std::size_t total_reserve_size;
+};
+
+template <::std::integral chtype, typename T, typename... Args>
+constexpr reserve_scatter_sizes compute_print_scatters_and_reserve_sizes() noexcept {
+  ::std::size_t count{}, sz{};
+  if constexpr (::fast_io::reserve_printable<chtype, T>) {
+    sz += print_reserve_size(::fast_io::io_reserve_type<chtype, T>);
+  }
+  if constexpr(::fast_io::scatter_printable<chtype, T>)
+  {
+	++count;
+  }
+  if constexpr (sizeof...(Args) != 0) {
+    auto [retcounts, retreservesize] = compute_print_reserve_sizes<chtype, Args...>();
+    constexpr ::std::size_t mxcounts{SIZE_MAX-count};
+    constexpr ::std::size_t mxsz{SIZE_MAX-sz};
+    if(mxcounts < retcounts || mxsz < retreservesize)
+    {
+	::fast_io::fast_terminate();
+    }
+    sz += retreservesize;
+    count += retcounts;
+  }
+  return {count, sz};
+}
+
+template<::std::integral chtype, typename... Args>
+inline constexpr auto result_print_scatters_and_reserve_sizes{compute_print_scatters_and_reserve_sizes<chtype, Args...>()};
+
+template<::std::integral chtype, typename... Args>
+inline constexpr auto result_print_reserve_sizes{result_print_scatters_and_reserve_sizes<chtype, Args...>.total_reserve_size};
+
+template<::std::integral chtype, typename... Args>
+inline constexpr auto result_print_scatters{result_print_scatters_and_reserve_sizes<chtype, Args...>.scatter_counts};
+
+
 template <bool line, typename T, typename... Args>
 constexpr void print_controls_impl(T outsm, Args... args) {
+  static_assert(!line ||
+                sizeof...(Args) == ::std::numeric_limits<::std::size_t>::max());
   using chtype = typename T::output_char_type; // Extract the output character
                                                // type from the output stream
   // Determine if the output stream supports basic obuffer operations
-//  __builtin_fprintf(stderr,"LINE %d:%s\n",__LINE__,__PRETTY_FUNCTION__);
+  //  __builtin_fprintf(stderr,"LINE %d:%s\n",__LINE__,__PRETTY_FUNCTION__);
   constexpr bool has_obuffer_ops{
       ::fast_io::operations::decay::defines::has_obuffer_basic_operations<T>};
 
@@ -35,51 +73,61 @@ constexpr void print_controls_impl(T outsm, Args... args) {
 
   // Case 2: Arguments are provided in the pack
   else {
-    if constexpr((::fast_io::printable<chtype, Args>|| ...))
-    {
+    if constexpr ((::fast_io::printable<chtype, Args> || ...)) {
       // Special handling for locked streams
-      if constexpr (::fast_io::operations::decay::defines::has_output_or_io_stream_mutex_ref_define<T>) {
-          ::fast_io::operations::decay::stream_ref_decay_lock_guard lock_guard{
-              ::fast_io::operations::decay::output_stream_mutex_ref_decay(outsm)}; // Acquire lock
+      if constexpr (::fast_io::operations::decay::defines::
+                        has_output_or_io_stream_mutex_ref_define<T>) {
+        ::fast_io::operations::decay::stream_ref_decay_lock_guard lock_guard{
+            ::fast_io::operations::decay::output_stream_mutex_ref_decay(
+                outsm)}; // Acquire lock
 
-          // Recursively call with the unlocked stream
-          return print_controls_impl<line>(
-              ::fast_io::operations::decay::output_stream_unlocked_ref_decay(outsm), args...);
-      }
-      else
-      {
+        // Recursively call with the unlocked stream
+        return print_controls_impl<line>(
+            ::fast_io::operations::decay::output_stream_unlocked_ref_decay(
+                outsm),
+            args...);
+      } else {
         // Find the index of the first printable argument
-        constexpr std::size_t first_printable_index{print_find_first_printable_index<chtype,0,Args...>()};
+        constexpr std::size_t first_printable_index{
+            print_find_first_printable_index<chtype, 0, Args...>()};
         // Divide the argument pack into three parts:
         // Before: Arguments before the printable
         // Middle: The printable argument itself
         // After: Arguments after the printable
-        auto split_pack = [&]<std::size_t... Before, std::size_t Middle, std::size_t... After>(
-                              ::std::index_sequence<Before...>, ::std::index_sequence<Middle>, ::std::index_sequence<After...>) {
-            if constexpr (sizeof...(Before) != 0) {
+        auto split_pack =
+            [&]<std::size_t... Before, std::size_t Middle, std::size_t... After>
+#if __has_cpp_attribute(__gnu__::__always_inline__)
+            [[__gnu__::__always_inline__]]
+#endif
+            (::std::index_sequence<Before...>, ::std::index_sequence<Middle>,
+             ::std::index_sequence<After...>) {
+              if constexpr (sizeof...(Before) != 0) {
                 // Recursively process arguments before the printable
                 print_controls_impl<false>(outsm, args...[Before]...);
-            }
+              }
 
-            // Process the printable argument
-            print_define(::fast_io::io_reserve_type<chtype, decltype(args...[Middle])>,outsm, args...[Middle]);
+              // Process the printable argument
+              print_define(
+                  ::fast_io::io_reserve_type<chtype, decltype(args...[Middle])>,
+                  outsm, args...[Middle]);
 
-            if constexpr (sizeof...(After) != 0) {
+              if constexpr (sizeof...(After) != 0) {
                 // Recursively process arguments after the printable
-                print_controls_impl<line>(outsm, args...[Middle+1+After]...);
-            }
-            else if constexpr(line)
-            {
-              ::fast_io::operations::decay::char_put_decay(
-                outsm, ::fast_io::char_literal_v<u8'\n', chtype>);
-            }
-        };
+                print_controls_impl<line>(outsm,
+                                          args...[Middle + 1 + After]...);
+              } else if constexpr (line) {
+                ::fast_io::operations::decay::char_put_decay(
+                    outsm, ::fast_io::char_literal_v<u8'\n', chtype>);
+              }
+            };
         // Create compile-time indices for splitting the pack
         constexpr std::size_t num_args{sizeof...(Args)};
         split_pack(
-            ::std::make_index_sequence<first_printable_index>{},     // Before indices
-            ::std::index_sequence<first_printable_index>{},          // Middle index
-            ::std::make_index_sequence<num_args - first_printable_index - 1>{} // After indices
+            ::std::make_index_sequence<first_printable_index>{}, // Before
+                                                                 // indices
+            ::std::index_sequence<first_printable_index>{},      // Middle index
+            ::std::make_index_sequence<num_args - first_printable_index - 1>{}
+            // After indices
         );
       }
     }
@@ -172,24 +220,25 @@ constexpr void print_controls_impl(T outsm, Args... args) {
       ::fast_io::operations::decay::write_all_decay(outsm, buffer, current_ptr);
     }
 #if 0
-    else if constexpr (((::fast_io::reserve_printable<chtype, Args>|| ::fast_io::dynamic_reserve_printable<chtype, Args>)&& ...)) {
+		else if constexpr (((::fast_io::reserve_printable<chtype, Args>|| ::fast_io::dynamic_reserve_printable<chtype, Args>)&& ...)) {
 
-    }
+		}
 #endif
-    else if constexpr(((::fast_io::reserve_printable<chtype, Args>|| ::fast_io::scatter_printable<chtype, Args>)&&...))
-    {
-      constexpr ::std::size_t scatters_count{(static_cast<::std::size_t>(::fast_io::scatter_printable<chtype,Args>)+...)};
-      
+    else if constexpr (((::fast_io::reserve_printable<chtype, Args> ||
+                         ::fast_io::scatter_printable<chtype, Args>) &&
+                        ...)) {
+	::fast_io::basic_io_scatter_t<chtype> scatters[result_print_scatters<chtype, Args...>];
+	chtype total_szs[result_print_reserve_sizes<chtype, Args...>];
+	
     }
   }
 }
 
-struct foo
-{};
-template<::std::integral chtype, typename outsm>
-inline constexpr void print_define(::fast_io::io_reserve_type_t<chtype, foo>, outsm, foo t) noexcept
-{
-//  __builtin_fprintf(stderr,"helloworld\n");
+struct foo {};
+template <::std::integral chtype, typename outsm>
+inline constexpr void print_define(::fast_io::io_reserve_type_t<chtype, foo>,
+                                   outsm, foo t) noexcept {
+  //  __builtin_fprintf(stderr,"helloworld\n");
 }
 
 static_assert(::fast_io::printable<char, foo>);
@@ -198,5 +247,8 @@ int main() {
   constexpr ::fast_io::basic_io_scatter_t<char> bis{"Hello", 5};
   constexpr ::fast_io::basic_io_scatter_t<char> bis2{"Hello6", 6};
   constexpr ::fast_io::basic_io_scatter_t<char> bis3{"Hello8f", 7};
-  print_controls_impl<false>(::fast_io::c_stdout(), bis, bis2, bis3, foo{}, bis, bis, bis, bis, bis, bis, bis);
+  print_controls_impl<false>(::fast_io::c_stdout(), bis, bis2, bis3, foo{}, bis,
+                             bis, bis, bis, bis, bis, bis);
+  print_controls_impl<false>(::fast_io::c_stdout(), bis, bis2, bis3, foo{}, bis,
+                             bis, bis, bis, bis, bis, bis, bis);
 }
