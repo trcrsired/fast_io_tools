@@ -24,7 +24,8 @@ int main(int argc, char** argv)
         if (ext == u8".h" || ext == u8".cc" ||
             ext == u8".hpp" || ext == u8".ixx" ||
             ext == u8".cpp" || ext == u8".xsd" ||
-            ext == u8".idl" || ext == u8".inl")
+            ext == u8".idl" || ext == u8".inl" ||
+            ext == u8".cppm" || ext == u8".json")
         {
             {
                 ::fast_io::u8posix_file source(drt(ent),::fast_io::open_mode::in|::fast_io::open_mode::text);
