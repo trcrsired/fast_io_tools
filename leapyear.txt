@@ -1,0 +1,5 @@
+> >> bool is_leap_hueffner(short y)
+> >> {
+> >>     const auto y32 = static_cast<unsigned int>(y) + 32800u;
+> >>     return ((y32 * 1073750999u) & 3221352463u) <= 126976u;
+> >> }
