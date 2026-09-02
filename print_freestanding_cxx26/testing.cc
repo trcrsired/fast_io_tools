@@ -7,7 +7,7 @@
 #define FAST_IO_HERBCEPTIONS_THROWS_IF(x) noexcept(!(x))
 #endif
 
-#if 0
+#if 1
 #include"print_freestanding_cxx26.h"
 #endif
 

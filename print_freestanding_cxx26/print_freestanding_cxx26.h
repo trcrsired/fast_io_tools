@@ -43,7 +43,7 @@ inline constexpr decltype(auto) print_freestanding_decay2(outputstmtype optstm, 
 			constexpr bool islastwithlf{line&&(i+1zu == sizeof...(Args))};
 			if constexpr(::fast_io::reserve_printable<output_char_type, ArgsIType>)
 			{
-				constexpr ::std::size_t reserved_space{print_reserve_size(::fast_io::io_reserve_type<char_type, ArgsIType>)
+				constexpr ::std::size_t reserved_space{print_reserve_size(::fast_io::io_reserve_type<output_char_type, ArgsIType>)
 					+ static_cast<::std::size_t>(islastwithlf)};
 				static_assert(reserved_space<=::std::numeric_limits<::std::ptrdiff_t>::max(), "reserve space too big");
 				constexpr ::std::ptrdiff_t ptrdiff_reserved_space{static_cast<::std::ptrddiff_t>(reserved_space)};
@@ -57,7 +57,7 @@ inline constexpr decltype(auto) print_freestanding_decay2(outputstmtype optstm, 
 					auto end=obuffer_end(out);
 					buffer_space_enough = (ptrdiff_reserved_space < end-curr);
 				}
-				it = print_reserve_define(::fast_io::io_reserve_type<char_type, ArgsIType>, it, args...[i]);
+				it = print_reserve_define(::fast_io::io_reserve_type<output_char_type, ArgsIType>, it, args...[i]);
 				if constexpr(islastwithlf)
 				{
 					*it = ::fast_io::char_literal_v<u8'\n', output_char_type>;
