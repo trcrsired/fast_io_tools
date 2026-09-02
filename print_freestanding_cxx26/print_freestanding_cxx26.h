@@ -1,4 +1,6 @@
-namespace ::fast_io::operations::decay
+#pragma once
+
+namespace fast_io::operations::decay
 {
 template <bool line, typename outputstmtype, typename... Args>
 inline constexpr decltype(auto) print_freestanding_decay2(outputstmtype optstm, Args... args) FAST_IO_HERBCEPTIONS_THROWS
@@ -73,4 +75,6 @@ inline constexpr decltype(auto) print_freestanding_decay2(outputstmtype optstm, 
 			}
 		}
 	}
+}
+
 }
