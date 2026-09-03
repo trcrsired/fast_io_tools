@@ -113,11 +113,12 @@ inline constexpr decltype(auto) print_freestanding_decay2(outputstmtype optstm, 
 		if constexpr (split_pos != n)
 		{
 			// Left side: 0 .. split_pos-1
-			[&]<::std::size_t... pos>(::std::index_sequence<pos...>) {
-				if constexpr (sizeof...(pos) != 0)
+			if constexpr...(pos != 0)
+			{
+				[&]<::std::size_t... pos>(::std::index_sequence<pos...>) {
 					::fast_io::operations::decay::print_freestanding_decay2<line>(optstm, args...[pos]...);
-			}(::std::make_index_sequence<split_pos>{});
-
+				}(::std::make_index_sequence<split_pos>{});
+			}
 			// Middle element: split_pos
 			using mid_type = ::std::remove_cvref_t<Args...[split_pos]>;
 			print_define(optstm, args...[split_pos]);
@@ -137,8 +138,7 @@ inline constexpr decltype(auto) print_freestanding_decay2(outputstmtype optstm, 
 			else
 			{
 				[&]<::std::size_t... pos>(::std::index_sequence<pos...>) {
-					if constexpr (sizeof...(pos) != 0)
-						::fast_io::operations::decay::print_freestanding_decay2<line>(optstm, args...[split_pos + pos]...);
+					::fast_io::operations::decay::print_freestanding_decay2<line>(optstm, args...[split_pos + pos]...);
 				}(::std::make_index_sequence<n - split_pos - 1>{});
 			}
 		}
