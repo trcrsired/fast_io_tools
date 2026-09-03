@@ -7,6 +7,12 @@
 #define FAST_IO_HERBCEPTIONS_THROWS_IF(x) noexcept(!(x))
 #endif
 
+#if __has_cpp_attribute(indeterminate)
+#define FAST_IO_INDETERMINATE [[indeterminate]]
+#else
+#define FAST_IO_INDETERMINATE
+#endif
+
 #if 1
 #include"print_freestanding_cxx26.h"
 #endif
