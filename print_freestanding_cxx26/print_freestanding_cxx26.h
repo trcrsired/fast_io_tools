@@ -30,6 +30,10 @@ inline constexpr auto create_index_array() noexcept
 	return arr;
 }
 
+template <::std::size_t first, ::std::size_t last>
+inline constexpr auto index_array_range{
+	::fast_io::details::create_index_array_range<first, last>()};
+
 /*
 Returns the first print_index that has print_define only. returns
 sizeof...(Args) if we do not find any print_index one
@@ -38,7 +42,7 @@ template <::std::integral char_type, typename... Args>
 inline consteval ::std::size_t first_print_define_index() noexcept
 {
 	template for (constexpr auto i :
-				  ::fast_io::details::create_index_array<sizeof...(Args)>())
+				  ::fast_io::details::index_array_range<0, sizeof...(Args)>)
 	{
 		using ArgsIType = ::std::remove_cvref_t<Args...[i]>;
 		if constexpr (!(::fast_io::printable<char_type, ArgsIType> ||
@@ -98,7 +102,7 @@ consteval auto compute_total_normal_reserved_size_or_scatters_cache_count(
 	constexpr ::std::size_t mx{::std::numeric_limits<::std::size_t>::max()};
 	::std::size_t total_sz{};
 	template for (constexpr auto pos :
-				  ::fast_io::details::create_index_array<sizeof...(Args)>())
+				  ::fast_io::details::index_array_range<0, sizeof...(Args)>)
 	{
 		using arg_type = ::std::remove_cvref_t<Args...[pos]>;
 		::std::size_t sz{};
@@ -158,6 +162,49 @@ consteval auto compute_total_scatters_count() noexcept
 	return ::fast_io::details::
 		compute_total_normal_reserved_size_or_scatters_cache_count<char_type,
 																   Args...>(true);
+}
+
+template <::std::integral output_char_type, ::std::size_t idx, typename... Args>
+consteval bool is_last_element_or_not_next_element_reserve_or_dynamic_reserve_printable() noexcept
+{
+	if constexpr (static_cast<::std::size_t>(idx + 1zu) ==
+				  sizeof...(Args))
+	{
+		return true;
+	}
+	else if constexpr (!::fast_io::reserve_printable<
+						   output_char_type,
+						   ::std::remove_cvref_t<Args...[idx + 1zu]>> &&
+					   !::fast_io::dynamic_reserve_printable<
+						   output_char_type,
+						   ::std::remove_cvref_t<Args...[idx + 1zu]>>)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+template <::std::integral output_char_type, ::std::size_t idx, typename... Args>
+consteval bool has_element_after_of_reserve_or_dynamic_reserve_printable() noexcept
+{
+	template for (constexpr auto pos :
+				  ::fast_io::details::index_array_range<idx + 1zu, sizeof...(Args)>)
+	{
+		using arg_type = ::std::remove_cvref_t<Args...[pos]>;
+		if constexpr (::fast_io::reserve_printable<
+						  output_char_type,
+						  arg_type> ||
+					  ::fast_io::dynamic_reserve_printable<
+						  output_char_type,
+						  arg_type>)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 } // namespace fast_io::details
@@ -265,6 +312,7 @@ print_freestanding_decay2(outputstmtype optstm,
 			::fast_io::containers::array<::fast_io::basic_io_scatter_t<output_char_type>, total_scatters_cached_count> scatters_cache FAST_IO_INDETERMINATE;
 #endif
 			constexpr bool use_dynamic_storage{
+				256zu / sizeof(output_char_type) <= total_normal_reserved_size ||
 				(::fast_io::dynamic_reserve_printable<output_char_type,
 													  ::std::remove_cvref_t<Args>> ||
 				 ...)};
@@ -272,46 +320,49 @@ print_freestanding_decay2(outputstmtype optstm,
 			constexpr bool is_buffer_output_stream{
 				::fast_io::operations::decay::defines::has_obuffer_basic_operations<
 					outputstmtype>};
-			output_char_type *curr FAST_IO_INDETERMINATE, *end FAST_IO_INDETERMINATE;
+			output_char_type *currptr FAST_IO_INDETERMINATE, *endptr FAST_IO_INDETERMINATE;
 			if constexpr (is_buffer_output_stream)
 			{
-				curr = obuffer_curr(optstm);
-				end = obuffer_end(optstm);
+				currptr = obuffer_curr(optstm);
+				endptr = obuffer_end(optstm);
 			}
 			::std::size_t buffer_remained_spaces{
-				static_cast<::std::size_t>(end - curr)};
+				static_cast<::std::size_t>(endptr - currptr)};
 			constexpr ::std::size_t szmx{
 				::std::numeric_limits<::std::size_t>::max()};
 			bool buffer_enough_space{total_reserved_size < buffer_remained_spaces};
 			if (buffer_enough_space)
 			{
 				template for (constexpr auto i :
-							  ::fast_io::details::create_index_array<sizeof...(
-								  Args)>())
+							  ::fast_io::details::index_array_range<0, sizeof...(
+																		   Args)>)
 				{
 					using argtype = ::std::remove_cvref_t<Args...[i]>;
 					if constexpr (!::fast_io::reserve_printable<output_char_type,
 																argtype>)
 					{
 						::std::size_t argsz;
-						if constexpr (::fast_io::dynamic_reserve_printable<
-										  output_char_type, argtype>)
+						if constexpr (::std::same_as<argtype,
+													 ::fast_io::basic_io_scatter_t<
+														 output_char_type>>)
+						{
+							argsz = args...[i].len;
+						}
+						else if constexpr (::fast_io::runtime_reserve_printable_size_available<output_char_type, argtype>)
 						{
 							argsz = print_reserve_size(
 								::fast_io::io_reserve_type<output_char_type, argtype>,
 								args...[i]);
-							if (static_cast<::std::size_t>(szmx - argsz) <
-								total_reserved_size)
+							if constexpr (::fast_io::dynamic_reserve_printable<
+											  output_char_type, argtype>)
 							{
-								::fast_io::fast_terminate();
+								if (static_cast<::std::size_t>(szmx - argsz) <
+									total_reserved_size)
+								{
+									::fast_io::fast_terminate();
+								}
+								total_reserved_size += argsz;
 							}
-							total_reserved_size += argsz;
-						}
-						else if constexpr (::std::same_as<argtype,
-														  ::fast_io::basic_io_scatter_t<
-															  output_char_type>>)
-						{
-							argsz = args...[i].len;
 						}
 						if (buffer_remained_spaces <= argsz)
 						{
@@ -330,7 +381,7 @@ print_freestanding_decay2(outputstmtype optstm,
 				::fast_io::details::local_operator_new_array_ptr<output_char_type>,
 				::fast_io::details::empty>
 				dynamic_buffer;
-			output_char_type *it{curr};
+			output_char_type *it{currptr};
 			if constexpr (!is_buffer_output_stream)
 			{
 				if constexpr (use_dynamic_storage)
@@ -367,19 +418,21 @@ print_freestanding_decay2(outputstmtype optstm,
 				::fast_io::basic_io_scatter_t<output_char_type>,
 				(only_one_scatter ? 0zu : requested_scatters)>
 				scatters FAST_IO_INDETERMINATE;
-			auto scatterbase{scatters.data()};
-			auto scatterptr{scatterbase};
+			::fast_io::basic_io_scatter_t<output_char_type> *scatterbase FAST_IO_INDETERMINATE,
+				*scatterptr FAST_IO_INDETERMINATE;
+			if constexpr (only_one_scatter)
+			{
+				scatterptr = scatterbase = scatters.data();
+			}
 			output_char_type *bufferbase{it};
-			::std::conditional_t<only_one_scatter, ::fast_io::details::empty,
-								 output_char_type *>
-				last_pos FAST_IO_INDETERMINATE;
+			output_char_type *last_pos FAST_IO_INDETERMINATE;
 			if constexpr (!only_one_scatter)
 			{
 				last_pos = bufferbase;
 			}
 			template for (constexpr auto i :
-						  ::fast_io::details::create_index_array<sizeof...(
-							  Args)>())
+						  ::fast_io::details::index_array_range<0zu, sizeof...(
+																		 Args)>)
 			{
 				constexpr bool islastwithlf{line && (i + 1zu == sizeof...(Args))};
 				using argtype = ::std::remove_cvref_t<Args...[i]>;
@@ -396,51 +449,43 @@ print_freestanding_decay2(outputstmtype optstm,
 						*it = ::fast_io::char_literal_v<u8'\n', output_char_type>;
 						++it;
 					}
-					if constexpr (!only_one_scatter &&
-								  (static_cast<::std::size_t>(i + 1zu) ==
-								   sizeof...(Args)
-#if 0
 
-										   ||
-									   (static_cast<::std::size_t>(i + 1zu) !=
-										   sizeof...(Args)&&!::fast_io::reserve_printable<
-											output_char_type,
-											::std::remove_cvref_t<Args...[i + 1zu]>> &&
-										!::fast_io::dynamic_reserve_printable<
-											output_char_type,
-											::std::remove_cvref_t<Args...[i + 1zu]>>)
-#endif
-									   ))
+					if constexpr (!only_one_scatter &&
+								  ::fast_io::details::is_last_element_or_not_next_element_reserve_or_dynamic_reserve_printable<output_char_type, i, Args...>())
 					{
-						using argtype = ::std::remove_cvref_t<Args...[i]>;
-						if constexpr ((::fast_io::reserve_printable<output_char_type,
-																	argtype> ||
-									   ::fast_io::dynamic_reserve_printable<
-										   output_char_type, argtype>))
+						if (buffer_enough_space) [[likely]]
 						{
-							if (buffer_enough_space) [[likely]]
-							{
-								continue;
-							}
-							*scatterptr = {last_pos,
-										   static_cast<::std::size_t>(it - last_pos)};
-							++scatterptr;
-							if constexpr (static_cast<::std::size_t>(i + 1zu) !=
-										  sizeof...(Args))
-							{
-								last_pos = it; // To do. eliminate this branch when all
-											   // parameters after it do not exist
-							}
+							continue;
+						}
+						*scatterptr = {last_pos,
+									   static_cast<::std::size_t>(it - last_pos)};
+						++scatterptr;
+						if constexpr (::fast_io::details::has_element_after_of_reserve_or_dynamic_reserve_printable<output_char_type, i, Args...>())
+						{
+							last_pos = it;
 						}
 					}
 				}
 				else if constexpr (::std::same_as<argtype,
 												  ::fast_io::basic_io_scatter_t<
-													  output_char_type>>)
+													  output_char_type>> ||
+								   ::fast_io::scatter_printable<output_char_type, argtype>)
 				{
+					::fast_io::basic_io_scatter_t<output_char_type> scatteri FAST_IO_INDETERMINATE;
+					if constexpr (::std::same_as<argtype,
+												 ::fast_io::basic_io_scatter_t<
+													 output_char_type>>)
+					{
+						scatteri = args...[i];
+					}
+					else
+					{
+						scatteri = print_scatter_define(::fast_io::io_reserve_type<output_char_type, argtype>,
+														args...[i]);
+					}
 					if (buffer_enough_space) [[likely]]
 					{
-						it = ::fast_io::details::copy_scatter(args...[i], it);
+						it = ::fast_io::details::copy_scatter(scatteri, it);
 						if constexpr (islastwithlf)
 						{
 							*it = ::fast_io::char_literal_v<u8'\n', output_char_type>;
@@ -449,13 +494,20 @@ print_freestanding_decay2(outputstmtype optstm,
 					}
 					else
 					{
-						*scatterptr = args...[i];
-						++scatterptr;
-						if constexpr (islastwithlf)
+						if constexpr (only_one_scatter && !islastwithlf)
 						{
-							*it = {::fast_io::char_literal_v<u8'\n', output_char_type>,
-								   1zu};
-							++it;
+							bufferbase = const_cast<output_char_type *>(scatteri.base);
+							it = bufferbase + scatteri.len;
+						}
+						else
+						{
+							*scatterptr = scatteri;
+							++scatterptr;
+							if constexpr (islastwithlf)
+							{
+								*scatterptr = ::fast_io::details::line_scatter_common<output_char_type>;
+								++scatterptr;
+							}
 						}
 					}
 				}

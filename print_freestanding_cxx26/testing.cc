@@ -1,4 +1,5 @@
 #include <fast_io.h>
+#include <fast_io_dsal/array.h>
 #ifdef __HERBCEPTIONS__
 #define FAST_IO_HERBCEPTIONS_THROWS throws
 #define FAST_IO_HERBCEPTIONS_THROWS_IF(x) throws(x)
@@ -18,7 +19,8 @@
 #include "print_freestanding_cxx26.h"
 #endif
 
-
 int main()
 {
+	::fast_io::posix_io_observer piob{2};
+	::fast_io::operations::decay::print_freestanding_decay2<true>(piob, ::fast_io::mnp::hex(0xFFFEull));
 }
