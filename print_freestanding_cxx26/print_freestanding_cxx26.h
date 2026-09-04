@@ -52,7 +52,8 @@ inline consteval ::std::size_t first_print_define_index() noexcept
 						::fast_io::scatter_printable<char_type, ArgsIType> ||
 						::fast_io::reserve_scatters_printable<char_type,
 															  ArgsIType> ||
-						::fast_io::context_printable<char_type, ArgsIType>))
+						::fast_io::context_printable<char_type, ArgsIType>||
+						::std::same_as<ArgsIType, ::fast_io::basic_io_scatter_t<char_type>>))
 		{
 			return i;
 		}
@@ -434,7 +435,7 @@ print_freestanding_decay2(outputstmtype optstm,
 				scatters FAST_IO_INDETERMINATE;
 			::fast_io::basic_io_scatter_t<output_char_type> *scatterbase FAST_IO_INDETERMINATE,
 				*scatterptr FAST_IO_INDETERMINATE;
-			if constexpr (only_one_scatter)
+			if constexpr (!only_one_scatter)
 			{
 				scatterptr = scatterbase = scatters.data();
 			}
@@ -467,9 +468,12 @@ print_freestanding_decay2(outputstmtype optstm,
 					if constexpr (!only_one_scatter &&
 								  ::fast_io::details::is_last_element_or_not_next_element_reserve_or_dynamic_reserve_printable<output_char_type, i, Args...>())
 					{
-						if (buffer_enough_space) [[likely]]
+						if constexpr(is_buffer_output_stream)
 						{
-							continue;
+							if (buffer_enough_space) [[likely]]
+							{
+								continue;
+							}
 						}
 						*scatterptr = {last_pos,
 									   static_cast<::std::size_t>(it - last_pos)};
@@ -497,35 +501,37 @@ print_freestanding_decay2(outputstmtype optstm,
 						scatteri = print_scatter_define(::fast_io::io_reserve_type<output_char_type, argtype>,
 														args...[i]);
 					}
-					if (buffer_enough_space) [[likely]]
+					if constexpr (is_buffer_output_stream)
 					{
-						it = ::fast_io::details::copy_scatter(scatteri, it);
-						if constexpr (islastwithlf)
+						if (buffer_enough_space) [[likely]]
 						{
-							*it = ::fast_io::char_literal_v<u8'\n', output_char_type>;
-							++it;
+							it = ::fast_io::details::copy_scatter(scatteri, it);
+							if constexpr (islastwithlf)
+							{
+								*it = ::fast_io::char_literal_v<u8'\n', output_char_type>;
+								++it;
+							}
+							continue;
 						}
+					}
+					if constexpr (only_one_scatter && !islastwithlf)
+					{
+						bufferbase = const_cast<output_char_type *>(scatteri.base);
+						it = bufferbase + scatteri.len;
 					}
 					else
 					{
-						if constexpr (only_one_scatter && !islastwithlf)
+						*scatterptr = scatteri;
+						++scatterptr;
+						if constexpr (islastwithlf)
 						{
-							bufferbase = const_cast<output_char_type *>(scatteri.base);
-							it = bufferbase + scatteri.len;
-						}
-						else
-						{
-							*scatterptr = scatteri;
+							*scatterptr = ::fast_io::details::line_scatter_common<output_char_type>;
 							++scatterptr;
-							if constexpr (islastwithlf)
-							{
-								*scatterptr = ::fast_io::details::line_scatter_common<output_char_type>;
-								++scatterptr;
-							}
 						}
 					}
 				}
 			}
+
 			if constexpr (is_buffer_output_stream)
 			{
 				if (buffer_enough_space) [[likely]]
