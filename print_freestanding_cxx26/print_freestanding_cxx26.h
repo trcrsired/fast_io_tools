@@ -52,7 +52,7 @@ inline consteval ::std::size_t first_print_define_index() noexcept
 						::fast_io::scatter_printable<char_type, ArgsIType> ||
 						::fast_io::reserve_scatters_printable<char_type,
 															  ArgsIType> ||
-						::fast_io::context_printable<char_type, ArgsIType>||
+						::fast_io::context_printable<char_type, ArgsIType> ||
 						::std::same_as<ArgsIType, ::fast_io::basic_io_scatter_t<char_type>>))
 		{
 			return i;
@@ -468,7 +468,7 @@ print_freestanding_decay2(outputstmtype optstm,
 					if constexpr (!only_one_scatter &&
 								  ::fast_io::details::is_last_element_or_not_next_element_reserve_or_dynamic_reserve_printable<output_char_type, i, Args...>())
 					{
-						if constexpr(is_buffer_output_stream)
+						if constexpr (is_buffer_output_stream)
 						{
 							if (buffer_enough_space) [[likely]]
 							{
