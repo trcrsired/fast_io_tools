@@ -215,6 +215,56 @@ consteval bool has_element_after_of_reserve_or_dynamic_reserve_printable() noexc
 	return false;
 }
 
+template <::std::integral output_char_type, bool line, typename... Args>
+consteval ::std::size_t compute_print_scatters_pos() noexcept
+{
+	constexpr ::std::size_t mx{::std::numeric_limits<::std::size_t>::max()};
+	::std::size_t scatters{};
+	template for (constexpr auto pos :
+				  ::fast_io::details::index_array_range<0zu, sizeof...(Args)>)
+	{
+		using arg_type = ::std::remove_cvref_t<Args...[pos]>;
+		bool skipaddone{};
+		if constexpr (::fast_io::reserve_printable<output_char_type, arg_type> &&
+					  ::fast_io::dynamic_reserve_printable<output_char_type, arg_type>)
+		{
+			if constexpr (!::fast_io::details::is_last_element_or_not_next_element_reserve_or_dynamic_reserve_printable<output_char_type, pos, Args...>)
+			{
+				continue;
+			}
+		}
+		else if constexpr (!::fast_io::scatter_printable<output_char_type, arg_type> &&
+						   !::std::same_as<::fast_io::basic_io_scatter_t<output_char_type>, arg_type> &&
+						   ::fast_io::reserve_scatters_printable<output_char_type, arg_type>)
+		{
+			constexpr ::std::size_t scatters_size{print_reserve_scatters_size(::fast_io::io_reserve_type<output_char_type, arg_type>).scatters_size};
+			if (static_cast<::std::size_t>(mx - scatters_size) < scatters)
+			{
+				::fast_io::fast_terminate();
+			}
+			scatters += scatters_size;
+			skipaddone = true;
+		}
+		if (!skipaddone)
+		{
+			if (scatters == mx)
+			{
+				::fast_io::fast_terminate();
+			}
+			++scatters;
+		}
+		if constexpr (pos + 1zu == sizeof...(Args) && line)
+		{
+			if (scatters == mx)
+			{
+				::fast_io::fast_terminate();
+			}
+			++scatters;
+		}
+	}
+	return scatters;
+}
+
 } // namespace fast_io::details
 
 namespace fast_io::operations::decay
@@ -314,11 +364,7 @@ print_freestanding_decay2(outputstmtype optstm,
 			constexpr ::std::size_t total_normal_reserved_size{
 				::fast_io::details::compute_total_normal_reserved_size<
 					output_char_type, line, Args...>()};
-#if 0
-			constexpr
-				::std::size_t total_scatters_cached_count{::fast_io::details::compute_total_scatters_cached_count<output_char_type, Args...>()};
-			::fast_io::containers::array<::fast_io::basic_io_scatter_t<output_char_type>, total_scatters_cached_count> scatters_cache FAST_IO_INDETERMINATE;
-#endif
+
 			constexpr bool use_dynamic_storage{
 				256zu / sizeof(output_char_type) <= total_normal_reserved_size ||
 				(::fast_io::dynamic_reserve_printable<output_char_type,
@@ -427,7 +473,8 @@ print_freestanding_decay2(outputstmtype optstm,
 					it = buffer.data();
 				}
 			}
-			constexpr ::std::size_t requested_scatters{sizeof...(Args)}; // to fix
+			constexpr ::std::size_t requested_scatters{
+				::fast_io::details::compute_print_scatters_pos<output_char_type, line, Args...>()};
 			constexpr bool only_one_scatter{requested_scatters < 2zu};
 			::fast_io::containers::array<
 				::fast_io::basic_io_scatter_t<output_char_type>,
@@ -439,11 +486,16 @@ print_freestanding_decay2(outputstmtype optstm,
 			{
 				scatterptr = scatterbase = scatters.data();
 			}
-			output_char_type *bufferbase{it};
+			output_char_type const *bufferbase{it};
+			output_char_type const *itconst FAST_IO_INDETERMINATE;
 			output_char_type *last_pos FAST_IO_INDETERMINATE;
 			if constexpr (!only_one_scatter)
 			{
-				last_pos = bufferbase;
+				last_pos = it;
+			}
+			if consteval
+			{
+				itconst = it;
 			}
 			template for (constexpr auto i :
 						  ::fast_io::details::index_array_range<0zu, sizeof...(
@@ -464,7 +516,6 @@ print_freestanding_decay2(outputstmtype optstm,
 						*it = ::fast_io::char_literal_v<u8'\n', output_char_type>;
 						++it;
 					}
-
 					if constexpr (!only_one_scatter &&
 								  ::fast_io::details::is_last_element_or_not_next_element_reserve_or_dynamic_reserve_printable<output_char_type, i, Args...>())
 					{
@@ -505,19 +556,40 @@ print_freestanding_decay2(outputstmtype optstm,
 					{
 						if (buffer_enough_space) [[likely]]
 						{
-							it = ::fast_io::details::copy_scatter(scatteri, it);
-							if constexpr (islastwithlf)
+							if consteval
 							{
-								*it = ::fast_io::char_literal_v<u8'\n', output_char_type>;
-								++it;
+								auto oldit{it};
+								it = ::fast_io::details::copy_scatter(scatteri, it);
+								if constexpr (islastwithlf)
+								{
+									*it = ::fast_io::char_literal_v<u8'\n', output_char_type>;
+									++it;
+								}
+								itconst += it - oldit;
+							}
+							else
+							{
+								it = ::fast_io::details::copy_scatter(scatteri, it);
+								if constexpr (islastwithlf)
+								{
+									*it = ::fast_io::char_literal_v<u8'\n', output_char_type>;
+									++it;
+								}
 							}
 							continue;
 						}
 					}
 					if constexpr (only_one_scatter && !islastwithlf)
 					{
-						bufferbase = const_cast<output_char_type *>(scatteri.base);
-						it = bufferbase + scatteri.len;
+						bufferbase = scatteri.base;
+						if consteval
+						{
+							itconst = bufferbase + scatteri.len;
+						}
+						else
+						{
+							it = const_cast<output_char_type *>(bufferbase) + scatteri.len;
+						}
 					}
 					else
 					{
@@ -529,6 +601,18 @@ print_freestanding_decay2(outputstmtype optstm,
 							++scatterptr;
 						}
 					}
+				}
+				else if constexpr (::fast_io::reserve_scatters_printable<output_char_type, argtype>)
+				{
+/*
+concepts defined wrong. dynamic_reserve_printable should be base for many others
+*/
+#if 0
+					auto [newscatter, newit] = print_reserve_scatters_define(::fast_io::io_reserve_type<output_char_type, argtype>,
+						scatterptr, it, args...[i]);
+					scatterptr = newscatter;
+					newit = it;
+#endif
 				}
 			}
 
@@ -542,7 +626,14 @@ print_freestanding_decay2(outputstmtype optstm,
 			}
 			if constexpr (only_one_scatter)
 			{
-				::fast_io::operations::decay::write_all_decay(optstm, bufferbase, it);
+				if consteval
+				{
+					::fast_io::operations::decay::write_all_decay(optstm, bufferbase, itconst);
+				}
+				else
+				{
+					::fast_io::operations::decay::write_all_decay(optstm, bufferbase, it);
+				}
 			}
 			else
 			{
