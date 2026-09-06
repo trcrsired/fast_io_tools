@@ -361,6 +361,7 @@ print_freestanding_decay2(outputstmtype optstm,
 		else
 #endif
 		{
+			constexpr ::std::size_t szmx{::std::numeric_limits<::std::size_t>::max()};
 			constexpr ::std::size_t total_normal_reserved_size{
 				::fast_io::details::compute_total_normal_reserved_size<
 					output_char_type, line, Args...>()};
@@ -370,60 +371,57 @@ print_freestanding_decay2(outputstmtype optstm,
 				(::fast_io::dynamic_reserve_printable<output_char_type,
 													  ::std::remove_cvref_t<Args>> ||
 				 ...)};
-			::std::size_t total_reserved_size{total_normal_reserved_size};
+			::std::size_t total_to_allocate_size{total_normal_reserved_size};
 			constexpr bool is_buffer_output_stream{
 				::fast_io::operations::decay::defines::has_obuffer_basic_operations<
 					outputstmtype>};
 			output_char_type *currptr FAST_IO_INDETERMINATE;
 			bool buffer_enough_space FAST_IO_INDETERMINATE;
-			if constexpr (is_buffer_output_stream)
 			{
-				currptr = obuffer_curr(optstm);
-				output_char_type *endptr = obuffer_end(optstm);
-
-				::std::size_t buffer_remained_spaces{
-					static_cast<::std::size_t>(endptr - currptr)};
-				constexpr ::std::size_t szmx{
-					::std::numeric_limits<::std::size_t>::max()};
-				buffer_enough_space = total_reserved_size < buffer_remained_spaces;
-				if (buffer_enough_space)
+				output_char_type *endptr FAST_IO_INDETERMINATE;
+				::std::size_t buffer_remained_spaces FAST_IO_INDETERMINATE;
+				if constexpr (is_buffer_output_stream)
 				{
-					template for (constexpr auto i :
-								  ::fast_io::details::index_array_range<0, sizeof...(
-																			   Args)>)
+					currptr = obuffer_curr(optstm);
+					endptr = obuffer_end(optstm);
+					buffer_remained_spaces = static_cast<::std::size_t>(endptr - currptr);
+					buffer_enough_space = (total_normal_reserved_size <= buffer_remained_spaces);
+					buffer_enough_space &= (currptr <= endptr);
+				}
+				template for (constexpr auto i :
+							  ::fast_io::details::index_array_range<0, sizeof...(
+																		   Args)>)
+				{
+					using argtype = ::std::remove_cvref_t<Args...[i]>;
+					if constexpr (!::fast_io::reserve_printable<output_char_type,
+																argtype>)
 					{
-						using argtype = ::std::remove_cvref_t<Args...[i]>;
-						if constexpr (!::fast_io::reserve_printable<output_char_type,
-																	argtype>)
+						if constexpr (::fast_io::dynamic_reserve_printable<output_char_type, argtype>)
 						{
-							::std::size_t argsz;
-							if constexpr (::std::same_as<argtype,
-														 ::fast_io::basic_io_scatter_t<
-															 output_char_type>>)
+							::std::size_t argsz{print_reserve_size(::fast_io::io_reserve_type<output_char_type, argtype>, args...[i])};
+							if (static_cast<::std::size_t>(szmx - argsz) <
+								total_to_allocate_size)
 							{
-								argsz = args...[i].len;
+								::fast_io::fast_terminate();
 							}
-							else if constexpr (::fast_io::runtime_reserve_printable_size_available<output_char_type, argtype>)
+							total_to_allocate_size += argsz;
+							if constexpr (is_buffer_output_stream)
 							{
-								argsz = print_reserve_size(
-									::fast_io::io_reserve_type<output_char_type, argtype>,
-									args...[i]);
-								if constexpr (::fast_io::dynamic_reserve_printable<
-												  output_char_type, argtype>)
-								{
-									if (static_cast<::std::size_t>(szmx - argsz) <
-										total_reserved_size)
-									{
-										::fast_io::fast_terminate();
-									}
-									total_reserved_size += argsz;
-								}
+								buffer_remained_spaces -= argsz;
+								buffer_enough_space &= argsz < buffer_remained_spaces;
 							}
-							if (buffer_remained_spaces <= argsz)
-							{
-								buffer_enough_space &= false;
-							}
+						}
+						else if constexpr (is_buffer_output_stream && ::std::same_as<argtype, ::fast_io::basic_io_scatter_t<output_char_type>>)
+						{
+							::std::size_t const argsz{args...[i].len};
 							buffer_remained_spaces -= argsz;
+							buffer_enough_space &= argsz < buffer_remained_spaces;
+						}
+						else if constexpr (is_buffer_output_stream && ::fast_io::scatter_printable<output_char_type, argtype>)
+						{
+							::std::size_t const argsz{print_reserve_size(::fast_io::io_reserve_type<output_char_type, argtype>, args...[i]).len};
+							buffer_remained_spaces -= argsz;
+							buffer_enough_space &= argsz < buffer_remained_spaces;
 						}
 					}
 				}
@@ -449,8 +447,8 @@ print_freestanding_decay2(outputstmtype optstm,
 						it = dynamic_buffer.ptr = ::fast_io::details::allocate_iobuf_space<
 							output_char_type,
 							typename ::fast_io::details::local_operator_new_array_ptr<
-								output_char_type>::allocator_type>(total_reserved_size);
-						dynamic_buffer.size = total_reserved_size;
+								output_char_type>::allocator_type>(total_to_allocate_size);
+						dynamic_buffer.size = total_to_allocate_size;
 					}
 					else
 					{
@@ -465,8 +463,8 @@ print_freestanding_decay2(outputstmtype optstm,
 					it = dynamic_buffer.ptr = ::fast_io::details::allocate_iobuf_space<
 						output_char_type,
 						typename ::fast_io::details::local_operator_new_array_ptr<
-							output_char_type>::allocator_type>(total_reserved_size);
-					dynamic_buffer.size = total_reserved_size;
+							output_char_type>::allocator_type>(total_to_allocate_size);
+					dynamic_buffer.size = total_to_allocate_size;
 				}
 				else
 				{
