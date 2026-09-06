@@ -407,21 +407,21 @@ print_freestanding_decay2(outputstmtype optstm,
 							total_to_allocate_size += argsz;
 							if constexpr (is_buffer_output_stream)
 							{
-								buffer_remained_spaces -= argsz;
 								buffer_enough_space &= argsz < buffer_remained_spaces;
+								buffer_remained_spaces -= argsz;
 							}
 						}
 						else if constexpr (is_buffer_output_stream && ::std::same_as<argtype, ::fast_io::basic_io_scatter_t<output_char_type>>)
 						{
 							::std::size_t const argsz{args...[i].len};
-							buffer_remained_spaces -= argsz;
 							buffer_enough_space &= argsz < buffer_remained_spaces;
+							buffer_remained_spaces -= argsz;
 						}
 						else if constexpr (is_buffer_output_stream && ::fast_io::scatter_printable<output_char_type, argtype>)
 						{
 							::std::size_t const argsz{print_reserve_size(::fast_io::io_reserve_type<output_char_type, argtype>, args...[i]).len};
-							buffer_remained_spaces -= argsz;
 							buffer_enough_space &= argsz < buffer_remained_spaces;
+							buffer_remained_spaces -= argsz;
 						}
 					}
 				}
@@ -637,7 +637,6 @@ concepts defined wrong. dynamic_reserve_printable should be base for many others
 			}
 			else
 			{
-				__builtin_printf("%s %d: %zu\n", __FILE__, __LINE__, static_cast<::std::size_t>(scatterptr - scatterbase));
 				::fast_io::operations::decay::scatter_write_all_decay(
 					optstm, scatterbase,
 					static_cast<::std::size_t>(scatterptr - scatterbase));
