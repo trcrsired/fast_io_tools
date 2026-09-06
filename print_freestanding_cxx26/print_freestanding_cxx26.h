@@ -600,6 +600,7 @@ print_freestanding_decay2(outputstmtype optstm,
 						}
 					}
 				}
+#if 0
 				else if constexpr (::fast_io::reserve_scatters_printable<output_char_type, argtype>)
 				{
 /*
@@ -612,6 +613,7 @@ concepts defined wrong. dynamic_reserve_printable should be base for many others
 					newit = it;
 #endif
 				}
+#endif
 			}
 
 			if constexpr (is_buffer_output_stream)
@@ -635,6 +637,7 @@ concepts defined wrong. dynamic_reserve_printable should be base for many others
 			}
 			else
 			{
+				__builtin_printf("%s %d: %zu\n", __FILE__, __LINE__, static_cast<::std::size_t>(scatterptr - scatterbase));
 				::fast_io::operations::decay::scatter_write_all_decay(
 					optstm, scatterbase,
 					static_cast<::std::size_t>(scatterptr - scatterbase));
