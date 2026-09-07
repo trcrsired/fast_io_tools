@@ -34,6 +34,11 @@ template <::std::size_t first, ::std::size_t last>
 inline constexpr auto index_array_range{
 	::fast_io::details::create_index_array_range<first, last>()};
 
+struct first_print_define_index_range_result
+{
+	::std::size_t first, last;
+};
+
 /*
 Returns the first print_index that has print_define only. returns
 sizeof...(Args) if we do not find any print_index one
@@ -59,6 +64,40 @@ inline consteval ::std::size_t first_print_define_index() noexcept
 		}
 	}
 	return sizeof...(Args);
+}
+
+template <::std::integral char_type, typename... Args>
+inline consteval ::fast_io::details::first_print_define_index_range_result
+first_print_define_index_range() noexcept
+{
+	::std::size_t startpos{sizeof...(Args)};
+	::std::size_t endpos{sizeof...(Args)};
+	template for (constexpr auto i :
+				  ::fast_io::details::index_array_range<0, sizeof...(Args)>)
+	{
+		using ArgsIType = ::std::remove_cvref_t<Args...[i]>;
+		if constexpr (::fast_io::printable<char_type, ArgsIType> ||
+					  ::fast_io::reserve_printable<char_type, ArgsIType> ||
+					  ::fast_io::dynamic_reserve_printable<char_type,
+														   ArgsIType> ||
+					  ::fast_io::scatter_printable<char_type, ArgsIType> ||
+					  ::fast_io::reserve_scatters_printable<char_type,
+															ArgsIType> ||
+					  ::fast_io::context_printable<char_type, ArgsIType> ||
+					  ::std::same_as<ArgsIType, ::fast_io::basic_io_scatter_t<char_type>>)
+		{
+			if (startpos != sizeof...(Args))
+			{
+				endpos = i;
+				break;
+			}
+		}
+		else
+		{
+			startpos = i;
+		}
+	}
+	return {startpos, endpos};
 }
 
 template <typename... Args>
@@ -315,24 +354,26 @@ print_freestanding_decay2(outputstmtype optstm,
 	}
 	else
 	{
-		constexpr ::std::size_t split_pos{
-			::fast_io::details::first_print_define_index<output_char_type, Args...>()};
-		if constexpr (split_pos != sizeof...(Args))
+		constexpr auto [printdefine_startpos, printdefine_endpos]{
+			::fast_io::details::first_print_define_index_range<output_char_type, Args...>()};
+		if constexpr (printdefine_startpos != sizeof...(Args))
 		{
-			// Left side: 0 .. split_pos-1
-			if constexpr (split_pos != 0)
+			// Left side: 0 .. startpos-1
+			if constexpr (printdefine_startpos != 0)
 			{
 				[&]<::std::size_t... pos>(::std::index_sequence<pos...>) {
 					::fast_io::operations::decay::print_freestanding_decay2<line>(
 						optstm, args...[pos]...);
-				}(::std::make_index_sequence<split_pos>{});
+				}(::std::make_index_sequence<printdefine_startpos>{});
 			}
-			// Middle element: split_pos
-			using mid_type = ::std::remove_cvref_t<Args...[split_pos]>;
-			print_define(optstm, args...[split_pos]);
-
+			// Middle: contiguous print_define-only range [startpos, endpos)
+			template for (constexpr auto i :
+						  ::fast_io::details::index_array_range<printdefine_startpos, printdefine_endpos>)
+			{
+				print_define(optstm, args...[i]);
+			}
 			// Right side: split_pos+1 .. n-1
-			if constexpr (split_pos + 1 == sizeof...(Args))
+			if constexpr (printdefine_endpos == sizeof...(Args))
 			{
 				if constexpr (line)
 				{
@@ -348,8 +389,8 @@ print_freestanding_decay2(outputstmtype optstm,
 			{
 				[&]<::std::size_t... pos>(::std::index_sequence<pos...>) {
 					::fast_io::operations::decay::print_freestanding_decay2<line>(
-						optstm, args...[split_pos + pos]...);
-				}(::std::make_index_sequence<sizeof...(Args) - split_pos - 1zu>{});
+						optstm, args...[printdefine_endpos + pos]...);
+				}(::std::make_index_sequence<sizeof...(Args) - printdefine_endpos>{});
 			}
 		}
 		else
