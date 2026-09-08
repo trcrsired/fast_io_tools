@@ -3,6 +3,22 @@
 namespace fast_io::details
 {
 
+template <typename char_type, typename T>
+concept has_any_print_define_operations_not_noexcept = ::std::integral<char_type> && ((::fast_io::printable<char_type, T> && !requires() {
+																						  { print_define(::fast_io::io_reserve_type<char_type, ::std::remove_cvref_t<T>>) } noexcept;
+																					  }) || (::fast_io::reserve_printable<char_type, T> && !requires(char_type *ptr, T t) {
+																						  { print_reserve_define(::fast_io::io_reserve_type<char_type, ::std::remove_cvref_t<T>>, ptr, t) } noexcept;
+																					  }) || (::fast_io::dynamic_reserve_printable<char_type, T> && !requires(char_type *ptr, T t) {
+																						  { print_reserve_size(::fast_io::io_reserve_type<char_type, ::std::remove_cvref_t<T>>, t) } noexcept;
+																						  { print_reserve_define(::fast_io::io_reserve_type<char_type, ::std::remove_cvref_t<T>>, ptr, t) } noexcept;
+																					  }) || (::fast_io::scatter_printable<char_type, T> && !requires(T t) {
+																						  { print_scatter_define(::fast_io::io_reserve_type<char_type, ::std::remove_cvref_t<T>>, t) } noexcept;
+																					  }));
+
+template <typename outputstmtype, typename... Args>
+concept decayed_output_stream_print_may_throw = (!::fast_io::operations::decay::defines::output_stream_operations_nothrow<outputstmtype>) ||
+												(::fast_io::details::has_any_print_define_operations_not_noexcept<typename outputstmtype::output_char_type, Args> || ...);
+
 template <::std::integral char_type, typename T = char_type>
 inline constexpr basic_io_scatter_t<T> line_scatter_common{
 	__builtin_addressof(char_literal_v<u8'\n', char_type>),
@@ -311,7 +327,8 @@ namespace fast_io::operations::decay
 template <bool line, typename outputstmtype, typename... Args>
 inline constexpr decltype(auto)
 print_freestanding_decay2(outputstmtype optstm,
-						  Args... args) FAST_IO_HERBCEPTIONS_THROWS
+						  Args... args) FAST_IO_HERBCEPTIONS_THROWS_IF((!::fast_io::operations::decay::defines::output_stream_operations_nothrow<outputstmtype>) ||
+																	   (::fast_io::details::has_any_print_define_operations_not_noexcept<typename outputstmtype::output_char_type, Args> || ...))
 {
 	using output_char_type = typename outputstmtype::output_char_type;
 	if constexpr ((::std::same_as<::std::remove_cvref_t<Args>,
