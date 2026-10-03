@@ -156,6 +156,13 @@ that parses `%`-syntax into `field` ops.
 | 14 | type | uleb | enum below | `%d` | `{:d}` |
 | 15 | chrono | bytes | nested pct program | — | `{:%H:%M}` |
 
+`chrono` is exclusive with the standard spec params — for a chrono arg
+the *entire* spec is the time spec (`{:>20%Y}` = literal `">20"` + `%Y`,
+not "align right width 20"). Compile rule: try a standard-spec parse
+first; anything it cannot fully consume becomes a pct program — the same
+way `formatter<T>::parse` claims the spec only when it recognises it.
+A chrono spec may contain `{...}` fields (bounded depth).
+
 Absent `arg` = AUTO (next arg). printf `%2$` is normalized to 0-based
 index at compile. fmt `-` align is printf `-`; fmt `-` *sign* is sign=2.
 
@@ -358,6 +365,25 @@ consumes the count arg through an ordinary `%d` field.
   08             list len = 8
   05 00          tag (1<<2)|1   arg  = 0
   29 FF*4 07     tag (10<<2)|1  width = 2147483647  (uleb: 5 bytes)
+```
+
+`{0:%Y-%m-%d}` on a chrono arg (family=fmt) — 26 bytes: the spec becomes
+an embedded pct program via the `chrono` param:
+
+```
+00               family=0
+18               content_size = 24
+0B               tag (2<<2)|3   field, list
+  16             len = 22
+  05 00          arg = 0
+  3E             tag (15<<2)|2  chrono, bytes
+    14             len = 20
+    01 12          inner program: family=1, size=18
+      0F 02 51 20    %Y
+      06 01 "-"      literal
+      0F 02 51 10    %m
+      06 01 "-"      literal
+      0F 02 51 07    %d
 ```
 
 `"%Y年%m月%d日 %H時%M分%S秒"` (ja_JP `d_t_fmt`, family=pct=1) = 57 bytes —
