@@ -154,7 +154,7 @@ that parses `%`-syntax into `field` ops.
 | 12 | length | uleb | enum below | `ll` `L` `w` | — |
 | 13 | length-bits | uleb | 8/16/32/64 | `%w64` | — |
 | 14 | type | uleb | enum below | `%d` | `{:d}` |
-| 15 | chrono | bytes | nested pct program | — | `{:%H:%M}` |
+| 15 | chrono | bytes | nested pct node sequence | — | `{:%H:%M}` |
 
 `chrono` is exclusive with the standard spec params — for a chrono arg
 the *entire* spec is the time spec (`{:>20%Y}` = literal `">20"` + `%Y`,
@@ -162,6 +162,11 @@ not "align right width 20"). Compile rule: try a standard-spec parse
 first; anything it cannot fully consume becomes a pct program — the same
 way `formatter<T>::parse` claims the spec only when it recognises it.
 A chrono spec may contain `{...}` fields (bounded depth).
+
+The `chrono` payload is a **bare node sequence**, not a wrapped program —
+the bytes-len is the delimiter. Only the top-level program carries the
+family/size header; nested node sequences need none (their ops are
+grammar-agnostic).
 
 Absent `arg` = AUTO (next arg). printf `%2$` is normalized to 0-based
 index at compile. fmt `-` align is printf `-`; fmt `-` *sign* is sign=2.
@@ -313,8 +318,8 @@ programs:
 (plural (count <arg-idx>)  (form <prog>)  (form <prog>) ...)
 
 1st child: count — uleb, which call arg holds n
-rest:      form×N — bytes nodes; each payload is a complete binfmt
-                    program (usually family=0, compiled from msgstr[N] via the printf front-end)
+rest:      form×N — bytes nodes; each payload is a bare node sequence
+                    (the msgstr[N] program, usually via the printf front-end)
 ```
 
 Interpretation: the caller reads `count` to know which arg is `n`,
@@ -341,7 +346,7 @@ fast_io's own plural-rule table (CLDR rules implemented as native code),
 |------|------|------|---------|
 | 0x40 | `plural` | list | children: `count` + `form`×N |
 | 0x41 | `count` | uleb | arg index of `n` |
-| 0x42 | `form` | bytes | complete program blob |
+| 0x42 | `form` | bytes | bare node sequence (a program's body) |
 
 ### Example — `"an apple"` / `"%d apples"`
 
@@ -377,8 +382,7 @@ an embedded pct program via the `chrono` param:
   16             len = 22
   05 00          arg = 0
   3E             tag (15<<2)|2  chrono, bytes
-    14             len = 20
-    01 12          inner program: family=1, size=18
+    12             len = 18     → bare nodes, no inner header
       0F 02 51 20    %Y
       06 01 "-"      literal
       0F 02 51 10    %m
@@ -396,18 +400,18 @@ each `%X` directive is 4 bytes, e.g. `%Y`:
 ```
 
 Plural, `count=arg0` + `"an apple"` / `"%d apples"` — the caller picks
-the index = 41 bytes:
+the index = 37 bytes:
 
 ```
 02               family=2 (gettext)
-27               content_size = 39
+23               content_size = 35
 83 02            tag (0x40<<2)|3 plural, list
-  24             len = 36
+  20             len = 32
   85 02 00       tag (0x41<<2)|1 count = 0
-  8A 02 0C       tag (0x42<<2)|2 form, len=12
-    <blob for "an apple"   = family0: (literal "an apple")>
-  8A 02 0F       tag (0x42<<2)|2 form, len=15
-    <blob for "%d apples"  = family0: (field (type d))(literal " apples")>
+  8A 02 0A       tag (0x42<<2)|2 form, len=10
+    <nodes: (literal "an apple")>
+  8A 02 0D       tag (0x42<<2)|2 form, len=13
+    <nodes: (field (type d))(literal " apples")>
 ```
 
 ---
