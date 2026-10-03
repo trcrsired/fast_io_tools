@@ -302,17 +302,22 @@ the chosen **form index**; the `plural` node is just an ordered list of
 programs:
 
 ```
-(plural (form <prog>)  (form <prog>) ...)
+(plural (count <arg-idx>)  (form <prog>)  (form <prog>) ...)
 
-children: form×N — bytes nodes; each payload is a complete binfmt
-                   program (usually family=stdio, compiled from msgstr[N])
+1st child: count — uleb, which call arg holds n
+rest:      form×N — bytes nodes; each payload is a complete binfmt
+                    program (usually family=stdio, compiled from msgstr[N])
 ```
 
-Interpretation: caller supplies index `i` → run `form[i]`'s program.
-`form[0]` is the singular/last-resort form. The forms are ordinary
-programs — gettext printf-isms (`%1$s`, `%d`…) compile through the stdio
-front-end into `field` nodes, so a form can consume the count arg like
-any other (`"%d files"` just prints it).
+Interpretation: the caller reads `count` to know which arg is `n`,
+evaluates its own plural rule, passes the chosen index → `form[i]` runs.
+`form[i]` is whatever the locale's rule says — `form[0]` is conventionally
+the singular but the rule decides: English `n != 1` sends `n=0` to the
+plural ("0 apples"), French `n <= 1` sends it to `form[0]`. The blob only
+carries the forms; which n maps where is the rule's business. The forms
+are ordinary programs — gettext printf-isms (`%1$s`, `%d`…) compile
+through the stdio front-end into `field` nodes, so a form can consume
+the count arg like any other (`"%d apples"` just prints it).
 
 The lcblob side carries `plural_rule` as an integer slot — an index into
 fast_io's own plural-rule table (CLDR rules implemented as native code),
@@ -320,14 +325,18 @@ fast_io's own plural-rule table (CLDR rules implemented as native code),
 
 | code | node | kind | payload |
 |------|------|------|---------|
-| 0x40 | `plural` | list | children: `form`×N only |
-| 0x41 | `form` | bytes | complete program blob |
+| 0x40 | `plural` | list | children: `count` + `form`×N |
+| 0x41 | `count` | uleb | arg index of `n` |
+| 0x42 | `form` | bytes | complete program blob |
 
-### Example — English plural
+### Example — `"an apple"` / `"%d apples"`
 
 ```
-(plural (form "%d file") (form "%d files"))
+(plural (count 0) (form "an apple") (form "%d apples"))
 ```
+
+`form[0]` is literal-only — "an apple" has no field at all; `form[1]`
+consumes the count arg through an ordinary `%d` field.
 
 ---
 
@@ -353,17 +362,19 @@ each `%X` directive is 4 bytes, e.g. `%Y`:
   51 20          tag (20<<2)|1  conv = 32 ('%Y')
 ```
 
-Plural, `"%d file"` / `"%d files"` — the caller picks the index = 38 bytes:
+Plural, `count=arg0` + `"an apple"` / `"%d apples"` — the caller picks
+the index = 41 bytes:
 
 ```
 04               family=4 (gettext)
-24               content_size = 36
+27               content_size = 39
 83 02            tag (0x40<<2)|3 plural, list
-  21             len = 33
-  86 02 0D       tag (0x41<<2)|2 form, len=13
-    <blob for "%d file"  = family3: (field (type d))(literal " file")>
-  86 02 0E       tag (0x41<<2)|2 form, len=14
-    <blob for "%d files">
+  24             len = 36
+  85 02 00       tag (0x41<<2)|1 count = 0
+  8A 02 0C       tag (0x42<<2)|2 form, len=12
+    <blob for "an apple"   = family3: (literal "an apple")>
+  8A 02 0F       tag (0x42<<2)|2 form, len=15
+    <blob for "%d apples"  = family3: (field (type d))(literal " apples")>
 ```
 
 ---
