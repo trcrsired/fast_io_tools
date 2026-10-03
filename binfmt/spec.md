@@ -314,10 +314,16 @@ evaluates its own plural rule, passes the chosen index → `form[i]` runs.
 `form[i]` is whatever the locale's rule says — `form[0]` is conventionally
 the singular but the rule decides: English `n != 1` sends `n=0` to the
 plural ("0 apples"), French `n <= 1` sends it to `form[0]`. The blob only
-carries the forms; which n maps where is the rule's business. The forms
-are ordinary programs — gettext printf-isms (`%1$s`, `%d`…) compile
-through the stdio front-end into `field` nodes, so a form can consume
-the count arg like any other (`"%d apples"` just prints it).
+carries the forms; which n maps where is the rule's business.
+
+`count` may index a non-integer arg: "0.5 apples" is legal input. The
+native rule works on CLDR operands (`n`, `i`, `v`, `w`, `f`, `e` —
+integer part, visible fraction digits, etc.), so "1.0 apple" vs
+"1 apple" can select differently. The program only needs the arg index.
+
+The forms are ordinary programs — gettext printf-isms (`%1$s`, `%d`…)
+compile through the stdio front-end into `field` nodes, so a form can
+consume the count arg like any other (`"%d apples"` just prints it).
 
 The lcblob side carries `plural_rule` as an integer slot — an index into
 fast_io's own plural-rule table (CLDR rules implemented as native code),
