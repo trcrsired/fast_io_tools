@@ -301,52 +301,68 @@ The rule is a pure expression tree — it maps straight onto nodes.
 ### `plural` node children — ordered
 
 ```
-(plural (count <arg-idx>)  <expr root>  (form <prog>)  (form <prog>) ...)
+(plural (count <arg-idx>)  (expr <ops...>)  (form <prog>)  (form <prog>) ...)
 
-1st child: count   — u32, which call arg holds n
-2nd child: expr    — the rule's root expression node
+1st child: count   — uleb, which call arg holds n
+2nd child: expr    — list of flat op nodes, postfix order
 rest:      form×N  — bytes nodes; each payload is a complete binfmt
                      program (usually family=stdio, compiled from msgstr[N])
 ```
 
-Evaluation: `eval(expr)` with `n` = the `count` arg; result selects the
-`form` index (clamped to `0..N-1`); that form's program runs. The plural
-forms are ordinary programs — gettext msgstr printf-isms (`%1$s`,
-`%d`…) compile through the stdio front-end into `field` nodes, so a form
-can itself consume args (`"%1$s has %2$d files"` just works).
+### The rule is postfix, not a tree
 
-### expression nodes (children of the rule)
+An expression *tree* would be nearly a real language — recursive parser,
+recursive evaluator. Instead the compiler flattens the gettext AST to
+**postfix** at build time: the `expr` node is a flat list of op nodes,
+evaluation is a stack machine — linear scan, no recursion, ~15 lines:
 
-| code | node | kind | payload |
-|------|------|------|---------|
-| 0x40 | `plural` | list | as above |
+```
+plural=(n==1) ? 0 : 1   →  (expr (n)(const 1)(eq)(const 0)(const 1)(tern))
+n%10==1 && n%100!=11    →  (expr (n)(const 10)(mod)(const 1)(eq)
+                                 (n)(const 100)(mod)(const 11)(ne)(and))
+```
+
+Evaluation: `eval(expr)` runs the stack machine with `n` = the `count`
+arg; result selects `form` index (clamped `0..N-1`); that program runs.
+`&&`/`||` evaluate eagerly — safe, because exprs are pure and div/mod
+by zero return 0, making short-circuit semantically unobservable.
+The forms are ordinary programs — gettext printf-isms (`%1$s`) compile
+through the stdio front-end into `field` nodes.
+
+### op codes inside `expr` — all flat, postfix
+
+| code | node | kind | stack action |
+|------|------|------|--------------|
+| 0x40 | `plural` | list | children: count, expr, form×N |
 | 0x41 | `count` | uleb | arg index of `n` |
 | 0x42 | `form` | bytes | complete program blob |
-| 0x50 | `const` | sleb | integer literal (signed) |
-| 0x51 | `n` | none | the count variable |
-| 0x52 | `neg` | list×1 | `-e` |
-| 0x53 | `not` | list×1 | `!e` |
-| 0x54 | `and` | list×2 | `a && b` (short-circuit) |
-| 0x55 | `or` | list×2 | `a \|\| b` (short-circuit) |
-| 0x56 | `eq` | list×2 | `==` |
-| 0x57 | `ne` | list×2 | `!=` |
-| 0x58 | `lt` | list×2 | `<` |
-| 0x59 | `le` | list×2 | `<=` |
-| 0x5A | `gt` | list×2 | `>` |
-| 0x5B | `ge` | list×2 | `>=` |
-| 0x5C | `add` | list×2 | `+` |
-| 0x5D | `sub` | list×2 | `-` |
-| 0x5E | `mul` | list×2 | `*` |
-| 0x5F | `div` | list×2 | `/` — divisor 0 → result 0 (gettext semantics) |
-| 0x60 | `mod` | list×2 | `%` — divisor 0 → result 0 |
-| 0x61 | `tern` | list×3 | `c ? a : b` |
+| 0x43 | `expr` | list | flat op nodes, postfix order |
+| 0x50 | `const` | sleb | push i64 literal |
+| 0x51 | `n` | none | push n |
+| 0x52 | `neg` | none | `a → -a` |
+| 0x53 | `not` | none | `a → !a` |
+| 0x54 | `and` | none | `a,b → a&&b` |
+| 0x55 | `or` | none | `a,b → a\|\|b` |
+| 0x56 | `eq` | none | `==` |
+| 0x57 | `ne` | none | `!=` |
+| 0x58 | `lt` | none | `<` |
+| 0x59 | `le` | none | `<=` |
+| 0x5A | `gt` | none | `>` |
+| 0x5B | `ge` | none | `>=` |
+| 0x5C | `add` | none | `+` |
+| 0x5D | `sub` | none | `-` |
+| 0x5E | `mul` | none | `*` |
+| 0x5F | `div` | none | `/` — divisor 0 → 0 |
+| 0x60 | `mod` | none | `%` — divisor 0 → 0 |
+| 0x61 | `tern` | none | `c,a,b → c?a:b` |
 
-Values are `i64` during evaluation; leaves carry u32 constants.
+Evaluation is i64; malformed stacks (underflow, leftover ≠1) are
+structural errors caught by the bounds-checked walk.
 
 ### Example — `n != 1` English plural
 
 ```
-(plural (count 0) (ne (n) (const 1)) (form P0) (form P1))
+(plural (count 0) (expr (n)(const 1)(ne)) (form P0) (form P1))
 ```
 
 ---
@@ -373,18 +389,19 @@ each `%X` directive is 4 bytes, e.g. `%Y`:
   51 20          tag (20<<2)|1  conv = 32 ('%Y')
 ```
 
-Plural, `n != 1` + `"%d file"` / `"%d files"` = 49 bytes:
+Plural, `n != 1` + `"%d file"` / `"%d files"` = 51 bytes:
 
 ```
 04               family=4 (gettext)
-2F               content_size = 47
+31               content_size = 49
 83 02            tag (0x40<<2)|3 plural, list
-  2C             len = 44
+  2E             len = 46
   85 02 00       tag (0x41<<2)|1 count = 0
-  DF 02          tag (0x57<<2)|3 ne, list
-    05             len = 5
+  8F 02          tag (0x43<<2)|3 expr, list
+    07             len = 7
     C4 02          tag (0x51<<2)|0 n
     C1 02 01       tag (0x50<<2)|1 const = 1
+    DC 02          tag (0x57<<2)|0 ne
   8A 02 <len> <P0 blob>   form  "%d file"
   8A 02 <len> <P1 blob>   form  "%d files"
 ```
