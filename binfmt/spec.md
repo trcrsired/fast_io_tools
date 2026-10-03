@@ -39,8 +39,12 @@ the instances:
 
 ### Integers and text
 
-- All integers little-endian, fixed width (`u8`/`u32`/`i32`). No varints:
-  decode is a memcpy, not a bit loop.
+- Node stream: **LEB128** (`uleb128`/`sleb128`) — tags, lengths, scalar
+  values. Locale data is mostly small numbers and markers; fixed u32
+  would spend most of its bytes on zeros.
+- The **container** (lcblob tables, RVAs, slot records) stays fixed-width
+  little-endian u32/i32 — those are random-access tables, not a walked
+  stream; decode is a memcpy.
 - Text payloads (literals, names, fill chars) are byte strings in the
   container's declared charset (UTF-8 default).
 - Structural codes are numeric enums — never character codes. A compiler
@@ -50,42 +54,46 @@ the instances:
 
 ### Node framing — lisp-like tagged nodes
 
-Every node is `[u32 tag][payload]`:
+Every node is `[uleb128 tag][payload]`:
 
 ```
-u32 tag = [31:24] payload_kind | [23:0] code
+uleb128 tag = (code << 2) | payload_kind
 
-kind 0 none    bare marker                    next node at +4
-kind 1 u32     [u32 value]                    +8
-kind 2 bytes   [u32 len][data]                +8+len   (a u32 code, a u32
-kind 3 list    [u32 len][child nodes]          +8+len    len, then payload)
+kind 0 none    bare marker                    next node at +tagbytes
+kind 1 uleb    [uleb128 value]                unsigned scalar
+kind 2 bytes   [uleb128 len][data]            a code, a length, a payload
+kind 3 list    [uleb128 len][child nodes]     children bounded by len
+kind 4 sleb    [sleb128 value]                signed scalar
+(kind 5-7 reserved)
 ```
 
-Every node is self-delimiting: the walker reads the tag and hops
-`4`/`8`/`8+len` bytes — it never inspects payload to find the next node.
-Unknown codes skip cleanly via kind, so new codes are forward-compatible.
+Every node is self-delimiting: the walker reads the tag varint and hops
+— it never inspects payload to find the next node. Unknown codes skip
+cleanly via kind, so new codes are forward-compatible. Common codes are
+1-byte tags; the encoding spends bytes on data, not on zeros.
 
 ### Code space
 
-`code` is 24 bits, partitioned:
+`code` is unbounded (it lives in the varint tag). Ranges by value:
 
 | range | meaning |
 |-------|---------|
-| `0x000000`–`0x0000FF` | core codes (this spec) |
-| `0x000100`–`0x7FFFFF` | reserved — future standard params |
-| `0x800000`–`0xFFFFFE` | reserved — vendor/experimental |
-| `0xFFFFFF` | EXTEND escape — real code is the following `u32`; the escape may repeat (64-bit+ codes). Almost certainly never needed; costs one extra u32 read when it ever happens. |
+| `0x00`–`0x3F` | core codes (this spec) — 1-byte tags |
+| `0x40`–`0xFF` | plural expression codes — still 1-byte tags |
+| `0x100`–`0x3FFFFF` | reserved — future standard params (2-3-byte tags) |
+| `0x400000`+ | reserved — vendor/experimental |
 
 ### Program header
 
 ```
-u32 family_version   [7:0]=family   1=fmt 2=pct 3=stdio
-                     [15:8]=version (=1)
-                     [31:16]=flags  (0)
-u32 content_size     bytes of the node region that follows
-nodes*               until content_size is exhausted — size bounds it,
-                     no terminator needed
+uleb128 family        1=fmt 2=pct 3=stdio 4=gettext
+uleb128 content_size  bytes of the node region that follows
+nodes*                until content_size is exhausted — size bounds it,
+                      no terminator needed
 ```
+
+No version field. Forward compat is handled by the code-space partition
+and by unknown-code skipping (every node is self-delimiting).
 
 `family` records which source grammar produced the program — it only
 matters for decompiling back to text. The node set itself is grammar-
@@ -98,6 +106,9 @@ superset of the fmt spec. Families:
 | 1 | fmt / `std::format` | `literal` + `field` |
 | 2 | strftime / generic `%` slots | `literal` + `pct` (+ `field` for nested) |
 | 3 | printf | `literal` + `field` (same ops as fmt) |
+| 4 | gettext plural entry | one `plural` node |
+
+`family` only matters for decompiling back to text.
 
 ---
 
@@ -108,6 +119,7 @@ superset of the fmt spec. Families:
 | 1 | `literal` | bytes | already-unescaped text |
 | 2 | `field` | list | **the** format field — fmt-spec superset; printf compiles into this too (children below) |
 | 3 | `pct` | list | `%`-directive (children below) |
+| 4 | `plural` | list | gettext plural selection (below) |
 
 `field` may appear inside a `pct` program (chrono/generic specs allow
 nested `{...}`). Otherwise families don't mix.
@@ -127,20 +139,20 @@ that parses `%`-syntax into `field` ops.
 
 | code | param | kind | value | printf | fmt |
 |------|-------|------|-------|--------|-----|
-| 1 | arg | u32 | arg index | `%2$`→1 | `{1}` |
+| 1 | arg | uleb | arg index | `%2$`→1 | `{1}` |
 | 2 | fill | bytes 1–4 | one code point | — | `{:*>8}` |
-| 3 | align | u32 | 1`<` 2`>` 3`^` | `-`→1 | `<` `>` `^` |
-| 4 | sign | u32 | 1`+` 2`-` 3` ` | `+` ` ` | `+` `-` ` ` |
+| 3 | align | uleb | 1`<` 2`>` 3`^` | `-`→1 | `<` `>` `^` |
+| 4 | sign | uleb | 1`+` 2`-` 3` ` | `+` ` ` | `+` `-` ` ` |
 | 5 | flag-alt | none | `#` | `#` | `#` |
 | 6 | flag-zero | none | `0` | `0` | `0` |
 | 7 | flag-group | none | `'` | `'` | — |
 | 8 | flag-locale | none | `L` | — | `L` |
 | 9 | flag-outdigits | none | `I` | `I` | — |
-| 10 | width | u32 | value | `%5` | `{:5}` |
-| 11 | prec | u32 | value (`.` alone → 0) | `%.3` | `{:.3}` |
-| 12 | length | u32 | enum below | `ll` `L` `w` | — |
-| 13 | length-bits | u32 | 8/16/32/64 | `%w64` | — |
-| 14 | type | u32 | enum below | `%d` | `{:d}` |
+| 10 | width | uleb | value | `%5` | `{:5}` |
+| 11 | prec | uleb | value (`.` alone → 0) | `%.3` | `{:.3}` |
+| 12 | length | uleb | enum below | `ll` `L` `w` | — |
+| 13 | length-bits | uleb | 8/16/32/64 | `%w64` | — |
+| 14 | type | uleb | enum below | `%d` | `{:d}` |
 | 15 | chrono | bytes | nested pct program | — | `{:%H:%M}` |
 
 Absent `arg` = AUTO (next arg). printf `%2$` is normalized to 0-based
@@ -189,14 +201,14 @@ Example — `"%08.3f"` and `"{:08.3f}"` compile to the same node:
 
 | code | param | kind | value |
 |------|-------|------|-------|
-| 20 | conv | u32 | enum below — required |
-| 21 | letter | u32 | raw ASCII conv — generic slots only (name_fmt, postal_fmt, tel_*_fmt); meaning is slot-defined |
-| 22 | pad | u32 | bit0 `-` bit1 `_` bit2 `0` |
-| 23 | case | u32 | bit0 `^` bit1 `#` |
-| 24 | modifier | u32 | 1 `E` era · 2 `O` alternative |
-| 25 | colons | u32 | 1–3 (`%:z` `%::z` `%:::z`, conv `z` only) |
-| 10 | width | u32 | shared code (`%5Y`) |
-| 11 | prec | u32 | fractional-second digits etc. |
+| 20 | conv | uleb | enum below — required |
+| 21 | letter | uleb | raw ASCII conv — generic slots only (name_fmt, postal_fmt, tel_*_fmt); meaning is slot-defined |
+| 22 | pad | uleb | bit0 `-` bit1 `_` bit2 `0` |
+| 23 | case | uleb | bit0 `^` bit1 `#` |
+| 24 | modifier | uleb | 1 `E` era · 2 `O` alternative |
+| 25 | colons | uleb | 1–3 (`%:z` `%::z` `%:::z`, conv `z` only) |
+| 10 | width | uleb | shared code (`%5Y`) |
+| 11 | prec | uleb | fractional-second digits etc. |
 
 `conv` is its **own enum** — pct codes are not ASCII. strftime `%c`
 (locale date-time composite) and printf `%c` (a character) are different
@@ -279,7 +291,107 @@ Also folded to literal bytes by the compiler (never nodes): `%%`→`%`,
 
 ---
 
-## Part 5 — rejected constructs
+## Part 5 — plural (gettext)
+
+A gettext catalog entry is `msgid` / `msgid_plural` / `msgstr[0..N-1]`
+plus a plural rule — a C-expression over the count `n`
+(`nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<12||n%100>14) ? 1 : 2`).
+The rule is a pure expression tree — it maps straight onto nodes.
+
+### `plural` node children — ordered
+
+```
+(plural (count <arg-idx>)  <expr root>  (form <prog>)  (form <prog>) ...)
+
+1st child: count   — u32, which call arg holds n
+2nd child: expr    — the rule's root expression node
+rest:      form×N  — bytes nodes; each payload is a complete binfmt
+                     program (usually family=stdio, compiled from msgstr[N])
+```
+
+Evaluation: `eval(expr)` with `n` = the `count` arg; result selects the
+`form` index (clamped to `0..N-1`); that form's program runs. The plural
+forms are ordinary programs — gettext msgstr printf-isms (`%1$s`,
+`%d`…) compile through the stdio front-end into `field` nodes, so a form
+can itself consume args (`"%1$s has %2$d files"` just works).
+
+### expression nodes (children of the rule)
+
+| code | node | kind | payload |
+|------|------|------|---------|
+| 0x40 | `plural` | list | as above |
+| 0x41 | `count` | uleb | arg index of `n` |
+| 0x42 | `form` | bytes | complete program blob |
+| 0x50 | `const` | sleb | integer literal (signed) |
+| 0x51 | `n` | none | the count variable |
+| 0x52 | `neg` | list×1 | `-e` |
+| 0x53 | `not` | list×1 | `!e` |
+| 0x54 | `and` | list×2 | `a && b` (short-circuit) |
+| 0x55 | `or` | list×2 | `a \|\| b` (short-circuit) |
+| 0x56 | `eq` | list×2 | `==` |
+| 0x57 | `ne` | list×2 | `!=` |
+| 0x58 | `lt` | list×2 | `<` |
+| 0x59 | `le` | list×2 | `<=` |
+| 0x5A | `gt` | list×2 | `>` |
+| 0x5B | `ge` | list×2 | `>=` |
+| 0x5C | `add` | list×2 | `+` |
+| 0x5D | `sub` | list×2 | `-` |
+| 0x5E | `mul` | list×2 | `*` |
+| 0x5F | `div` | list×2 | `/` — divisor 0 → result 0 (gettext semantics) |
+| 0x60 | `mod` | list×2 | `%` — divisor 0 → result 0 |
+| 0x61 | `tern` | list×3 | `c ? a : b` |
+
+Values are `i64` during evaluation; leaves carry u32 constants.
+
+### Example — `n != 1` English plural
+
+```
+(plural (count 0) (ne (n) (const 1)) (form P0) (form P1))
+```
+
+---
+
+## Byte examples
+
+`{0:2147483647}` (family=fmt) — 12 bytes total:
+
+```
+01               family=1 (fmt)
+0A               content_size = 10
+0B               tag (2<<2)|3   field, list
+  08             list len = 8
+  05 00          tag (1<<2)|1   arg  = 0
+  29 FF*4 07     tag (10<<2)|1  width = 2147483647  (uleb: 5 bytes)
+```
+
+`"%Y年%m月%d日 %H時%M分%S秒"` (ja_JP `d_t_fmt`, family=pct) = 57 bytes —
+each `%X` directive is 4 bytes, e.g. `%Y`:
+
+```
+0F               tag (3<<2)|3   pct, list
+  02             len = 2
+  51 20          tag (20<<2)|1  conv = 32 ('%Y')
+```
+
+Plural, `n != 1` + `"%d file"` / `"%d files"` = 49 bytes:
+
+```
+04               family=4 (gettext)
+2F               content_size = 47
+83 02            tag (0x40<<2)|3 plural, list
+  2C             len = 44
+  85 02 00       tag (0x41<<2)|1 count = 0
+  DF 02          tag (0x57<<2)|3 ne, list
+    05             len = 5
+    C4 02          tag (0x51<<2)|0 n
+    C1 02 01       tag (0x50<<2)|1 const = 1
+  8A 02 <len> <P0 blob>   form  "%d file"
+  8A 02 <len> <P1 blob>   form  "%d files"
+```
+
+---
+
+## Part 6 — rejected constructs
 
 No encoding exists; compilers error out:
 
@@ -294,12 +406,11 @@ No encoding exists; compilers error out:
 
 ---
 
-## Part 6 — lcblob container
+## Part 7 — lcblob container
 
 ```
 header:
-  u32 magic          'FCL1' = 0x314C4346
-  u32 version        = 1
+  u32 magic          'FCL1' = 0x314C4346  (trailing digit = rev)
   u32 total_size
   u32 flags          reserved, 0
   u32 name_rva       strref — "de_DE"
