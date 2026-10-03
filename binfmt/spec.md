@@ -548,16 +548,36 @@ No encoding exists; compilers error out:
 
 ## Part 7 — lcblob container
 
+One file per `<locale>.<codeset>`: `de_DE.UTF-8.bin`, `zh_CN.GB18030.bin`.
+The codeset names the **`char` view only** — `char8_t`/`char16_t`/
+`char32_t` sections are always present and identical across codesets.
+Supported codesets: UTF-8, GB18030, UTF-EBCDIC. `C`/`POSIX` emit once as
+`POSIX.UTF-8.bin`.
+
 ```
-header:
-  u32 magic          'FCL1' = 0x314C4346  — the one fixed-width field (sync)
-  uleb128 version      format version — reader rejects files with
-                       version > its own. Slot-kind changes (e.g.
-                       yesexpr STR -> regex PROGRAM) are version bumps.
+outer header:
+  u32 magic            'FCL1' = 0x314C4346 — the one fixed-width field
+  uleb128 version      format version (currently 1)
+  uleb128 total_size
+  uleb128 flags        reserved, 0
+  strref name          "de_DE.GB18030"   (canonical, utf8, -> pool)
+  strref encoding      "GB18030"         (char codeset, utf8, -> pool)
+  sec_dir := (uleb128 rva | uleb128 size) × 4, ordered:
+             [0] charset   the locale's declared char codeset section;
+                           aliases section[1] when codeset == utf8
+             [1] utf8      char8_t section (always UTF-8)
+             [2] utf16     char16_t section (LE)
+             [3] utf32     char32_t section (LE)
+  pool               name + encoding bytes (utf8)
+  sections           the referenced complete v1 blobs
+
+section blob (v1, self-contained, section-relative RVAs):
+  u32 magic          'FCL1'
+  uleb128 version
   uleb128 total_size
   uleb128 flags          reserved, 0
   strref name            "de_DE"
-  strref encoding        charset of all string payloads
+  strref encoding        this section's payload charset
   uleb128 cat_dir_rva  -> u32 cat_table_rva[LC_CAT_COUNT]   (0 = absent)
 
 strref := uleb128 rva | uleb128 len

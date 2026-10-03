@@ -209,24 +209,35 @@ inline constexpr ::fast_io_i18n::lcblob::cat_schema cat_schemas[cat_count]{
 // charset of the container's payload bytes
 // ---------------------------------------------------------------------------
 
+// payload encoding of one blob section — not to be confused with the
+// section selector in the consumer header
 enum class blob_charset : ::std::uint_least8_t
 {
 	utf8 = 0,
 	utf16 = 1, // LE
 	utf32 = 2, // LE
+	gb18030 = 3,
+	utf_ebcdic = 4,
 };
 
-inline constexpr ::std::string_view blob_charset_name(blob_charset cs) noexcept
+inline constexpr ::fast_io::u8string_view blob_charset_name(blob_charset cs) noexcept
 {
 	switch (cs)
 	{
-	case blob_charset::utf8: return "UTF-8";
-	case blob_charset::utf16: return "UTF-16";
-	default: return "UTF-32";
+	case blob_charset::utf8:
+		return u8"UTF-8";
+	case blob_charset::utf16:
+		return u8"UTF-16";
+	case blob_charset::utf32:
+		return u8"UTF-32";
+	case blob_charset::gb18030:
+		return u8"GB18030";
+	default:
+		return u8"UTF-EBCDIC";
 	}
 }
 
-// u8 source -> container charset bytes
+// u8 source -> section payload bytes
 inline ::fast_io::string transcode(::std::u8string_view sv, blob_charset cs) throws
 {
 	::fast_io::string out;
@@ -246,7 +257,7 @@ inline ::fast_io::string transcode(::std::u8string_view sv, blob_charset cs) thr
 		out.append(reinterpret_cast<char const *>(u16.data()), u16.size() * 2);
 		return out;
 	}
-	default:
+	case blob_charset::utf32:
 	{
 		::fast_io::u32string u32;
 		::fast_io::u32ostring_ref_fast_io ref{__builtin_addressof(u32)};
@@ -255,6 +266,24 @@ inline ::fast_io::string transcode(::std::u8string_view sv, blob_charset cs) thr
 						      ::fast_io::encoding_scheme::utf_le>(
 				 ::fast_io::basic_io_scatter_t<char8_t>{sv.data(), sv.size()}));
 		out.append(reinterpret_cast<char const *>(u32.data()), u32.size() * 4);
+		return out;
+	}
+	case blob_charset::gb18030:
+	{
+		::fast_io::ostring_ref_fast_io oref{__builtin_addressof(out)};
+		::fast_io::print(
+			oref, ::fast_io::mnp::code_cvt<::fast_io::encoding_scheme::utf_le,
+					       ::fast_io::encoding_scheme::gb18030>(
+				  ::fast_io::basic_io_scatter_t<char8_t>{sv.data(), sv.size()}));
+		return out;
+	}
+	default: // utf_ebcdic — a byte transform of the utf8 form
+	{
+		::fast_io::ostring_ref_fast_io oref{__builtin_addressof(out)};
+		::fast_io::print(
+			oref, ::fast_io::mnp::code_cvt<::fast_io::encoding_scheme::utf_le,
+					       ::fast_io::encoding_scheme::utf_ebcdic>(
+				  ::fast_io::basic_io_scatter_t<char8_t>{sv.data(), sv.size()}));
 		return out;
 	}
 	}
@@ -884,6 +913,103 @@ inline ::std::uint_least32_t read_u32(char8_t const *p) noexcept
 	::fast_io::details::my_memcpy(__builtin_addressof(v), p, 4);
 	return v;
 }
+
+// ---------------------------------------------------------------------------
+// container — one file per locale carrying all three charset sections.
+//   u32 magic 'FCL1' | uleb version | uleb total_size | uleb flags
+//   | strref name | strref encoding            (utf8; targets live in
+//   |                                          the utf8 section's pool)
+//   | (uleb rva | uleb size) * blob_charset_count
+// Each section is a complete standalone v1 blob — the same read_header
+// validates it and all its RVAs are section-relative.
+// ---------------------------------------------------------------------------
+
+// Build the outer container. sections are the charset, utf8, utf16 and
+// utf32 blobs in that order; an EMPTY charset section aliases the utf8
+// one (the codeset IS utf8). name/encoding are stored as utf8 in a
+// small pool right after the section directory.
+inline ::fast_io::string build_container(::fast_io::string const (&sections)[4],
+					 ::std::u8string_view name,
+					 ::std::u8string_view encoding) throws
+{
+	using ::fast_io_i18n::binfmt::put_leb128_to;
+	::std::size_t const nsec{sections[0].empty() ? 3zu : 4zu};
+	::std::uint_least64_t secsz[4]{sections[0].empty() ? sections[1].size() : sections[0].size(),
+								   sections[1].size(), sections[2].size(), sections[3].size()};
+	::std::uint_least64_t const name_len{name.size()};
+	::std::uint_least64_t const enc_len{encoding.size()};
+
+	::std::uint_least32_t hdr_size{32}; // seed
+	for (unsigned iter{};; ++iter)
+	{
+		if (iter > 8)
+		{
+			throw throws ::std::errc::invalid_argument;
+		}
+		::std::uint_least64_t const pool_rva{hdr_size};
+		::std::uint_least64_t const name_rva{pool_rva};
+		::std::uint_least64_t const enc_rva{pool_rva + name_len};
+		::std::uint_least64_t sec_rva[4];
+		::std::uint_least64_t off{pool_rva + name_len + enc_len};
+		::std::uint_least64_t sidx{nsec == 3 ? 1zu : 0zu};
+		::std::uint_least64_t off0{off};
+		sec_rva[0] = nsec == 3 ? off0 : off; // charset slot aliases utf8 when nsec==3
+		if (nsec == 4)
+		{
+			sec_rva[0] = off;
+			off += secsz[0];
+		}
+		for (::std::size_t c{1}; c < 4; ++c)
+		{
+			sec_rva[c] = off;
+			off += secsz[c];
+		}
+		if (nsec == 3)
+		{
+			sec_rva[0] = sec_rva[1];
+		}
+		::std::uint_least64_t const total{off};
+		::std::uint_least32_t nh{
+			4 + static_cast<::std::uint_least32_t>(details::uleb_len(blob_version)) +
+			static_cast<::std::uint_least32_t>(details::uleb_len(total)) + 1 +
+			static_cast<::std::uint_least32_t>(details::uleb_len(name_rva)) +
+			static_cast<::std::uint_least32_t>(details::uleb_len(name_len)) +
+			static_cast<::std::uint_least32_t>(details::uleb_len(enc_rva)) +
+			static_cast<::std::uint_least32_t>(details::uleb_len(enc_len))};
+		for (::std::size_t c{}; c < 4; ++c)
+		{
+			nh += static_cast<::std::uint_least32_t>(
+				details::uleb_len(sec_rva[c]) + details::uleb_len(secsz[c]));
+		}
+		if (nh == hdr_size)
+		{
+			// emit
+			::fast_io::string blob;
+			details::put_u32(blob, magic);
+			put_leb128_to(blob, blob_version);
+			put_leb128_to(blob, total);
+			put_leb128_to(blob, 0); // flags
+			put_leb128_to(blob, name_rva);
+			put_leb128_to(blob, name_len);
+			put_leb128_to(blob, enc_rva);
+			put_leb128_to(blob, enc_len);
+			for (::std::size_t c{}; c < 4; ++c)
+			{
+				put_leb128_to(blob, sec_rva[c]);
+				put_leb128_to(blob, secsz[c]);
+			}
+			blob.append(reinterpret_cast<char const *>(name.data()), name.size());
+			blob.append(reinterpret_cast<char const *>(encoding.data()), encoding.size());
+			for (::std::size_t c{sidx}; c < 4; ++c)
+			{
+				blob.append(sections[c].data(), sections[c].size());
+			}
+			return blob;
+		}
+		hdr_size = nh;
+	}
+}
+
 
 } // namespace lcblob
 } // namespace fast_io_i18n
