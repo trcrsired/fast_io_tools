@@ -27,7 +27,6 @@ try
 catch throws(::std::error e)
 {
 	::fast_io::posix_io_observer myiob{2};
-	::fast_io::operations::decay::print_freestanding_decay2<true>(myiob,
-																  ::fast_io::basic_io_scatter_t<char>{"hello\t", 6}, ::fast_io::mnp::name(e));
+	::fast_io::operations::decay::print_freestanding_decay2<true>(myiob, ::fast_io::mnp::name_message(e));
 	return 1;
 }
