@@ -189,7 +189,7 @@ consumers (DLL boundaries, `void*` args, codegen):
 | 18 | `cf128` | ppc/arm `ld _Complex` | 40 | `mthptr_m2` | MS member fn ptr — 2 words |
 | 19 | `c8` | `%c` — `char8_t` | 41 | `mthptr_m3` | MS member fn ptr — 3 words |
 | 20 | `c16` | `%lc` `%C` — `char16_t` | 42 | `mthptr_m4` | MS member fn ptr — 4 words |
-| 21 | `c32` | `char32_t` | | | |
+| 21 | `c32` | `char32_t` | 43 | `error` | `std::error` — `{domain const*, size_t}` |
 
 `other` = 0 covers user-defined types — and is also what an absent
 `ctype` param decodes to (a fmt-source field declares no C type).
@@ -223,6 +223,9 @@ pointers are **ABI-split** since their layouts differ:
   encoded in the code so a type-erased consumer knows the arg size
   without a second field. The compiler resolves the count from the
   declared type + `/vm*` model at build.
+- `error` — herbceptions `std::error`: a plain 2-word struct
+  `{error_domain_singleton const*, size_t opaque code}`. The code's
+  meaning lives in the domain's functions; emit is domain-driven.
 
 `chrono` is exclusive with the standard spec params — for a chrono arg
 the *entire* spec is the time spec (`{:>20%Y}` = literal `">20"` + `%Y`,
