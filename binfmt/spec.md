@@ -551,6 +551,9 @@ No encoding exists; compilers error out:
 ```
 header:
   u32 magic          'FCL1' = 0x314C4346  — the one fixed-width field (sync)
+  uleb128 version      format version — reader rejects files with
+                       version > its own. Slot-kind changes (e.g.
+                       yesexpr STR -> regex PROGRAM) are version bumps.
   uleb128 total_size
   uleb128 flags          reserved, 0
   strref name            "de_DE"

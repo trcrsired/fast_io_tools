@@ -119,7 +119,7 @@ int main(int argc, char **argv) try
 	::fast_io::u8string_view blob{
 		reinterpret_cast<char8_t const *>(fmp.data()), fmp.size()};
 	auto h{lcblob::read_header(blob)};
-	::fast_io::println("total=", h.total_size, " (file ", blob.size(), ")");
+	::fast_io::println("version=", h.version, " total=", h.total_size, " (file ", blob.size(), ")");
 	::fast_io::println("name_len=", h.name.size(), " enc_len=",
 			   h.encoding.size());
 	for (::std::size_t c{}; c < lcblob::cat_count; ++c)

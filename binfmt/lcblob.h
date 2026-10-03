@@ -6,7 +6,7 @@
 //
 // Layout: [header][cat_dir u32*12][pool][slot tables][records]
 //
-//   header:   u32 magic 'FCL1' | uleb total_size | uleb flags
+//   header:   u32 magic 'FCL1' | uleb version | uleb total_size | uleb flags
 //             | strref name | strref encoding | uleb cat_dir_rva
 //   cat_dir:  u32 rva per category (0 = category absent)
 //   pool:     string / program / list-body bytes (strref targets)
@@ -25,6 +25,7 @@ namespace lcblob
 {
 
 inline constexpr ::std::uint_least32_t magic{0x314C4346}; // 'FCL1'
+inline constexpr ::std::uint_least64_t blob_version{1};   // reader rejects files with version > this
 
 // categories — fixed ids
 enum lc_cat : ::std::uint_least32_t
@@ -738,7 +739,7 @@ inline ::fast_io::string build_blob(cat_src const cats[cat_count],
 			}
 		}
 
-		// hdr_size = 4 + uleb(total) + 1(flags)
+		// hdr_size = 4 + uleb(version) + uleb(total) + 1(flags)
 		//          + uleb(name_rva) + uleb(name_len)
 		//          + uleb(enc_rva) + uleb(enc_len) + uleb(cat_dir_rva)
 		// cat_dir_rva = hdr_size; pool rvas = hdr_size + 48 + off.
@@ -750,6 +751,7 @@ inline ::fast_io::string build_blob(cat_src const cats[cat_count],
 						    p.pool.size() + slots_size + records.size()};
 			::std::uint_least32_t nh{
 				4 +
+				static_cast<::std::uint_least32_t>(details::uleb_len(blob_version)) +
 				static_cast<::std::uint_least32_t>(details::uleb_len(total)) +
 				1 +
 				static_cast<::std::uint_least32_t>(details::uleb_len(name_rva)) +
@@ -775,6 +777,7 @@ inline ::fast_io::string build_blob(cat_src const cats[cat_count],
 						  records.size()};
 		::fast_io::string blob;
 		details::put_u32(blob, magic);
+		put_leb128_to(blob, blob_version);
 		put_leb128_to(blob, total);
 		put_leb128_to(blob, 0); // flags
 		put_leb128_to(blob, name_rva);
@@ -821,6 +824,7 @@ inline ::fast_io::string build_blob(cat_src const cats[cat_count],
 
 struct blob_header
 {
+	::std::uint_least64_t version{};
 	::std::uint_least64_t total_size{};
 	::std::uint_least64_t flags{};
 	::fast_io::u8string_view name{};
@@ -843,6 +847,11 @@ inline blob_header read_header(::fast_io::u8string_view blob) throws
 	}
 	::fast_io_i18n::binfmt::reader r{{blob.data() + 4, blob.size() - 4}};
 	blob_header h;
+	r.get_leb(h.version);
+	if (h.version > blob_version)
+	{
+		throw throws ::std::errc::invalid_argument;
+	}
 	r.get_leb(h.total_size);
 	r.get_leb(h.flags);
 	::std::uint_least64_t rva{}, len{};
