@@ -52,7 +52,7 @@ int main(int argc, char **argv) try
 				outname.append(cs == lcblob::blob_charset::utf8   ? ".utf8.bin"
 						   : cs == lcblob::blob_charset::utf16 ? ".utf16.bin"
 										     : ".utf32.bin",
-						   cs == lcblob::blob_charset::utf32 ? 10 : 9);
+						   cs == lcblob::blob_charset::utf8 ? 9 : 10);
 				::fast_io::obuf_file of{
 					::fast_io::at(outdir),
 					::fast_io::mnp::os_c_str(outname.c_str())};
