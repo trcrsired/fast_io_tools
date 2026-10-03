@@ -79,7 +79,7 @@ cleanly via kind, so new codes are forward-compatible. Common codes are
 | range | meaning |
 |-------|---------|
 | `0x00`–`0x3F` | core codes (this spec) — 1-byte tags |
-| `0x40`–`0xFF` | plural expression codes — still 1-byte tags |
+| `0x40`–`0xFF` | plural codes (`plural`/`count`/`form`) — 1-byte tags |
 | `0x100`–`0x3FFFFF` | reserved — future standard params (2-3-byte tags) |
 | `0x400000`+ | reserved — vendor/experimental |
 
@@ -130,9 +130,10 @@ fields — `%H` is "hour", not an arg. Different domains, different nodes.
 
 The `field` node is deliberately a **superset of fmt's format spec**:
 fmt needs fill/align/sign/`#`/`0`/width/prec/`L`/type/chrono — printf
-adds `'`-grouping, `I`-outdigits, and `hh/l/ll/j/z/t/L/q/w/wf` length —
-both are the same node. A printf compiler is just a front-end option
-that parses `%`-syntax into `field` ops.
+adds `'`-grouping and `I`-outdigits. printf **length modifiers compile
+to `ctype`** (`hh`…`wf` → i32…cf128/c8ptr…gbview/ptr) — kept in the blob for
+type-erased consumers, ignored by the in-process interpreter where the
+real C++ arg type wins.
 
 ---
 
@@ -141,7 +142,7 @@ that parses `%`-syntax into `field` ops.
 | code | param | kind | value | printf | fmt |
 |------|-------|------|-------|--------|-----|
 | 1 | arg | uleb | arg index | `%2$`→1 | `{1}` |
-| 2 | fill | bytes 1–4 | one code point | — | `{:*>8}` |
+| 2 | fill | bytes | raw fill bytes in container charset; absent → `" "`. Covers multi-byte / fullwidth / grapheme fills; zero transcode | — | `{:*>8}` |
 | 3 | align | uleb | 1`<` 2`>` 3`^` | `-`→1 | `<` `>` `^` |
 | 4 | sign | uleb | 1`+` 2`-` 3` ` | `+` ` ` | `+` `-` ` ` |
 | 5 | flag-alt | none | `#` | `#` | `#` |
@@ -151,10 +152,57 @@ that parses `%`-syntax into `field` ops.
 | 9 | flag-outdigits | none | `I` | `I` | — |
 | 10 | width | uleb | value | `%5` | `{:5}` |
 | 11 | prec | uleb | value (`.` alone → 0) | `%.3` | `{:.3}` |
-| 12 | length | uleb | enum below | `ll` `L` `w` | — |
-| 13 | length-bits | uleb | 8/16/32/64 | `%w64` | — |
-| 14 | type | uleb | enum below | `%d` | `{:d}` |
-| 15 | chrono | bytes | nested pct node sequence | — | `{:%H:%M}` |
+| 12 | ctype | uleb | enum below — declared C arg type | `%lld`→i64 | — |
+| 13 | type | uleb | conv enum below | `%d` | `{:d}` |
+| 14 | chrono | bytes | nested pct node sequence | — | `{:%H:%M}` |
+
+**ctype enum** — the C arg type, declared as `i`/`u`/`f` fixed-width codes
+instead of the length-modifier zoo. printf source always emits it;
+other front-ends emit it when they know the arg's C type. The compiler
+resolves platform meanings at build time
+(`l`→i64 on LP64 / i32 on LLP64, `z`→usize/isize, `t`→isize, `L`→ld,
+`w64`/`wf64`→i64, `q`→i64). In-process interpreters ignore it — the C++
+arg type is authoritative — but it's kept in the blob for type-erased
+consumers (DLL boundaries, `void*` args, codegen):
+
+| code | ctype | from | code | ctype | from |
+|------|-------|------|------|-------|------|
+| 0 | `other` | user-defined / absent | 18 | `cf64` | `double _Complex` |
+| 1 | `i32` | `%d` `%hhd` `%hd` | 19 | `cf80` | x86 `ld _Complex` |
+| 2 | `i64` | `%lld` `%jd` `%w64` | 20 | `cf128` | ppc/arm `ld _Complex` |
+| 3 | `i128` | ext | 21 | `c8` | `%c` — `char8_t` |
+| 4 | `u32` | `%u` `%x` `%hhu` | 22 | `c16` | `%lc` — `char16_t` |
+| 5 | `u64` | `%llu` `%ju` | 23 | `c32` | `char32_t` |
+| 6 | `u128` | ext | 24 | `cebc` | EBCDIC codepage char |
+| 7 | `usize` | `%zu` `%zo` … | 25 | `c8ptr` | `%s` — `char8_t const*` NUL |
+| 8 | `isize` | `%zd` `%td` `%jd` | 26 | `c16ptr` | `%ls` — `char16_t const*` NUL |
+| 9 | `f16` | — (binary16) | 27 | `c32ptr` | `char32_t const*` NUL |
+| 10 | `bf16` | — (bfloat16) | 28 | `ebcptr` | UTF-EBCDIC string, NUL |
+| 11 | `f32` | — | 29 | `gbptr` | GB18030 string, NUL |
+| 12 | `f64` | `%f` `%e` `%g` `%a` | 30 | `c8view` | `{char8_t const*, len}` |
+| 13 | `f80` | `%Lf` (x86 ld) | 31 | `c16view` | `{char16_t const*, len}` |
+| 14 | `f128` | `%Lf` (ppc/arm ld) | 32 | `c32view` | `{char32_t const*, len}` |
+| 15 | `cf16` | — | 33 | `ebcview` | UTF-EBCDIC `{ptr, len}` |
+| 16 | `cbf16` | — | 34 | `gbview` | GB18030 `{ptr, len}` |
+| 17 | `cf32` | `float _Complex` | 35 | `ptr` | `%p` — `void const*` |
+
+`other` = 0 covers user-defined types — and is also what an absent
+`ctype` param decodes to (a fmt-source field declares no C type).
+
+No `i8`/`i16`/`u8`/`u16` — C varargs promote `hh`/`h` args to `int`.
+No complex ints — GNU `_Complex int` and `std::complex<int>` have no
+sane conversion semantic; they fall to `other`. `cf*` never appears in
+printf-source programs (no complex conversion exists) — it's metadata
+for fast_io-source / codegen-produced programs.
+
+Chars are the fixed-width types (`c8`/`c16`/`c32`) plus `cebc` (one
+EBCDIC codepage byte) — never `wchar_t` (platform-width, ambiguous), no
+`cgb` (a GB18030 char is 1–4 bytes, i.e. already a `gbview`). Strings
+split into the two real shapes (`*ptr` NUL-terminated vs `*view`
+ptr+len) × three byte charsets: UTF code units, UTF-EBCDIC (`ebc*`),
+GB18030 (`gb*`). The encoded forms are byte strings — the tag tells the
+consumer how to transcode to the container charset. One `ptr` covers
+all raw pointers.
 
 `chrono` is exclusive with the standard spec params — for a chrono arg
 the *entire* spec is the time spec (`{:>20%Y}` = literal `">20"` + `%Y`,
@@ -198,9 +246,6 @@ decompiled to printf always emits `d`):
 | 20 | `P` | pointer upper (fmt only) |
 | 21 | `C` | wide char (glibc `%C`) |
 | 22 | `S` | wide string (glibc `%S`) |
-
-**length enum**: `0` none · `1` hh · `2` h · `3` l · `4` ll · `5` j ·
-`6` z · `7` t · `8` L · `9` q · `10` w · `11` wf (+ length-bits 8/16/32/64).
 
 Example — `"%08.3f"` and `"{:08.3f}"` compile to the same node:
 
@@ -381,7 +426,7 @@ an embedded pct program via the `chrono` param:
 0B               tag (2<<2)|3   field, list
   16             len = 22
   05 00          arg = 0
-  3E             tag (15<<2)|2  chrono, bytes
+  3A             tag (14<<2)|2  chrono, bytes
     12             len = 18     → bare nodes, no inner header
       0F 02 51 20    %Y
       06 01 "-"      literal
