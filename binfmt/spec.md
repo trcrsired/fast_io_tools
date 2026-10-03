@@ -294,75 +294,39 @@ Also folded to literal bytes by the compiler (never nodes): `%%`→`%`,
 ## Part 5 — plural (gettext)
 
 A gettext catalog entry is `msgid` / `msgid_plural` / `msgstr[0..N-1]`
-plus a plural rule — a C-expression over the count `n`
-(`nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<12||n%100>14) ? 1 : 2`).
-The rule is a pure expression tree — it maps straight onto nodes.
-
-### `plural` node children — ordered
-
-```
-(plural (count <arg-idx>)  (expr <ops...>)  (form <prog>)  (form <prog>) ...)
-
-1st child: count   — uleb, which call arg holds n
-2nd child: expr    — list of flat op nodes, postfix order
-rest:      form×N  — bytes nodes; each payload is a complete binfmt
-                     program (usually family=stdio, compiled from msgstr[N])
-```
-
-### The rule is postfix, not a tree
-
-An expression *tree* would be nearly a real language — recursive parser,
-recursive evaluator. Instead the compiler flattens the gettext AST to
-**postfix** at build time: the `expr` node is a flat list of op nodes,
-evaluation is a stack machine — linear scan, no recursion, ~15 lines:
+plus a plural rule. **The rule does not live in the blob** — it is a
+fixed function of `n` per locale, and this format is not a programming
+language. The caller evaluates the rule (a native per-locale function,
+selected by a rule id stored in the lcblob catalog metadata) and passes
+the chosen **form index**; the `plural` node is just an ordered list of
+programs:
 
 ```
-plural=(n==1) ? 0 : 1   →  (expr (n)(const 1)(eq)(const 0)(const 1)(tern))
-n%10==1 && n%100!=11    →  (expr (n)(const 10)(mod)(const 1)(eq)
-                                 (n)(const 100)(mod)(const 11)(ne)(and))
+(plural (form <prog>)  (form <prog>) ...)
+
+children: form×N — bytes nodes; each payload is a complete binfmt
+                   program (usually family=stdio, compiled from msgstr[N])
 ```
 
-Evaluation: `eval(expr)` runs the stack machine with `n` = the `count`
-arg; result selects `form` index (clamped `0..N-1`); that program runs.
-`&&`/`||` evaluate eagerly — safe, because exprs are pure and div/mod
-by zero return 0, making short-circuit semantically unobservable.
-The forms are ordinary programs — gettext printf-isms (`%1$s`) compile
-through the stdio front-end into `field` nodes.
+Interpretation: caller supplies index `i` → run `form[i]`'s program.
+`form[0]` is the singular/last-resort form. The forms are ordinary
+programs — gettext printf-isms (`%1$s`, `%d`…) compile through the stdio
+front-end into `field` nodes, so a form can consume the count arg like
+any other (`"%d files"` just prints it).
 
-### op codes inside `expr` — all flat, postfix
+The lcblob side carries `plural_rule` as an integer slot — an index into
+fast_io's own plural-rule table (CLDR rules implemented as native code),
+*not* an encoded expression.
 
-| code | node | kind | stack action |
-|------|------|------|--------------|
-| 0x40 | `plural` | list | children: count, expr, form×N |
-| 0x41 | `count` | uleb | arg index of `n` |
-| 0x42 | `form` | bytes | complete program blob |
-| 0x43 | `expr` | list | flat op nodes, postfix order |
-| 0x50 | `const` | sleb | push i64 literal |
-| 0x51 | `n` | none | push n |
-| 0x52 | `neg` | none | `a → -a` |
-| 0x53 | `not` | none | `a → !a` |
-| 0x54 | `and` | none | `a,b → a&&b` |
-| 0x55 | `or` | none | `a,b → a\|\|b` |
-| 0x56 | `eq` | none | `==` |
-| 0x57 | `ne` | none | `!=` |
-| 0x58 | `lt` | none | `<` |
-| 0x59 | `le` | none | `<=` |
-| 0x5A | `gt` | none | `>` |
-| 0x5B | `ge` | none | `>=` |
-| 0x5C | `add` | none | `+` |
-| 0x5D | `sub` | none | `-` |
-| 0x5E | `mul` | none | `*` |
-| 0x5F | `div` | none | `/` — divisor 0 → 0 |
-| 0x60 | `mod` | none | `%` — divisor 0 → 0 |
-| 0x61 | `tern` | none | `c,a,b → c?a:b` |
+| code | node | kind | payload |
+|------|------|------|---------|
+| 0x40 | `plural` | list | children: `form`×N only |
+| 0x41 | `form` | bytes | complete program blob |
 
-Evaluation is i64; malformed stacks (underflow, leftover ≠1) are
-structural errors caught by the bounds-checked walk.
-
-### Example — `n != 1` English plural
+### Example — English plural
 
 ```
-(plural (count 0) (expr (n)(const 1)(ne)) (form P0) (form P1))
+(plural (form "%d file") (form "%d files"))
 ```
 
 ---
@@ -389,21 +353,17 @@ each `%X` directive is 4 bytes, e.g. `%Y`:
   51 20          tag (20<<2)|1  conv = 32 ('%Y')
 ```
 
-Plural, `n != 1` + `"%d file"` / `"%d files"` = 51 bytes:
+Plural, `"%d file"` / `"%d files"` — the caller picks the index = 38 bytes:
 
 ```
 04               family=4 (gettext)
-31               content_size = 49
+24               content_size = 36
 83 02            tag (0x40<<2)|3 plural, list
-  2E             len = 46
-  85 02 00       tag (0x41<<2)|1 count = 0
-  8F 02          tag (0x43<<2)|3 expr, list
-    07             len = 7
-    C4 02          tag (0x51<<2)|0 n
-    C1 02 01       tag (0x50<<2)|1 const = 1
-    DC 02          tag (0x57<<2)|0 ne
-  8A 02 <len> <P0 blob>   form  "%d file"
-  8A 02 <len> <P1 blob>   form  "%d files"
+  21             len = 33
+  86 02 0D       tag (0x41<<2)|2 form, len=13
+    <blob for "%d file"  = family3: (field (type d))(literal " file")>
+  86 02 0E       tag (0x41<<2)|2 form, len=14
+    <blob for "%d files">
 ```
 
 ---
