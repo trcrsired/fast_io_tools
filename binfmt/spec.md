@@ -389,17 +389,26 @@ locale slot (itself a blob) with a bounded recursion depth.
      %OB/%OC → ab_alt_mon / alt forms (ru_RU etc. use these)
 ```
 
-`%Ey` survives because it is an *era* year, not a truncated AD year.
-`%Oy` does not — it's year-mod-100 in alternative digits.
+`%Ey` compiles to `modifier E` + `conv Y` — the same node as `%EY`, since
+year-of-era needs no truncation. `%Oy`/`%y`/`%g`/`%D` get the 4-digit
+substitution described below.
 
-### Dropped — no 2-digit years
+### Substituted — 2-digit years become 4-digit
 
-`%y`, `%Oy`, `%g`, `%D` — **not encodable.** Two-digit years are
-ambiguity-shaped bugs; nothing in this format emits one.
+`%y`, `%Oy`, `%g`, `%D` are **not encodable** as two-digit years — the
+format cannot represent truncation. The compiler substitutes the 4-digit
+equivalent instead of rejecting:
 
-Impact: ~108 locale files use `%y` (mostly in `d_fmt`/`date_fmt`; the C
-locale itself has `d_fmt "%m//%d//%y"`). Decision needed: compiler rejects
-those slots outright, or data gets fixed upstream.
+| source | emits | notes |
+|--------|-------|-------|
+| `%y` | `conv Y` | 2-digit → 4-digit year |
+| `%Oy` | `modifier O` + `conv Y` | alt-form 4-digit year |
+| `%Ey` | `modifier E` + `conv Y` | identical encoding to `%EY` — era year |
+| `%g` | `conv G` | ISO week-year 2-digit → 4-digit |
+| `%D` | `pct m`, `"/"`, `pct d`, `"/"`, `pct Y` | `%m/%d/%y` expansion |
+
+This is deliberately lossy: a locale that asked for year-mod-100 gets the
+full year. Better a wider year than a wrong one.
 
 Also folded to literal bytes by the compiler (never nodes): `%%`→`%`,
 `%n`→`\n`, `%t`→`\t`, `{{`→`{`, `}}`→`}`.
@@ -530,7 +539,9 @@ No encoding exists; compilers error out:
 - `!r` `!a` `!s` — repr dispatch
 - `{:{}}` — nested `{}` inside width/precision
 - `,`/`_` digit-group specifiers
-- `%y` `%Oy` `%g` `%D` — 2-digit years (era `%Ey`/`%EY`/`%EC` are kept)
+- `%y` `%Oy` `%g` `%D` as two-digit years — the compiler substitutes the
+  4-digit equivalent (`%Y`/`%OY`/`%G`/`%m/%d/%Y`; `%Ey` shares the `%EY`
+  encoding)
 - unknown convs; colons on non-`z`; unterminated fields; lone `}`
 
 ---
@@ -592,7 +603,8 @@ measurement.
 
 ## Open items
 
-1. `%y` fallout: ~108 locales — reject slot / fix data / keep compat code?
+1. ~~`%y` fallout~~ — resolved: 2-digit year forms compile to their
+   4-digit equivalents (`%y`→`%Y`, `%g`→`%G`, `%D`→`%m/%d/%Y`)
 2. era `fmt` inside `era_rec` is a pct program — era fmts can themselves
    contain `%E` directives (`%EC%Ey年`); recursion is depth-capped ≤ 8.
 3. `field` inside `pct` (chrono nested `{}`) — allowed; depth-capped.

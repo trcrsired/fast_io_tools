@@ -1,556 +1,407 @@
 #pragma once
 
 // binfmt — compiled binary format-string program format.
-// See readme.md in this directory for the full specification.
+// See spec.md in this directory. Wire format: bare node sequences of
+// LEB128-tagged nodes; no program header, the embedding bound ends it.
 //
-// Header-only, freestanding-friendly: only <cstdint>/<cstddef>/<cstring>
-// plus std::string as the encoder's byte sink. The decoder works purely
-// on byte spans and does bounds checking on every read.
+// Tooling-side header: uses fast_io containers. Everything that can
+// report an error reports it through herbceptions
+// (throw throws ::std::errc) — this header is built with -fherbceptions.
 
 #include <cstdint>
 #include <cstddef>
-#include <cstring>
-#include <string>
+#include <span>
 #include <string_view>
+#include <optional>
 
 namespace fast_io_i18n
 {
 namespace binfmt
 {
 
-using u8 = ::std::uint8_t;
-using u32 = ::std::uint32_t;
-using i32 = ::std::int32_t;
+// ---------------------------------------------------------------------------
+// node framing: [uleb128 tag][payload], tag = (code << 3) | payload_kind
+// (kind is 3 bits — values 0-4 are used; 5-7 reserved)
+// ---------------------------------------------------------------------------
 
-inline constexpr u32 format_version{1};
+inline constexpr ::std::uint_least8_t kind_none{0};
+inline constexpr ::std::uint_least8_t kind_uleb{1};
+inline constexpr ::std::uint_least8_t kind_bytes{2};
+inline constexpr ::std::uint_least8_t kind_list{3};
+inline constexpr ::std::uint_least8_t kind_sleb{4};
+// kinds 5-7 reserved
 
-enum class family : u8
+// ---------------------------------------------------------------------------
+// top-level op codes
+// ---------------------------------------------------------------------------
+
+inline constexpr ::std::uint_least32_t op_literal{1};
+inline constexpr ::std::uint_least32_t op_field{2};
+inline constexpr ::std::uint_least32_t op_pct{3};
+// op 4 free
+inline constexpr ::std::uint_least32_t op_plural{0x40};
+inline constexpr ::std::uint_least32_t op_plural_count{0x41};
+inline constexpr ::std::uint_least32_t op_plural_form{0x42};
+
+// ---------------------------------------------------------------------------
+// field child param codes
+// ---------------------------------------------------------------------------
+
+enum class field_param : ::std::uint_least32_t
 {
-	fmt = 1,	// fmt.dev / std::format replacement fields
-	pct = 2,	// strftime/chrono % directives + generic %-letter slots
-	stdio = 3,	// printf conversions
+	arg = 1,
+	fill = 2,
+	align = 3,
+	sign = 4,
+	flag_alt = 5,
+	flag_zero = 6,
+	flag_group = 7,
+	flag_locale = 8,
+	flag_outdigits = 9,
+	width = 10,
+	prec = 11,
+	ctype = 12,
+	type = 13,
+	chrono = 14,
+	element = 15,
+	flag_upper = 16,
 };
 
-enum class opcode : u8
+// align values
+inline constexpr ::std::uint_least32_t align_left{1};
+inline constexpr ::std::uint_least32_t align_right{2};
+inline constexpr ::std::uint_least32_t align_center{3};
+
+// sign values
+inline constexpr ::std::uint_least32_t sign_plus{1};
+inline constexpr ::std::uint_least32_t sign_minus{2};
+inline constexpr ::std::uint_least32_t sign_space{3};
+
+// ---------------------------------------------------------------------------
+// pct child param codes
+// ---------------------------------------------------------------------------
+
+enum class pct_param : ::std::uint_least32_t
 {
-	end = 0,
-	literal = 1,
-	field_fmt = 2,
-	field_stdio = 3,
-	field_pct = 4,
+	conv = 20,
+	pad = 22,	// bit0 '-' bit1 '_' bit2 '0'
+	casef = 23,	// bit0 '^' bit1 '#'
+	modifier = 24,	// 1 E (era), 2 O (alternative)
+	colons = 25,	// 1-3, conv z only
+	// 10 width, 11 prec are shared with field_param codes
 };
 
-// Safety here is structural, not enforced: the op set cannot express
-// writes, lookups, or dynamic specs — there are no encodings for named
-// args, arg-driven width/precision, !r-style conversions, or %n/%m, and
-// an argref is only an index (arg content can never become format code).
-// The blob is trusted compiled data — same trust level as generated .cc
-// tables — so the decoder does bounds-checking for well-formedness only.
+inline constexpr ::std::uint_least32_t pct_modifier_era{1};
+inline constexpr ::std::uint_least32_t pct_modifier_alt{2};
 
-enum class argref_kind : u8
+// ---------------------------------------------------------------------------
+// pct conv enum (spec Part 4)
+// ---------------------------------------------------------------------------
+
+enum class pct_conv : ::std::uint_least32_t
 {
-	automatic = 0,	// fmt {} / stdio next arg
-	index = 1,	// fmt {N} / stdio %N$ (0-based; bound-checked by user)
-};
-
-enum class dynparam_kind : u8
-{
-	none = 0,
-	value = 1,	// literal value only — no arg-driven params
-};
-
-enum class fmt_align : u8
-{
-	none = 0,
-	left = 1,	// <
-	right = 2,	// >
-	center = 3,	// ^
-};
-
-enum class fmt_sign : u8
-{
-	none = 0,
-	plus = 1,
-	minus = 2,
-	space = 3,
-};
-
-// FIELD_FMT flags bitfield
-inline constexpr u8 fmt_flag_alternate{1u << 0};	// '#'
-inline constexpr u8 fmt_flag_zero{1u << 1};		// '0'
-inline constexpr u8 fmt_flag_locale{1u << 2};	// 'L'
-
-enum class spec_kind : u8
-{
-	none = 0,
-	standard = 1,
-	chrono = 2,	// payload: embedded pct blob
-};
-
-// FIELD_STDIO flags bitfield
-inline constexpr u8 stdio_flag_minus{1u << 0};
-inline constexpr u8 stdio_flag_plus{1u << 1};
-inline constexpr u8 stdio_flag_space{1u << 2};
-inline constexpr u8 stdio_flag_alternate{1u << 3};	// '#'
-inline constexpr u8 stdio_flag_zero{1u << 4};
-inline constexpr u8 stdio_flag_group{1u << 5};		// '\''
-inline constexpr u8 stdio_flag_glibc_i{1u << 6};	// 'I' outdigits
-
-enum class stdio_length : u8
-{
-	none = 0,
-	hh = 1,
-	h = 2,
-	l = 3,
-	ll = 4,
-	j = 5,
-	z = 6,
-	t = 7,
-	L = 8,
-	q = 9,	// glibc alias for ll
-	w = 10,	// C23 intN_t — length_bits carries N
-	wf = 11,	// C23 int_fastN_t — length_bits carries N
-};
-
-// FIELD_PCT bitfields
-inline constexpr u8 pct_pad_minus{1u << 0};	// '-'
-inline constexpr u8 pct_pad_underscore{1u << 1};	// '_'
-inline constexpr u8 pct_pad_zero{1u << 2};	// '0'
-inline constexpr u8 pct_case_upper{1u << 0};	// '^'
-inline constexpr u8 pct_case_swap{1u << 1};	// '#'
-
-enum class pct_modifier : u8
-{
-	none = 0,
-	era = 1,		// E
-	alternative = 2,	// O
+	a = 1,	// weekday abbr
+	A = 2,	// weekday full
+	b = 3,	// month abbr (absorbs %h)
+	B = 4,	// month full
+	c = 5,	// composite -> d_t_fmt
+	C = 6,	// century
+	d = 7,	// day of month
+	e = 8,	// day of month, space-padded
+	F = 9,	// ISO date composite
+	G = 10,	// ISO week-numbering year
+	H = 11,	// hour 00-23
+	I = 12,	// hour 01-12
+	j = 13,	// day of year
+	k = 14,	// hour 0-23 space-pad
+	l = 15,	// hour 1-12 space-pad
+	m = 16,	// month
+	M = 17,	// minute
+	p = 18,	// AM/PM
+	P = 19,	// am/pm lowercase
+	r = 20,	// composite -> t_fmt_ampm
+	R = 21,	// %H:%M
+	s = 22,	// seconds since epoch
+	S = 23,	// second
+	T = 24,	// %H:%M:%S
+	u = 25,	// weekday Mon=1..Sun=7
+	U = 26,	// week number (Sunday)
+	V = 27,	// ISO week number
+	w = 28,	// weekday Sun=0..Sat=6
+	W = 29,	// week number (Monday)
+	x = 30,	// composite -> d_fmt
+	X = 31,	// composite -> t_fmt
+	Y = 32,	// year (full)
+	z = 33,	// tz offset
+	Z = 34,	// tz name
+	plus = 35,	// composite -> date_fmt
+	iso8601 = 36,
+	iso8601_utc = 37,
+	fracsec = 38,
 };
 
 // ---------------------------------------------------------------------------
-// payload structs (encoder side) — strings as views; the builder copies
+// ctype enum (spec Part 3) — declared C arg type, blob metadata
 // ---------------------------------------------------------------------------
 
-struct argref
+enum class ctype : ::std::uint_least32_t
 {
-	argref_kind kind{argref_kind::automatic};
-	u32 index{};
-};
-
-struct dynparam
-{
-	dynparam_kind kind{dynparam_kind::none};
-	u32 value{};
-};
-
-struct fmt_standard_spec
-{
-	::std::string_view fill{};	// 0..4 bytes, one code point
-	fmt_align align{fmt_align::none};
-	fmt_sign sign{fmt_sign::none};
-	u8 flags{};
-	dynparam width{};
-	dynparam precision{};
-	u8 type{};			// ASCII type char, 0 = none
-};
-
-struct field_fmt_desc
-{
-	argref arg{};
-	spec_kind spec{spec_kind::none};
-	fmt_standard_spec standard{};		// when spec==standard
-	::std::string_view chrono_blob{};	// when spec==chrono: complete blob
-};
-
-struct field_stdio_desc
-{
-	argref arg{};				// automatic or index only
-	u8 flags{};
-	stdio_length length{stdio_length::none};
-	u8 length_bits{};
-	u8 conv{};				// ASCII conversion char
-	dynparam width{};
-	dynparam precision{};
-};
-
-struct field_pct_desc
-{
-	u8 conv{};				// ASCII conversion char
-	u8 pad_flags{};
-	u8 case_flags{};
-	pct_modifier modifier{pct_modifier::none};
-	u8 colons{};
-	bool has_width{};
-	u32 width{};
+	other = 0,	// user-defined / absent
+	i32 = 1,
+	i64 = 2,
+	i128 = 3,
+	u32 = 4,
+	u64 = 5,
+	u128 = 6,
+	f16 = 7,
+	bf16 = 8,
+	f32 = 9,
+	f64 = 10,
+	f80 = 11,
+	f128 = 12,
+	cf16 = 13,
+	cbf16 = 14,
+	cf32 = 15,
+	cf64 = 16,
+	cf80 = 17,
+	cf128 = 18,
+	c8 = 19,
+	c16 = 20,
+	c32 = 21,
+	cebc = 22,
+	c8ptr = 23,
+	c16ptr = 24,
+	c32ptr = 25,
+	ebcptr = 26,
+	gbptr = 27,
+	c8view = 28,
+	c16view = 29,
+	c32view = 30,
+	ebcview = 31,
+	gbview = 32,
+	ptr = 33,
+	fptr = 34,
+	fldptr_i = 35,	// Itanium member object ptr — 1 word
+	mthptr_i = 36,	// Itanium member fn ptr — 2 words
+	fldptr_m1 = 37,
+	fldptr_m2 = 38,
+	mthptr_m1 = 39,
+	mthptr_m2 = 40,
+	mthptr_m3 = 41,
+	mthptr_m4 = 42,
+	error = 43,	// herbceptions std::error — {domain const*, size_t}
 };
 
 // ---------------------------------------------------------------------------
-// encoder
+// type enum (spec Part 3)
 // ---------------------------------------------------------------------------
 
-class builder
+enum class conv_type : ::std::uint_least32_t
 {
-public:
-	explicit builder(family fam) noexcept
+	d = 1,
+	u = 2,
+	o = 3,
+	x = 4,
+	b = 5,
+	c = 6,
+	s = 7,
+	debug = 8,	// '?'
+	p = 9,
+	addr = 10,	// addrvw/pointervw/itervw/funcvw/fieldptrvw
+	mth = 11,	// methodvw
+	dec = 12,	// fast_io decimal shortest (float default)
+	decp = 13,
+	fix = 14,
+	fixp = 15,
+	sci = 16,
+	scip = 17,
+	gen = 18,
+	genp = 19,
+	hexf = 20,
+	hexfp = 21,
+	rng = 22,
+	rngn = 23,
+	rngm = 24,
+};
+
+// ---------------------------------------------------------------------------
+// encoder — appends to a byte buffer. LEB128 encode/decode reuse
+// fast_io's serializations/leb128.h (pr_rsv_leb128_impl / scn_cnt_*).
+// ---------------------------------------------------------------------------
+
+template <::fast_io::details::my_integral T>
+inline void put_leb128_to(::fast_io::string &buf, T v) noexcept
+{
+	char tmp[::fast_io::details::leb128_length_val<T>];
+	char *e{::fast_io::details::pr_rsv_leb128_impl(tmp, v)};
+	buf.append(tmp, e);
+}
+
+struct encoder
+{
+	::fast_io::string buf{};
+
+	void tag(::std::uint_least32_t code, ::std::uint_least8_t kind) noexcept
 	{
-		buf_.resize(8);
-		write_u32_at(0, static_cast<u32>(fam) | (format_version << 8));
+		put_leb128_to(buf, (static_cast<::std::uint_least64_t>(code) << 3) | kind);
 	}
-
-	void op_literal(::std::string_view bytes)
+	void node_none(::std::uint_least32_t code) noexcept
 	{
-		put_u8(static_cast<u8>(opcode::literal));
-		put_u32(static_cast<u32>(bytes.size()));
-		buf_.append(bytes.data(), bytes.size());
+		tag(code, kind_none);
 	}
-
-	void op_field_fmt(field_fmt_desc const& d)
+	void node_uleb(::std::uint_least32_t code, ::std::uint_least64_t v) noexcept
 	{
-		put_u8(static_cast<u8>(opcode::field_fmt));
-		put_argref(d.arg);
-		put_u8(static_cast<u8>(d.spec));
-		switch (d.spec)
+		tag(code, kind_uleb);
+		put_leb128_to(buf, v);
+	}
+	void node_sleb(::std::uint_least32_t code, ::std::int_least64_t v) noexcept
+	{
+		tag(code, kind_sleb);
+		put_leb128_to(buf, v);
+	}
+	void node_bytes(::std::uint_least32_t code, ::std::string_view bytes) noexcept
+	{
+		tag(code, kind_bytes);
+		put_leb128_to(buf, bytes.size());
+		buf.append(bytes.data(), bytes.size());
+	}
+	// list: count written first, children appended after (their own bytes)
+	void node_list_begin(::std::uint_least32_t code, ::std::uint_least64_t nchildren) noexcept
+	{
+		tag(code, kind_list);
+		put_leb128_to(buf, nchildren);
+	}
+	void node_list(::std::uint_least32_t code, ::std::span<::std::string_view const> children) noexcept
+	{
+		node_list_begin(code, children.size());
+		for (auto c : children)
 		{
-		case spec_kind::standard:
-		{
-			auto const& s{d.standard};
-			put_u8(static_cast<u8>(s.fill.size()));
-			buf_.append(s.fill.data(), s.fill.size());
-			put_u8(static_cast<u8>(s.align));
-			put_u8(static_cast<u8>(s.sign));
-			put_u8(s.flags);
-			put_dynparam(s.width);
-			put_dynparam(s.precision);
-			put_u8(s.type);
-			break;
-		}
-		case spec_kind::chrono:
-			put_u32(static_cast<u32>(d.chrono_blob.size()));
-			buf_.append(d.chrono_blob.data(), d.chrono_blob.size());
-			break;
-		default:
-			break;
+			buf.append(c.data(), c.size());
 		}
 	}
-
-	void op_field_stdio(field_stdio_desc const& d)
+	void literal(::std::string_view bytes) noexcept
 	{
-		put_u8(static_cast<u8>(opcode::field_stdio));
-		put_argref(d.arg);
-		put_u8(d.flags);
-		put_u8(static_cast<u8>(d.length));
-		put_u8(d.length_bits);
-		put_u8(d.conv);
-		put_dynparam(d.width);
-		put_dynparam(d.precision);
-	}
-
-	void op_field_pct(field_pct_desc const& d)
-	{
-		put_u8(static_cast<u8>(opcode::field_pct));
-		put_u8(d.conv);
-		put_u8(d.pad_flags);
-		put_u8(d.case_flags);
-		put_u8(static_cast<u8>(d.modifier));
-		put_u8(d.colons);
-		put_u8(d.has_width ? 1 : 0);
-		if (d.has_width)
-			put_u32(d.width);
-	}
-
-	[[nodiscard]] ::std::string finish()
-	{
-		put_u8(static_cast<u8>(opcode::end));
-		write_u32_at(4, static_cast<u32>(buf_.size()) - 8u);
-		return ::std::move(buf_);
-	}
-
-private:
-	::std::string buf_;
-
-	void put_u8(u8 v)
-	{
-		buf_.push_back(static_cast<char>(v));
-	}
-	void put_u32(u32 v)
-	{
-		char b[4];
-		::std::memcpy(b, __builtin_addressof(v), 4);
-		buf_.append(b, 4);
-	}
-	void write_u32_at(::std::size_t pos, u32 v)
-	{
-		::std::memcpy(buf_.data() + pos, __builtin_addressof(v), 4);
-	}
-	void put_argref(argref const& a)
-	{
-		put_u8(static_cast<u8>(a.kind));
-		if (a.kind == argref_kind::index)
-			put_u32(a.index);
-	}
-	void put_dynparam(dynparam const& p)
-	{
-		put_u8(static_cast<u8>(p.kind));
-		if (p.kind == dynparam_kind::value)
-			put_u32(p.value);
+		node_bytes(op_literal, bytes);
 	}
 };
 
 // ---------------------------------------------------------------------------
-// decoder — bounds-checked cursor over a blob
+// decoder — bounds-checked cursor over a program's byte span.
+// LEB128 reads go through scan() on an ibuffer_view: end-of-input throws
+// std::error (parse domain) by itself; structural violations throw
+// std::errc::invalid_argument here.
 // ---------------------------------------------------------------------------
 
 struct reader
 {
-	u8 const* cur{};
-	u8 const* end{};
+	::fast_io::u8ibuffer_view iv{};
 
-	bool get_u8(u8& v) noexcept
+	constexpr reader() noexcept = default;
+	constexpr reader(::std::u8string_view sv) noexcept
+	    : iv{sv.data(), sv.data() + sv.size()}
 	{
-		if (cur >= end)
-			return false;
-		v = *cur++;
-		return true;
 	}
-	bool get_u32(u32& v) noexcept
+	constexpr reader(::fast_io::u8string_view sv) noexcept
+	    : iv{sv.data(), sv.data() + sv.size()}
 	{
-		if (static_cast<::std::size_t>(end - cur) < 4)
-			return false;
-		::std::memcpy(__builtin_addressof(v), cur, 4);
-		cur += 4;
-		return true;
 	}
-	bool get_bytes(::std::string_view& v, u32 n) noexcept
+	// byte buffer view: chars reinterpreted as u8 (blob payloads are
+	// charset bytes; container charset is a blob-level property)
+	constexpr reader(::std::string_view sv) noexcept
+	    : iv{reinterpret_cast<char8_t const *>(sv.data()),
+		 reinterpret_cast<char8_t const *>(sv.data() + sv.size())}
 	{
-		if (static_cast<::std::size_t>(end - cur) < n)
-			return false;
-		v = {reinterpret_cast<char const*>(cur), n};
-		cur += n;
-		return true;
+	}
+
+	template <::fast_io::details::my_integral T>
+	void get_leb(T &v) throws
+	{
+		::fast_io::scan(iv, ::fast_io::mnp::leb128_get(v));
+	}
+
+	void get_bytes(::std::size_t n, ::fast_io::u8string_view &v) throws
+	{
+		if (static_cast<::std::size_t>(iv.end_ptr - iv.curr_ptr) < n)
+		{
+			throw throws ::std::errc::invalid_argument;
+		}
+		v = ::fast_io::u8string_view{iv.curr_ptr, n};
+		iv.curr_ptr += n;
+	}
+
+	[[nodiscard]] bool empty() const noexcept
+	{
+		return iv.curr_ptr == iv.end_ptr;
+	}
+	[[nodiscard]] char8_t const *cur() const noexcept
+	{
+		return iv.curr_ptr;
 	}
 };
 
-// Parse a blob header. On success `r` is positioned at the first op.
-inline bool open_program(u8 const* blob, ::std::size_t blob_size,
-			 family& fam, reader& r) noexcept
+struct node_head
 {
-	if (blob_size < 8)
-		return false;
-	u32 fv{}, size{};
-	::std::memcpy(__builtin_addressof(fv), blob, 4);
-	::std::memcpy(__builtin_addressof(size), blob + 4, 4);
-	fam = static_cast<family>(fv & 0xff);
-	u32 ver{(fv >> 8) & 0xff};
-	if (ver != format_version || 8ull + size > blob_size)
-		return false;
-	r.cur = blob + 8;
-	r.end = r.cur + size;
-	return true;
-}
-
-inline bool open_program(::std::string_view blob, family& fam, reader& r) noexcept
-{
-	return open_program(reinterpret_cast<u8 const*>(blob.data()), blob.size(), fam, r);
-}
-
-// Decoded op views — all string_view/name members point into the blob.
-struct dec_argref
-{
-	argref_kind kind{};
-	u32 index{};
+	::std::uint_least32_t code{};
+	::std::uint_least8_t kind{};
 };
 
-struct dec_dynparam
+// Read one node tag. On success the reader is positioned at the payload.
+// Out-param: this toolchain zeroes the upper bytes of register-sized
+// aggregate returns from functions that make calls — out-params avoid it.
+inline void next_tag(reader &r, node_head &h) throws
 {
-	dynparam_kind kind{};
-	u32 value{};
-};
-
-struct dec_field_fmt
-{
-	dec_argref arg{};
-	spec_kind spec{};
-	// standard:
-	::std::string_view fill{};
-	fmt_align align{};
-	fmt_sign sign{};
-	u8 flags{};
-	dec_dynparam width{}, precision{};
-	u8 type{};
-	// chrono:
-	::std::string_view chrono_blob{};
-};
-
-struct dec_field_stdio
-{
-	dec_argref arg{};
-	u8 flags{};
-	stdio_length length{};
-	u8 length_bits{};
-	u8 conv{};
-	dec_dynparam width{}, precision{};
-};
-
-struct dec_field_pct
-{
-	u8 conv{};
-	u8 pad_flags{};
-	u8 case_flags{};
-	pct_modifier modifier{};
-	u8 colons{};
-	bool has_width{};
-	u32 width{};
-};
-
-inline bool read_argref(reader& r, dec_argref& a) noexcept
-{
-	u8 k{};
-	if (!r.get_u8(k))
-		return false;
-	a.kind = static_cast<argref_kind>(k);
-	switch (a.kind)
+	::std::uint_least64_t tag{};
+	r.get_leb(tag);
+	h.code = static_cast<::std::uint_least32_t>(tag >> 3);
+	h.kind = static_cast<::std::uint_least8_t>(tag & 7u);
+	if (h.kind > kind_sleb)
 	{
-	case argref_kind::automatic:
-		return true;
-	case argref_kind::index:
-		return r.get_u32(a.index);
-	default:
-		return false;
+		throw throws ::std::errc::invalid_argument;
 	}
 }
 
-inline bool read_dynparam(reader& r, dec_dynparam& p) noexcept
+// Skip the payload of a node whose tag was already read.
+inline void skip_payload(reader &r, node_head h) throws
 {
-	u8 k{};
-	if (!r.get_u8(k))
-		return false;
-	p.kind = static_cast<dynparam_kind>(k);
-	switch (p.kind)
+	::std::uint_least64_t v{};
+	switch (h.kind)
 	{
-	case dynparam_kind::none:
-		return true;
-	case dynparam_kind::value:
-		return r.get_u32(p.value);
-	default:
-		return false;
+	case kind_none:
+		return;
+	case kind_uleb:
+		r.get_leb(v);
+		return;
+	case kind_sleb:
+	{
+		::std::int_least64_t sv{};
+		r.get_leb(sv);
+		return;
 	}
-}
-
-// Read the next op. Returns opcode; for field ops the matching out-param
-// is filled. Returns opcode::end at END. Returns false-style error via
-// `bad` out-param: true = malformed blob.
-inline opcode next_op(reader& r, bool& bad,
-		      ::std::string_view* literal = nullptr,
-		      dec_field_fmt* fmt = nullptr,
-		      dec_field_stdio* stdio_f = nullptr,
-		      dec_field_pct* pct = nullptr) noexcept
-{
-	bad = false;
-	u8 op{};
-	if (!r.get_u8(op))
+	case kind_bytes:
 	{
-		bad = true;
-		return opcode::end;
+		r.get_leb(v);
+		::fast_io::u8string_view bytes;
+		r.get_bytes(v, bytes);
+		return;
 	}
-	switch (static_cast<opcode>(op))
+	case kind_list:
 	{
-	case opcode::end:
-		if (r.cur != r.end)
-			bad = true;	// END must be the last byte
-		return opcode::end;
-	case opcode::literal:
-	{
-		u32 n{};
-		if (!literal || !r.get_u32(n) || !r.get_bytes(*literal, n))
-			bad = true;
-		return opcode::literal;
-	}
-	case opcode::field_fmt:
-	{
-		if (!fmt)
+		r.get_leb(v);
+		// children are scalars/bytes/markers — a list never contains a list
+		for (; v; --v)
 		{
-			bad = true;
-			return opcode::field_fmt;
+			node_head c;
+			next_tag(r, c);
+			if (c.kind == kind_list)
+			{
+				throw throws ::std::errc::invalid_argument;
+			}
+			skip_payload(r, c);
 		}
-		u8 sk{};
-		if (!read_argref(r, fmt->arg) || !r.get_u8(sk))
-		{
-			bad = true;
-			return opcode::field_fmt;
-		}
-		fmt->spec = static_cast<spec_kind>(sk);
-		switch (fmt->spec)
-		{
-		case spec_kind::none:
-			return opcode::field_fmt;
-		case spec_kind::standard:
-		{
-			u8 fl{}, al{}, sg{};
-			if (!r.get_u8(fl) || fl > 4 || !r.get_bytes(fmt->fill, fl) ||
-			    !r.get_u8(al) || !r.get_u8(sg) || !r.get_u8(fmt->flags) ||
-			    !read_dynparam(r, fmt->width) ||
-			    !read_dynparam(r, fmt->precision) || !r.get_u8(fmt->type))
-				bad = true;
-			fmt->align = static_cast<fmt_align>(al);
-			fmt->sign = static_cast<fmt_sign>(sg);
-			return opcode::field_fmt;
-		}
-		case spec_kind::chrono:
-		{
-			u32 n{};
-			if (!r.get_u32(n) || !r.get_bytes(fmt->chrono_blob, n))
-				bad = true;
-			return opcode::field_fmt;
-		}
-		default:
-			bad = true;
-			return opcode::field_fmt;
-		}
-	}
-	case opcode::field_stdio:
-	{
-		if (!stdio_f || !read_argref(r, stdio_f->arg))
-		{
-			bad = true;
-			return opcode::field_stdio;
-		}
-		u8 ln{};
-		if (!r.get_u8(stdio_f->flags) || !r.get_u8(ln) ||
-		    !r.get_u8(stdio_f->length_bits) || !r.get_u8(stdio_f->conv) ||
-		    !read_dynparam(r, stdio_f->width) ||
-		    !read_dynparam(r, stdio_f->precision))
-			bad = true;
-		stdio_f->length = static_cast<stdio_length>(ln);
-		return opcode::field_stdio;
-	}
-	case opcode::field_pct:
-	{
-		if (!pct)
-		{
-			bad = true;
-			return opcode::field_pct;
-		}
-		u8 mod{}, wk{};
-		if (!r.get_u8(pct->conv) || !r.get_u8(pct->pad_flags) ||
-		    !r.get_u8(pct->case_flags) || !r.get_u8(mod) ||
-		    !r.get_u8(pct->colons) || !r.get_u8(wk))
-		{
-			bad = true;
-			return opcode::field_pct;
-		}
-		pct->modifier = static_cast<pct_modifier>(mod);
-		pct->has_width = wk == 1;
-		if (wk != 0 && wk != 1)
-		{
-			bad = true;
-			return opcode::field_pct;
-		}
-		if (pct->has_width && !r.get_u32(pct->width))
-			bad = true;
-		return opcode::field_pct;
+		return;
 	}
 	default:
-		bad = true;
-		return opcode::end;
+		throw throws ::std::errc::invalid_argument;
 	}
 }
 
