@@ -87,8 +87,17 @@ nodes*               until content_size is exhausted — size bounds it,
                      no terminator needed
 ```
 
-`family` records which source grammar produced the program — it is the
-roundtrip target for decompilation, nothing more. The nodes are shared.
+`family` records which source grammar produced the program — it only
+matters for decompiling back to text. The node set itself is grammar-
+agnostic: **there is no stdio-specific field encoding** — a printf
+front-end compiles `%08.3f` straight into the `field` op, which is a
+superset of the fmt spec. Families:
+
+| id | source grammar | emits |
+|----|---------------|-------|
+| 1 | fmt / `std::format` | `literal` + `field` |
+| 2 | strftime / generic `%` slots | `literal` + `pct` (+ `field` for nested) |
+| 3 | printf | `literal` + `field` (same ops as fmt) |
 
 ---
 
@@ -97,7 +106,7 @@ roundtrip target for decompilation, nothing more. The nodes are shared.
 | code | node | kind | payload |
 |------|------|------|---------|
 | 1 | `literal` | bytes | already-unescaped text |
-| 2 | `field` | list | unified printf/fmt field (children below) |
+| 2 | `field` | list | **the** format field — fmt-spec superset; printf compiles into this too (children below) |
 | 3 | `pct` | list | `%`-directive (children below) |
 
 `field` may appear inside a `pct` program (chrono/generic specs allow
@@ -105,6 +114,12 @@ nested `{...}`). Otherwise families don't mix.
 
 `field` takes a call arg and formats it. `pct` indexes locale/time-struct
 fields — `%H` is "hour", not an arg. Different domains, different nodes.
+
+The `field` node is deliberately a **superset of fmt's format spec**:
+fmt needs fill/align/sign/`#`/`0`/width/prec/`L`/type/chrono — printf
+adds `'`-grouping, `I`-outdigits, and `hh/l/ll/j/z/t/L/q/w/wf` length —
+both are the same node. A printf compiler is just a front-end option
+that parses `%`-syntax into `field` ops.
 
 ---
 
