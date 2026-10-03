@@ -42,9 +42,11 @@ the instances:
 - Node stream: **LEB128** (`uleb128`/`sleb128`) — tags, lengths, scalar
   values. Locale data is mostly small numbers and markers; fixed u32
   would spend most of its bytes on zeros.
-- The **container** (lcblob tables, RVAs, slot records) stays fixed-width
-  little-endian u32/i32 — those are random-access tables, not a walked
-  stream; decode is a memcpy.
+- The **container** (lcblob) uses LEB128 for every numeric value —
+  lengths, counts, ints, sizes. Only **RVA index tables** stay fixed
+  u32: they're the random-access mechanism (an array of variable-width
+  entries can't be indexed), and you decode exactly one entry per
+  lookup anyway.
 - Text payloads (literals, names, fill chars) are byte strings in the
   container's declared charset (UTF-8 default).
 - Structural codes are numeric enums — never character codes. A compiler
@@ -62,49 +64,45 @@ uleb128 tag = (code << 2) | payload_kind
 kind 0 none    bare marker                    next node at +tagbytes
 kind 1 uleb    [uleb128 value]                unsigned scalar
 kind 2 bytes   [uleb128 len][data]            a code, a length, a payload
-kind 3 list    [uleb128 len][child nodes]     children bounded by len
+kind 3 list    [uleb128 count][child nodes]   children counted, not sized
 kind 4 sleb    [sleb128 value]                signed scalar
 (kind 5-7 reserved)
 ```
 
 Every node is self-delimiting: the walker reads the tag varint and hops
-— it never inspects payload to find the next node. Unknown codes skip
-cleanly via kind, so new codes are forward-compatible. Common codes are
-1-byte tags; the encoding spends bytes on data, not on zeros.
+— it never inspects payload to find the next node. `list` reads a child
+count and hops that many child nodes (each still self-delimiting); list
+children are scalars/bytes/markers — a list never contains a list, so
+skipping needs no recursion. Unknown codes skip cleanly via kind, so
+new codes are forward-compatible. Common codes are 1-byte tags; the
+encoding spends bytes on data, not on zeros.
 
 ### Code space
 
-`code` is unbounded (it lives in the varint tag). Ranges by value:
+`code` is unbounded (it lives in the varint tag) — no partition needed.
+Current assignments: `0x00`–`0x3F` core codes (1-byte tags),
+`0x40`–`0x4F` gettext sub-space (`plural`/`count`/`form`, 2-byte tags).
+Future codes just take the next free value.
 
-| range | meaning |
-|-------|---------|
-| `0x00`–`0x3F` | core codes (this spec) — 1-byte tags |
-| `0x40`–`0xFF` | plural codes (`plural`/`count`/`form`) — 1-byte tags |
-| `0x100`–`0x3FFFFF` | reserved — future standard params (2-3-byte tags) |
-| `0x400000`+ | reserved — vendor/experimental |
+### Program
 
-### Program header
+A program is a **bare node sequence** — no header, no version, no
+grammar marker. The bound comes from wherever the program is embedded:
+an lcblob `PROGRAM` slot's `len`, a `constexpr` array's extent. There
+is no end-of-program node either — the container's bound is the
+terminator. Every program is exactly the same shape as a `chrono` or
+`form` payload: nodes until the outer length runs out.
 
-```
-uleb128 family        0=fmt 1=pct 2=gettext
-uleb128 content_size  bytes of the node region that follows
-nodes*                until content_size is exhausted — size bounds it,
-                      no terminator needed
-```
+Forward compat is handled by unknown-code skipping (every node is
+self-delimiting).
 
-No version field. Forward compat is handled by the code-space partition
-and by unknown-code skipping (every node is self-delimiting).
-
-`family` records which source grammar produced the program — it only
-matters for decompiling back to text. The node set itself is grammar-
-agnostic: **there is no printf family** — a printf front-end compiles
-`%08.3f` straight into a family-0 program. Families:
-
-| id | source grammar | emits |
-|----|---------------|-------|
-| 0 | fmt / `std::format` (and printf, via the front-end option) | `literal` + `field` |
-| 1 | strftime / generic `%` slots | `literal` + `pct` (+ `field` for nested) |
-| 2 | gettext plural entry | one `plural` node |
+There is **one opcode space**: `literal`/`field`/`pct`/`plural` are just
+ops in a stream, not categories of program. Which ops appear depends on
+which front-end compiled the text — a strftime slot produces `pct` ops,
+a fmt string produces `field` ops, a printf string produces the same
+`field` ops (printf is a front-end option, not a format). The
+interpreter never asks what grammar made the program; a chrono `field`
+carrying `pct` children is just how ops compose.
 
 ---
 
@@ -114,16 +112,17 @@ agnostic: **there is no printf family** — a printf front-end compiles
 |------|------|------|---------|
 | 1 | `literal` | bytes | already-unescaped text |
 | 2 | `field` | list | **the** format field — fmt-spec superset; printf compiles into this too (children below) |
-| 3 | `pct` | list | `%`-directive (children below) |
-| 4 | `plural` | list | gettext entry — sole root node only; `count` + `form`×N (below) |
+| 3 | `pct` | uleb / list | `%`-directive — `uleb` = conv only (the common case, 2B); `list` = parameterized (children below) |
+| 0x40 | `plural` | list | gettext entry — sole root node only; `count` + `form`×N (Part 5). 0x40–0x4F is the gettext sub-space; op code 4 stays free |
 
-`plural` is NOT a mid-stream op. A program in family 2 is exactly one
-root `plural` node; it cannot nest inside a program or appear next to
-other ops. This is deliberately not ICU — no inline select/gender/
-nested message machinery.
+`plural` is NOT a mid-stream op — a plural program is exactly one root
+`plural` node; it cannot nest inside a program or appear next to other
+ops. That's a grammar rule, not an encoding layer: the decoder sees
+"program = single plural node", no marker needed. Deliberately not ICU
+— no inline select/gender/nested message machinery.
 
-`field` may appear inside a `pct` program (chrono/generic specs allow
-nested `{...}`). Otherwise families don't mix.
+`field` may appear inside a `pct` node sequence (chrono/generic specs
+allow nested `{...}`).
 
 `field` takes a call arg and formats it. `pct` indexes locale/time-struct
 fields — `%H` is "hour", not an arg. Different domains, different nodes.
@@ -155,6 +154,8 @@ real C++ arg type wins.
 | 12 | ctype | uleb | enum below — declared C arg type | `%lld`→i64 | — |
 | 13 | type | uleb | conv enum below | `%d` | `{:d}` |
 | 14 | chrono | bytes | nested pct node sequence | — | `{:%H:%M}` |
+| 15 | element | bytes | node seq = element's field params (no `arg`) — range types only | — | `{::^8x}` |
+| 16 | flag-upper | none | uppercase digits/prefix/exponent | `E F G A X B` | `{:X}` |
 
 **ctype enum** — the C arg type, declared as `i`/`u`/`f` fixed-width codes
 instead of the length-modifier zoo. printf source always emits it;
@@ -167,31 +168,37 @@ consumers (DLL boundaries, `void*` args, codegen):
 
 | code | ctype | from | code | ctype | from |
 |------|-------|------|------|-------|------|
-| 0 | `other` | user-defined / absent | 18 | `cf64` | `double _Complex` |
-| 1 | `i32` | `%d` `%hhd` `%hd` | 19 | `cf80` | x86 `ld _Complex` |
-| 2 | `i64` | `%lld` `%jd` `%w64` | 20 | `cf128` | ppc/arm `ld _Complex` |
-| 3 | `i128` | ext | 21 | `c8` | `%c` — `char8_t` |
-| 4 | `u32` | `%u` `%x` `%hhu` | 22 | `c16` | `%lc` — `char16_t` |
-| 5 | `u64` | `%llu` `%ju` | 23 | `c32` | `char32_t` |
-| 6 | `u128` | ext | 24 | `cebc` | EBCDIC codepage char |
-| 7 | `usize` | `%zu` `%zo` … | 25 | `c8ptr` | `%s` — `char8_t const*` NUL |
-| 8 | `isize` | `%zd` `%td` `%jd` | 26 | `c16ptr` | `%ls` — `char16_t const*` NUL |
-| 9 | `f16` | — (binary16) | 27 | `c32ptr` | `char32_t const*` NUL |
-| 10 | `bf16` | — (bfloat16) | 28 | `ebcptr` | UTF-EBCDIC string, NUL |
-| 11 | `f32` | — | 29 | `gbptr` | GB18030 string, NUL |
-| 12 | `f64` | `%f` `%e` `%g` `%a` | 30 | `c8view` | `{char8_t const*, len}` |
-| 13 | `f80` | `%Lf` (x86 ld) | 31 | `c16view` | `{char16_t const*, len}` |
-| 14 | `f128` | `%Lf` (ppc/arm ld) | 32 | `c32view` | `{char32_t const*, len}` |
-| 15 | `cf16` | — | 33 | `ebcview` | UTF-EBCDIC `{ptr, len}` |
-| 16 | `cbf16` | — | 34 | `gbview` | GB18030 `{ptr, len}` |
-| 17 | `cf32` | `float _Complex` | 35 | `ptr` | `%p` — `void const*` |
+| 0 | `other` | user-defined / absent | 22 | `cebc` | EBCDIC codepage char |
+| 1 | `i32` | `%d` `%hhd` `%hd` | 23 | `c8ptr` | `%s` — `char8_t const*` NUL |
+| 2 | `i64` | `%lld` `%jd` `%w64` `%zd` `%td` | 24 | `c16ptr` | `%ls` `%S` — `char16_t const*` |
+| 3 | `i128` | ext | 25 | `c32ptr` | `char32_t const*` NUL |
+| 4 | `u32` | `%u` `%x` `%hhu` | 26 | `ebcptr` | UTF-EBCDIC string, NUL |
+| 5 | `u64` | `%llu` `%ju` `%zu` | 27 | `gbptr` | GB18030 string, NUL |
+| 6 | `u128` | ext | 28 | `c8view` | `{char8_t const*, len}` |
+| 7 | `f16` | — (binary16) | 29 | `c16view` | `{char16_t const*, len}` |
+| 8 | `bf16` | — (bfloat16) | 30 | `c32view` | `{char32_t const*, len}` |
+| 9 | `f32` | — | 31 | `ebcview` | UTF-EBCDIC `{ptr, len}` |
+| 10 | `f64` | `%f` `%e` `%g` `%a` | 32 | `gbview` | GB18030 `{ptr, len}` |
+| 11 | `f80` | `%Lf` (x86 ld) | 33 | `ptr` | `%p` — `void const*` |
+| 12 | `f128` | `%Lf` (ppc/arm ld) | 34 | `fptr` | function ptr — not `void*` |
+| 13 | `cf16` | — | 35 | `fldptr_i` | Itanium member object ptr — 1 word |
+| 14 | `cbf16` | — | 36 | `mthptr_i` | Itanium member fn ptr — 2 words |
+| 15 | `cf32` | `float _Complex` | 37 | `fldptr_m1` | MS member object ptr — 1 word |
+| 16 | `cf64` | `double _Complex` | 38 | `fldptr_m2` | MS member object ptr — 2 words |
+| 17 | `cf80` | x86 `ld _Complex` | 39 | `mthptr_m1` | MS member fn ptr — 1 word |
+| 18 | `cf128` | ppc/arm `ld _Complex` | 40 | `mthptr_m2` | MS member fn ptr — 2 words |
+| 19 | `c8` | `%c` — `char8_t` | 41 | `mthptr_m3` | MS member fn ptr — 3 words |
+| 20 | `c16` | `%lc` `%C` — `char16_t` | 42 | `mthptr_m4` | MS member fn ptr — 4 words |
+| 21 | `c32` | `char32_t` | | | |
 
 `other` = 0 covers user-defined types — and is also what an absent
 `ctype` param decodes to (a fmt-source field declares no C type).
 
 No `i8`/`i16`/`u8`/`u16` — C varargs promote `hh`/`h` args to `int`.
-No complex ints — GNU `_Complex int` and `std::complex<int>` have no
-sane conversion semantic; they fall to `other`. `cf*` never appears in
+No `usize`/`isize` — `%z`/`%t`/`%j` resolve to `u64`/`i64` (or `u32`/`i32`
+on 32-bit targets) at compile; matching the passed arg is the caller's
+responsibility. No complex ints — GNU `_Complex int` and
+`std::complex<int>` fall to `other`. `cf*` never appears in
 printf-source programs (no complex conversion exists) — it's metadata
 for fast_io-source / codegen-produced programs.
 
@@ -201,8 +208,21 @@ EBCDIC codepage byte) — never `wchar_t` (platform-width, ambiguous), no
 split into the two real shapes (`*ptr` NUL-terminated vs `*view`
 ptr+len) × three byte charsets: UTF code units, UTF-EBCDIC (`ebc*`),
 GB18030 (`gb*`). The encoded forms are byte strings — the tag tells the
-consumer how to transcode to the container charset. One `ptr` covers
-all raw pointers.
+consumer how to transcode to the container charset.
+
+Pointers split by *representation*, not convenience: `fptr` is a
+function pointer (not `void*` — POSIX-only interconvertible). Member
+pointers are **ABI-split** since their layouts differ:
+
+- `fldptr_i` / `mthptr_i` — Itanium: member object ptr is one
+  `ptrdiff_t` offset (always 1 word); member fn ptr is exactly 2 words
+  `{fn ptr | vtable offset, this-adjust}`
+- `fldptr_m1/m2`, `mthptr_m1..m4` — MSVC `/vmg`: sizes vary *per type*
+  by inheritance model — member object ptr 1–2 words, member fn ptr
+  1–4 words `{code, this-delta, vb-delta, vtordisp}`. The word count is
+  encoded in the code so a type-erased consumer knows the arg size
+  without a second field. The compiler resolves the count from the
+  declared type + `/vm*` model at build.
 
 `chrono` is exclusive with the standard spec params — for a chrono arg
 the *entire* spec is the time spec (`{:>20%Y}` = literal `">20"` + `%Y`,
@@ -211,10 +231,9 @@ first; anything it cannot fully consume becomes a pct program — the same
 way `formatter<T>::parse` claims the spec only when it recognises it.
 A chrono spec may contain `{...}` fields (bounded depth).
 
-The `chrono` payload is a **bare node sequence**, not a wrapped program —
-the bytes-len is the delimiter. Only the top-level program carries the
-family/size header; nested node sequences need none (their ops are
-grammar-agnostic).
+The `chrono` payload is a **bare node sequence** — the bytes-len is the
+delimiter, same as the top-level program's container bound. No headers
+anywhere in the nesting.
 
 Absent `arg` = AUTO (next arg). printf `%2$` is normalized to 0-based
 index at compile. fmt `-` align is printf `-`; fmt `-` *sign* is sign=2.
@@ -222,44 +241,79 @@ index at compile. fmt `-` align is printf `-`; fmt `-` *sign* is sign=2.
 **type enum** (semantic codes — `%i` canonicalizes to `d`; a blob
 decompiled to printf always emits `d`):
 
-| code | letter | notes |
-|------|--------|-------|
-| 1 | `d` | signed dec — absorbs printf `%i` |
-| 2 | `u` | unsigned dec |
-| 3 | `o` | octal |
-| 4 | `x` | hex lower |
-| 5 | `X` | hex upper |
-| 6 | `b` | binary lower (C23 + fmt) |
-| 7 | `B` | binary upper |
-| 8 | `e` | sci lower |
-| 9 | `E` | sci upper |
-| 10 | `f` | fixed lower |
-| 11 | `F` | fixed upper |
-| 12 | `g` | general lower |
-| 13 | `G` | general upper |
-| 14 | `a` | hexfloat lower |
-| 15 | `A` | hexfloat upper |
-| 16 | `c` | character |
-| 17 | `s` | string |
-| 18 | `?` | debug-escaped string (fmt only) |
-| 19 | `p` | pointer |
-| 20 | `P` | pointer upper (fmt only) |
-| 21 | `C` | wide char (glibc `%C`) |
-| 22 | `S` | wide string (glibc `%S`) |
+| code | name | emits | printf | fmt / fast_io |
+|------|------|-------|--------|---------------|
+| 1 | `d` | signed dec — absorbs `%i` | `%d` `%i` | `{:d}` |
+| 2 | `u` | unsigned dec | `%u` | `mnp::udec` |
+| 3 | `o` | octal | `%o` | `{:o}` `mnp::oct` |
+| 4 | `x` | hex — `#`→`0x`, case→`flag-upper` | `%x` `%X` | `{:x}` `{:X}` `mnp::hex` |
+| 5 | `b` | binary | — | `{:b}` `{:B}` `mnp::bin` |
+| 6 | `c` | character — `ctype` picks width | `%c` `%lc` `%C` | `{:c}` |
+| 7 | `s` | string — `ctype` picks charset/shape | `%s` `%ls` `%S` | `{:s}` |
+| 8 | `?` | debug-escaped string | — | `{:?}` |
+| 9 | `p` | pointer `0x…` impl-defined | `%p` | `{:p}` `{:P}`→upper |
+| 10 | `addr` | `0x` + full-width hex | — | `mnp::addrvw` `pointervw` `itervw` `funcvw` `fieldptrvw` |
+| 11 | `mth` | member fn ptr: `0x<w0>` then signed `+wi` per extra word | — | `mnp::methodvw` |
+| 12 | `dec` | decimal — shortest of fixed/sci (**fast_io float default**) | — | `mnp::decimal(t)`, fast_io `{}` |
+| 13 | `decp` | decimal + precision | — | `mnp::decimal(t,n)` |
+| 14 | `fix` | fixed, shortest | — | `mnp::fixed(t)` |
+| 15 | `fixp` | fixed, prec frac digits | `%f` `%F` (prec→6) `{:.Nf}` | `mnp::fixed(t,n)` `{:f}`→prec 6 |
+| 16 | `sci` | scientific, shortest | — | `mnp::scientific(t)` |
+| 17 | `scip` | scientific, prec frac digits | `%e` `%E` (prec→6) `{:.Ne}` | `mnp::scientific(t,n)` `{:e}`→prec 6 |
+| 18 | `gen` | general, shortest | — | `mnp::general(t)` |
+| 19 | `genp` | general, prec sig digits | `%g` `%G` (prec→6) `{:.Ng}` | `mnp::general(t,n)` `{:g}`→prec 6 |
+| 20 | `hexf` | hexfloat, shortest | `%a` `%A` (no prec) | `mnp::hexfloat(t)` `{:a}` |
+| 21 | `hexfp` | hexfloat, prec frac hex digits | `%.Na` `%.NA` | `mnp::hexfloat(t,n)` `{:.Na}` |
+| 22 | `rng` | range `[e0, e1]` — `, ` sep | — | `{:}` on a range |
+| 23 | `rngn` | range naked `e0 e1` — ` ` sep | — | `{:n}` |
+| 24 | `rngm` | map `{k0: v0}` — `, `/`: ` | — | `{:m}` |
+
+**Normalization rules:**
+
+- **Case is a flag, not a type** — `%X`/`{:X}`, `%E`, `{:B}`, `{:P}` all
+  compile to the lower type + `flag-upper` (matches `mnp::x<upper>`,
+  a bool template param, not a second conversion)
+- **Float letters fold into fast_io modes** — printf/fmt `e`/`f`/`g`
+  absent-prec defaults bake `prec=6` at compile: `%f` ≡ `{:f}` ≡
+  `(type fixp)(prec 6)`. `%a` no-prec *is* shortest → `hexf`; `%.3a` →
+  `hexfp`. The two algorithms (roundtrip vs precision) are distinct
+  codes because fast_io dispatches them as different overloads
+  (`roundtrip.h` vs `precision.h`), not a default arg
+- **fmt `{}` on a float** → `dec` (fmt's default is also shortest repr)
+- **`%lc`/`%ls`/`%C`/`%S` fold** — `type c`/`s` + `ctype c16`/`c16ptr`
+  carries the width. No wide-letter codes
+- **`fieldptrvw` shares `addr`** — member-object-ptr emit is identical
+  (`0x`+full hex); only `methodvw` differs (multiword + signed adjust),
+  so it gets `mth`
+
+**`element` (param 15)** — range types only; payload is a node sequence
+of the element's field params (same grammar as field children, minus
+`arg`). `{::^8x}` → `(type rng)(element <(align ^)(width 8)(type x)>)`.
+Outer `width`/`align`/`fill`/`sign` apply to the whole `[…]` output.
+Nesting recurses: `vector<vector<int>>` `{:::x}` = `rng` + `element`
+containing `rng` + its own `element` — depth-bounded like `chrono`.
 
 Example — `"%08.3f"` and `"{:08.3f}"` compile to the same node:
 
 ```
-(field (flag-zero) (width 8) (prec 3) (type f))
+(field (flag-zero) (width 8) (prec 3) (type fixp))
 ```
 
 ---
 
 ## Part 4 — `pct` children (%-directives)
 
+`pct` has two payload shapes — the tag's `kind` disambiguates:
+
+- **`uleb` — bare directive** (2 bytes): payload is the conv enum
+  directly, no children. Every `%Y`/`%m`/`%H` with no modifiers.
+- **`list` — parameterized** : children below; `conv` still required.
+  Only used when `pad`/`case`/`modifier`/`colons`/`width`/`prec` exist
+  (`%Ec`, `%5Y`, `%::z`, `%Od`).
+
 | code | param | kind | value |
 |------|-------|------|-------|
-| 20 | conv | uleb | enum below — required |
+| 20 | conv | uleb | enum below — required (first child in list form) |
 | 21 | letter | uleb | raw ASCII conv — generic slots only (name_fmt, postal_fmt, tel_*_fmt); meaning is slot-defined |
 | 22 | pad | uleb | bit0 `-` bit1 `_` bit2 `0` |
 | 23 | case | uleb | bit0 `^` bit1 `#` |
@@ -395,63 +449,65 @@ fast_io's own plural-rule table (CLDR rules implemented as native code),
 
 ### Example — `"an apple"` / `"%d apples"`
 
+Source text stays source — the *forms* hold compiled node sequences:
+
 ```
-(plural (count 0) (form "an apple") (form "%d apples"))
+(plural (count 0)
+        (form <nodes: (literal "an apple")>)
+        (form <nodes: (field (type d))(literal " apples")>))
 ```
 
-`form[0]` is literal-only — "an apple" has no field at all; `form[1]`
-consumes the count arg through an ordinary `%d` field.
+`form[0]` is literal-only — "an apple" has no field at all; `form[1]`'s
+`"%d apples"` compiled through the printf front-end into the same nodes
+`"{:d} apples"` would produce — no C syntax survives serialization.
 
 ---
 
 ## Byte examples
 
-`{0:2147483647}` (family=fmt) — 12 bytes total:
+`{0:2147483647}` — 10 bytes total (the whole program is the field node;
+the embedder's bound ends it):
 
 ```
-00               family=0 (fmt)
-0A               content_size = 10
 0B               tag (2<<2)|3   field, list
-  08             list len = 8
+  02             count = 2 children
   05 00          tag (1<<2)|1   arg  = 0
   29 FF*4 07     tag (10<<2)|1  width = 2147483647  (uleb: 5 bytes)
 ```
 
-`{0:%Y-%m-%d}` on a chrono arg (family=fmt) — 26 bytes: the spec becomes
+`{0:%Y-%m-%d}` on a chrono arg — 18 bytes: the spec becomes
 an embedded pct program via the `chrono` param:
 
 ```
-00               family=0
-18               content_size = 24
 0B               tag (2<<2)|3   field, list
-  16             len = 22
+  02             count = 2
   05 00          arg = 0
   3A             tag (14<<2)|2  chrono, bytes
-    12             len = 18     → bare nodes, no inner header
-      0F 02 51 20    %Y
+    0C             len = 12     → bare nodes, no inner header
+      0D 20          pct scalar (3<<2)|1, conv = 32 (%Y)
       06 01 "-"      literal
-      0F 02 51 10    %m
+      0D 10          conv = 16 (%m)
       06 01 "-"      literal
-      0F 02 51 07    %d
+      0D 07          conv = 7  (%d)
 ```
 
-`"%Y年%m月%d日 %H時%M分%S秒"` (ja_JP `d_t_fmt`, family=pct=1) = 57 bytes —
-each `%X` directive is 4 bytes, e.g. `%Y`:
+`"%Y年%m月%d日 %H時%M分%S秒"` (ja_JP `d_t_fmt`) = 43 bytes —
+each `%X` directive is 2 bytes, e.g. `%Y` = `0D 20`. A parameterized one
+uses the list form — `%Ec` (6 bytes):
 
 ```
 0F               tag (3<<2)|3   pct, list
-  02             len = 2
-  51 20          tag (20<<2)|1  conv = 32 ('%Y')
+  02             count = 2
+  61 01          modifier (24<<2)|1 = 1 (E)
+  51 05          conv (20<<2)|1 = 5 ('c')
 ```
 
 Plural, `count=arg0` + `"an apple"` / `"%d apples"` — the caller picks
-the index = 37 bytes:
+the index = 35 bytes:
 
 ```
-02               family=2 (gettext)
-23               content_size = 35
 83 02            tag (0x40<<2)|3 plural, list
-  20             len = 32
+  03             count = 3 children
   85 02 00       tag (0x41<<2)|1 count = 0
   8A 02 0A       tag (0x42<<2)|2 form, len=10
     <nodes: (literal "an apple")>
@@ -480,39 +536,46 @@ No encoding exists; compilers error out:
 
 ```
 header:
-  u32 magic          'FCL1' = 0x314C4346  (trailing digit = rev)
-  u32 total_size
-  u32 flags          reserved, 0
-  u32 name_rva       strref — "de_DE"
-  u32 encoding_rva   strref — charset of all string payloads
-  u32 cat_dir_rva    -> u32 table_rva[LC_CAT_COUNT]   (0 = absent)
+  u32 magic          'FCL1' = 0x314C4346  — the one fixed-width field (sync)
+  uleb128 total_size
+  uleb128 flags          reserved, 0
+  strref name            "de_DE"
+  strref encoding        charset of all string payloads
+  uleb128 cat_dir_rva  -> u32 cat_table_rva[LC_CAT_COUNT]   (0 = absent)
 
-strref := u32 rva | u32 len
-slot   := u32 tag | u32 rva | u32 len | u32 aux          (16 bytes)
-  tag 0 ABSENT
-  tag 1 STRING      rva+len -> bytes
-  tag 2 STRLIST     rva -> strref[len]      (abday[7], mon[12], am_pm[2]…)
-  tag 3 INT         aux = i32 value
-  tag 4 BYTES       rva+len -> i8 list      (grouping, mon_grouping)
-  tag 5 PROGRAM     rva+len -> binfmt blob  (d_t_fmt, name_fmt, …)
-  tag 6 INT3        rva -> i32[3]           (week: ndays;first_date;first_week)
-  tag 7 ERALIST     rva -> era_rec[len]
+strref := uleb128 rva | uleb128 len
+
+cat_table_rva[cat] -> u32 slot_rva[nfields]
+                     fixed u32 index — the random-access mechanism;
+                     schema (lc_field_def{name,kind}) lives in lcblob.h
+
+slot := uleb128 tag | payload-by-tag        variable-length record
+  tag 0 ABSENT      (nothing follows)
+  tag 1 STRING      uleb rva | uleb len -> bytes
+  tag 2 STRLIST     uleb rva -> uleb count | strref*count  (abday[7], mon[12]…)
+  tag 3 INT         sleb128 value
+  tag 4 BYTES       uleb rva | uleb len -> i8 list  (grouping, mon_grouping)
+  tag 5 PROGRAM     uleb rva | uleb len -> binfmt blob
+  tag 6 INT3        sleb128 ×3                      (week: ndays;first_date;first_week)
+  tag 7 ERALIST     uleb rva -> uleb count | era_rec*count
 ```
 
-Each category is a fixed-order slot table indexed by field id; the schema
-(`lc_field_def{name,kind}` arrays) lives in `lcblob.h`. Lookup is
-`cat_dir[cat] + field*16` — no key strings at runtime.
+Lookup is `cat_dir[cat]` → `slot_rva[field]` → decode the record — two
+u32 derefs plus a varint or two, still no key strings at runtime.
+Variable-length lists (`strref*count`, `era_rec*count`) decode
+sequentially — era lists and day/month tables are ≤ ~30 entries, so the
+walk is bounded and trivial.
 
 ```
-era_rec (40 bytes):
-  i32 direction      +1 | -1
-  i32 offset
-  i32 start_year     i32_MIN = "-*"
-  u8  start_month, start_day
-  i32 end_year       i32_MAX = "+*"
-  u8  end_month, end_day
-  u32 name_rva, name_len
-  u32 fmt_rva,  fmt_len      binfmt pct program
+era_rec (variable):
+  sleb128 direction      +1 | -1
+  sleb128 offset
+  sleb128 start_year     i32_MIN = "-*"
+  uleb128 start_month, start_day
+  sleb128 end_year       i32_MAX = "+*"
+  uleb128 end_month, end_day
+  strref name
+  strref fmt             binfmt pct program
 ```
 
 Categories (fixed ids 0–11): identification, ctype, collate, time,
