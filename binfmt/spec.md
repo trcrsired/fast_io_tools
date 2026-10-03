@@ -115,16 +115,15 @@ agnostic: **there is no printf family** — a printf front-end compiles
 | 1 | `literal` | bytes | already-unescaped text |
 | 2 | `field` | list | **the** format field — fmt-spec superset; printf compiles into this too (children below) |
 | 3 | `pct` | list | `%`-directive (children below) |
-| 4 | `plural` | list | inline plural selection — caller index picks a sub-program (below) |
+| 4 | `plural` | list | gettext entry — sole root node only; `count` + `form`×N (below) |
 
-`plural` is an ordinary stream op: it can sit mid-sequence in any
-program (ICU `{count, plural, one{…} other{…}}` = inline plural), not
-just as a whole gettext entry. The forms are self-contained programs —
-they may themselves contain `plural` (bounded by structural depth).
+`plural` is NOT a mid-stream op. A program in family 2 is exactly one
+root `plural` node; it cannot nest inside a program or appear next to
+other ops. This is deliberately not ICU — no inline select/gender/
+nested message machinery.
 
 `field` may appear inside a `pct` program (chrono/generic specs allow
-nested `{...}`); `plural` is family-agnostic and nests anywhere.
-Otherwise families don't mix.
+nested `{...}`). Otherwise families don't mix.
 
 `field` takes a call arg and formats it. `pct` indexes locale/time-struct
 fields — `%H` is "hour", not an arg. Different domains, different nodes.
@@ -345,19 +344,6 @@ fast_io's own plural-rule table (CLDR rules implemented as native code),
 
 `form[0]` is literal-only — "an apple" has no field at all; `form[1]`
 consumes the count arg through an ordinary `%d` field.
-
-ICU-style inline usage — plural mid-stream inside a family-0 program:
-
-```
-"You have 0.5 apples left"  =
-
-(literal "You have ")
-(plural (count 0) (form "an apple") (form "%d apples"))
-(literal " left")
-```
-
-The caller's index selects which embedded program runs at that position;
-args (including the count) flow through into the chosen form's fields.
 
 ---
 
