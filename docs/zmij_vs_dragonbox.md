@@ -237,23 +237,24 @@ picks the grid so that the short candidate (`integral`), the extra digit, and
 both distances-to-ticks coexist in one product's integer and fractional
 parts — nothing is divided away, so nothing has to be recovered.
 
-## 7. Subnormal fixup (caller-side in zmij)
+## 7. Subnormals: DA needs no fixup at all
 
-`::to_decimal` assumes normal inputs; for `e2 == 0` zmij calls it with
-`raw_exp = 1` then corrects the digit deficit (zmij.cc:1709-1726):
+zmij's `write` pads short subnormal significands (`clz` deficit + `pow10s[]`
+multiply, zmij.cc:1709-1726) — but that's for its writer's digit-block
+layout invariants, **not correctness**.
 
-```cpp
-dec = ::to_decimal(bin_sig, /*raw_exp=*/1, /*regular=*/true, d);
-num_digits = compute_dec_exp(63 - clz(dec.sig | 1)) + (dec.sig != 0);
-num_digits += dec.sig >= pow10s[num_digits];   // pow10s = 10^0..10^19
-num_zeros = max_digits10 - 3 - num_digits;     // 14 for f64, 6 for f32
-if (num_zeros >= 0)
-    dec.sig = (dec.sig*10 + (-has_last_digit & last_digit)) * pow10s[num_zeros],
-    dec.exp -= num_zeros + 1, has_last_digit = false;
-```
+DA passes subnormals straight into the regular formula with
+`effective_raw_exp = 1` and no implicit bit — and it's *provably* fine:
+for a subnormal, `δ` is fixed at `2^-1075` (never varies with `m`) and the
+grid is fixed at `10^{-323}`, so the scaled half-width is always
+`h = 2^-1075/10^-323 ≈ 0.247 < 0.5` — the cell can never hold more than one
+coarse tick, exactly what the two-grid proof needs. No normalization, no pad.
 
-The pow10 scale depends only on the exponent, so a short subnormal `m` yields
-a proportionally short `dec.sig`; the `pow10s` pad restores the digit count.
+Verified: all `m ∈ [1, 2²¹]` plus 3M random 52-bit subnormals — 5,097,152
+cases, 0 mismatches vs the canonical implementation.
+
+(The trap to avoid: thinking `h ≈ 2.47` — that's off by 10×, confusing
+`2^-1075` with `2^-1074`.)
 
 ## 8. Float (binary32) path — even simpler
 
@@ -325,7 +326,39 @@ roundtrip.h:715 and lc_roundtrip.h:455. `m2` is the raw mantissa **without**
 implicit bit, `raw_e2` the biased field — identical to zmij's `get_sig`/
 `get_exp` split.
 
-## 12. Sources
+## 12. Where DA is wrong: the irregular lower boundary
+
+DA's asymmetric interval test uses `h/2 > F` — an **open** lower boundary
+computed under the assumption the boundary case never materializes for its
+formats. For binary16, reusing the same machinery hits it: v = 2^13 has
+sig 2^11 (even, so the lower edge is **closed**) and R = [8190, 8196].
+
+At scale 10, the cell below v contains exactly one member: 8190 — and
+fractional − half_ulp lands exactly on it (frac == h/2). DA's strict `>`
+rejects the boundary member and keeps the 17th-digit-form 8192; canonical
+is **8190** (one digit shorter). The same goes for 2^14 → 16380 and
+2^15 → 32760.
+
+Counterexample table (f16 powers of two, exhaustive — 3 of 255 finite
+irregular cases):
+
+| v | DA strict `>` | canonical |
+|---|---|---|
+| 2^13 = 8192 | `{8192,0}` → "8192" | `{819,1}` → "8190" |
+| 2^14 = 16384 | `{1639,1}` → "16390" | `{1638,1}` → "16380" |
+| 2^15 = 32768 | `{3277,1}` → "32770" | `{3276,1}` → "32760" |
+
+Why binary16 alone bites: the boundary member exists only when the
+mantissa odd-part divides a power of ten, i.e. 2^(p+2)−1 carries a factor
+of 5 — f16's 4095 = 3^2·5·7·13 does; bf16's 511, f32's 2^25−1, f64's
+2^54−1, and both wide formats' masks do not. The fix: for a closed lower
+edge the member test must be inclusive (`>=`), or (simpler, as
+implemented) — in the narrow irregular path, solve the whole interval
+exactly in integers: search the coarsest scale containing a member, then
+take the member nearest v with ties to even.
+
+## 13. Sources
+
 
 - zmij repo (vitaut/zmij): `zmij.cc:1243` core, `:1663` wrapper, `:1709`
   subnormal fixup; `zmij.h:294` seed tables, `:347` `compute_pow10`, `:394`
