@@ -86,7 +86,7 @@ cleanly via kind, so new codes are forward-compatible. Common codes are
 ### Program header
 
 ```
-uleb128 family        1=fmt 2=pct 3=stdio 4=gettext
+uleb128 family        0=fmt 1=pct 2=gettext
 uleb128 content_size  bytes of the node region that follows
 nodes*                until content_size is exhausted — size bounds it,
                       no terminator needed
@@ -97,18 +97,14 @@ and by unknown-code skipping (every node is self-delimiting).
 
 `family` records which source grammar produced the program — it only
 matters for decompiling back to text. The node set itself is grammar-
-agnostic: **there is no stdio-specific field encoding** — a printf
-front-end compiles `%08.3f` straight into the `field` op, which is a
-superset of the fmt spec. Families:
+agnostic: **there is no printf family** — a printf front-end compiles
+`%08.3f` straight into a family-0 program. Families:
 
 | id | source grammar | emits |
 |----|---------------|-------|
-| 1 | fmt / `std::format` | `literal` + `field` |
-| 2 | strftime / generic `%` slots | `literal` + `pct` (+ `field` for nested) |
-| 3 | printf | `literal` + `field` (same ops as fmt) |
-| 4 | gettext plural entry | one `plural` node |
-
-`family` only matters for decompiling back to text.
+| 0 | fmt / `std::format` (and printf, via the front-end option) | `literal` + `field` |
+| 1 | strftime / generic `%` slots | `literal` + `pct` (+ `field` for nested) |
+| 2 | gettext plural entry | one `plural` node |
 
 ---
 
@@ -306,7 +302,7 @@ programs:
 
 1st child: count — uleb, which call arg holds n
 rest:      form×N — bytes nodes; each payload is a complete binfmt
-                    program (usually family=stdio, compiled from msgstr[N])
+                    program (usually family=0, compiled from msgstr[N] via the printf front-end)
 ```
 
 Interpretation: the caller reads `count` to know which arg is `n`,
@@ -322,7 +318,7 @@ integer part, visible fraction digits, etc.), so "1.0 apple" vs
 "1 apple" can select differently. The program only needs the arg index.
 
 The forms are ordinary programs — gettext printf-isms (`%1$s`, `%d`…)
-compile through the stdio front-end into `field` nodes, so a form can
+compile through the printf front-end into `field` nodes, so a form can
 consume the count arg like any other (`"%d apples"` just prints it).
 
 The lcblob side carries `plural_rule` as an integer slot — an index into
@@ -351,7 +347,7 @@ consumes the count arg through an ordinary `%d` field.
 `{0:2147483647}` (family=fmt) — 12 bytes total:
 
 ```
-01               family=1 (fmt)
+00               family=0 (fmt)
 0A               content_size = 10
 0B               tag (2<<2)|3   field, list
   08             list len = 8
@@ -359,7 +355,7 @@ consumes the count arg through an ordinary `%d` field.
   29 FF*4 07     tag (10<<2)|1  width = 2147483647  (uleb: 5 bytes)
 ```
 
-`"%Y年%m月%d日 %H時%M分%S秒"` (ja_JP `d_t_fmt`, family=pct) = 57 bytes —
+`"%Y年%m月%d日 %H時%M分%S秒"` (ja_JP `d_t_fmt`, family=pct=1) = 57 bytes —
 each `%X` directive is 4 bytes, e.g. `%Y`:
 
 ```
@@ -372,15 +368,15 @@ Plural, `count=arg0` + `"an apple"` / `"%d apples"` — the caller picks
 the index = 41 bytes:
 
 ```
-04               family=4 (gettext)
+02               family=2 (gettext)
 27               content_size = 39
 83 02            tag (0x40<<2)|3 plural, list
   24             len = 36
   85 02 00       tag (0x41<<2)|1 count = 0
   8A 02 0C       tag (0x42<<2)|2 form, len=12
-    <blob for "an apple"   = family3: (literal "an apple")>
+    <blob for "an apple"   = family0: (literal "an apple")>
   8A 02 0F       tag (0x42<<2)|2 form, len=15
-    <blob for "%d apples"  = family3: (field (type d))(literal " apples")>
+    <blob for "%d apples"  = family0: (field (type d))(literal " apples")>
 ```
 
 ---
@@ -389,7 +385,7 @@ the index = 41 bytes:
 
 No encoding exists; compilers error out:
 
-- `%n`, `%m`, `%[` (stdio)
+- `%n`, `%m`, `%[` (printf grammar)
 - `*`, `*n$` — runtime-driven width/precision
 - `{name}` — named args
 - `!r` `!a` `!s` — repr dispatch
