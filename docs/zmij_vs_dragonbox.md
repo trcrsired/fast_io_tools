@@ -3,6 +3,23 @@
 Notes on the two Schubfach-family `double → shortest decimal` cores, why zmij is
 ~2x faster, and what we are porting into `fast_io.floating`.
 
+**Schubfach** (Raffaello Giulietti, ~2020) is the algorithm family these all
+belong to — German for "pigeonhole/drawer", after the *Schubfachprinzip*
+(pigeonhole principle), which is the grid argument in §2. It powers Java's
+`Double.toString` since JDK 19. Lineage:
+
+```
+Dragon4 (1990, bignum)
+ └─ Grisu (2010)
+     ├─ Ryū (2018)
+     ├─ Schubfach (2020) — pigeonhole + Nadezhin, non-iterative
+     │    ├─ dragonbox (2021) ──► our roundtrip.h
+     │    └─ yy / yyjson ──► zmij (2025)
+     │         + xjb's 10^{-(k+1)} scaling + Dougall Johnson's pow10
+     │           compression + Lean proofs
+     └─ MacroModel's "DA" — another yy/Schubfach derivative
+```
+
 Measured on this machine (random f64 bit patterns, clang trunk, `-O3 -march=native`):
 
 | implementation | insns (core) | ns/value |
@@ -10,11 +27,10 @@ Measured on this machine (random f64 bit patterns, clang trunk, `-O3 -march=nati
 | zmij `::to_decimal` (zmij.cc:1243) | ~186 | **6.5** |
 | zmij header constexpr `to_decimal` (zmij.h:394) | ~190 | 14.7 |
 | upstream dragonbox `compute_nearest` | ~338 | 12.8 |
-| fast_io `dragonbox_main` + `rtz` | ~186 | **15.5** |
 | zmij full `write` (conv + SIMD digits + layout) | ~318 | 14.9 |
 
-50M random f64 (incl. subnormals): zmij `to_decimal`+trim vs our
-`dragonbox_impl` — 0 mismatches. zmij is also Lean-verified (`test/*.lean`)
+50M random f64 (incl. subnormals): zmij `to_decimal`+trim matches the current
+implementation on every input. zmij is also Lean-verified (`test/*.lean`)
 and MIT/Boost licensed.
 
 ---
@@ -22,17 +38,38 @@ and MIT/Boost licensed.
 ## 1. The problem
 
 A finite double is `v = m × 2^e` with `m` a 53-bit integer (implicit leading 1
-for normals) and `e ∈ [-1074, 971]`.
+for normals) and `e ∈ [-1074, 971]`. The function we want is `(m, e) →
+{m10, e10}` — two integers in, two integers out — where `m10 × 10^e10` is
+the *shortest* decimal that round-trips.
 
-`v` is not a point — it *owns* a rounding interval `R = [v−δ, v+δ]`,
-`δ = 2^e / 2` (half the gap to the next double). **Any real inside R parses
-back to v**, so the printer's job:
+**Doubles can't represent most reals** — there are only 2⁶⁴ of them, so
+consecutive doubles have a gap (`2^e`). Parsing takes the *nearest* double,
+which means `v` is not a point — it *owns* a rounding interval
+`R = [v−δ, v+δ]`, `δ = 2^e / 2` (the midpoints to its neighbors are the
+borders):
+
+```
+     ◄──────────►◄──────────►
+prev ──●────────│────●────────│────●──── next
+       │◄─ interval owned by v ─►│
+       [v − gap/2,  v + gap/2]
+```
+
+**Any real inside R parses back to v** — so `v` has many correct spellings.
+`1.0` owns `[1 − 1.1e-16, 1 + 1.1e-16]`; `1`, `1.0`,
+`0.99999999999999999`, `1.00000000000000011` all round-trip. The exact binary
+value of e.g. `0.1` is a ~55-digit decimal — the interval is what lets the
+printer answer `1` instead. The printer's job:
 
 > find the shortest decimal `d = c × 10^k` that lands inside R.
 
+Wider strip (larger `e`) → bigger target → fewer digits needed; that's why
+`1e300` prints as `1e300`.
+
 Tie rule (round-to-nearest-even): if `m` is **even**, both endpoints `v±δ`
 belong to `v` (closed interval); if **odd**, they belong to the neighbors
-(open interval). Whether an endpoint is included decides ties — remember this.
+(open interval). A decimal sitting *exactly* on a midpoint round-trips to `v`
+only when `m` is even — this decides ties.
 
 Wrinkle: at powers of two the gap *below* is half the gap above — the
 "irregular" interval (`δ− = 2^e/4`). Subnormals have uniform spacing but tiny
@@ -53,7 +90,24 @@ Pick `k` with `10^k ≤ width(R) < 10^{k+1}`. Then only two scales matter:
 - **fine candidate** `t × 10^k` — at least one tick is guaranteed → used when
   the coarse grid misses (~17 digits).
 
-`k ≈ floor(e2 · log10 2)`, computed by one fixed-point multiply.
+**What `k` is concretely**: since `v = m × 2^e` and `m` is already a 16-digit
+integer, `v`'s decimal magnitude is almost entirely `2^e`, so
+`k ≈ floor(e · log10 2) = e · 0.30103…` — one fixed-point multiply, no table.
+Choosing `k` with `10^{k+1} ≈ 2^e` means `v / 10^{k+1} ≈ m`: the division
+undoes the binary exponent and leaves a significand-sized integer. `k` is
+both the scaling input and the skeleton of the output exponent `e10`.
+
+**The interval `R` itself is never computed.** Only three derived quantities
+are used:
+
+- `k` — comes from `e` alone, not from an actual width computation;
+- `h = δ × 10^{-(k+1)}`, the half-width in scaled units — free, because `δ`
+  is a power of two (no mantissa), so it's just a *shift* of the same pow10
+  table entry used for `v`;
+- `even = m & 1` — endpoint inclusion, folded into `h` as ±1 ulp.
+
+The algorithm only answers two questions *about* R — "does a coarse tick
+fall inside it?" and "which fine tick is nearest v?" — never builds it.
 
 ## 3. The scaling step (shared machinery)
 
@@ -104,6 +158,13 @@ Total: **1 main multiply + up to 3 recovery multiplies + magic-divides by
 must then be reconstructed by multiplying again.
 
 ## 5. zmij: scale one notch finer, read everything off one product
+
+Framed differently: the whole algorithm is **one division**
+`c = v / 10^{k+1}` computed in fixed point, plus `h` in the same units.
+In cell units **integers are the coarse ticks and tenths are the fine
+ticks**, so "is there a coarse tick inside R?" reduces to "is there an
+integer inside `[c−h, c+h]`?" — two compares. If not, `fractional` literally
+*is* the next decimal digit.
 
 `::to_decimal` (zmij.cc:1243, the production path) chooses the grid **one
 level finer than the coarse candidate** (`10^{-dec_exp-1}` — Xiang JunBo's
