@@ -129,25 +129,36 @@ int main(int argc, char **argv) try
 					lname.push_back(u8'.');
 					lname.append(encn[e].data(), encn[e].size());
 				}
-				// charset section only when the codeset is not utf8 —
-				// otherwise slot 0 aliases the utf8 section
-				::fast_io::string charset_sec{};
+				::std::u8string_view const lv{lname.data(), lname.size()};
+				// section slots [charset, utf8, utf16, utf32]; the charset
+				// one is only built for non-utf8 codesets — otherwise
+				// slot 0 aliases the utf8 section
+				::fast_io_i18n::lcblob::sec_build secs[4];
 				if (encs[e] != ::fast_io_i18n::lcblob::blob_charset::utf8)
 				{
-					charset_sec = ::fast_io_i18n::lcblob::build_blob(
-						cats, ::std::u8string_view{lname.data(), lname.size()},
-						encs[e], ctx);
+					secs[0] = ::fast_io_i18n::lcblob::build_section(
+						cats, lv, encn[e], encs[e], ctx);
 				}
-				::fast_io::string sections[4]{
-					static_cast<::fast_io::string &&>(charset_sec),
-					::fast_io_i18n::lcblob::build_blob(cats, ::std::u8string_view{lname.data(), lname.size()},
-									   ::fast_io_i18n::lcblob::blob_charset::utf8, ctx),
-					::fast_io_i18n::lcblob::build_blob(cats, ::std::u8string_view{lname.data(), lname.size()},
-									   ::fast_io_i18n::lcblob::blob_charset::utf16, ctx),
-					::fast_io_i18n::lcblob::build_blob(cats, ::std::u8string_view{lname.data(), lname.size()},
-									   ::fast_io_i18n::lcblob::blob_charset::utf32, ctx)};
+				secs[1] = ::fast_io_i18n::lcblob::build_section(
+					cats, lv, u8"UTF-8", ::fast_io_i18n::lcblob::blob_charset::utf8,
+					ctx);
+				secs[2] = ::fast_io_i18n::lcblob::build_section(
+					cats, lv, u8"UTF-16", ::fast_io_i18n::lcblob::blob_charset::utf16,
+					ctx);
+				secs[3] = ::fast_io_i18n::lcblob::build_section(
+					cats, lv, u8"UTF-32", ::fast_io_i18n::lcblob::blob_charset::utf32,
+					ctx);
+				// blob_charset payload tag -> locale_charset codeset id
+				namespace ilc = ::fast_io::i18n::lcblob;
+				::std::uint_least32_t const codeset{static_cast<::std::uint_least32_t>(
+					encs[e] == ::fast_io_i18n::lcblob::blob_charset::gb18030
+						? ilc::locale_charset::gb18030
+					: encs[e] == ::fast_io_i18n::lcblob::blob_charset::utf_ebcdic
+						? ilc::locale_charset::utf_ebcdic
+						: ilc::locale_charset::utf8)};
 				auto blob{::fast_io_i18n::lcblob::build_container(
-					sections, ::std::u8string_view{lname.data(), lname.size()}, encn[e])};
+					secs, encs[e] == ::fast_io_i18n::lcblob::blob_charset::utf8, lv,
+					codeset)};
 				::fast_io::u8string outname{lname};
 				outname.append(u8".bin", 4);
 				::fast_io::obuf_file of{

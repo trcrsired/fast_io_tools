@@ -554,75 +554,79 @@ The codeset names the **`char` view only** — `char8_t`/`char16_t`/
 Supported codesets: UTF-8, GB18030, UTF-EBCDIC. `C`/`POSIX` emit once as
 `POSIX.UTF-8.bin`.
 
-```
-outer header:
-  u32 magic            'FCL1' = 0x314C4346 — the one fixed-width field
-  uleb128 version      format version (currently 1)
-  uleb128 total_size
-  uleb128 flags        reserved, 0
-  strref name          "de_DE.GB18030"   (canonical, utf8, -> pool)
-  strref encoding      "GB18030"         (char codeset, utf8, -> pool)
-  sec_dir := (uleb128 rva | uleb128 size) × 4, ordered:
-             [0] charset   the locale's declared char codeset section;
-                           aliases section[1] when codeset == utf8
-             [1] utf8      char8_t section (always UTF-8)
-             [2] utf16     char16_t section (LE)
-             [3] utf32     char32_t section (LE)
-  pool               name + encoding bytes (utf8)
-  sections           the referenced complete v1 blobs
-
-section blob (v1, self-contained, section-relative RVAs):
-  u32 magic          'FCL1'
-  uleb128 version
-  uleb128 total_size
-  uleb128 flags          reserved, 0
-  strref name            "de_DE"
-  strref encoding        this section's payload charset
-  uleb128 cat_dir_rva  -> u32 cat_table_rva[LC_CAT_COUNT]   (0 = absent)
-
-strref := uleb128 rva | uleb128 len
-
-cat_table_rva[cat] -> u32 slot_rva[nfields]
-                     fixed u32 index — the random-access mechanism;
-                     schema (lc_field_def{name,kind}) lives in lcblob.h
-
-slot := uleb128 tag | payload-by-tag        variable-length record
-  tag 0 ABSENT      (nothing follows)
-  tag 1 STRING      uleb rva | uleb len -> bytes
-  tag 2 STRLIST     uleb rva -> uleb count | strref*count  (abday[7], mon[12]…)
-  tag 3 INT         sleb128 value
-  tag 4 BYTES       uleb rva | uleb len -> i8 list  (grouping, mon_grouping)
-  tag 5 PROGRAM     uleb rva | uleb len -> binfmt blob
-  tag 6 INT3        sleb128 ×3                      (week: ndays;first_date;first_week)
-  tag 7 ERALIST     uleb rva -> uleb count | era_rec*count
-```
-
-Lookup is `cat_dir[cat]` → `slot_rva[field]` → decode the record — two
-u32 derefs plus a varint or two, still no key strings at runtime.
-Variable-length lists (`strref*count`, `era_rec*count`) decode
-sequentially — era lists and day/month tables are ≤ ~30 entries, so the
-walk is bounded and trivial.
+**The file IS the locale data.** It is a flat, position-independent
+image of the `basic_lc_*` C-struct layout — every pointer is an
+`lc_rva<T>` (a `u32` file offset) and every `basic_io_scatter_t` is an
+`lc_scatter<T>` (`lc_rva` + `u32` unit count). All fields are
+little-endian `u32`/`s32`; the layout is all-`u32`, deterministic on
+every ABI. Loading is: mmap (private copy-on-write) + check magic and
+version + return a `lc_locale const*` into the image. There is no
+decoding step and no validation beyond the two header words.
 
 ```
-era_rec (variable):
-  sleb128 direction      +1 | -1
-  sleb128 offset
-  sleb128 start_year     i32_MIN = "-*"
-  uleb128 start_month, start_day
-  sleb128 end_year       i32_MAX = "+*"
-  uleb128 end_month, end_day
-  strref name
-  strref fmt             binfmt pct program
+lc_locale root (40 bytes, at file offset 0):
+  u32 magic            'FCL1' = 0x314C4346
+  u32 version          format version (currently 1)
+  u32 total            file size
+  u32 flags            reserved, 0
+  u32 codeset          locale_charset of the char view: 0 UTF-8,
+                       1 GB18030, 2 UTF-EBCDIC
+  lc_scatter<char8_t> name     canonical "de_DE.GB18030", utf8
+  lc_rva<basic_lc_all<char>>     all    charset section — the declared
+  lc_rva<basic_lc_all<char8_t>>  u8all    char codeset for char text;
+  lc_rva<basic_lc_all<char16_t>> u16all   aliases u8all when UTF-8
+  lc_rva<basic_lc_all<char32_t>> u32all
+
+name pool            utf8 name bytes
+section image*       per present slot:
+                     basic_lc_all<char_type> bytes + payload pool
 ```
 
-Categories (fixed ids 0–11): identification, ctype, collate, time,
-numeric, monetary, messages, paper, name, address, telephone,
-measurement.
+Every `rva` is an absolute file offset resolved with
+`lc_get_rva(file_base, field.ref)`; scalars read via `lc_u32(field)` /
+`lc_s32`. `rva == 0` means absent. A section image's members point into
+its own pool which directly follows the struct — one contiguous
+position-independent region.
 
-- `ctype` v1: encoding string only (translit/charclass tables TBD)
-- `collate` v1: flag slot only (codepoint vs table)
+Field types inside a section:
+
+```
+lc_scatter<char_type>              text fields (units = section chars)
+lc_scatter<char8_t>                programs (compiled binfmt blobs)
+                                   and byte lists (grouping) — len in bytes
+lc_scatter<char_type> arr[N]       inline fixed arrays (abday[7], am_pm[2])
+lc_scatter<lc_scatter<char_type>>  dynamic string lists — member is
+                                   {tbl_rva, count}, tbl = strref[count]
+lc_scatter<basic_lc_time_era<char_type>>  era list — {tbl_rva, count},
+                                   tbl = basic_lc_time_era[count]
+s32                                integer fields
+```
+
+`basic_lc_time_era` (48 bytes, in the pool):
+
+```
+  s32 direction        +1 | -1
+  s32 offset
+  s32 start_year
+  u32 start_month, start_day
+  s32 end_year         i32_MIN = "-*", i32_MAX = "+*"
+  u32 end_month, end_day
+  lc_scatter<char_type> name
+  lc_scatter<char8_t> era_format   compiled binfmt program
+```
+
+Categories (members of `basic_lc_all`, master parity): identification,
+monetary, numeric, time, messages, paper, telephone, name, address,
+measurement, keyboard. `ctype`, `collate` and `xliterate` are not
+modeled.
+
 - `messages.yesexpr/noexpr` stay **strings** — they're regex sources for
   matching, not formatting programs
+- LEB128 is used ONLY inside compiled `binfmt` program payloads —
+  never in the container
+- The mapping is private copy-on-write: the image is shared through the
+  OS page cache but a process may patch rva fields in its own copy
+  without touching the file
 
 ## Open items
 

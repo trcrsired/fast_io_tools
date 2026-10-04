@@ -1,48 +1,46 @@
 #pragma once
 
 // lcblob — flat position-independent locale container (spec Part 7).
-// Every reference is an RVA uleb/u32 from the blob base; mmap-friendly,
-// no relocations.
+// The file is the locale data itself: the basic_lc_* C-struct layout
+// with every pointer an lc_rva<T> and every scatter an lc_scatter<T>
+// (see fast_io_i18n/lcblob.h for the wire types). All fields are
+// little-endian u32/s32 — deterministic on every ABI.
 //
-// Layout: [header][cat_dir u32*12][pool][slot tables][records]
+// Layout:
+//   [lc_locale root 40B][name pool][section image]*
+//   section image = basic_lc_all<char_type> struct bytes + payload pool;
+//   every rva in it is a u32 file offset.
 //
-//   header:   u32 magic 'FCL1' | uleb version | uleb total_size | uleb flags
-//             | strref name | strref encoding | uleb cat_dir_rva
-//   cat_dir:  u32 rva per category (0 = category absent)
-//   pool:     string / program / list-body bytes (strref targets)
-//   slot tbl: u32 rva per field (0 = slot absent)
-//   records:  uleb tag | payload
-//
-// Pool-first ordering matters: strrefs live inside pool bodies
-// (STRLIST/ERALIST) and inside records, so pool content depends only on
-// pool_base — one fixpoint loop covers header-size feedback.
+// Emission: each section's payload references are written pool-relative
+// with fixup slots recorded; once the section's file base is known the
+// fixups relocate every rva in one pass. Single pass, no fixpoint.
 
 #include "compile.h"
+#include <fast_io_i18n/lcblob.h>
 
 namespace fast_io_i18n
 {
 namespace lcblob
 {
 
-inline constexpr ::std::uint_least32_t magic{0x314C4346}; // 'FCL1'
-inline constexpr ::std::uint_least64_t blob_version{1};   // reader rejects files with version > this
+inline constexpr ::std::uint_least32_t magic{::fast_io::i18n::lcblob::magic}; // 'FCL1'
+inline constexpr ::std::uint_least32_t blob_version{::fast_io::i18n::lcblob::blob_version};
 
-// categories — fixed ids
+// categories — master parity (ctype/collate/xliterate are not modeled)
 enum lc_cat : ::std::uint_least32_t
 {
 	cat_identification = 0,
-	cat_ctype = 1,
-	cat_collate = 2,
+	cat_monetary = 1,
+	cat_numeric = 2,
 	cat_time = 3,
-	cat_numeric = 4,
-	cat_monetary = 5,
-	cat_messages = 6,
-	cat_paper = 7,
-	cat_name = 8,
-	cat_address = 9,
-	cat_telephone = 10,
-	cat_measurement = 11,
-	cat_count = 12,
+	cat_messages = 4,
+	cat_paper = 5,
+	cat_telephone = 6,
+	cat_name = 7,
+	cat_address = 8,
+	cat_measurement = 9,
+	cat_keyboard = 10,
+	cat_count = 11,
 };
 
 enum class slot_tag : ::std::uint_least8_t
@@ -113,33 +111,12 @@ inline constexpr ::std::size_t szf{0};
 		name_, ::fast_io_i18n::lcblob::slot_tag::eralist, {}                                                           \
 	}
 
+// schema field order == file-struct member order in every category
 inline constexpr ::fast_io_i18n::lcblob::field_def identification_fields[]{
 	LC_S("title"), LC_S("source"), LC_S("address"), LC_S("contact"),
 	LC_S("email"), LC_S("tel"), LC_S("fax"), LC_S("language"),
 	LC_S("territory"), LC_S("audience"), LC_S("application"),
 	LC_S("abbreviation"), LC_S("revision"), LC_S("date"),
-};
-
-inline constexpr ::fast_io_i18n::lcblob::field_def ctype_fields[]{
-	LC_S("codeset"), // v1: charset name only
-};
-
-inline constexpr ::fast_io_i18n::lcblob::field_def collate_fields[]{
-	LC_I("collation"), // 1 = codepoint
-};
-
-inline constexpr ::fast_io_i18n::lcblob::field_def time_fields[]{
-	LC_SL("abday"), LC_SL("day"), LC_SL("abmon"), LC_SL("ab_alt_mon"),
-	LC_SL("mon"), LC_SL("alt_mon"), LC_PT("d_t_fmt"), LC_PT("d_fmt"), LC_PT("t_fmt"),
-	LC_PT("t_fmt_ampm"), LC_PT("date_fmt"), LC_SL("am_pm"),
-	LC_EL("era"), LC_PT("era_d_fmt"), LC_PT("era_d_t_fmt"),
-	LC_PT("era_t_fmt"), LC_SL("alt_digits"), LC_I3("week"),
-	LC_I("first_weekday"), LC_I("first_workday"), LC_I("cal_direction"),
-	LC_SL("timezone"),
-};
-
-inline constexpr ::fast_io_i18n::lcblob::field_def numeric_fields[]{
-	LC_S("decimal_point"), LC_S("thousands_sep"), LC_B("grouping"),
 };
 
 inline constexpr ::fast_io_i18n::lcblob::field_def monetary_fields[]{
@@ -152,12 +129,31 @@ inline constexpr ::fast_io_i18n::lcblob::field_def monetary_fields[]{
 	LC_I("n_sign_posn"), LC_I("int_p_sign_posn"), LC_I("int_n_sign_posn"),
 };
 
+inline constexpr ::fast_io_i18n::lcblob::field_def numeric_fields[]{
+	LC_S("decimal_point"), LC_S("thousands_sep"), LC_B("grouping"),
+};
+
+inline constexpr ::fast_io_i18n::lcblob::field_def time_fields[]{
+	LC_SL("abday"), LC_SL("day"), LC_SL("abmon"), LC_SL("ab_alt_mon"),
+	LC_SL("mon"), LC_SL("alt_mon"), LC_PT("d_t_fmt"), LC_PT("d_fmt"), LC_PT("t_fmt"),
+	LC_PT("t_fmt_ampm"), LC_PT("date_fmt"), LC_SL("am_pm"),
+	LC_EL("era"), LC_PT("era_d_fmt"), LC_PT("era_d_t_fmt"),
+	LC_PT("era_t_fmt"), LC_SL("alt_digits"), LC_I3("week"),
+	LC_I("first_weekday"), LC_I("first_workday"), LC_I("cal_direction"),
+	LC_SL("timezone"),
+};
+
 inline constexpr ::fast_io_i18n::lcblob::field_def messages_fields[]{
 	LC_S("yesexpr"), LC_S("noexpr"), LC_S("yesstr"), LC_S("nostr"),
 };
 
 inline constexpr ::fast_io_i18n::lcblob::field_def paper_fields[]{
 	LC_I("height"), LC_I("width"),
+};
+
+inline constexpr ::fast_io_i18n::lcblob::field_def telephone_fields[]{
+	LC_PG("tel_int_fmt"), LC_PG("tel_dom_fmt"), LC_S("int_select"),
+	LC_S("int_prefix"),
 };
 
 inline constexpr ::fast_io_i18n::lcblob::field_def name_fields[]{
@@ -172,13 +168,12 @@ inline constexpr ::fast_io_i18n::lcblob::field_def address_fields[]{
 	LC_S("lang_ab"), LC_S("lang_term"), LC_S("lang_lib"),
 };
 
-inline constexpr ::fast_io_i18n::lcblob::field_def telephone_fields[]{
-	LC_PG("tel_int_fmt"), LC_PG("tel_dom_fmt"), LC_S("int_select"),
-	LC_S("int_prefix"),
-};
-
 inline constexpr ::fast_io_i18n::lcblob::field_def measurement_fields[]{
 	LC_I("measurement"),
+};
+
+inline constexpr ::fast_io_i18n::lcblob::field_def keyboard_fields[]{
+	LC_SL("keyboards"),
 };
 
 struct cat_schema
@@ -187,13 +182,21 @@ struct cat_schema
 	char const *glibc_name;
 };
 
+// glibc_name maps localedef "LC_FOO" keywords; the array order is the
+// cat id. LC_CTYPE/LC_COLLATE are intentionally absent — their bodies
+// are ignored by the parser.
 inline constexpr ::fast_io_i18n::lcblob::cat_schema cat_schemas[cat_count]{
-	{identification_fields, "LC_IDENTIFICATION"}, {ctype_fields, "LC_CTYPE"},
-	{collate_fields, "LC_COLLATE"},		 {time_fields, "LC_TIME"},
-	{numeric_fields, "LC_NUMERIC"},		 {monetary_fields, "LC_MONETARY"},
-	{messages_fields, "LC_MESSAGES"},	 {paper_fields, "LC_PAPER"},
-	{name_fields, "LC_NAME"},		 {address_fields, "LC_ADDRESS"},
-	{telephone_fields, "LC_TELEPHONE"},	 {measurement_fields, "LC_MEASUREMENT"},
+	{identification_fields, "LC_IDENTIFICATION"},
+	{monetary_fields, "LC_MONETARY"},
+	{numeric_fields, "LC_NUMERIC"},
+	{time_fields, "LC_TIME"},
+	{messages_fields, "LC_MESSAGES"},
+	{paper_fields, "LC_PAPER"},
+	{telephone_fields, "LC_TELEPHONE"},
+	{name_fields, "LC_NAME"},
+	{address_fields, "LC_ADDRESS"},
+	{measurement_fields, "LC_MEASUREMENT"},
+	{keyboard_fields, "LC_KEYBOARD"},
 };
 
 #undef LC_S
@@ -451,80 +454,38 @@ struct cat_src
 namespace details
 {
 
-inline ::std::size_t uleb_len(::std::uint_least64_t v) noexcept
+// little-endian scalar <-> host (file fields are always LE)
+inline constexpr ::std::uint_least32_t le32(::std::uint_least32_t v) noexcept
 {
-	::std::size_t n{1};
-	for (; v >>= 7; ++n)
+	if constexpr (::std::endian::native == ::std::endian::big)
 	{
+		v = ::std::byteswap(v);
 	}
-	return n;
+	return v;
 }
 
+// append one LE u32 to a byte buffer — byte-wise, host independent
 inline void put_u32(::fast_io::string &buf, ::std::uint_least32_t v) noexcept
 {
-	char b[4];
-	::fast_io::details::my_memcpy(b, __builtin_addressof(v), 4);
+	char b[4]{static_cast<char>(v), static_cast<char>(v >> 8),
+			  static_cast<char>(v >> 16), static_cast<char>(v >> 24)};
 	buf.append(b, 4);
 }
 
-// pool builder — payloads + rva bookkeeping for one fixpoint pass
-struct pool_builder
+inline ::std::uint_least32_t rd_le32(char const *p) noexcept
 {
-	::fast_io::string pool{};
-	::std::uint_least32_t base{}; // rva where pool[0] lands in the blob
+	return static_cast<::std::uint_least8_t>(p[0]) |
+		   (static_cast<::std::uint_least32_t>(static_cast<::std::uint_least8_t>(p[1])) << 8) |
+		   (static_cast<::std::uint_least32_t>(static_cast<::std::uint_least8_t>(p[2])) << 16) |
+		   (static_cast<::std::uint_least32_t>(static_cast<::std::uint_least8_t>(p[3])) << 24);
+}
 
-	::std::uint_least32_t here() const noexcept
-	{
-		return base + static_cast<::std::uint_least32_t>(pool.size());
-	}
-	::std::uint_least32_t intern(::fast_io::string const &bytes) noexcept
-	{
-		auto rva{here()};
-		pool.append(bytes.data(), bytes.size());
-		return rva;
-	}
-	void strref(::std::uint_least32_t rva, ::std::size_t len) noexcept
-	{
-		::fast_io_i18n::binfmt::put_leb128_to(pool, rva);
-		::fast_io_i18n::binfmt::put_leb128_to(pool, len);
-	}
-};
-
-// build one slot's pool payload; returns the pool rva where the payload
-// starts (0 for inline-tag slots that carry no pool data)
-// record bytes for one slot; payload_rva valid for
-// string/strlist/bytes/program/eralist slots
-inline ::fast_io::string emit_record(field_def def, slot_src const &s,
-				     ::std::uint_least32_t payload_rva,
-				     ::std::size_t payload_len) noexcept
+inline void wr_le32(char *p, ::std::uint_least32_t v) noexcept
 {
-	using ::fast_io_i18n::binfmt::put_leb128_to;
-	::fast_io::string rec;
-	put_leb128_to(rec, static_cast<::std::uint_least64_t>(def.tag));
-	switch (def.tag)
-	{
-	case slot_tag::string:
-	case slot_tag::bytes:
-	case slot_tag::program:
-		put_leb128_to(rec, payload_rva);
-		put_leb128_to(rec, payload_len);
-		break;
-	case slot_tag::strlist:
-	case slot_tag::eralist:
-		put_leb128_to(rec, payload_rva);
-		break;
-	case slot_tag::integer:
-		put_leb128_to(rec, s.ints[0]);
-		break;
-	case slot_tag::int3:
-		put_leb128_to(rec, s.ints[0]);
-		put_leb128_to(rec, s.ints[1]);
-		put_leb128_to(rec, s.ints[2]);
-		break;
-	default:
-		break;
-	}
-	return rec;
+	p[0] = static_cast<char>(v);
+	p[1] = static_cast<char>(v >> 8);
+	p[2] = static_cast<char>(v >> 16);
+	p[3] = static_cast<char>(v >> 24);
 }
 
 inline bool slot_has(slot_tag tag, slot_src const &s) noexcept
@@ -547,467 +508,543 @@ inline bool slot_has(slot_tag tag, slot_src const &s) noexcept
 	}
 }
 
-// emit one slot's pool payload; returns pool rva (inline-tag slots return 0).
-// For string/program the transcoded bytes are returned in `tc` so the record
-// can carry the length.
-inline ::std::uint_least32_t emit_slot_payload(
-	pool_builder &p, field_def def, slot_src const &s, blob_charset cs,
-	::fast_io::string &tc, ::fast_io_i18n::binfmt::src_ctx ctx) throws
+} // namespace details
+
+// ---------------------------------------------------------------------------
+// one section under construction: a real basic_lc_all<char> image (all
+// basic_lc_all<T> share the same all-u32 layout — the char_type tag only
+// documents semantics) plus the payload pool after it.
+//
+// Member rva fields are written POOL-RELATIVE; fixups relocate them to
+// file offsets (pool_base = section file offset + sizeof(lc_all)) once
+// the container layout is known.
+// ---------------------------------------------------------------------------
+
+struct sec_build
 {
-	using ::fast_io_i18n::binfmt::put_leb128_to;
-	switch (def.tag)
+	::fast_io::i18n::lcblob::basic_lc_all<char> img{};
+	::fast_io::string pool{};
+	::fast_io::vector<::std::uint_least32_t> fix_img{};
+	::fast_io::vector<::std::uint_least32_t> fix_pool{};
+
+	inline ::std::uint_least32_t here() const noexcept
 	{
-	case slot_tag::string:
-		tc = transcode(s.strs[0], cs);
-		return p.intern(tc);
-	case slot_tag::bytes:
+		return static_cast<::std::uint_least32_t>(pool.size());
+	}
+	inline ::std::uint_least32_t intern(::fast_io::string const &bytes) throws
 	{
-		auto rva{p.here()};
-		for (auto v : s.ints)
-		{
-			p.pool.push_back(static_cast<char>(v & 0xFF));
-		}
+		auto const rva{here()};
+		pool.append(bytes.data(), bytes.size());
 		return rva;
 	}
-	case slot_tag::program:
+	// an rva member carrying a pool-relative offset — relocate() adds
+	// the pool's file base. fix_img stores BYTE OFFSETS into img, not
+	// pointers: the object must survive being moved into secs[].
+	template <typename T>
+	inline void rva(::fast_io::i18n::lcblob::lc_rva<T> &m, ::std::uint_least32_t off) throws
 	{
-		// a rejected directive drops the slot, not the locale
-		try
-		{
-			auto prog{def.lang == src_lang::pct_generic
-					  ? ::fast_io_i18n::binfmt::compile_generic_pct(
-						    s.fmt_src, ctx)
-					  : ::fast_io_i18n::binfmt::compile_time(
-						    s.fmt_src, ctx)};
-			tc = transcode_program({prog.data(), prog.size()}, cs);
-			return p.intern(tc);
-		}
-		catch throws(::std::error e)
-		{
-			::fast_io::perrln("  skip program `", ::std::string_view{def.name}, "' in ",
-					  ctx.where);
-			return 0;
-		}
+		m.off = details::le32(off);
+		fix_img.push_back(static_cast<::std::uint_least32_t>(
+			reinterpret_cast<char *>(__builtin_addressof(m.off)) -
+			reinterpret_cast<char *>(&img)));
 	}
-	case slot_tag::strlist:
+	// scatter member: rva + element count (no fixup on len)
+	template <typename T>
+	inline void scatter(::fast_io::i18n::lcblob::lc_scatter<T> &m, ::std::uint_least32_t off,
+						::std::uint_least32_t len) throws
 	{
-		// element strings first (collect rvas + transcoded lens),
-		// then count|strref*
-		::fast_io::vector<::std::uint_least32_t> rvas;
-		::fast_io::vector<::std::size_t> lens;
-		for (auto e : s.strs)
-		{
-			auto t{transcode(e, cs)};
-			lens.push_back(t.size());
-			rvas.push_back(p.intern(::std::move(t)));
-		}
-		auto rva{p.here()};
-		put_leb128_to(p.pool, rvas.size());
-		auto it{rvas.cbegin()};
-		for (auto l : lens)
-		{
-			p.strref(*it++, l);
-		}
-		return rva;
+		rva(m.ref, off);
+		m.len = details::le32(len);
 	}
-	case slot_tag::eralist:
+	// plain s32 member
+	inline void sint(::std::int_least32_t &m, ::std::int_least64_t v) noexcept
 	{
-		// era names + fmts first (strrefs point at them)
-		::fast_io::vector<::std::uint_least32_t> name_rvas;
-		::fast_io::vector<::std::size_t> name_lens;
-		::fast_io::vector<::std::uint_least32_t> fmt_rvas;
-		::fast_io::vector<::fast_io::string> fmts;
-		try
-		{
-			for (auto const &e : s.eras)
-			{
-				auto t{transcode(e.name, cs)};
-				name_lens.push_back(t.size());
-				name_rvas.push_back(p.intern(::std::move(t)));
-				auto prog{::fast_io_i18n::binfmt::compile_time(e.fmt, ctx)};
-				fmts.emplace_back(transcode_program(
-					{prog.data(), prog.size()}, cs));
-				fmt_rvas.push_back(p.intern(fmts.back()));
-			}
-		}
-		catch throws(::std::error e)
-		{
-			::fast_io::perrln("  skip `era' in ", ctx.where);
-			return 0;
-		}
-		auto rva{p.here()};
-		put_leb128_to(p.pool, s.eras.size());
-		auto ni{name_rvas.cbegin()};
-		auto nl{name_lens.cbegin()};
-		auto fi{fmt_rvas.cbegin()};
-		auto ti{fmts.cbegin()};
-		for (auto const &e : s.eras)
-		{
-			put_leb128_to(p.pool, e.direction);
-			put_leb128_to(p.pool, e.offset);
-			put_leb128_to(p.pool, e.start_year);
-			put_leb128_to(p.pool, static_cast<::std::uint_least32_t>(e.start_month));
-			put_leb128_to(p.pool, static_cast<::std::uint_least32_t>(e.start_day));
-			put_leb128_to(p.pool, e.end_year);
-			put_leb128_to(p.pool, static_cast<::std::uint_least32_t>(e.end_month));
-			put_leb128_to(p.pool, static_cast<::std::uint_least32_t>(e.end_day));
-			p.strref(*ni++, *nl++);
-			p.strref(*fi++, ti->size());
-			++ti;
-		}
-		return rva;
+		m = static_cast<::std::int_least32_t>(
+			details::le32(static_cast<::std::uint_least32_t>(
+				static_cast<::std::int_least32_t>(v))));
 	}
-	default:
-		return 0;
+	// a pool-internal rva slot (strref tables, era recs) — appended LE
+	inline void pool_rva(::std::uint_least32_t off) throws
+	{
+		fix_pool.push_back(here());
+		details::put_u32(pool, off);
 	}
+	// every recorded rva slot += pool's file base
+	inline void relocate(::std::uint_least32_t pool_base) noexcept
+	{
+		for (auto off : fix_img)
+		{
+			auto *m{reinterpret_cast<::std::uint_least32_t *>(
+				reinterpret_cast<char *>(&img) + off)};
+			*m = details::le32(details::le32(*m) + pool_base);
+		}
+		for (auto off : fix_pool)
+		{
+			details::wr_le32(pool.data() + off,
+							 details::rd_le32(pool.data() + off) + pool_base);
+		}
+	}
+};
+
+namespace details
+{
+
+// byte size of one char unit in a section's payload charset
+inline constexpr ::std::size_t cs_units(blob_charset cs) noexcept
+{
+	return cs == blob_charset::utf16 ? 2 : cs == blob_charset::utf32 ? 4 : 1;
+}
+
+// member of the section image by byte offset
+template <typename M>
+inline M *mem_at(void *img, ::std::uint_least32_t off) noexcept
+{
+	return reinterpret_cast<M *>(static_cast<char *>(img) + off);
+}
+
+// text member <- transcoded string; len is in section char units
+inline void sec_string(::fast_io::i18n::lcblob::lc_scatter<char> &m,
+					   ::std::u8string_view sv, sec_build &b, blob_charset cs,
+					   ::std::size_t units) throws
+{
+	if (sv.empty())
+	{
+		return;
+	}
+	auto t{transcode(sv, cs)};
+	b.scatter(m, b.intern(t),
+			  static_cast<::std::uint_least32_t>(t.size() / units));
+}
+
+// fixed inline scatter array (abday[7], am_pm[2] ...): at most cap elems
+inline void sec_strs(::fast_io::i18n::lcblob::lc_scatter<char> *arr,
+					 ::std::size_t cap,
+					 ::fast_io::vector<::std::u8string_view> const &strs,
+					 sec_build &b, blob_charset cs, ::std::size_t units) throws
+{
+	for (::std::size_t i{}; i < cap && i < strs.size(); ++i)
+	{
+		sec_string(arr[i], strs[i], b, cs, units);
+	}
+}
+
+// dynamic list member {tbl_rva,count} — tbl = strref{u32,u32}[] in pool
+inline void sec_strlist(
+	::fast_io::i18n::lcblob::lc_scatter<::fast_io::i18n::lcblob::lc_scatter<char>> &m,
+	::fast_io::vector<::std::u8string_view> const &strs, sec_build &b,
+	blob_charset cs, ::std::size_t units) throws
+{
+	if (strs.empty())
+	{
+		return;
+	}
+	::fast_io::vector<::std::uint_least32_t> rvas;
+	::fast_io::vector<::std::size_t> lens;
+	for (auto e : strs)
+	{
+		auto t{transcode(e, cs)};
+		lens.push_back(t.size());
+		rvas.push_back(b.intern(t));
+	}
+	auto const tbl{b.here()};
+	auto li{lens.cbegin()};
+	for (auto r : rvas)
+	{
+		b.pool_rva(r);
+		put_u32(b.pool, static_cast<::std::uint_least32_t>(*li++ / units));
+	}
+	b.scatter(m, tbl, static_cast<::std::uint_least32_t>(rvas.size()));
+}
+
+// compiled-program member — a rejected directive drops the slot, not
+// the locale
+inline void sec_program(::fast_io::i18n::lcblob::lc_scatter<char8_t> &m,
+						::std::u8string_view fmt_src, src_lang lang, sec_build &b,
+						blob_charset cs,
+						::fast_io_i18n::binfmt::src_ctx ctx,
+						char const *fname) throws
+{
+	try
+	{
+		auto prog{lang == src_lang::pct_generic
+					  ? ::fast_io_i18n::binfmt::compile_generic_pct(fmt_src, ctx)
+					  : ::fast_io_i18n::binfmt::compile_time(fmt_src, ctx)};
+		auto tc{transcode_program({prog.data(), prog.size()}, cs)};
+		b.scatter(m, b.intern(tc), static_cast<::std::uint_least32_t>(tc.size()));
+	}
+	catch throws(::std::error)
+	{
+		::fast_io::perrln("  skip program `", ::std::string_view{fname}, "' in ",
+						  ctx.where);
+	}
+}
+
+// raw byte list member (grouping)
+inline void sec_bytes(::fast_io::i18n::lcblob::lc_scatter<char8_t> &m,
+					  ::fast_io::vector<::std::int_least64_t> const &ints,
+					  sec_build &b) throws
+{
+	if (ints.empty())
+	{
+		return;
+	}
+	auto const rva{b.here()};
+	for (auto v : ints)
+	{
+		b.pool.push_back(static_cast<char>(v & 0xFF));
+	}
+	b.scatter(m, rva, static_cast<::std::uint_least32_t>(ints.size()));
+}
+
+// era list member {tbl_rva,count} — tbl = basic_lc_time_era[count] in
+// pool: s32 direction | s32 offset | s32 start_year | u32 start_month |
+// u32 start_day | s32 end_year | u32 end_month | u32 end_day |
+// strref name | strref fmt(program)
+inline void sec_era(
+	::fast_io::i18n::lcblob::lc_scatter<::fast_io::i18n::lcblob::basic_lc_time_era<char>> &m,
+	::fast_io::vector<era_src> const &eras, sec_build &b, blob_charset cs,
+	::std::size_t units, ::fast_io_i18n::binfmt::src_ctx ctx) throws
+{
+	if (eras.empty())
+	{
+		return;
+	}
+	::fast_io::vector<::std::uint_least32_t> name_rvas;
+	::fast_io::vector<::std::size_t> name_lens;
+	::fast_io::vector<::std::uint_least32_t> fmt_rvas;
+	::fast_io::vector<::fast_io::string> fmts;
+	try
+	{
+		for (auto const &e : eras)
+		{
+			auto t{transcode(e.name, cs)};
+			name_lens.push_back(t.size());
+			name_rvas.push_back(b.intern(t));
+			auto prog{::fast_io_i18n::binfmt::compile_time(e.fmt, ctx)};
+			fmts.emplace_back(transcode_program({prog.data(), prog.size()}, cs));
+			fmt_rvas.push_back(b.intern(fmts.back()));
+		}
+	}
+	catch throws(::std::error)
+	{
+		::fast_io::perrln("  skip `era' in ", ctx.where);
+		return;
+	}
+	auto const tbl{b.here()};
+	auto ni{name_rvas.cbegin()};
+	auto nl{name_lens.cbegin()};
+	auto fi{fmt_rvas.cbegin()};
+	auto ti{fmts.cbegin()};
+	for (auto const &e : eras)
+	{
+		put_u32(b.pool, static_cast<::std::uint_least32_t>(
+							static_cast<::std::int_least32_t>(e.direction)));
+		put_u32(b.pool, static_cast<::std::uint_least32_t>(
+							static_cast<::std::int_least32_t>(e.offset)));
+		put_u32(b.pool, static_cast<::std::uint_least32_t>(
+							static_cast<::std::int_least32_t>(e.start_year)));
+		put_u32(b.pool, static_cast<::std::uint_least32_t>(e.start_month));
+		put_u32(b.pool, static_cast<::std::uint_least32_t>(e.start_day));
+		put_u32(b.pool, static_cast<::std::uint_least32_t>(
+							static_cast<::std::int_least32_t>(e.end_year)));
+		put_u32(b.pool, static_cast<::std::uint_least32_t>(e.end_month));
+		put_u32(b.pool, static_cast<::std::uint_least32_t>(e.end_day));
+		b.pool_rva(*ni++);
+		put_u32(b.pool, static_cast<::std::uint_least32_t>(*nl++ / units));
+		b.pool_rva(*fi++);
+		put_u32(b.pool, static_cast<::std::uint_least32_t>(ti->size()));
+		++ti;
+	}
+	b.scatter(m, tbl, static_cast<::std::uint_least32_t>(eras.size()));
 }
 
 } // namespace details
 
 // ---------------------------------------------------------------------------
-// emit — fixpoint over hdr_size: pool strrefs and record RVAs all depend
-// on where the pool lands, which depends on the header's own size
+// emit — fill one section image (basic_lc_all members at compile-time
+// offsets), then assemble the container
 // ---------------------------------------------------------------------------
 
-inline ::fast_io::string build_blob(cat_src const cats[cat_count],
-				    ::std::u8string_view name, blob_charset cs,
-				    ::std::string_view file_ctx) throws
+namespace details
 {
-	using ::fast_io_i18n::binfmt::put_leb128_to;
-	auto enc_name{blob_charset_name(cs)};
 
-	::fast_io::string name_tc{transcode(name, cs)};
-	::fast_io::string enc_tc{transcode(
-		{reinterpret_cast<char8_t const *>(enc_name.data()), enc_name.size()}, cs)};
+using all_t = ::fast_io::i18n::lcblob::basic_lc_all<char>;
 
-	struct slot_info
-	{
-		::std::uint_least32_t rva{};
-		::std::size_t len{};
-	};
+// member byte offsets per schema field index — schema order == member
+// order in every category
+constexpr ::std::uint_least32_t identification_off[]{
+	offsetof(all_t, identification.title),
+	offsetof(all_t, identification.source),
+	offsetof(all_t, identification.address),
+	offsetof(all_t, identification.contact),
+	offsetof(all_t, identification.email),
+	offsetof(all_t, identification.tel),
+	offsetof(all_t, identification.fax),
+	offsetof(all_t, identification.language),
+	offsetof(all_t, identification.territory),
+	offsetof(all_t, identification.audience),
+	offsetof(all_t, identification.application),
+	offsetof(all_t, identification.abbreviation),
+	offsetof(all_t, identification.revision),
+	offsetof(all_t, identification.date)};
 
-	::std::uint_least32_t hdr_size{24}; // seed
-	for (unsigned iter{};; ++iter)
-	{
-		if (iter > 8)
-		{
-			throw throws ::std::errc::invalid_argument; // fixpoint diverged
-		}
-		::std::uint_least32_t const pool_base{hdr_size + 48};
-		details::pool_builder p;
-		p.base = pool_base;
+constexpr ::std::uint_least32_t monetary_off[]{
+	offsetof(all_t, monetary.int_curr_symbol),
+	offsetof(all_t, monetary.currency_symbol),
+	offsetof(all_t, monetary.mon_decimal_point),
+	offsetof(all_t, monetary.mon_thousands_sep),
+	offsetof(all_t, monetary.mon_grouping),
+	offsetof(all_t, monetary.positive_sign),
+	offsetof(all_t, monetary.negative_sign),
+	offsetof(all_t, monetary.int_frac_digits),
+	offsetof(all_t, monetary.frac_digits),
+	offsetof(all_t, monetary.p_cs_precedes),
+	offsetof(all_t, monetary.p_sep_by_space),
+	offsetof(all_t, monetary.n_cs_precedes),
+	offsetof(all_t, monetary.n_sep_by_space),
+	offsetof(all_t, monetary.int_p_cs_precedes),
+	offsetof(all_t, monetary.int_p_sep_by_space),
+	offsetof(all_t, monetary.int_n_cs_precedes),
+	offsetof(all_t, monetary.int_n_sep_by_space),
+	offsetof(all_t, monetary.p_sign_posn),
+	offsetof(all_t, monetary.n_sign_posn),
+	offsetof(all_t, monetary.int_p_sign_posn),
+	offsetof(all_t, monetary.int_n_sign_posn)};
 
-		// header strrefs are pool entries too — name first, encoding second
-		auto const name_rva{p.intern(name_tc)};
-		auto const enc_rva{p.intern(enc_tc)};
+constexpr ::std::uint_least32_t numeric_off[]{
+	offsetof(all_t, numeric.decimal_point),
+	offsetof(all_t, numeric.thousands_sep),
+	offsetof(all_t, numeric.grouping)};
 
-		::fast_io::vector<slot_info> infos[cat_count];
-		for (::std::size_t c{}; c < cat_count; ++c)
-		{
-			if (!cats[c].present)
-			{
-				continue;
-			}
-			auto const &schema{cat_schemas[c]};
-			for (::std::size_t f{}; f < schema.fields.size(); ++f)
-			{
-				auto const &def{schema.fields[f]};
-				auto const &s{cats[c].slots[f]};
-				slot_info si;
-				if (details::slot_has(def.tag, s))
-				{
-					::fast_io::string tc;
-					si.rva = details::emit_slot_payload(
-						p, def, s, cs, tc, {file_ctx});
-					si.len = p.here() - si.rva;
-				}
-				infos[c].push_back(si);
-			}
-		}
+constexpr ::std::uint_least32_t time_off[]{
+	offsetof(all_t, time.abday),
+	offsetof(all_t, time.day),
+	offsetof(all_t, time.abmon),
+	offsetof(all_t, time.ab_alt_mon),
+	offsetof(all_t, time.mon),
+	offsetof(all_t, time.alt_mon),
+	offsetof(all_t, time.d_t_fmt),
+	offsetof(all_t, time.d_fmt),
+	offsetof(all_t, time.t_fmt),
+	offsetof(all_t, time.t_fmt_ampm),
+	offsetof(all_t, time.date_fmt),
+	offsetof(all_t, time.am_pm),
+	offsetof(all_t, time.era),
+	offsetof(all_t, time.era_d_fmt),
+	offsetof(all_t, time.era_d_t_fmt),
+	offsetof(all_t, time.era_t_fmt),
+	offsetof(all_t, time.alt_digits),
+	offsetof(all_t, time.week),
+	offsetof(all_t, time.first_weekday),
+	offsetof(all_t, time.first_workday),
+	offsetof(all_t, time.cal_direction),
+	offsetof(all_t, time.timezone)};
 
-		// records — keep offsets only; the records base is patched at emit
-		::fast_io::string records;
-		::fast_io::vector<::std::uint_least32_t> rec_off[cat_count];
-		for (::std::size_t c{}; c < cat_count; ++c)
-		{
-			if (!cats[c].present)
-			{
-				continue;
-			}
-			auto const &schema{cat_schemas[c]};
-			for (::std::size_t f{}; f < schema.fields.size(); ++f)
-			{
-				auto const &si{infos[c][f]};
-				bool inline_int{schema.fields[f].tag == slot_tag::integer ||
-						schema.fields[f].tag == slot_tag::int3};
-				if (!si.rva && !inline_int)
-				{
-					rec_off[c].push_back(0);
-					continue;
-				}
-				if (!details::slot_has(schema.fields[f].tag, cats[c].slots[f]))
-				{
-					rec_off[c].push_back(0);
-					continue;
-				}
-				rec_off[c].push_back(
-					static_cast<::std::uint_least32_t>(records.size()));
-				auto rec{details::emit_record(schema.fields[f], cats[c].slots[f],
-							      si.rva, si.len)};
-				records.append(rec.data(), rec.size());
-			}
-		}
+// aux = fixed inline-array capacity (0 = regular slot)
+constexpr ::std::uint_least8_t time_aux[]{
+	7, 7, 12, 12, 12, 12, 0, 0, 0, 0, 0, 2,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-		::std::uint_least32_t slots_size{};
-		for (::std::size_t c{}; c < cat_count; ++c)
-		{
-			if (cats[c].present)
-			{
-				slots_size += static_cast<::std::uint_least32_t>(
-					cat_schemas[c].fields.size() * 4);
-			}
-		}
+constexpr ::std::uint_least32_t messages_off[]{
+	offsetof(all_t, messages.yesexpr), offsetof(all_t, messages.noexpr),
+	offsetof(all_t, messages.yesstr), offsetof(all_t, messages.nostr)};
 
-		// hdr_size = 4 + uleb(version) + uleb(total) + 1(flags)
-		//          + uleb(name_rva) + uleb(name_len)
-		//          + uleb(enc_rva) + uleb(enc_len) + uleb(cat_dir_rva)
-		// cat_dir_rva = hdr_size; pool rvas = hdr_size + 48 + off.
-		// Self-referential — inner fixpoint.
-		::std::uint_least32_t h{};
-		for (;;)
-		{
-			::std::uint_least64_t total{static_cast<::std::uint_least64_t>(h) + 48 +
-						    p.pool.size() + slots_size + records.size()};
-			::std::uint_least32_t nh{
-				4 +
-				static_cast<::std::uint_least32_t>(details::uleb_len(blob_version)) +
-				static_cast<::std::uint_least32_t>(details::uleb_len(total)) +
-				1 +
-				static_cast<::std::uint_least32_t>(details::uleb_len(name_rva)) +
-				static_cast<::std::uint_least32_t>(details::uleb_len(name_tc.size())) +
-				static_cast<::std::uint_least32_t>(details::uleb_len(enc_rva)) +
-				static_cast<::std::uint_least32_t>(details::uleb_len(enc_tc.size())) +
-				static_cast<::std::uint_least32_t>(details::uleb_len(h))};
-			if (nh == h)
-			{
-				break;
-			}
-			h = nh;
-		}
-		if (h != hdr_size)
-		{
-			hdr_size = h;
-			continue; // pool_base moved — rebuild
-		}
+constexpr ::std::uint_least32_t paper_off[]{
+	offsetof(all_t, paper.height), offsetof(all_t, paper.width)};
 
-		// stable — emit
-		::std::uint_least64_t const total{static_cast<::std::uint_least64_t>(hdr_size) +
-						  48 + p.pool.size() + slots_size +
-						  records.size()};
-		::fast_io::string blob;
-		details::put_u32(blob, magic);
-		put_leb128_to(blob, blob_version);
-		put_leb128_to(blob, total);
-		put_leb128_to(blob, 0); // flags
-		put_leb128_to(blob, name_rva);
-		put_leb128_to(blob, name_tc.size());
-		put_leb128_to(blob, enc_rva);
-		put_leb128_to(blob, enc_tc.size());
-		put_leb128_to(blob, hdr_size); // cat_dir_rva
-		::std::uint_least32_t const tables_base{hdr_size + 48 +
-							static_cast<::std::uint_least32_t>(
-								p.pool.size())};
-		{
-			::std::uint_least32_t off{tables_base};
-			for (::std::size_t c{}; c < cat_count; ++c)
-			{
-				details::put_u32(blob, cats[c].present ? off : 0);
-				if (cats[c].present)
-				{
-					off += static_cast<::std::uint_least32_t>(
-						cat_schemas[c].fields.size() * 4);
-				}
-			}
-		}
-		blob.append(p.pool.data(), p.pool.size());
-		::std::uint_least32_t const records_base{tables_base + slots_size};
-		for (::std::size_t c{}; c < cat_count; ++c)
-		{
-			if (!cats[c].present)
-			{
-				continue;
-			}
-			for (::std::size_t f{}; f < cat_schemas[c].fields.size(); ++f)
-			{
-				auto const ro{rec_off[c][f]};
-				details::put_u32(blob, ro ? records_base + ro : 0);
-			}
-		}
-		blob.append(records.data(), records.size());
-		return blob;
-	}
-}
-// ---------------------------------------------------------------------------
-// header decode (dump/accessor side)
-// ---------------------------------------------------------------------------
+constexpr ::std::uint_least32_t telephone_off[]{
+	offsetof(all_t, telephone.tel_int_fmt),
+	offsetof(all_t, telephone.tel_dom_fmt),
+	offsetof(all_t, telephone.int_select),
+	offsetof(all_t, telephone.int_prefix)};
 
-struct blob_header
+constexpr ::std::uint_least32_t name_off[]{
+	offsetof(all_t, name.name_fmt), offsetof(all_t, name.name_gen),
+	offsetof(all_t, name.name_miss), offsetof(all_t, name.name_mr),
+	offsetof(all_t, name.name_mrs), offsetof(all_t, name.name_ms)};
+
+constexpr ::std::uint_least32_t address_off[]{
+	offsetof(all_t, address.postal_fmt),
+	offsetof(all_t, address.country_name),
+	offsetof(all_t, address.country_post),
+	offsetof(all_t, address.country_ab2),
+	offsetof(all_t, address.country_ab3),
+	offsetof(all_t, address.country_num),
+	offsetof(all_t, address.country_car),
+	offsetof(all_t, address.country_isbn),
+	offsetof(all_t, address.lang_name),
+	offsetof(all_t, address.lang_ab),
+	offsetof(all_t, address.lang_term),
+	offsetof(all_t, address.lang_lib)};
+
+constexpr ::std::uint_least32_t measurement_off[]{
+	offsetof(all_t, measurement.measurement)};
+
+constexpr ::std::uint_least32_t keyboard_off[]{
+	offsetof(all_t, keyboard.keyboards)};
+
+constexpr ::std::uint_least8_t zero_aux[22]{};
+
+struct cat_map
 {
-	::std::uint_least64_t version{};
-	::std::uint_least64_t total_size{};
-	::std::uint_least64_t flags{};
-	::fast_io::u8string_view name{};
-	::fast_io::u8string_view encoding{};
-	::std::uint_least64_t cat_dir_rva{};
-	char8_t const *cat_dir{}; // -> u32[cat_count]
+	::std::uint_least32_t const *off;
+	::std::uint_least8_t const *aux;
 };
 
-inline blob_header read_header(::fast_io::u8string_view blob) throws
+constexpr cat_map cat_maps[cat_count]{
+	{identification_off, zero_aux}, {monetary_off, zero_aux},
+	{numeric_off, zero_aux},		{time_off, time_aux},
+	{messages_off, zero_aux},		{paper_off, zero_aux},
+	{telephone_off, zero_aux},		{name_off, zero_aux},
+	{address_off, zero_aux},		{measurement_off, zero_aux},
+	{keyboard_off, zero_aux}};
+
+// fill one category's members in the section image
+inline void fill_cat(void *img, cat_map const &m, cat_schema const &sch,
+					 cat_src const &cat, sec_build &b, blob_charset cs,
+					 ::std::size_t units,
+					 ::fast_io_i18n::binfmt::src_ctx ctx) throws
 {
-	if (blob.size() < 4)
+	for (::std::size_t f{}; f < sch.fields.size(); ++f)
 	{
-		throw throws ::std::errc::invalid_argument;
+		auto const &def{sch.fields[f]};
+		auto const &s{cat.slots[f]};
+		if (!slot_has(def.tag, s))
+		{
+			continue;
+		}
+		auto const off{m.off[f]};
+		switch (def.tag)
+		{
+		case slot_tag::string:
+			sec_string(*mem_at<::fast_io::i18n::lcblob::lc_scatter<char>>(img, off),
+					   s.strs[0], b, cs, units);
+			break;
+		case slot_tag::program:
+			sec_program(*mem_at<::fast_io::i18n::lcblob::lc_scatter<char8_t>>(img, off),
+						s.fmt_src, def.lang, b, cs, ctx, def.name);
+			break;
+		case slot_tag::bytes:
+			sec_bytes(*mem_at<::fast_io::i18n::lcblob::lc_scatter<char8_t>>(img, off),
+					  s.ints, b);
+			break;
+		case slot_tag::strlist:
+			if (m.aux[f])
+			{
+				sec_strs(mem_at<::fast_io::i18n::lcblob::lc_scatter<char>>(img, off),
+						 m.aux[f], s.strs, b, cs, units);
+			}
+			else
+			{
+				sec_strlist(
+					*mem_at<::fast_io::i18n::lcblob::lc_scatter<
+						::fast_io::i18n::lcblob::lc_scatter<char>>>(img, off),
+					s.strs, b, cs, units);
+			}
+			break;
+		case slot_tag::eralist:
+			sec_era(*mem_at<::fast_io::i18n::lcblob::lc_scatter<
+							::fast_io::i18n::lcblob::basic_lc_time_era<char>>>(img, off),
+					s.eras, b, cs, units, ctx);
+			break;
+		case slot_tag::integer:
+			b.sint(*mem_at<::std::int_least32_t>(img, off), s.ints[0]);
+			break;
+		case slot_tag::int3:
+			for (::std::size_t k{}; k < 3 && k < s.ints.size(); ++k)
+			{
+				b.sint(*mem_at<::std::int_least32_t>(img, off + k * 4), s.ints[k]);
+			}
+			break;
+		default:
+			break;
+		}
 	}
-	::std::uint_least32_t m{};
-	::fast_io::details::my_memcpy(__builtin_addressof(m), blob.data(), 4);
-	if (m != magic)
-	{
-		throw throws ::std::errc::invalid_argument;
-	}
-	::fast_io_i18n::binfmt::reader r{{blob.data() + 4, blob.size() - 4}};
-	blob_header h;
-	r.get_leb(h.version);
-	if (h.version > blob_version)
-	{
-		throw throws ::std::errc::invalid_argument;
-	}
-	r.get_leb(h.total_size);
-	r.get_leb(h.flags);
-	::std::uint_least64_t rva{}, len{};
-	r.get_leb(rva);
-	r.get_leb(len);
-	if (rva + len > blob.size())
-	{
-		throw throws ::std::errc::invalid_argument;
-	}
-	h.name = ::fast_io::u8string_view{blob.data() + rva, len};
-	r.get_leb(rva);
-	r.get_leb(len);
-	if (rva + len > blob.size())
-	{
-		throw throws ::std::errc::invalid_argument;
-	}
-	h.encoding = ::fast_io::u8string_view{blob.data() + rva, len};
-	r.get_leb(h.cat_dir_rva);
-	if (h.cat_dir_rva + cat_count * 4 > blob.size())
-	{
-		throw throws ::std::errc::invalid_argument;
-	}
-	h.cat_dir = blob.data() + h.cat_dir_rva;
-	return h;
 }
 
-inline ::std::uint_least32_t read_u32(char8_t const *p) noexcept
+} // namespace details
+
+// fill one section image for payload charset cs. name is the canonical
+// locale name and encname this section's charset name — both land in
+// identification in the section's own encoding.
+inline sec_build build_section(cat_src const cats[cat_count],
+							   ::std::u8string_view name,
+							   ::std::u8string_view encname, blob_charset cs,
+							   ::std::string_view file_ctx) throws
 {
-	::std::uint_least32_t v{};
-	::fast_io::details::my_memcpy(__builtin_addressof(v), p, 4);
-	return v;
+	sec_build b;
+	auto const units{details::cs_units(cs)};
+	::fast_io_i18n::binfmt::src_ctx ctx{file_ctx};
+	auto &a{b.img};
+	details::sec_string(a.identification.name, name, b, cs, units);
+	details::sec_string(a.identification.encoding, encname, b, cs, units);
+	for (::std::size_t c{}; c < cat_count; ++c)
+	{
+		if (cats[c].present)
+		{
+			details::fill_cat(&a, details::cat_maps[c], cat_schemas[c],
+							  cats[c], b, cs, units, ctx);
+		}
+	}
+	return b;
 }
 
 // ---------------------------------------------------------------------------
-// container — one file per locale carrying all three charset sections.
-//   u32 magic 'FCL1' | uleb version | uleb total_size | uleb flags
-//   | strref name | strref encoding            (utf8; targets live in
-//   |                                          the utf8 section's pool)
-//   | (uleb rva | uleb size) * blob_charset_count
-// Each section is a complete standalone v1 blob — the same read_header
-// validates it and all its RVAs are section-relative.
+// container — the file IS an lc_locale:
+//   [lc_locale root 40B][name bytes utf8][section image]*4
+//   section image = basic_lc_all<char_type> bytes + payload pool; every
+//   rva inside it is a u32 file offset.
+// Sections in slot order: [charset, utf8, utf16, utf32]; the charset
+// section aliases the utf8 one when codeset == utf8 (secs[0] unused).
 // ---------------------------------------------------------------------------
 
-// Build the outer container. sections are the charset, utf8, utf16 and
-// utf32 blobs in that order; an EMPTY charset section aliases the utf8
-// one (the codeset IS utf8). name/encoding are stored as utf8 in a
-// small pool right after the section directory.
-inline ::fast_io::string build_container(::fast_io::string const (&sections)[4],
-					 ::std::u8string_view name,
-					 ::std::u8string_view encoding) throws
+inline ::fast_io::string build_container(sec_build (&secs)[4], bool charset_is_utf8,
+									   ::std::u8string_view name,
+									   ::std::uint_least32_t codeset) throws
 {
-	using ::fast_io_i18n::binfmt::put_leb128_to;
-	::std::size_t const nsec{sections[0].empty() ? 3zu : 4zu};
-	::std::uint_least64_t secsz[4]{sections[0].empty() ? sections[1].size() : sections[0].size(),
-								   sections[1].size(), sections[2].size(), sections[3].size()};
-	::std::uint_least64_t const name_len{name.size()};
-	::std::uint_least64_t const enc_len{encoding.size()};
-
-	::std::uint_least32_t hdr_size{32}; // seed
-	for (unsigned iter{};; ++iter)
+	constexpr ::std::uint_least32_t img_size{
+		sizeof(::fast_io::i18n::lcblob::basic_lc_all<char>)};
+	::std::uint_least32_t const name_rva{
+		static_cast<::std::uint_least32_t>(
+			sizeof(::fast_io::i18n::lcblob::lc_locale))};
+	::std::uint_least32_t off{
+		name_rva + static_cast<::std::uint_least32_t>(name.size())};
+	::std::uint_least32_t base[4]{};
+	::std::size_t const first{charset_is_utf8 ? 1zu : 0zu};
+	for (::std::size_t c{first}; c < 4; ++c)
 	{
-		if (iter > 8)
-		{
-			throw throws ::std::errc::invalid_argument;
-		}
-		::std::uint_least64_t const pool_rva{hdr_size};
-		::std::uint_least64_t const name_rva{pool_rva};
-		::std::uint_least64_t const enc_rva{pool_rva + name_len};
-		::std::uint_least64_t sec_rva[4];
-		::std::uint_least64_t off{pool_rva + name_len + enc_len};
-		::std::uint_least64_t sidx{nsec == 3 ? 1zu : 0zu};
-		::std::uint_least64_t off0{off};
-		sec_rva[0] = nsec == 3 ? off0 : off; // charset slot aliases utf8 when nsec==3
-		if (nsec == 4)
-		{
-			sec_rva[0] = off;
-			off += secsz[0];
-		}
-		for (::std::size_t c{1}; c < 4; ++c)
-		{
-			sec_rva[c] = off;
-			off += secsz[c];
-		}
-		if (nsec == 3)
-		{
-			sec_rva[0] = sec_rva[1];
-		}
-		::std::uint_least64_t const total{off};
-		::std::uint_least32_t nh{
-			4 + static_cast<::std::uint_least32_t>(details::uleb_len(blob_version)) +
-			static_cast<::std::uint_least32_t>(details::uleb_len(total)) + 1 +
-			static_cast<::std::uint_least32_t>(details::uleb_len(name_rva)) +
-			static_cast<::std::uint_least32_t>(details::uleb_len(name_len)) +
-			static_cast<::std::uint_least32_t>(details::uleb_len(enc_rva)) +
-			static_cast<::std::uint_least32_t>(details::uleb_len(enc_len))};
-		for (::std::size_t c{}; c < 4; ++c)
-		{
-			nh += static_cast<::std::uint_least32_t>(
-				details::uleb_len(sec_rva[c]) + details::uleb_len(secsz[c]));
-		}
-		if (nh == hdr_size)
-		{
-			// emit
-			::fast_io::string blob;
-			details::put_u32(blob, magic);
-			put_leb128_to(blob, blob_version);
-			put_leb128_to(blob, total);
-			put_leb128_to(blob, 0); // flags
-			put_leb128_to(blob, name_rva);
-			put_leb128_to(blob, name_len);
-			put_leb128_to(blob, enc_rva);
-			put_leb128_to(blob, enc_len);
-			for (::std::size_t c{}; c < 4; ++c)
-			{
-				put_leb128_to(blob, sec_rva[c]);
-				put_leb128_to(blob, secsz[c]);
-			}
-			blob.append(reinterpret_cast<char const *>(name.data()), name.size());
-			blob.append(reinterpret_cast<char const *>(encoding.data()), encoding.size());
-			for (::std::size_t c{sidx}; c < 4; ++c)
-			{
-				blob.append(sections[c].data(), sections[c].size());
-			}
-			return blob;
-		}
-		hdr_size = nh;
+		base[c] = off;
+		off += img_size + static_cast<::std::uint_least32_t>(secs[c].pool.size());
 	}
+	if (charset_is_utf8)
+	{
+		base[0] = base[1];
+	}
+	for (::std::size_t c{first}; c < 4; ++c)
+	{
+		secs[c].relocate(base[c] + img_size);
+	}
+	::std::uint_least32_t const total{off};
+
+	::fast_io::string blob;
+	details::put_u32(blob, magic);
+	details::put_u32(blob, blob_version);
+	details::put_u32(blob, total);
+	details::put_u32(blob, 0); // flags
+	details::put_u32(blob, codeset);
+	details::put_u32(blob, name_rva);
+	details::put_u32(blob, static_cast<::std::uint_least32_t>(name.size()));
+	for (auto sbase : base)
+	{
+		details::put_u32(blob, sbase);
+	}
+	blob.append(reinterpret_cast<char const *>(name.data()), name.size());
+	for (::std::size_t c{first}; c < 4; ++c)
+	{
+		blob.append(reinterpret_cast<char const *>(&secs[c].img), img_size);
+		blob.append(secs[c].pool.data(), secs[c].pool.size());
+	}
+	return blob;
 }
 
 

@@ -7,8 +7,8 @@
 // Handled: comment_char / escape_char directives, line continuations,
 // quoted strings with escapes and <U> codepoint names, `;`-separated
 // token lists, `copy "file"` imports, `END` markers.
-// LC_CTYPE / LC_COLLATE bodies are skipped entirely (v1) except
-// codepoint_collation, which becomes the collate category's flag slot.
+// LC_CTYPE / LC_COLLATE are not modeled at all — their bodies are
+// skipped as unknown categories.
 
 #include "lcblob.h"
 
@@ -26,7 +26,6 @@ struct lc_field
 struct lc_file_data
 {
 	::fast_io::vector<lc_field> fields[::fast_io_i18n::lcblob::cat_count]{};
-	bool codepoint_collate{};
 };
 
 struct parse_ctx
@@ -269,13 +268,6 @@ inline ::std::size_t cat_id_of(::std::string_view name) noexcept
 	return ::fast_io_i18n::lcblob::cat_count;
 }
 
-// categories whose bodies carry collation/charclass junk we don't model
-inline bool cat_body_skipped(::std::size_t id) noexcept
-{
-	return id == ::fast_io_i18n::lcblob::cat_ctype ||
-	       id == ::fast_io_i18n::lcblob::cat_collate;
-}
-
 using file_cache =
 	::fast_io::vector<::std::pair<::fast_io::string, lc_file_data>>;
 
@@ -418,31 +410,12 @@ inline void parse_file(::fast_io::dir_file const &df, ::fast_io::string const &n
 			::fast_io::string fname;
 			fname.append(v.data() + 1, v.data() + v.size() - 1);
 			parse_file(df, fname, imp, cache, depth + 1);
-			if (cur_cat == ::fast_io_i18n::lcblob::cat_collate &&
-			    imp.codepoint_collate)
+			for (auto &e : imp.fields[cur_cat])
 			{
-				out.codepoint_collate = true;
-			}
-			if (!cat_body_skipped(cur_cat))
-			{
-				for (auto &e : imp.fields[cur_cat])
-				{
-					lc_field cp;
-					cp.name = e.name;
-					cp.tokens = e.tokens;
-					upsert_field(out.fields[cur_cat], ::std::move(cp));
-				}
-			}
-			pending.clear();
-			continue;
-		}
-		// skipped bodies: collate keeps only codepoint_collation
-		if (cat_body_skipped(cur_cat))
-		{
-			if (cur_cat == ::fast_io_i18n::lcblob::cat_collate &&
-			    line == "codepoint_collation")
-			{
-				out.codepoint_collate = true;
+				lc_field cp;
+				cp.name = e.name;
+				cp.tokens = e.tokens;
+				upsert_field(out.fields[cur_cat], ::std::move(cp));
 			}
 			pending.clear();
 			continue;
@@ -568,19 +541,13 @@ inline void to_cats(lc_file_data const &d,
 	using ::fast_io_i18n::lcblob::slot_tag;
 	for (::std::size_t c{}; c < cat_count; ++c)
 	{
-		if (d.fields[c].empty() &&
-		    !(c == ::fast_io_i18n::lcblob::cat_collate && d.codepoint_collate))
+		if (d.fields[c].empty())
 		{
 			continue;
 		}
 		cats[c].present = true;
 		auto const &sch{cat_schemas[c]};
 		cats[c].slots.resize(sch.fields.size());
-		if (c == ::fast_io_i18n::lcblob::cat_collate)
-		{
-			cats[c].slots[0].ints.push_back(d.codepoint_collate ? 1 : 0);
-			continue;
-		}
 		for (auto const &f : d.fields[c])
 		{
 			::std::size_t fi{sch.fields.size()};
