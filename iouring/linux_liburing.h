@@ -566,8 +566,8 @@ enum io_uring_int_flag : ::std::uint_least32_t
 
 struct io_uring_ring_state
 {
-	details::io_uring_sq_state sq{};
-	details::io_uring_cq_state cq{};
+	::fast_io::liburing::details::io_uring_sq_state sq{};
+	::fast_io::liburing::details::io_uring_cq_state cq{};
 	int ring_fd{-1};
 	::std::uint_least32_t flags{};
 	::std::uint_least32_t features{};
@@ -679,7 +679,7 @@ public:
 	::std::size_t size{};
 	inline io_uring_mmap_guard(::std::size_t len, int fd, ::std::uint_least64_t offset) throws
 	{
-		::std::ptrdiff_t p{details::io_uring_mmap_impl(len, fd, offset)};
+		::std::ptrdiff_t p{::fast_io::liburing::details::io_uring_mmap_impl(len, fd, offset)};
 		if (::fast_io::linux_system_call_fails(p)) [[unlikely]]
 		{
 			::fast_io::throw_posix_error(static_cast<int>(-p));
@@ -1366,22 +1366,22 @@ inline void io_uring_sqe_set_target_fixed_file(::fast_io::liburing::io_uring_sqe
 inline io_uring_sqe *io_uring_get_sqe(::fast_io::liburing::io_uring_ring_state &ring) noexcept
 {
 	auto &sq{ring.sq};
-	::std::uint_least32_t head{details::io_uring_load_sq_head(ring)};
+	::std::uint_least32_t head{::fast_io::liburing::details::io_uring_load_sq_head(ring)};
 	::std::uint_least32_t tail{sq.sqe_tail};
 	if (tail - head >= sq.ring_entries)
 	{
 		return nullptr;
 	}
-	io_uring_sqe *sqe{sq.sqes + ((tail & sq.ring_mask) << details::io_uring_sqe_shift(ring))};
+	io_uring_sqe *sqe{sq.sqes + ((tail & sq.ring_mask) << ::fast_io::liburing::details::io_uring_sqe_shift(ring))};
 	sq.sqe_tail = tail + 1;
-	details::io_uring_initialize_sqe(sqe);
+	::fast_io::liburing::details::io_uring_initialize_sqe(sqe);
 	return sqe;
 }
 
 /* Returns how many unsubmitted entries are pending in the SQ */
 inline ::std::uint_least32_t io_uring_sq_ready(::fast_io::liburing::io_uring_ring_state &ring) noexcept
 {
-	return ring.sq.sqe_tail - details::io_uring_load_sq_head(ring);
+	return ring.sq.sqe_tail - ::fast_io::liburing::details::io_uring_load_sq_head(ring);
 }
 
 /* Returns how much space is left in the SQ ring */
@@ -1396,16 +1396,16 @@ inline ::std::uint_least32_t io_uring_sq_space_left(::fast_io::liburing::io_urin
  */
 inline ::std::uint_least32_t io_uring_submit(::fast_io::liburing::io_uring_ring_state &ring) throws
 {
-	::std::uint_least32_t submitted{details::io_uring_flush_sq(ring)};
-	bool cq_enter{details::io_uring_cq_ring_needs_enter(ring)};
+	::std::uint_least32_t submitted{::fast_io::liburing::details::io_uring_flush_sq(ring)};
+	bool cq_enter{::fast_io::liburing::details::io_uring_cq_ring_needs_enter(ring)};
 	::std::uint_least32_t flags{};
-	if (details::io_uring_sq_ring_needs_enter(ring, submitted, flags) || cq_enter)
+	if (::fast_io::liburing::details::io_uring_sq_ring_needs_enter(ring, submitted, flags) || cq_enter)
 	{
 		if (cq_enter)
 		{
 			flags |= io_uring_enter_getevents;
 		}
-		int ret{details::io_uring_enter_impl(ring, submitted, 0, flags)};
+		int ret{::fast_io::liburing::details::io_uring_enter_impl(ring, submitted, 0, flags)};
 		::fast_io::system_call_throw_error(ret);
 		return static_cast<::std::uint_least32_t>(ret);
 	}
@@ -1416,16 +1416,16 @@ inline ::std::uint_least32_t io_uring_submit(::fast_io::liburing::io_uring_ring_
 inline ::std::uint_least32_t io_uring_submit_and_wait(::fast_io::liburing::io_uring_ring_state &ring, ::std::uint_least32_t wait_nr)
 	throws
 {
-	::std::uint_least32_t submitted{details::io_uring_flush_sq(ring)};
-	bool cq_enter{wait_nr != 0 || details::io_uring_cq_ring_needs_enter(ring)};
+	::std::uint_least32_t submitted{::fast_io::liburing::details::io_uring_flush_sq(ring)};
+	bool cq_enter{wait_nr != 0 || ::fast_io::liburing::details::io_uring_cq_ring_needs_enter(ring)};
 	::std::uint_least32_t flags{};
-	if (details::io_uring_sq_ring_needs_enter(ring, submitted, flags) || cq_enter)
+	if (::fast_io::liburing::details::io_uring_sq_ring_needs_enter(ring, submitted, flags) || cq_enter)
 	{
 		if (cq_enter)
 		{
 			flags |= io_uring_enter_getevents;
 		}
-		int ret{details::io_uring_enter_impl(ring, submitted, wait_nr, flags)};
+		int ret{::fast_io::liburing::details::io_uring_enter_impl(ring, submitted, wait_nr, flags)};
 		::fast_io::system_call_throw_error(ret);
 		return static_cast<::std::uint_least32_t>(ret);
 	}
@@ -1435,7 +1435,7 @@ inline ::std::uint_least32_t io_uring_submit_and_wait(::fast_io::liburing::io_ur
 /* Flush pending CQEs the kernel may be holding (IOPOLL/overflow/taskrun) */
 inline void io_uring_get_events(::fast_io::liburing::io_uring_ring_state &ring) throws
 {
-	int ret{details::io_uring_enter_impl(ring, 0, 0, io_uring_enter_getevents)};
+	int ret{::fast_io::liburing::details::io_uring_enter_impl(ring, 0, 0, io_uring_enter_getevents)};
 	::fast_io::system_call_throw_error(ret);
 }
 
@@ -1449,7 +1449,7 @@ inline void io_uring_sqring_wait(::fast_io::liburing::io_uring_ring_state &ring)
 	{
 		return;
 	}
-	int ret{details::io_uring_enter_impl(ring, 0, 0, io_uring_enter_sq_wait)};
+	int ret{::fast_io::liburing::details::io_uring_enter_impl(ring, 0, 0, io_uring_enter_sq_wait)};
 	::fast_io::system_call_throw_error(ret);
 }
 
@@ -1489,7 +1489,7 @@ inline io_uring_sqe *ensure_io_uring_sqe(::fast_io::liburing::io_uring_ring_stat
 /* Returns how many unconsumed entries are ready in the CQ ring */
 inline ::std::uint_least32_t io_uring_cq_ready(::fast_io::liburing::io_uring_ring_state &ring) noexcept
 {
-	return details::io_uring_load_acquire(ring.cq.ktail) - *ring.cq.khead;
+	return ::fast_io::liburing::details::io_uring_load_acquire(ring.cq.ktail) - *ring.cq.khead;
 }
 
 /*
@@ -1500,7 +1500,7 @@ inline void io_uring_cq_advance(::fast_io::liburing::io_uring_ring_state &ring, 
 {
 	if (nr != 0)
 	{
-		details::io_uring_store_release(ring.cq.khead, *ring.cq.khead + nr);
+		::fast_io::liburing::details::io_uring_store_release(ring.cq.khead, *ring.cq.khead + nr);
 	}
 }
 
@@ -1520,29 +1520,29 @@ inline void io_uring_cqe_seen(::fast_io::liburing::io_uring_ring_state &ring, io
  */
 inline io_uring_cqe *io_uring_peek_cqe(::fast_io::liburing::io_uring_ring_state &ring) throws
 {
-	io_uring_cqe *cqe{details::io_uring_peek_cqe_impl(ring).cqe_ptr};
+	io_uring_cqe *cqe{::fast_io::liburing::details::io_uring_peek_cqe_impl(ring).cqe_ptr};
 	if (cqe != nullptr)
 	{
 		return cqe;
 	}
 	if (!(ring.flags & io_uring_setup_iopoll) &&
-		!(details::io_uring_load_acquire(ring.sq.kflags) & (io_uring_sq_cq_overflow | io_uring_sq_taskrun)))
+		!(::fast_io::liburing::details::io_uring_load_acquire(ring.sq.kflags) & (io_uring_sq_cq_overflow | io_uring_sq_taskrun)))
 	{
 		return nullptr;
 	}
 	/* slow path: one kernel round trip with wait_nr = 0; when even that
 	 * comes back empty the result is EAGAIN, delivered like any error */
-	details::io_uring_get_data data{.submit = 0, .wait_nr = 0, .get_flags = 0, .sz = 0, .has_ts = false, .arg = nullptr};
-	return details::io_uring_get_cqe_impl(ring, data);
+	::fast_io::liburing::details::io_uring_get_data data{.submit = 0, .wait_nr = 0, .get_flags = 0, .sz = 0, .has_ts = false, .arg = nullptr};
+	return ::fast_io::liburing::details::io_uring_get_cqe_impl(ring, data);
 }
 
 /* Wait for (at least) wait_nr completions; returns the first CQE */
 inline io_uring_cqe *io_uring_wait_cqes(::fast_io::liburing::io_uring_ring_state &ring, ::std::uint_least32_t wait_nr)
 	throws
 {
-	details::io_uring_get_data data{.submit = 0, .wait_nr = wait_nr, .get_flags = 0, .sz = 0, .has_ts = false,
+	::fast_io::liburing::details::io_uring_get_data data{.submit = 0, .wait_nr = wait_nr, .get_flags = 0, .sz = 0, .has_ts = false,
 									.arg = nullptr};
-	return details::io_uring_get_cqe_impl(ring, data);
+	return ::fast_io::liburing::details::io_uring_get_cqe_impl(ring, data);
 }
 
 inline io_uring_cqe *io_uring_wait_cqe(::fast_io::liburing::io_uring_ring_state &ring) throws
@@ -1554,13 +1554,13 @@ inline io_uring_cqe *io_uring_wait_cqe(::fast_io::liburing::io_uring_ring_state 
 inline io_uring_cqe *io_uring_submit_and_wait_cqes(::fast_io::liburing::io_uring_ring_state &ring,
 													 ::std::uint_least32_t wait_nr) throws
 {
-	details::io_uring_get_data data{.submit = details::io_uring_flush_sq(ring),
+	::fast_io::liburing::details::io_uring_get_data data{.submit = ::fast_io::liburing::details::io_uring_flush_sq(ring),
 									.wait_nr = wait_nr,
 									.get_flags = 0,
 									.sz = 0,
 									.has_ts = false,
 									.arg = nullptr};
-	return details::io_uring_get_cqe_impl(ring, data);
+	return ::fast_io::liburing::details::io_uring_get_cqe_impl(ring, data);
 }
 
 /*
@@ -1581,19 +1581,19 @@ inline io_uring_cqe *io_uring_wait_cqe_timeout(::fast_io::liburing::io_uring_rin
 	if (ring.features & io_uring_feat_ext_arg)
 	{
 		io_uring_getevents_arg arg{0, 0, 0, reinterpret_cast<::std::uint_least64_t>(__builtin_addressof(ts))};
-		details::io_uring_get_data data{.submit = 0,
+		::fast_io::liburing::details::io_uring_get_data data{.submit = 0,
 										.wait_nr = 1,
 										.get_flags = io_uring_enter_ext_arg,
 										.sz = sizeof(arg),
 										.has_ts = true,
 										.arg = __builtin_addressof(arg)};
-		cqe = details::io_uring_get_cqe_impl(ring, data);
+		cqe = ::fast_io::liburing::details::io_uring_get_cqe_impl(ring, data);
 	}
 	else
 	{
 		/* queue an internal timeout SQE that the kernel completes when
 		 * either the deadline expires or a CQE is posted */
-		io_uring_sqe *sqe{details::ensure_io_uring_sqe(ring)};
+		io_uring_sqe *sqe{::fast_io::liburing::details::ensure_io_uring_sqe(ring)};
 		sqe->opcode = io_uring_op_timeout;
 		sqe->fd = -1;
 		sqe->addr = reinterpret_cast<::std::uint_least64_t>(__builtin_addressof(ts));
@@ -1601,7 +1601,7 @@ inline io_uring_cqe *io_uring_wait_cqe_timeout(::fast_io::liburing::io_uring_rin
 		sqe->off = 1;
 		sqe->timeout_flags = 0;
 		sqe->user_data = io_uring_internal_timeout_user_data;
-		details::io_uring_get_data data{.submit = details::io_uring_flush_sq(ring),
+		::fast_io::liburing::details::io_uring_get_data data{.submit = ::fast_io::liburing::details::io_uring_flush_sq(ring),
 										.wait_nr = 1,
 										.get_flags = 0,
 										.sz = 0,
@@ -1609,7 +1609,7 @@ inline io_uring_cqe *io_uring_wait_cqe_timeout(::fast_io::liburing::io_uring_rin
 										.arg = nullptr};
 		try
 		{
-			cqe = details::io_uring_get_cqe_impl(ring, data);
+			cqe = ::fast_io::liburing::details::io_uring_get_cqe_impl(ring, data);
 		}
 		catch throws(::std::error e)
 		{
@@ -1635,7 +1635,7 @@ inline ::std::uint_least32_t io_uring_peek_batch_cqe(::fast_io::liburing::io_uri
 	::std::uint_least32_t ready{io_uring_cq_ready(ring)};
 	if (ready == 0)
 	{
-		if (!details::io_uring_cq_ring_needs_flush(ring))
+		if (!::fast_io::liburing::details::io_uring_cq_ring_needs_flush(ring))
 		{
 			return 0;
 		}
@@ -1648,7 +1648,7 @@ inline ::std::uint_least32_t io_uring_peek_batch_cqe(::fast_io::liburing::io_uri
 	}
 	::std::uint_least32_t head{*ring.cq.khead};
 	::std::uint_least32_t mask{ring.cq.ring_mask};
-	::std::uint_least32_t shift{details::io_uring_cqe_shift(ring)};
+	::std::uint_least32_t shift{::fast_io::liburing::details::io_uring_cqe_shift(ring)};
 	::std::uint_least32_t nr{};
 	::std::uint_least32_t last{head + ready};
 	while (head != last && nr < count)
@@ -1676,7 +1676,7 @@ inline ::std::uint_least32_t io_uring_peek_batch_cqe(::fast_io::liburing::io_uri
 inline int io_uring_register(::fast_io::liburing::io_uring_ring_state &ring, ::std::uint_least32_t opcode, void const *arg,
 							 ::std::uint_least32_t nr_args) throws
 {
-	int ret{details::io_uring_register_impl(static_cast<::std::uint_least32_t>(ring.ring_fd), opcode, arg,
+	int ret{::fast_io::liburing::details::io_uring_register_impl(static_cast<::std::uint_least32_t>(ring.ring_fd), opcode, arg,
 											nr_args)};
 	::fast_io::system_call_throw_error(ret);
 	return ret;

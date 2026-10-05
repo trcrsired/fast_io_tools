@@ -13,16 +13,16 @@ namespace
 /* a throws coroutine: herbception errors escaping the body are delivered
  * to promise.unhandled_herbception automatically; an awaiting caller gets
  * them back through the channel at co_await */
-fast_io::details::io_uring_task<fast_io::native_global_allocator>
-coro_write_all(fast_io::linux_io_uring_observer sched, fast_io::posix_io_observer ob) throws
+::fast_io::details::io_uring_task<fast_io::native_global_allocator>
+coro_write_all(::fast_io::linux_io_uring_observer sched, ::fast_io::posix_io_observer ob) throws
 {
 	char const msg[] = "coroutine write_all\n";
 	auto const *f{reinterpret_cast<::std::byte const *>(msg)};
-	co_await fast_io::liburing::async_write_all_bytes_decay(sched, ob, f, f + sizeof(msg) - 1);
+	co_await ::fast_io::liburing::async_write_all_bytes_decay(sched, ob, f, f + sizeof(msg) - 1);
 }
 
-fast_io::details::io_uring_task<fast_io::native_global_allocator>
-coro_outer(fast_io::linux_io_uring_observer sched, fast_io::posix_io_observer ob) throws
+::fast_io::details::io_uring_task<fast_io::native_global_allocator>
+coro_outer(::fast_io::linux_io_uring_observer sched, ::fast_io::posix_io_observer ob) throws
 {
 	co_await coro_write_all(sched, ob);
 }
@@ -58,9 +58,9 @@ struct test_status_allocator
  * reaches promise_type::operator new through the coroutine arguments.
  * noinline keeps the ramp out of main so HALO cannot elide the frame
  * allocation and the allocator counters stay observable under LTO. */
-__attribute__((noinline)) fast_io::details::io_uring_task<test_status_allocator>
-coro_status(test_status_allocator::handle_type h, fast_io::linux_io_uring_observer sched,
-			fast_io::posix_io_observer ob) throws
+__attribute__((noinline)) ::fast_io::details::io_uring_task<test_status_allocator>
+coro_status(test_status_allocator::handle_type h, ::fast_io::linux_io_uring_observer sched,
+			::fast_io::posix_io_observer ob) throws
 {
 	co_await coro_write_all(sched, ob);
 }

@@ -278,7 +278,7 @@ inline void io_uring_dispatch_cqe(linux_io_uring_observer ring, io_uring_cqe *cq
 inline void io_async_wait(linux_io_uring_observer ring) throws
 {
 	io_uring_cqe *cqe{io_uring_wait_cqe(*ring.ring)};
-	details::io_uring_dispatch_cqe(ring, cqe);
+	::fast_io::liburing::details::io_uring_dispatch_cqe(ring, cqe);
 }
 
 /* Non-blocking variant: dispatch one completion if one is ready */
@@ -289,7 +289,7 @@ inline bool io_async_peek(linux_io_uring_observer ring) throws
 	{
 		return false;
 	}
-	details::io_uring_dispatch_cqe(ring, cqe);
+	::fast_io::liburing::details::io_uring_dispatch_cqe(ring, cqe);
 	return true;
 }
 
@@ -302,7 +302,7 @@ inline bool io_async_wait_timeout(linux_io_uring_observer ring, ::fast_io::posix
 	{
 		return false;
 	}
-	details::io_uring_dispatch_cqe(ring, cqe);
+	::fast_io::liburing::details::io_uring_dispatch_cqe(ring, cqe);
 	return true;
 }
 
@@ -375,15 +375,15 @@ async_write_some_bytes_callback_define(linux_io_uring_observer ring,
 									   ::std::byte const *first, ::std::byte const *last,
 									   func &&callback) throws
 {
-	using alloc_type = details::io_uring_scheduler_allocator_t<linux_io_uring_observer>;
-	using cookie_type = details::io_uring_write_some_bytes_cookie<alloc_type, ::std::remove_cvref_t<func>>;
-	details::io_uring_submit_guard<cookie_type> guard{
-		details::io_uring_new_state<cookie_type>(
-			ring, &details::io_uring_write_some_bytes_invoke<alloc_type, ::std::remove_cvref_t<func>>,
+	using alloc_type = ::fast_io::liburing::details::io_uring_scheduler_allocator_t<linux_io_uring_observer>;
+	using cookie_type = ::fast_io::liburing::details::io_uring_write_some_bytes_cookie<alloc_type, ::std::remove_cvref_t<func>>;
+	::fast_io::liburing::details::io_uring_submit_guard<cookie_type> guard{
+		::fast_io::liburing::details::io_uring_new_state<cookie_type>(
+			ring, &::fast_io::liburing::details::io_uring_write_some_bytes_invoke<alloc_type, ::std::remove_cvref_t<func>>,
 			typename cookie_type::handle_or_empty{}, first, ::std::forward<func>(callback))};
-	guard.sqe = details::ensure_io_uring_sqe(*ring.ring);
+	guard.sqe = ::fast_io::liburing::details::ensure_io_uring_sqe(*ring.ring);
 	io_uring_prep_write(guard.sqe, piob.fd, first, static_cast<::std::uint_least32_t>(last - first),
-						details::io_uring_use_file_position);
+						::fast_io::liburing::details::io_uring_use_file_position);
 	io_uring_sqe_set_data(guard.sqe, guard.cookie);
 	io_uring_submit(*ring.ring);
 	guard.release();
@@ -454,12 +454,12 @@ async_write_all_bytes_decay_callback(linux_io_uring_observer ring,
 							func &&callback) throws
 {
 	using state_type =
-		details::io_uring_write_all_bytes_state<char_type,
-												details::io_uring_scheduler_allocator_t<linux_io_uring_observer>,
+		::fast_io::liburing::details::io_uring_write_all_bytes_state<char_type,
+												::fast_io::liburing::details::io_uring_scheduler_allocator_t<linux_io_uring_observer>,
 												::std::remove_cvref_t<func>>;
-	auto *state{details::io_uring_new_state<state_type>(ring, ring, piob, last,
+	auto *state{::fast_io::liburing::details::io_uring_new_state<state_type>(ring, ring, piob, last,
 														   ::std::forward<func>(callback))};
-	details::io_uring_write_all_bytes_submit(state, first);
+	::fast_io::liburing::details::io_uring_write_all_bytes_submit(state, first);
 }
 
 namespace details
@@ -513,7 +513,7 @@ struct io_uring_write_all_bytes_awaiter
  * A submission failure surfaces the same way without ever suspending.
  */
 template <::std::integral char_type>
-inline details::io_uring_write_all_bytes_awaiter<char_type>
+inline ::fast_io::liburing::details::io_uring_write_all_bytes_awaiter<char_type>
 async_write_all_bytes_decay(linux_io_uring_observer ring,
 							::fast_io::basic_posix_family_io_observer<::fast_io::posix_family::api, char_type> piob,
 							::std::byte const *first, ::std::byte const *last) noexcept

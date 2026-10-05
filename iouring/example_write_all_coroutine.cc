@@ -5,10 +5,10 @@
 
 namespace
 {
-fast_io::details::io_uring_task<::fast_io::native_global_allocator> test_async_write_all(fast_io::linux_io_uring_observer sched, fast_io::posix_io_observer ob,
+::fast_io::details::io_uring_task<::fast_io::native_global_allocator> test_async_write_all(fast_io::linux_io_uring_observer sched, fast_io::posix_io_observer ob,
 										  ::std::byte const *first, ::std::byte const *last) throws
 {
-	co_await fast_io::liburing::async_write_all_bytes_decay(sched, ob, first, last);
+	co_await ::fast_io::liburing::async_write_all_bytes_decay(sched, ob, first, last);
 }
 } // namespace
 
