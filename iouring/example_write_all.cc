@@ -17,7 +17,7 @@ int main()
 
 		bool done{};
 		::std::cxx_std_error result{};
-		fi::async_write_all_bytes_decay(sched, fi::posix_io_observer{file.native_handle()}, first,
+		fi::liburing::async_write_all_bytes_decay_callback(sched, fi::posix_io_observer{file.native_handle()}, first,
 										first + sizeof(msg) - 1, [&](::std::cxx_std_error e) noexcept {
 											result = e;
 											done = true;
@@ -25,7 +25,7 @@ int main()
 
 		while (!done)
 		{
-			fi::io_async_wait(sched);
+			fi::liburing::io_async_wait(sched);
 		}
 
 		if (result.domain != nullptr)
