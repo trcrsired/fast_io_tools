@@ -1352,6 +1352,358 @@ inline void io_uring_sqe_set_target_fixed_file(::fast_io::liburing::io_uring_sqe
 	sqe->file_index = file_index + 1;
 }
 
+
+/* ======================= ring-level API ======================= */
+
+
+/* ======================= submission queue ======================= */
+
+/*
+ * Return an sqe to fill, or nullptr if the SQ is full. Submission only
+ * happens when the tail is published by io_uring_submit() (or a wait
+ * function that submits on the caller's behalf).
+ */
+inline io_uring_sqe *io_uring_get_sqe(::fast_io::liburing::io_uring_ring_state &ring) noexcept
+{
+	auto &sq{ring.sq};
+	::std::uint_least32_t head{details::io_uring_load_sq_head(ring)};
+	::std::uint_least32_t tail{sq.sqe_tail};
+	if (tail - head >= sq.ring_entries)
+	{
+		return nullptr;
+	}
+	io_uring_sqe *sqe{sq.sqes + ((tail & sq.ring_mask) << details::io_uring_sqe_shift(ring))};
+	sq.sqe_tail = tail + 1;
+	details::io_uring_initialize_sqe(sqe);
+	return sqe;
+}
+
+/* Returns how many unsubmitted entries are pending in the SQ */
+inline ::std::uint_least32_t io_uring_sq_ready(::fast_io::liburing::io_uring_ring_state &ring) noexcept
+{
+	return ring.sq.sqe_tail - details::io_uring_load_sq_head(ring);
+}
+
+/* Returns how much space is left in the SQ ring */
+inline ::std::uint_least32_t io_uring_sq_space_left(::fast_io::liburing::io_uring_ring_state &ring) noexcept
+{
+	return ring.sq.ring_entries - io_uring_sq_ready(ring);
+}
+
+/*
+ * Publish pending SQEs to the kernel. Returns the number submitted.
+ * With io_uring_setup_sqpoll this only wakes the SQ thread when needed.
+ */
+inline ::std::uint_least32_t io_uring_submit(::fast_io::liburing::io_uring_ring_state &ring) throws
+{
+	::std::uint_least32_t submitted{details::io_uring_flush_sq(ring)};
+	bool cq_enter{details::io_uring_cq_ring_needs_enter(ring)};
+	::std::uint_least32_t flags{};
+	if (details::io_uring_sq_ring_needs_enter(ring, submitted, flags) || cq_enter)
+	{
+		if (cq_enter)
+		{
+			flags |= io_uring_enter_getevents;
+		}
+		int ret{details::io_uring_enter_impl(ring, submitted, 0, flags)};
+		::fast_io::system_call_throw_error(ret);
+		return static_cast<::std::uint_least32_t>(ret);
+	}
+	return submitted;
+}
+
+/* Submit pending SQEs and wait for at least wait_nr CQEs */
+inline ::std::uint_least32_t io_uring_submit_and_wait(::fast_io::liburing::io_uring_ring_state &ring, ::std::uint_least32_t wait_nr)
+	throws
+{
+	::std::uint_least32_t submitted{details::io_uring_flush_sq(ring)};
+	bool cq_enter{wait_nr != 0 || details::io_uring_cq_ring_needs_enter(ring)};
+	::std::uint_least32_t flags{};
+	if (details::io_uring_sq_ring_needs_enter(ring, submitted, flags) || cq_enter)
+	{
+		if (cq_enter)
+		{
+			flags |= io_uring_enter_getevents;
+		}
+		int ret{details::io_uring_enter_impl(ring, submitted, wait_nr, flags)};
+		::fast_io::system_call_throw_error(ret);
+		return static_cast<::std::uint_least32_t>(ret);
+	}
+	return submitted;
+}
+
+/* Flush pending CQEs the kernel may be holding (IOPOLL/overflow/taskrun) */
+inline void io_uring_get_events(::fast_io::liburing::io_uring_ring_state &ring) throws
+{
+	int ret{details::io_uring_enter_impl(ring, 0, 0, io_uring_enter_getevents)};
+	::fast_io::system_call_throw_error(ret);
+}
+
+/*
+ * SQPOLL only: wait for space to free up in the SQ ring. No-op for
+ * non-SQPOLL rings or when space is already available.
+ */
+inline void io_uring_sqring_wait(::fast_io::liburing::io_uring_ring_state &ring) throws
+{
+	if (!(ring.flags & io_uring_setup_sqpoll) || io_uring_sq_space_left(ring) != 0)
+	{
+		return;
+	}
+	int ret{details::io_uring_enter_impl(ring, 0, 0, io_uring_enter_sq_wait)};
+	::fast_io::system_call_throw_error(ret);
+}
+
+namespace details
+{
+inline io_uring_sqe *ensure_io_uring_sqe(::fast_io::liburing::io_uring_ring_state &ring) throws
+{
+	io_uring_sqe *sqe{io_uring_get_sqe(ring)};
+	while (sqe == nullptr)
+	{
+		/*
+		 * SQ is full. Without SQPOLL, submitting publishes the pending
+		 * SQEs and the kernel advances the head as it consumes them.
+		 * With SQPOLL the kernel thread drains the SQ by itself; wait
+		 * for space instead.
+		 */
+		if (ring.flags & io_uring_setup_sqpoll)
+		{
+			int ret{io_uring_enter_impl(ring, 0, 0, io_uring_enter_sq_wait)};
+			::fast_io::system_call_throw_error(ret);
+		}
+		else
+		{
+			::std::uint_least32_t submitted{io_uring_flush_sq(ring)};
+			int ret{io_uring_enter_impl(ring, submitted, 0, 0)};
+			::fast_io::system_call_throw_error(ret);
+		}
+		sqe = io_uring_get_sqe(ring);
+	}
+	return sqe;
+}
+} // namespace details
+
+
+/* ======================= completion queue ======================= */
+
+/* Returns how many unconsumed entries are ready in the CQ ring */
+inline ::std::uint_least32_t io_uring_cq_ready(::fast_io::liburing::io_uring_ring_state &ring) noexcept
+{
+	return details::io_uring_load_acquire(ring.cq.ktail) - *ring.cq.khead;
+}
+
+/*
+ * Must be called after the application has consumed nr CQ slots, so the
+ * kernel can reuse them.
+ */
+inline void io_uring_cq_advance(::fast_io::liburing::io_uring_ring_state &ring, ::std::uint_least32_t nr) noexcept
+{
+	if (nr != 0)
+	{
+		details::io_uring_store_release(ring.cq.khead, *ring.cq.khead + nr);
+	}
+}
+
+/* Mark one CQE as consumed */
+inline void io_uring_cqe_seen(::fast_io::liburing::io_uring_ring_state &ring, io_uring_cqe const *cqe) noexcept
+{
+	if (cqe != nullptr)
+	{
+		io_uring_cq_advance(ring, io_uring_cqe_nr(cqe));
+	}
+}
+
+/*
+ * Peek at the next completion without entering the kernel unless CQEs
+ * might be pending a flush (IOPOLL / overflow / taskrun). Returns nullptr
+ * when no completion is currently available.
+ */
+inline io_uring_cqe *io_uring_peek_cqe(::fast_io::liburing::io_uring_ring_state &ring) throws
+{
+	io_uring_cqe *cqe{details::io_uring_peek_cqe_impl(ring).cqe_ptr};
+	if (cqe != nullptr)
+	{
+		return cqe;
+	}
+	if (!(ring.flags & io_uring_setup_iopoll) &&
+		!(details::io_uring_load_acquire(ring.sq.kflags) & (io_uring_sq_cq_overflow | io_uring_sq_taskrun)))
+	{
+		return nullptr;
+	}
+	/* slow path: one kernel round trip with wait_nr = 0; when even that
+	 * comes back empty the result is EAGAIN, delivered like any error */
+	details::io_uring_get_data data{.submit = 0, .wait_nr = 0, .get_flags = 0, .sz = 0, .has_ts = false, .arg = nullptr};
+	return details::io_uring_get_cqe_impl(ring, data);
+}
+
+/* Wait for (at least) wait_nr completions; returns the first CQE */
+inline io_uring_cqe *io_uring_wait_cqes(::fast_io::liburing::io_uring_ring_state &ring, ::std::uint_least32_t wait_nr)
+	throws
+{
+	details::io_uring_get_data data{.submit = 0, .wait_nr = wait_nr, .get_flags = 0, .sz = 0, .has_ts = false,
+									.arg = nullptr};
+	return details::io_uring_get_cqe_impl(ring, data);
+}
+
+inline io_uring_cqe *io_uring_wait_cqe(::fast_io::liburing::io_uring_ring_state &ring) throws
+{
+	return io_uring_wait_cqes(ring, 1);
+}
+
+/* Submit pending SQEs, then wait for wait_nr completions */
+inline io_uring_cqe *io_uring_submit_and_wait_cqes(::fast_io::liburing::io_uring_ring_state &ring,
+													 ::std::uint_least32_t wait_nr) throws
+{
+	details::io_uring_get_data data{.submit = details::io_uring_flush_sq(ring),
+									.wait_nr = wait_nr,
+									.get_flags = 0,
+									.sz = 0,
+									.has_ts = false,
+									.arg = nullptr};
+	return details::io_uring_get_cqe_impl(ring, data);
+}
+
+/*
+ * Wait for a completion with a timeout. On kernels with
+ * io_uring_feat_ext_arg the deadline rides in io_uring_enter(2) directly;
+ * on older kernels an internal io_uring_op_timeout SQE is queued instead.
+ * Returns nullptr when the deadline elapsed.
+ */
+inline io_uring_cqe *io_uring_wait_cqe_timeout(::fast_io::liburing::io_uring_ring_state &ring,
+											   ::fast_io::posix_statx_timestamp64 timestamp) throws
+{
+	/* the kernel reads the full 64-bit nsec field out of the address we
+	 * hand it; convert so the statx layout's 4-byte tail padding can
+	 * never leak garbage into it */
+	io_uring_timespec ts{static_cast<::std::int64_t>(timestamp.tv_sec),
+						 static_cast<::std::int64_t>(timestamp.tv_nsec)};
+	io_uring_cqe *cqe{};
+	if (ring.features & io_uring_feat_ext_arg)
+	{
+		io_uring_getevents_arg arg{0, 0, 0, reinterpret_cast<::std::uint_least64_t>(__builtin_addressof(ts))};
+		details::io_uring_get_data data{.submit = 0,
+										.wait_nr = 1,
+										.get_flags = io_uring_enter_ext_arg,
+										.sz = sizeof(arg),
+										.has_ts = true,
+										.arg = __builtin_addressof(arg)};
+		cqe = details::io_uring_get_cqe_impl(ring, data);
+	}
+	else
+	{
+		/* queue an internal timeout SQE that the kernel completes when
+		 * either the deadline expires or a CQE is posted */
+		io_uring_sqe *sqe{details::ensure_io_uring_sqe(ring)};
+		sqe->opcode = io_uring_op_timeout;
+		sqe->fd = -1;
+		sqe->addr = reinterpret_cast<::std::uint_least64_t>(__builtin_addressof(ts));
+		sqe->len = 1;
+		sqe->off = 1;
+		sqe->timeout_flags = 0;
+		sqe->user_data = io_uring_internal_timeout_user_data;
+		details::io_uring_get_data data{.submit = details::io_uring_flush_sq(ring),
+										.wait_nr = 1,
+										.get_flags = 0,
+										.sz = 0,
+										.has_ts = false,
+										.arg = nullptr};
+		try
+		{
+			cqe = details::io_uring_get_cqe_impl(ring, data);
+		}
+		catch throws(::std::error e)
+		{
+			/* the internal timeout sqe completed: deadline expired */
+			if (e != static_cast<::std::errc>(ETIME))
+			{
+				throw throws;
+			}
+		}
+	}
+	return cqe;
+}
+
+/*
+ * Fill an array of CQE pointers for the currently available completions.
+ * Returns the number filled; nothing is consumed — call
+ * io_uring_cq_advance afterwards with the total slot count
+ * (sum of io_uring_cqe_nr over the returned CQEs).
+ */
+inline ::std::uint_least32_t io_uring_peek_batch_cqe(::fast_io::liburing::io_uring_ring_state &ring, io_uring_cqe **cqes,
+											   ::std::uint_least32_t count) throws
+{
+	::std::uint_least32_t ready{io_uring_cq_ready(ring)};
+	if (ready == 0)
+	{
+		if (!details::io_uring_cq_ring_needs_flush(ring))
+		{
+			return 0;
+		}
+		io_uring_get_events(ring);
+		ready = io_uring_cq_ready(ring);
+		if (ready == 0)
+		{
+			return 0;
+		}
+	}
+	::std::uint_least32_t head{*ring.cq.khead};
+	::std::uint_least32_t mask{ring.cq.ring_mask};
+	::std::uint_least32_t shift{details::io_uring_cqe_shift(ring)};
+	::std::uint_least32_t nr{};
+	::std::uint_least32_t last{head + ready};
+	while (head != last && nr < count)
+	{
+		io_uring_cqe *cqe{ring.cq.cqes + ((head & mask) << shift)};
+		if (cqe->flags & io_uring_cqe_f_skip)
+		{
+			/* a skip entry can only be consumed at the CQ head */
+			if (nr != 0)
+			{
+				break;
+			}
+			io_uring_cq_advance(ring, 1);
+			++head;
+			continue;
+		}
+		head += io_uring_cqe_nr(cqe);
+		cqes[nr++] = cqe;
+	}
+	return nr;
+}
+
+/* ======================= io_uring_register(2) ======================= */
+
+inline int io_uring_register(::fast_io::liburing::io_uring_ring_state &ring, ::std::uint_least32_t opcode, void const *arg,
+							 ::std::uint_least32_t nr_args) throws
+{
+	int ret{details::io_uring_register_impl(static_cast<::std::uint_least32_t>(ring.ring_fd), opcode, arg,
+											nr_args)};
+	::fast_io::system_call_throw_error(ret);
+	return ret;
+}
+
+inline int io_uring_register_buffers(::fast_io::liburing::io_uring_ring_state &ring, io_scatter_t const *iovecs,
+									 ::std::uint_least32_t nr) throws
+{
+	return io_uring_register(ring, io_uring_regop_buffers, iovecs, nr);
+}
+
+inline int io_uring_unregister_buffers(::fast_io::liburing::io_uring_ring_state &ring) throws
+{
+	return io_uring_register(ring, io_uring_regop_unregister_buffers, nullptr, 0);
+}
+
+inline int io_uring_register_files(::fast_io::liburing::io_uring_ring_state &ring, int const *files,
+								   ::std::uint_least32_t nr) throws
+{
+	return io_uring_register(ring, io_uring_regop_files, files, nr);
+}
+
+inline int io_uring_unregister_files(::fast_io::liburing::io_uring_ring_state &ring) throws
+{
+	return io_uring_register(ring, io_uring_regop_unregister_files, nullptr, 0);
+}
+
 } // namespace fast_io::liburing
 
 #include <fast_io_dsal/impl/misc/pop_macros.h>

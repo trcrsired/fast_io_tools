@@ -73,33 +73,33 @@ int main()
 
 	// raw path: nop
 	{
-		auto *sqe{fi::liburing::io_uring_get_sqe(ring)};
+		auto *sqe{fi::liburing::io_uring_get_sqe(*ring.native_handle())};
 		fi::liburing::io_uring_prep_nop(sqe);
 		fi::liburing::io_uring_sqe_set_data64(sqe, 0xdead);
-		fi::liburing::io_uring_submit(ring);
-		auto *cqe{fi::liburing::io_uring_wait_cqe(ring)};
+		fi::liburing::io_uring_submit(*ring.native_handle());
+		auto *cqe{fi::liburing::io_uring_wait_cqe(*ring.native_handle())};
 		fi::println("nop res=", cqe->res);
-		fi::liburing::io_uring_cqe_seen(ring, cqe);
+		fi::liburing::io_uring_cqe_seen(*ring.native_handle(), cqe);
 	}
 
 	// batch drain (raw)
 	for (::std::uint64_t i{}; i < 8; ++i)
 	{
-		auto *sqe{fi::liburing::io_uring_get_sqe(ring)};
+		auto *sqe{fi::liburing::io_uring_get_sqe(*ring.native_handle())};
 		fi::liburing::io_uring_prep_nop(sqe);
 		fi::liburing::io_uring_sqe_set_data64(sqe, i);
 	}
-	fi::liburing::io_uring_submit(ring);
-	fi::liburing::io_uring_wait_cqes(ring, 8);
+	fi::liburing::io_uring_submit(*ring.native_handle());
+	fi::liburing::io_uring_wait_cqes(*ring.native_handle(), 8);
 	fi::liburing::io_uring_cqe *cqes[8];
-	auto n{fi::liburing::io_uring_peek_batch_cqe(ring, cqes, 8)};
+	auto n{fi::liburing::io_uring_peek_batch_cqe(*ring.native_handle(), cqes, 8)};
 	fi::println("batch: ", n, " cqes");
 	::std::uint32_t slots{};
 	for (::std::uint32_t i{}; i < n; ++i)
 	{
 		slots += fi::liburing::io_uring_cqe_nr(cqes[i]);
 	}
-	fi::liburing::io_uring_cq_advance(ring, slots);
+	fi::liburing::io_uring_cq_advance(*ring.native_handle(), slots);
 
 	fi::posix_file file{"/tmp/iouring_test.bin",
 						fi::open_mode::out | fi::open_mode::in | fi::open_mode::creat | fi::open_mode::trunc};
