@@ -259,3 +259,73 @@ r2, n0inv, exponent bytes, limb/bit/byte counts), `verify_init_to_ptr`,
 - DH note: montgomery_pow IS finite-field DH (g^x mod p) mathematically,
   but it's variable-time — secret exponents need blinding/constant-time
   before it can be used for FFDHE. TLS 1.3 barely uses ffdhe anyway.
+
+---
+
+## 2026-10-10: TLS 1.3 client over Linux kTLS (b0162f43)
+
+User's direction: implement the KERNEL TLS path first (not generic),
+TLS 1.3 only -- no version downgrade anywhere.
+
+### Layout
+
+- `include/fast_io_crypto/hash/hmac.h` -- HMAC over md5_sha context.
+  `basic_md5_sha_context_impl` gained a public `block_size` constant.
+- `include/fast_io_crypto/tls/` -- freestanding-capable protocol:
+  - `cipher_suite.h` -- TLS 1.3 enum (replaces the old byte-pair stub
+    which collided: `namespace cipher_suite` vs `enum class cipher_suite`
+    cannot share a name). dynamic_reserve_printable printing.
+  - `defs.h` -- content_type / handshake_type / extension_type /
+    named_group / signature_scheme / alert_description enums.
+  - `wire.h` -- BE put_u16/u24/u64 + bounds-checked wire_reader.
+  - `key_schedule.h` -- HKDF extract/expand/Expand-Label/Derive-Secret,
+    traffic key+iv, finished_key, key_schedule<ctx> secret-chain class.
+  - `handshake.h` -- ClientHello body writer, ServerHello parser
+    (HRR + downgrade sentinels + supported_versions==0x0304 gate),
+    CV parse, covered-content builder.
+  - `x509.h` -- DER TLV, cert fields (issuer/subject/validity/SPKI/SAN/BC),
+    OID table, signature dispatch: RSA pkcs1v15 + PSS + Ed25519
+    (ECDSA parsed but rejected -- needs P-256), chain verify with
+    validity windows, SAN hostname match (leftmost-label wildcard).
+  - `pem.h` -- BEGIN/END block scan + streaming base64 decode.
+  - `impl.h` aggregates; wired into fast_io_crypto.h.
+- `include/fast_io_tls.h` -- hosted umbrella (push_macros window).
+- `include/fast_io_tls/ktls.h` -- SOL_TLS setsockopt glue (self-contained
+  uapi structs, no <linux/tls.h>), recvmsg/sendmsg with
+  TLS_{GET,SET}_RECORD_TYPE cmsg, plaintext record helpers, getrandom.
+- `include/fast_io_tls/client.h` -- ktls_client: full handshake driver
+  (CH out -> SH parse -> x25519 -> RX s_hs key -> EE/CR/Cert/CV/Fin under
+  kernel decryption -> chain+hostname+CV+Finished verify -> CCS out ->
+  TX c_hs key -> client Finished -> TX/RX app keys), post-handshake
+  read_some/write_all/KeyUpdate-rekey/close_notify.
+  handshake_error carries (alert<<16|stage) via its own
+  std::error_domain singleton specialization -- thrown types need that.
+
+### Conventions learned
+
+- u8'' / u8"" literals only -- never plain '' or "" for chars.
+- print support = dynamic_reserve_printable (print_reserve_size +
+  print_reserve_define), NOT print_freestanding.
+- catch syntax: `catch throws(::std::error e)` -- never `catch(...)`.
+  Custom throwable types need `std::error_domain<T>` specialization
+  (domain singleton vtable + code()).
+- `int main()` must NOT be `throws`.
+- catch can only bind std::error; test domain via e.is_code_of<T>().
+- `system_clock` on this box is 2026; don't hardcode epoch constants.
+
+### Verified
+
+- Offline test tests/0045.ktls_tls/tls13.cc -- ALL PASS:
+  PEM extract+decode, x509 parse, chain verify (RSA pkcs1v15 leaf<-CA),
+  bad-sig/expired/untrusted rejection, SAN hostname match incl. negatives,
+  RFC5869 HKDF vector, expand_label determinism, wire roundtrip,
+  CH encoder size==bytes-written, supported_versions==0x0304 only.
+- vs openssl s_server: CH is accepted (server sends SH + encrypted
+  flight); everything up to the first ktls setsockopt works.
+
+### Blocker
+
+`CONFIG_TLS=m` and the tls module can't auto-load in this environment --
+SOL_TLS setsockopt returns ENOPROTOOPT(92) and `modprobe tls` fails
+"Operation not permitted". Live handshake test needs `sudo modprobe tls`
+on the host once.
