@@ -329,3 +329,51 @@ TLS 1.3 only -- no version downgrade anywhere.
 SOL_TLS setsockopt returns ENOPROTOOPT(92) and `modprobe tls` fails
 "Operation not permitted". Live handshake test needs `sudo modprobe tls`
 on the host once.
+
+---
+
+## 2026-10-10 (2): WORKING TLS 1.3 handshake over kTLS (84daf99d)
+
+End-to-end verified against `openssl s_server`: all three suites
+(0x1301 AES-128-GCM, 0x1302 AES-256-GCM, 0x1303 CHACHA20-POLY1305)
+complete handshake + cert chain/SAN/CV/Finished verification + client
+Finished + kernel app-epoch RX/TX + HTTP round-trip. Bad hostname
+aborts with alert 42 at stage 12. RSA-PSS CV signature verified via
+our Montgomery RSA.
+
+### The big lesson
+
+openssl ktls only offloads OSSL_RECORD_PROTECTION_LEVEL_APPLICATION --
+it does the whole encrypted handshake flight in userspace and installs
+kernel keys only for c_ap/s_ap. Trying to feed handshake-epoch records
+to the kernel gives EBADMSG even with verified-correct keys. Our layout
+now matches: tls/record.h does userspace AEAD for EE/CR/Cert/CV/Fin and
+the client Finished; setsockopt runs only for the app epoch.
+
+### Key debugging tools
+
+- `openssl s_server -keylogfile k` -- logs traffic secrets keyed by
+  client_random. Our s_hs matched openssl's exactly -> key schedule
+  correct; c_ap/s_ap mismatched -> found the transcript bug.
+- `openssl s_server -msg` -- full record/handshake message trace.
+- `openssl s_client -ktls` -- proves kernel+env is fine when debugging.
+
+### Bugs found (all fixed, all have regression tests)
+
+- client_hello_size: ext header is 4 bytes not 2 (every ext undercounted
+  by 2 -> server decode_error).
+- gf128_mul: big-endian right-shift carry went toward the wrong byte.
+- gcm_tag: lens block encodes BITS not bytes.
+- poly1305: wrong limb unpack scheme (needs 4xu32 at offsets 0/4/8/12);
+  pad-carry must truncate each 32-bit word before carrying (else limb
+  high bits double-count).
+- '"c ap traffic"' is 12 chars -- passed 13 (NUL in label -> wrong secret).
+- TLS ktls needs setsockopt(IPPROTO_TCP, TCP_ULP, "tls") before SOL_TLS
+  works (else ENOPROTOOPT).
+
+### Remaining
+
+- async integration (io_uring/thread_pool pump for handshake+app)
+- ECDSA P-256 cert signatures (parsed, rejected as unsupported)
+- resumption/0-RTT, client auth, FFDHE
+- KeyUpdate rekey is coded but untested (openssl s_server can't trigger)
