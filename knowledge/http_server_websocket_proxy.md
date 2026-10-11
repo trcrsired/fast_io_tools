@@ -260,3 +260,62 @@ segments → 404s/freeze):
 2. **`fi::at(rootdir)` dangling**: `rootdir` scoped inside `if (cfg.http)`;
    `at()` BORROWS the handle → destroyed at scope end → every static lookup
    404 while the proxy still worked. Hoist handles to program lifetime.
+
+## sockaddr ABI structs: alignas ≠ size (ASan-caught, fixed)
+
+`fast_io_core_impl/socket/posix_sockaddr.h` declared the C-ABI twins with
+`alignas(16)`/`alignas(128)` to force their *size* — but that also forced
+*alignment* far past the real C structs (sockaddr aligns 2, sockaddr_in 4,
+sockaddr_storage 8). Every `posix_sockaddr*`/`posix_sockaddr_in*` overlaid
+on kernel/libc/winsock-allocated results (getifaddrs, getaddrinfo `ai_addr`,
+GetAdaptersAddresses `lpSockaddr`, getpeername/accept buffers) was UB.
+UBSan caught it instantly under `-fsanitize=address,undefined`.
+
+Fix (shipped): real padding members, natural alignment, static_asserts:
+
+```cpp
+posix_sockaddr         { u16 sa_family; u8 sa_data[14]; }           // 16B align 2
+posix_sockaddr_in      { u16 f; u16 p; posix_in_addr a; u8 z[8]; }  // 16B align 4
+posix_sockaddr_in6     unchanged                                    // 28B align 4
+posix_sockaddr_storage { u16 ss_family; u8 pad[118]; u64 ss_align; }// 128B align 8
+```
+
+- posix_in_addr/in6_addr are byte/u16 arrays → our types may align LESS
+  than the C originals; under-alignment is safe (we only read through
+  them), over-alignment never is.
+- Same fix covers Windows: `win32_definitions.h` reuses `posix_sockaddr`
+  for its addrinfo/socket_address replicas — one header, both platforms.
+- `win32_definitions.h`'s own `sockaddr_storage`/`sockaddr_in`/`in_addr`/
+  `sockaddr_in6` were already field-faithful — checked all `alignas` in
+  include/, remaining ones are owned buffers (op cookies) = harmless.
+- Lesson: when a struct must match a C ABI, write the members; alignas is
+  for OUR storage only (e.g. `alignas(16) byte addr[128]` in connect
+  awaiters — fine, we own it).
+
+## WS gating in http-server.cc (feature-flag pattern)
+
+`-DFAST_IO_HTTP_SERVER_WS=1` opts in; default 0. Pattern used:
+
+```cpp
+#ifndef FAST_IO_HTTP_SERVER_WS
+#define FAST_IO_HTTP_SERVER_WS 0
+#endif
+#if FAST_IO_HTTP_SERVER_WS
+#include <fast_io_crypto.h>
+#endif
+inline constexpr bool enable_ws{FAST_IO_HTTP_SERVER_WS != 0};
+```
+
+`#if` guards: crypto include, the 3 http_request fields, header-capture
+arms, the whole ws section, and the dispatch `else if` (collapses so
+file-serving reattaches to the prior branch). Banner prints
+`WebSocket (-D...WS=1): enabled|disabled` from `enable_ws`.
+
+**Why `#if` and not `if constexpr`**: in a NON-template TU a discarded
+if-constexpr branch still requires declared names AND still ODR-uses /
+instantiates what it calls — `ws_session` would be needed regardless, so
+nothing is stripped. if constexpr only discards during instantiation of an
+enclosing TEMPLATED entity. For "compile this code out of the example"
+`#if` is the honest tool. Verified: slim 104KB vs ws 130KB (-26KB, crypto
+gone); upgrade on slim → normal 200 (headers ignored — correct HTTP
+behavior), on ws → 101 + RFC accept key.
