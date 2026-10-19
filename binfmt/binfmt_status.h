@@ -1,6 +1,6 @@
 #pragma once
 
-// fast_io integration for binfmt — a status-print imbuer.
+// fast_io integration for binfmt — a status-print indirector.
 //
 //   ::fast_io::io::print(::fast_io::mnp::binfmt(out), "user ", uid, " = ", n);
 //
@@ -36,6 +36,7 @@
 
 #include <fast_io.h>
 #include <fast_io_dsal/array.h>
+#include <fast_io_dsal/impl/misc/push_macros.h>
 
 #include "binfmt.h"
 #include "binfmt_print.h"
@@ -61,11 +62,11 @@ void u32binfmt_status_vprint(u32binfmt_device dev, void const *base, ::std::size
 							 ::std::size_t elements_count, void const *cookie) throws;
 
 // ---------------------------------------------------------------------------
-// the imbuer — bound to a real fast_io output stream (like lc_imbuer)
+// the indirector — bound to a real fast_io output stream
 // ---------------------------------------------------------------------------
 
 template <typename stm>
-struct binfmt_imbuer
+struct binfmt_indirector
 {
 	using handle_type = stm;
 	using output_char_type = typename handle_type::output_char_type;
@@ -482,7 +483,23 @@ constexpr void binfmt_emit_field_node(char8_t *b, ::std::size_t &n,
 	}
 }
 
-template <typename... Args>
+// a `println` trailing newline is a literal node in the program itself, so the
+// whole line — values and newline — is one interpreter call.
+template <::std::integral char_type>
+constexpr void binfmt_emit_newline_node(char8_t *b, ::std::size_t &n) noexcept
+{
+	constexpr ::std::size_t width{sizeof(char_type)};
+	constexpr ::std::uint_least64_t v{
+		static_cast<::std::uint_least64_t>(::fast_io::char_literal_v<u8'\n', char_type>)};
+	b[n++] = static_cast<char8_t>((binfmt_op_literal << 3) | binfmt_kind_bytes);
+	b[n++] = static_cast<char8_t>(width);
+	for (::std::size_t i{}; i != width; ++i)
+	{
+		b[n++] = static_cast<char8_t>((v >> (8u * i)) & 0xffu);
+	}
+}
+
+template <bool line, ::std::integral char_type, typename... Args>
 consteval ::std::size_t binfmt_prog_size() noexcept
 {
 	::std::size_t n{};
@@ -490,18 +507,28 @@ consteval ::std::size_t binfmt_prog_size() noexcept
 	{
 		n += binfmt_field_node_size(binfmt_arg_traits<::std::remove_cvref_t<Args...[i]>>::desc);
 	}
+	if constexpr (line)
+	{
+		n += 2u + sizeof(char_type);
+	}
 	return n;
 }
 
-template <typename... Args>
-consteval auto binfmt_make_prog() noexcept
+template <bool line, ::std::integral char_type, typename... Args>
+consteval ::fast_io::array<char8_t, binfmt_prog_size<line, char_type, Args...>()>
+binfmt_make_prog() noexcept
 {
-	::fast_io::array<char8_t, binfmt_prog_size<Args...>()> a{};
+	::fast_io::array<char8_t, binfmt_prog_size<line, char_type, Args...>()> a
+		FAST_IO_INDETERMINATE;
 	::std::size_t n{};
 	template for (constexpr auto i : ::fast_io::details::index_array_range<0, sizeof...(Args)>)
 	{
 		binfmt_emit_field_node(a.data(), n,
 							   binfmt_arg_traits<::std::remove_cvref_t<Args...[i]>>::desc);
+	}
+	if constexpr (line)
+	{
+		binfmt_emit_newline_node<char_type>(a.data(), n);
 	}
 	return a;
 }
@@ -594,83 +621,136 @@ inline void binfmt_pack_one(binfmt_cookie_element &ce, Arg const &a) noexcept
 	}
 }
 
+// an argument that is already a native character span: if every argument is
+// one of these there is nothing for the formatter to encode, so the call
+// degenerates to a plain scatter write.
+template <::std::integral char_type, typename T>
+inline constexpr bool binfmt_is_scatter_of{false};
+template <::std::integral char_type, typename C>
+inline constexpr bool binfmt_is_scatter_of<char_type, ::fast_io::basic_io_scatter_t<C>>{
+	::std::same_as<::std::remove_cv_t<C>, char_type>};
+
+// one shared interpreter entry, chosen by the stream's character type.
 template <::std::integral char_type>
-inline void binfmt_write_newline(basic_binfmt_device<char_type> dev) throws
+inline void binfmt_run_interpreter(basic_binfmt_device<char_type> dev, char8_t const *prog,
+								   ::std::size_t prog_len, ::std::size_t elements_count,
+								   void const *cookie) throws
 {
-	char_type nl{static_cast<char_type>(u8'\n')};
-	::fast_io::basic_io_scatter_t<char_type> sc{__builtin_addressof(nl), 1u};
-	scatter_write_all(dev, __builtin_addressof(sc), 1u);
+	if constexpr (::std::same_as<char_type, char>)
+	{
+		binfmt_status_vprint(dev, prog, prog_len, elements_count, cookie);
+	}
+	else if constexpr (::std::same_as<char_type, wchar_t>)
+	{
+		wbinfmt_status_vprint(dev, prog, prog_len, elements_count, cookie);
+	}
+	else if constexpr (::std::same_as<char_type, char8_t>)
+	{
+		u8binfmt_status_vprint(dev, prog, prog_len, elements_count, cookie);
+	}
+	else if constexpr (::std::same_as<char_type, char16_t>)
+	{
+		u16binfmt_status_vprint(dev, prog, prog_len, elements_count, cookie);
+	}
+	else if constexpr (::std::same_as<char_type, char32_t>)
+	{
+		u32binfmt_status_vprint(dev, prog, prog_len, elements_count, cookie);
+	}
+	else
+	{
+		binfmt_vprint_impl<binfmt_policy_default>(dev, prog, prog_len, elements_count, cookie);
+	}
 }
 
 // ---------------------------------------------------------------------------
-// the whole call: one program, one dense cookie, one interpreter call
+// the whole call. All arguments collapse to one program + one dense cookie +
+// one interpreter call; a `println` newline is part of that program. When
+// every argument is already a character span there is nothing to encode, so
+// it degenerates to a single scatter write.
 // ---------------------------------------------------------------------------
 
-template <bool line, typename output, typename... Args>
-inline void binfmt_print_all(binfmt_imbuer<output> imb, Args... args) throws
+template <bool line, typename stream_type, typename... Args>
+inline void binfmt_print_unlocked(stream_type &&stm, Args... args) throws
 {
-	using char_type = typename output::output_char_type;
-	auto const dev{binfmt_device_of(imb.handle)};
+	auto &&s{stm};
+	using char_type = typename ::std::remove_reference_t<decltype(s)>::output_char_type;
+	auto const dev{binfmt_device_of(s)};
 	constexpr ::std::size_t k{sizeof...(Args)};
-	if constexpr (k != 0u)
+	constexpr bool all_scatter{
+		k != 0u && (binfmt_is_scatter_of<char_type, ::std::remove_cvref_t<Args>> && ...)};
+	if constexpr (all_scatter)
 	{
-		constexpr auto prog{binfmt_make_prog<Args...>()};
-		binfmt_cookie_element cookie[k]{};
+		constexpr ::std::size_t n{k + (line ? 1u : 0u)};
+		::fast_io::basic_io_scatter_t<char_type> sc[n] FAST_IO_INDETERMINATE;
+		template for (constexpr auto i : ::fast_io::details::index_array_range<0, k>)
+		{
+			sc[i] = {args...[i].base, args...[i].len};
+		}
+		if constexpr (line)
+		{
+			static constexpr char_type nl{::fast_io::char_literal_v<u8'\n', char_type>};
+			sc[k] = {__builtin_addressof(nl), 1u};
+		}
+		scatter_write_all(dev, sc, n);
+	}
+	else if constexpr (k != 0u || line)
+	{
+		constexpr auto prog{binfmt_make_prog<line, char_type, Args...>()};
+		constexpr ::std::size_t cookie_n{k != 0u ? k : 1u};
+		binfmt_cookie_element cookie[cookie_n] FAST_IO_INDETERMINATE;
 		template for (constexpr auto i : ::fast_io::details::index_array_range<0, k>)
 		{
 			binfmt_pack_one<char_type>(cookie[i], args...[i]);
 		}
-		if constexpr (::std::same_as<char_type, char>)
-		{
-			binfmt_status_vprint(dev, prog.data(), prog.size(), k, cookie);
-		}
-		else if constexpr (::std::same_as<char_type, wchar_t>)
-		{
-			wbinfmt_status_vprint(dev, prog.data(), prog.size(), k, cookie);
-		}
-		else if constexpr (::std::same_as<char_type, char8_t>)
-		{
-			u8binfmt_status_vprint(dev, prog.data(), prog.size(), k, cookie);
-		}
-		else if constexpr (::std::same_as<char_type, char16_t>)
-		{
-			u16binfmt_status_vprint(dev, prog.data(), prog.size(), k, cookie);
-		}
-		else if constexpr (::std::same_as<char_type, char32_t>)
-		{
-			u32binfmt_status_vprint(dev, prog.data(), prog.size(), k, cookie);
-		}
-		else
-		{
-			binfmt_vprint_impl<binfmt_policy_default>(dev, prog.data(), prog.size(), k, cookie);
-		}
+		binfmt_run_interpreter(dev, prog.data(), prog.size(), k, cookie);
 	}
-	if constexpr (line)
+}
+
+template <bool line, typename output, typename... Args>
+inline void binfmt_print_all(binfmt_indirector<output> ind, Args... args) throws
+{
+	if constexpr (sizeof...(Args) == 0u && !line)
 	{
-		binfmt_write_newline(dev);
+		return;
+	}
+	else if constexpr (::fast_io::operations::decay::defines::
+						   has_output_or_io_stream_mutex_ref_define<
+							   ::std::remove_cvref_t<output>>)
+	{
+		// the stream is lockable, so take the lock and run against the
+		// unlocked handle — the status hook is reached before fast_io's own
+		// locking path, so it has to do this itself.
+		::fast_io::operations::decay::stream_ref_decay_lock_guard lg{
+			::fast_io::operations::decay::output_stream_mutex_ref_decay(ind.handle)};
+		binfmt_print_unlocked<line>(
+			::fast_io::operations::decay::output_stream_unlocked_ref_decay(ind.handle), args...);
+	}
+	else
+	{
+		binfmt_print_unlocked<line>(ind.handle, args...);
 	}
 }
 
 } // namespace details
 
 template <typename stm>
-inline constexpr binfmt_imbuer<stm> output_stream_ref_define(binfmt_imbuer<stm> t) noexcept
+inline constexpr binfmt_indirector<stm> output_stream_ref_define(binfmt_indirector<stm> t) noexcept
 {
 	return t;
 }
 
 template <typename stm>
 	requires(::std::is_lvalue_reference_v<stm> || ::std::is_trivially_copyable_v<stm>)
-inline constexpr auto imbue(stm &&out) throws
+inline constexpr auto indirect(stm &&out) throws
 {
 	using reftype = decltype(::fast_io::operations::output_stream_ref(out));
-	return binfmt_imbuer<reftype>{::fast_io::operations::output_stream_ref(out)};
+	return binfmt_indirector<reftype>{::fast_io::operations::output_stream_ref(out)};
 }
 
 template <bool line, typename output, typename... Args>
-inline constexpr void status_print_define(binfmt_imbuer<output> imb, Args... args) throws
+inline constexpr void status_print_define(binfmt_indirector<output> ind, Args... args) throws
 {
-	details::binfmt_print_all<line>(imb, args...);
+	details::binfmt_print_all<line>(ind, args...);
 }
 
 } // namespace fast_io::binfmt
@@ -682,7 +762,9 @@ template <typename stm>
 	requires(::std::is_lvalue_reference_v<stm> || ::std::is_trivially_copyable_v<stm>)
 inline constexpr auto binfmt(stm &&out) throws
 {
-	return ::fast_io::binfmt::imbue(static_cast<stm &&>(out));
+	return ::fast_io::binfmt::indirect(static_cast<stm &&>(out));
 }
 
 } // namespace fast_io::manipulators
+
+#include <fast_io_dsal/impl/misc/pop_macros.h>

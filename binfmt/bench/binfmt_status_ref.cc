@@ -9,6 +9,9 @@ int main() try
 						 static_cast<long long>(-1234567890123ll),
 						 static_cast<unsigned long long>(18446744073709551615ull),
 						 ::fast_io::mnp::boolalpha(true), " end", "\n");
+	::fast_io::io::println(::fast_io::c_stdout(), "alpha", "beta", "gamma");
+	::fast_io::io::print(::fast_io::c_stdout(), "no newline all spans");
+	::fast_io::io::println(::fast_io::c_stdout());
 	return 0;
 }
 catch throws(::std::error e)
