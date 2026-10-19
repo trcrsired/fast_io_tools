@@ -122,6 +122,20 @@ using u16binfmt_device = basic_binfmt_device<char16_t>;
 using u32binfmt_device = basic_binfmt_device<char32_t>;
 
 // ---------------------------------------------------------------------------
+// custom elements — a cookie element the interpreter does not convert
+// itself but hands back to caller code. This is how anything with no native
+// wire shape (floating point today, user types later) still rides in the
+// same program: the caller packs a thunk + an opaque context and the thunk
+// writes through the device. Same "bind the output into the callback" shape
+// as fast_io's herbception error reporting
+// (herbception_scatter_write_callback). The interpreter stays free of
+// fast_io and of every per-type formatter.
+// ---------------------------------------------------------------------------
+
+template <::std::integral char_type>
+using binfmt_custom_write_fn = void (*)(void *ctx, basic_binfmt_device<char_type> dev) throws;
+
+// ---------------------------------------------------------------------------
 // invokers — thin free functions, same shape as the ibuffer_*/write family
 // ---------------------------------------------------------------------------
 
@@ -1011,6 +1025,22 @@ inline void binfmt_emit_dec_plain(basic_binfmt_device<char_type> dev, bool neg,
 	binfmt_write_units(dev, buf, static_cast<::std::size_t>(p - buf));
 }
 
+// hand one custom element back to caller code. The cookie's field1 is the
+// thunk, field2 is the opaque context (typically the argument value plus
+// whatever binding the thunk needs). Nothing here knows what the element
+// means — that is the whole point.
+template <::std::integral char_type>
+inline void binfmt_emit_custom(basic_binfmt_device<char_type> dev,
+							   binfmt_cookie_element const &ce) throws
+{
+	auto const fn{reinterpret_cast<binfmt_custom_write_fn<char_type>>(ce.field1)};
+	if (fn == nullptr)
+	{
+		binfmt_malformed();
+	}
+	fn(reinterpret_cast<void *>(ce.field2), dev);
+}
+
 // emit one `{}`-shaped field for cookie element `idx`: no type on the wire, so
 // the conversion follows from the cookie's C type. Integers are the common case
 // and go through the short decimal path; anything else (char/string/pointer)
@@ -1020,11 +1050,16 @@ inline void binfmt_emit_default_at(
 	basic_binfmt_device<char_type> dev, binfmt_cookie_element const &ce) throws
 {
 	auto const t{static_cast<::std::uint_least32_t>(ce.typetag)};
-	if (t == static_cast<::std::uint_least32_t>(binfmt_typetag::from_format) ||
-		t == static_cast<::std::uint_least32_t>(binfmt_typetag::custom))
+	if (t == static_cast<::std::uint_least32_t>(binfmt_typetag::from_format))
 	{
 		// `{}` with no type in the program and no type in the cookie.
 		binfmt_malformed();
+	}
+	if (t == static_cast<::std::uint_least32_t>(binfmt_typetag::custom))
+	{
+		// the element carries a thunk instead of a value type.
+		binfmt_emit_custom(dev, ce);
+		return;
 	}
 	auto const ct{t - 1u};
 	bool neg;
@@ -1379,15 +1414,17 @@ inline void binfmt_vprint_impl(basic_binfmt_device<char_type> dev,
 				binfmt_malformed();
 			}
 			auto const &ce{binfmt_cookie_at(cookie, idx)};
-			auto const tag{static_cast<::std::uint_least32_t>(ce.typetag)};
-			if (tag != static_cast<::std::uint_least32_t>(binfmt_typetag::from_format))
+			auto const ctag{static_cast<::std::uint_least32_t>(ce.typetag)};
+			if (ctag == static_cast<::std::uint_least32_t>(binfmt_typetag::custom))
+			{
+				// the element carries a thunk instead of a value type.
+				binfmt_emit_custom(dev, ce);
+				break;
+			}
+			if (ctag != static_cast<::std::uint_least32_t>(binfmt_typetag::from_format))
 			{
 				// fmt `{}`: the type lives in the cookie, not the program.
-				if (tag == static_cast<::std::uint_least32_t>(binfmt_typetag::custom))
-				{
-					binfmt_malformed();
-				}
-				f.ctype = tag - 1u;
+				f.ctype = ctag - 1u;
 			}
 			binfmt_emit_field<policy>(dev, f, ce);
 			break;
