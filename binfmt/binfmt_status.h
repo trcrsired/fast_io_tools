@@ -701,8 +701,7 @@ inline void binfmt_emit(basic_binfmt_device<char_type> dev, Args... args) throws
 	}
 	else if constexpr (k != 0u || line)
 	{
-		constexpr ::std::size_t cookie_n{k != 0u ? k : 1u};
-		::fast_io::array<binfmt_cookie_element, cookie_n> cookie FAST_IO_INDETERMINATE;
+		::fast_io::array<binfmt_cookie_element, k> cookie FAST_IO_INDETERMINATE;
 		template for (constexpr auto i : ::fast_io::details::index_array_range<0, k>)
 		{
 			binfmt_pack_one<char_type>(cookie.index_unchecked(i), args...[i]);
