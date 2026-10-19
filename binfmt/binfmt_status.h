@@ -669,6 +669,16 @@ inline void binfmt_run_interpreter(basic_binfmt_device<char_type> dev, char8_t c
 // it degenerates to a single scatter write.
 // ---------------------------------------------------------------------------
 
+// the compiled program for one (line, char_type, Args...) shape, and the
+// newline character for the scatter fast path: variable templates, so every
+// call site and every function instantiation shares one definition instead
+// of each getting its own function-local static.
+template <bool line, ::std::integral char_type, typename... Args>
+inline constexpr auto binfmt_program{binfmt_make_prog<line, char_type, Args...>()};
+
+template <::std::integral char_type>
+inline constexpr char_type binfmt_newline{::fast_io::char_literal_v<u8'\n', char_type>};
+
 template <bool line, ::std::integral char_type, typename... Args>
 inline void binfmt_emit(basic_binfmt_device<char_type> dev, Args... args) throws
 {
@@ -678,28 +688,27 @@ inline void binfmt_emit(basic_binfmt_device<char_type> dev, Args... args) throws
 	if constexpr (all_scatter)
 	{
 		constexpr ::std::size_t n{k + (line ? 1u : 0u)};
-		::fast_io::basic_io_scatter_t<char_type> sc[n] FAST_IO_INDETERMINATE;
+		::fast_io::array<::fast_io::basic_io_scatter_t<char_type>, n> sc FAST_IO_INDETERMINATE;
 		template for (constexpr auto i : ::fast_io::details::index_array_range<0, k>)
 		{
-			sc[i] = {args...[i].base, args...[i].len};
+			sc.index_unchecked(i) = {args...[i].base, args...[i].len};
 		}
 		if constexpr (line)
 		{
-			static constexpr char_type nl{::fast_io::char_literal_v<u8'\n', char_type>};
-			sc[k] = {__builtin_addressof(nl), 1u};
+			sc.index_unchecked(k) = {__builtin_addressof(binfmt_newline<char_type>), 1u};
 		}
-		scatter_write_all(dev, sc, n);
+		scatter_write_all(dev, sc.data(), n);
 	}
 	else if constexpr (k != 0u || line)
 	{
-		static constexpr auto prog{binfmt_make_prog<line, char_type, Args...>()};
 		constexpr ::std::size_t cookie_n{k != 0u ? k : 1u};
-		binfmt_cookie_element cookie[cookie_n] FAST_IO_INDETERMINATE;
+		::fast_io::array<binfmt_cookie_element, cookie_n> cookie FAST_IO_INDETERMINATE;
 		template for (constexpr auto i : ::fast_io::details::index_array_range<0, k>)
 		{
-			binfmt_pack_one<char_type>(cookie[i], args...[i]);
+			binfmt_pack_one<char_type>(cookie.index_unchecked(i), args...[i]);
 		}
-		binfmt_run_interpreter(dev, prog.data(), prog.size(), k, cookie);
+		binfmt_run_interpreter(dev, binfmt_program<line, char_type, Args...>.data(),
+							   binfmt_program<line, char_type, Args...>.size(), k, cookie.data());
 	}
 }
 
