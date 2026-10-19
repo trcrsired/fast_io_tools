@@ -71,7 +71,7 @@ static bool run(std::vector<std::uint8_t> const &prog, std::size_t count,
 	char out[256]{};
 	::fast_io::basic_obuffer_view<char> ob{out, out + sizeof(out)};
 	auto dev{binfmt::binfmt_device_of(ob)};
-	binfmt::binfmt_vprint(dev, prog.data(), prog.size(), count, cookie);
+	binfmt::binfmt_vprint<binfmt::binfmt_policy_c_style>(dev, prog.data(), prog.size(), count, cookie);
 	auto p{binfmt::get_output_buffer_ptrs(dev)};
 	return std::string_view{out, static_cast<std::size_t>(p.curr_ptr - out)} == expect;
 }
@@ -157,7 +157,7 @@ int main()
 			bool threw{};
 			try
 			{
-				binfmt::binfmt_vprint(dev, prog.data(), prog.size(), 1, nullptr);
+				binfmt::binfmt_vprint<binfmt::binfmt_policy_c_style>(dev, prog.data(), prog.size(), 1, nullptr);
 			}
 			catch throws(::std::error e)
 			{

@@ -25,7 +25,7 @@ namespace
 	ck.field1 = 42;
 	::fast_io::string out;
 	auto oref{::fast_io::containers::io_strlike_ref(::fast_io::io_alias, out)};
-	binfmt_vprint(binfmt_device_of(oref), prog.data(), prog.size(), 1, &ck);
+	binfmt_vprint<binfmt_policy_c_style>(binfmt_device_of(oref), prog.data(), prog.size(), 1, &ck);
 	return out;
 }
 

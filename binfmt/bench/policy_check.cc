@@ -3,8 +3,8 @@
 //   {} / {N} / literals are fmt shapes: work under every policy.
 //   %zu        is a C shape (carries ctype): only accepted when policy.c_style.
 //
-// Runs the same programs through the default policy and through
-// binfmt_policy_fmt_only and checks the outputs / the rejection.
+// Runs the same programs through the default policy (fmt-only) and through
+// binfmt_policy_c_style and checks the outputs / the rejection.
 
 #include <cstddef>
 #include <cstring>
@@ -18,8 +18,8 @@ namespace
 {
 
 using ::fast_io::binfmt::binfmt_cookie_element;
+using ::fast_io::binfmt::binfmt_policy_c_style;
 using ::fast_io::binfmt::binfmt_policy_default;
-using ::fast_io::binfmt::binfmt_policy_fmt_only;
 
 inline constexpr char prog_fmt[]{"\x13\x00\x0a\x01\x0a"};				// {}\n
 inline constexpr char prog_printf[]{"\x13\x02\x61\x05\x69\x02\x0a\x01\x0a"}; // %zu\n
@@ -36,11 +36,11 @@ bool run_prog(char const *prog, ::std::size_t plen, bool c_style,
 	{
 		if (c_style)
 		{
-			::fast_io::binfmt::binfmt_vprint<binfmt_policy_default>(dev, prog, plen, 1, &ck);
+			::fast_io::binfmt::binfmt_vprint<binfmt_policy_c_style>(dev, prog, plen, 1, &ck);
 		}
 		else
 		{
-			::fast_io::binfmt::binfmt_vprint<binfmt_policy_fmt_only>(dev, prog, plen, 1, &ck);
+			::fast_io::binfmt::binfmt_vprint<binfmt_policy_default>(dev, prog, plen, 1, &ck);
 		}
 		return true;
 	}
@@ -56,24 +56,24 @@ void run() throws
 		::fast_io::string a;
 		bool const ok{run_prog(prog_fmt, sizeof(prog_fmt) - 1, false, a)};
 		bool const val{a.size() == 6 && ::std::memcmp(a.data(), "12345\n", 6) == 0};
-		::fast_io::io::println("fmt   {} under fmt-only : accepted=", ok, " correct=", val);
+		::fast_io::io::println("fmt   {} under fmt default : accepted=", ok, " correct=", val);
 	}
 	{
 		::fast_io::string a;
 		bool const ok{run_prog(prog_fmt, sizeof(prog_fmt) - 1, true, a)};
 		bool const val{a.size() == 6 && ::std::memcmp(a.data(), "12345\n", 6) == 0};
-		::fast_io::io::println("fmt   {} under default  : accepted=", ok, " correct=", val);
+		::fast_io::io::println("fmt   {} under c-style    : accepted=", ok, " correct=", val);
 	}
 	{
 		::fast_io::string a;
 		bool const ok{run_prog(prog_printf, sizeof(prog_printf) - 1, false, a)};
-		::fast_io::io::println("printf %zu under fmt-only: accepted=", ok, " (want 0)");
+		::fast_io::io::println("printf %zu under fmt default : accepted=", ok, " (want 0)");
 	}
 	{
 		::fast_io::string a;
 		bool const ok{run_prog(prog_printf, sizeof(prog_printf) - 1, true, a)};
 		bool const val{a.size() == 6 && ::std::memcmp(a.data(), "12345\n", 6) == 0};
-		::fast_io::io::println("printf %zu under default : accepted=", ok, " correct=", val);
+		::fast_io::io::println("printf %zu under c-style    : accepted=", ok, " correct=", val);
 	}
 }
 

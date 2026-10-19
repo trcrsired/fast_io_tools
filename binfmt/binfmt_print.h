@@ -46,7 +46,7 @@ namespace fast_io::binfmt
 // `c_style` accepts programs that carry an explicit C type in the field
 // parameter list (the C printf front-end). Disabling it drops the printf-only
 // fast paths and rejects any `ctype` parameter, so a fmt-only build carries no
-// printf machinery at all.
+// printf machinery at all. fmt is the default; C-style is opt-in.
 //
 // `floating_point` would accept binary float fields. It is not implemented yet
 // — enabling it is rejected at compile time (see the static_assert in
@@ -60,8 +60,10 @@ struct binfmt_policy
 	bool floating_point;
 };
 
-inline constexpr binfmt_policy binfmt_policy_default{true, false};
-inline constexpr binfmt_policy binfmt_policy_fmt_only{false, false};
+// fmt front-end only — the default.
+inline constexpr binfmt_policy binfmt_policy_default{false, false};
+// accept programs that carry an explicit C type (the printf front-end).
+inline constexpr binfmt_policy binfmt_policy_c_style{true, false};
 
 // ---------------------------------------------------------------------------
 // output buffer pointer pair — what get_output_buffer_ptrs hands back
@@ -1404,9 +1406,9 @@ inline void binfmt_vprint_impl(basic_binfmt_device<char_type> dev,
 // ---------------------------------------------------------------------------
 // entry points — char_type flavours. elements_count + cookie, no varargs.
 //
-// `policy` selects the compile-time feature set; the default accepts the C
-// printf front-end and rejects floats (not implemented yet). Pass e.g.
-// binfmt_policy_fmt_only to build a fmt-only interpreter.
+// `policy` selects the compile-time feature set; the default is the fmt
+// front-end only (floats not implemented yet). Pass binfmt_policy_c_style to
+// also accept programs that carry an explicit C type.
 // ---------------------------------------------------------------------------
 
 template <binfmt_policy policy = binfmt_policy_default>

@@ -31,7 +31,7 @@ int main() try
 		cookie_t ck[2]{};
 		ck[0].field1 = 42;
 		ck[1].field1 = 123456789;
-		::fast_io::binfmt::binfmt_vprint(dev, program, sizeof(program) - 1, 2, ck);
+		::fast_io::binfmt::binfmt_vprint<::fast_io::binfmt::binfmt_policy_c_style>(dev, program, sizeof(program) - 1, 2, ck);
 	}
 	// ---- unbuffered: c_stdout is not a buffer_output_stream -> scatter ----
 	{
@@ -42,7 +42,7 @@ int main() try
 		cookie_t ck[2]{};
 		ck[0].field1 = 7;
 		ck[1].field1 = 987654321;
-		::fast_io::binfmt::binfmt_vprint(dev, program, sizeof(program) - 1, 2, ck);
+		::fast_io::binfmt::binfmt_vprint<::fast_io::binfmt::binfmt_policy_c_style>(dev, program, sizeof(program) - 1, 2, ck);
 	}
 	return 0;
 }

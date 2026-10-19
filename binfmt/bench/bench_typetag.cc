@@ -41,7 +41,7 @@ void bench(char const *label, char const *prog, ::std::size_t plen,
 	for (::std::size_t i{}; i != N; ++i)
 	{
 		ck.field1 = i;
-		::fast_io::binfmt::binfmt_vprint(dev, prog, plen, 1, &ck);
+		::fast_io::binfmt::binfmt_vprint<::fast_io::binfmt::binfmt_policy_c_style>(dev, prog, plen, 1, &ck);
 	}
 	auto const t1{::fast_io::posix_clock_gettime(::fast_io::posix_clock_id::realtime)};
 	::fast_io::io::println(::fast_io::mnp::os_c_str(label), ": ", t1 - t0, "s  bytes=", out.size());

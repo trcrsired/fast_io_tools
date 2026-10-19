@@ -49,7 +49,7 @@ void run() throws
 		for (::std::size_t i{}; i != N; ++i)
 		{
 			ck.field1 = i;
-			::fast_io::binfmt::binfmt_vprint(dev, program, program_len, 1, &ck);
+			::fast_io::binfmt::binfmt_vprint<::fast_io::binfmt::binfmt_policy_c_style>(dev, program, program_len, 1, &ck);
 		}
 		auto const t1{::fast_io::posix_clock_gettime(::fast_io::posix_clock_id::realtime)};
 		::fast_io::io::println("binfmt_vprint : ", t1 - t0, "s  bytes=", out.size());

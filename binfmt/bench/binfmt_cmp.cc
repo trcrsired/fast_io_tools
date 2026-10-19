@@ -23,7 +23,7 @@ void run() throws
 	for (::std::size_t i{}; i != N; ++i)
 	{
 		ck.field1 = i;
-		::fast_io::binfmt::binfmt_vprint(dev, program, program_len, 1, &ck);
+		::fast_io::binfmt::binfmt_vprint<::fast_io::binfmt::binfmt_policy_c_style>(dev, program, program_len, 1, &ck);
 	}
 	for (::std::size_t i{}; i != N; ++i)
 	{
