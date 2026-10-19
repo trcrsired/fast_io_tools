@@ -213,17 +213,24 @@ binfmt_device_of(stream_type &s) noexcept
 // runtime — binfmt_vprint
 //
 // The format string is a *compiled binary program*, not text. The caller
-// has already packed every argument into one compact cookie:
+// has already packed every argument into one dense array of
+// binfmt_cookie_element (binfmt.h):
 //
-//     cookie layout
-//       +0                         : ::std::size_t addr_offsets_to_cookie[elements_count]
-//       +addr_offsets_to_cookie[i] : the bytes of element i
+//     struct binfmt_cookie_element
+//     {
+//         binfmt_typetag typetag;
+//         ::std::size_t field1;
+//         ::std::size_t field2;
+//     };
 //
-// So element i lives at (unsigned char*)cookie + ((size_t*)cookie)[i].
-// That packing keeps positional indexing trivial and keeps the argument
-// bytes dense (better cache locality) while staying a plain C ABI call.
-// There are no varargs anywhere: the cookie is the only way elements enter
-// the interpreter, which is exactly what makes the program both safe (all
+// Element i is simply cookie[i]. fmt's `{}` is type-erased at the call
+// site, so the type rides in typetag: 0 means "take the type from the
+// format program" (C printf), 1 is a caller-defined opaque type, and the
+// standard types are >= 2 (binfmt_ct_* + 1). The value is in field1/field2,
+// 16 contiguous bytes, so a 128-bit integer or a {ptr, len} view loads
+// straight out of the pair. There are no per-element offsets. There are no
+// varargs anywhere: the cookie is the only way elements enter the
+// interpreter, which is exactly what makes the program both safe (all
 // accesses bounds-checked) and fast.
 //
 // The interpreter itself is locale-agnostic. pct / chrono / plural / locale
@@ -268,12 +275,6 @@ struct binfmt_bytes
 	::std::size_t len;
 };
 
-struct binfmt_str_view
-{
-	void const *ptr;
-	::std::size_t len;
-};
-
 // field attributes decoded from a `field` node's parameter list
 
 template <::std::integral char_type>
@@ -296,6 +297,111 @@ struct binfmt_field
 	bool flag_outdigits;
 	bool flag_upper;
 };
+
+// `type` is optional on the wire: `{}` compiles to an empty field param list
+// (`13 00`) because the natural rendering follows from the C type. When the
+// program omits it, derive it from ctype — signed ints -> d, unsigned -> u,
+// char -> c, string/pointer -> s / p. Returns 0 when there is no natural
+// default (floats without a conv, unknown ctype), which the dispatch rejects.
+[[gnu::always_inline]] inline ::std::uint_least32_t
+binfmt_default_type(::std::uint_least32_t ct) noexcept
+{
+	switch (ct)
+	{
+	case binfmt_ct_i32:
+	case binfmt_ct_i64:
+	case binfmt_ct_i128:
+		return binfmt_conv_d;
+	case binfmt_ct_u32:
+	case binfmt_ct_u64:
+	case binfmt_ct_u128:
+		return binfmt_conv_u;
+	case binfmt_ct_c8:
+	case binfmt_ct_c16:
+	case binfmt_ct_c32:
+	case binfmt_ct_cebc:
+		return binfmt_conv_c;
+	case binfmt_ct_c8ptr:
+	case binfmt_ct_c16ptr:
+	case binfmt_ct_c32ptr:
+	case binfmt_ct_ebcptr:
+	case binfmt_ct_gbptr:
+	case binfmt_ct_c8view:
+	case binfmt_ct_c16view:
+	case binfmt_ct_c32view:
+	case binfmt_ct_ebcview:
+	case binfmt_ct_gbview:
+		return binfmt_conv_s;
+	case binfmt_ct_ptr:
+	case binfmt_ct_fptr:
+		return binfmt_conv_p;
+	default:
+		return 0;
+	}
+}
+
+// a field with every attribute at its default: no type, no ctype, no width,
+// no fill, no flags. This is exactly what `{}` compiles to (`13 00`).
+template <::std::integral char_type>
+inline constexpr binfmt_field<char_type> binfmt_default_field{
+	.fill = nullptr,
+	.fill_len = 0u,
+	.width = 0u,
+	.prec = 0u,
+	.arg = 0u,
+	.align = 0u,
+	.sign = 0u,
+	.ctype = 0u,
+	.type = 0u,
+	.auto_arg = true,
+	.flag_alt = false,
+	.flag_zero = false,
+	.flag_group = false,
+	.flag_locale = false,
+	.flag_outdigits = false,
+	.flag_upper = false};
+
+template <::std::integral char_type>
+inline constexpr binfmt_field<char_type> binfmt_plain_u64_field{
+	.fill = nullptr,
+	.fill_len = 0u,
+	.width = 0u,
+	.prec = 0u,
+	.arg = 0u,
+	.align = 0u,
+	.sign = 0u,
+	.ctype = binfmt_ct_u64,
+	.type = binfmt_conv_u,
+	.auto_arg = true,
+	.flag_alt = false,
+	.flag_zero = false,
+	.flag_group = false,
+	.flag_locale = false,
+	.flag_outdigits = false,
+	.flag_upper = false};
+
+// Raw byte prefixes of the node shapes the compiler emits for the common
+// integer formats, matched with memcmp before the general parser runs.
+//
+// `{}` has NO type on the wire — the compiler emits an empty field param
+// list (`13 00`) and the interpreter derives the conversion from the C type
+// in the cookie. That is the single most common node shape.
+//
+//   {}            13 00                          (fmt, type in cookie)
+//   {} "\n"       13 00 0a 01 0a
+//   {2}           13 01 09 <idx>                  (explicit arg, one byte)
+//   %zu           13 02 61 05 69 02              (ctype then type)
+//   %zu "\n"      13 02 61 05 69 02 0a 01 0a
+//
+// A match is only a *prefix* (rem >= the pattern length), so it also fires
+// part-way through a longer program — e.g. "hello {} world {} hello".
+// Literals (`0a <len> <bytes>`) are handled by a general 1-byte-length path,
+// not by a fixed pattern, so any literal text is fast.
+inline constexpr char8_t binfmt_pat_empty[]{0x13u, 0x00u};
+inline constexpr char8_t binfmt_pat_empty_nl[]{0x13u, 0x00u, 0x0au, 0x01u, 0x0au};
+inline constexpr char8_t binfmt_pat_arg[]{0x13u, 0x01u, 0x09u};
+inline constexpr char8_t binfmt_pat_u64[]{0x13u, 0x02u, 0x61u, 0x05u, 0x69u, 0x02u};
+inline constexpr char8_t binfmt_pat_u64_nl[]{0x13u, 0x02u, 0x61u, 0x05u, 0x69u, 0x02u, 0x0au, 0x01u, 0x0au};
 
 // ---------------------------------------------------------------------------
 // uleb128 / payload readers
@@ -368,21 +474,13 @@ inline void binfmt_skip_payload(binfmt_prog &p, ::std::uint_least32_t kind) thro
 }
 
 // ---------------------------------------------------------------------------
-// cookie element access — the whole point of the packed cookie
+// cookie element access — the whole point of the dense cookie array
 // ---------------------------------------------------------------------------
 
-[[gnu::always_inline]] inline void const *binfmt_cookie_element(void const *cookie, ::std::size_t index) noexcept
+[[gnu::always_inline]] inline binfmt_cookie_element const &binfmt_cookie_at(
+	void const *cookie, ::std::size_t index) noexcept
 {
-	auto const off{static_cast<::std::size_t const *>(cookie)[index]};
-	return static_cast<unsigned char const *>(cookie) + off;
-}
-
-template <typename T>
-[[gnu::always_inline]] inline T binfmt_load(void const *p) noexcept
-{
-	T v;
-	::std::memcpy(__builtin_addressof(v), p, sizeof(T));
-	return v;
+	return static_cast<binfmt_cookie_element const *>(cookie)[index];
 }
 
 // ---------------------------------------------------------------------------
@@ -719,10 +817,11 @@ inline ::std::size_t binfmt_unit_strlen(char_type const *p) noexcept
 
 template <::std::integral char_type, typename UInt>
 [[gnu::always_inline]] inline void binfmt_emit_int_mag(basic_binfmt_device<char_type> dev,
-								binfmt_field<char_type> const &f, bool neg, UInt mag) throws
+								binfmt_field<char_type> const &f,
+								::std::uint_least32_t ty, bool neg, UInt mag) throws
 {
 	::std::uint_least32_t base{10};
-	switch (f.type)
+	switch (ty)
 	{
 	case binfmt_conv_o:
 		base = 8;
@@ -740,7 +839,7 @@ template <::std::integral char_type, typename UInt>
 	::std::size_t prefix_len{};
 	auto const len{binfmt_format_uint<char_type>(content, neg, mag, base, f.flag_upper,
 												f.flag_alt,
-												f.type == binfmt_conv_d ? f.sign : 0u,
+												ty == binfmt_conv_d ? f.sign : 0u,
 												__builtin_addressof(prefix_len))};
 	binfmt_write_padded(dev, content, len, prefix_len, f.fill, f.fill_len,
 						f.width, f.align, f.flag_zero, true);
@@ -748,36 +847,38 @@ template <::std::integral char_type, typename UInt>
 
 template <::std::integral char_type>
 [[gnu::always_inline]] inline void binfmt_emit_int(basic_binfmt_device<char_type> dev,
-							binfmt_field<char_type> const &f, void const *elem) throws
+							binfmt_field<char_type> const &f,
+							::std::uint_least32_t ty,
+							binfmt_cookie_element const &ce) throws
 {
-	bool const want_signed{f.type == binfmt_conv_d};
+	bool const want_signed{ty == binfmt_conv_d};
 	switch (f.ctype)
 	{
 	case binfmt_ct_i32:
 	case binfmt_ct_u32:
 	{
-		auto const v{binfmt_load<::std::uint_least32_t>(elem)};
+		auto const v{static_cast<::std::uint_least32_t>(ce.field1)};
 		if (want_signed && (v >> 31) != 0)
 		{
-			binfmt_emit_int_mag(dev, f, true, static_cast<::std::uint_least32_t>(0u - v));
+			binfmt_emit_int_mag(dev, f, ty, true, static_cast<::std::uint_least32_t>(0u - v));
 		}
 		else
 		{
-			binfmt_emit_int_mag(dev, f, false, v);
+			binfmt_emit_int_mag(dev, f, ty, false, v);
 		}
 		return;
 	}
 	case binfmt_ct_i64:
 	case binfmt_ct_u64:
 	{
-		auto const v{binfmt_load<::std::uint_least64_t>(elem)};
+		auto const v{static_cast<::std::uint_least64_t>(ce.field1)};
 		if (want_signed && (v >> 63) != 0)
 		{
-			binfmt_emit_int_mag(dev, f, true, static_cast<::std::uint_least64_t>(0ull - v));
+			binfmt_emit_int_mag(dev, f, ty, true, static_cast<::std::uint_least64_t>(0ull - v));
 		}
 		else
 		{
-			binfmt_emit_int_mag(dev, f, false, v);
+			binfmt_emit_int_mag(dev, f, ty, false, v);
 		}
 		return;
 	}
@@ -785,14 +886,15 @@ template <::std::integral char_type>
 	case binfmt_ct_i128:
 	case binfmt_ct_u128:
 	{
-		auto const v{binfmt_load<__uint128_t>(elem)};
+		auto const v{(static_cast<__uint128_t>(ce.field2) << 64) |
+					 static_cast<__uint128_t>(ce.field1)};
 		if (want_signed && (v >> 127) != 0)
 		{
-			binfmt_emit_int_mag(dev, f, true, static_cast<__uint128_t>(0) - v);
+			binfmt_emit_int_mag(dev, f, ty, true, static_cast<__uint128_t>(0) - v);
 		}
 		else
 		{
-			binfmt_emit_int_mag(dev, f, false, v);
+			binfmt_emit_int_mag(dev, f, ty, false, v);
 		}
 		return;
 	}
@@ -802,9 +904,94 @@ template <::std::integral char_type>
 	}
 }
 
+// emit one `{}`-shaped field for cookie element `idx`: no type on the wire,
+// so the conversion follows from the cookie's C type. The switch is written
+// out so each arm passes a *compile-time constant* conversion to the integer
+// path — otherwise `ty` is a runtime value and the decimal/base/sign logic
+// stops folding. Anything not in the integer family falls back to the general
+// dispatch, which derives the same default.
+template <::std::integral char_type>
+[[gnu::always_inline]] inline void binfmt_emit_default_at(
+	basic_binfmt_device<char_type> dev, binfmt_cookie_element const &ce) throws
+{
+	auto const t{static_cast<::std::uint_least32_t>(ce.typetag)};
+	if (t == static_cast<::std::uint_least32_t>(binfmt_typetag::from_format) ||
+		t == static_cast<::std::uint_least32_t>(binfmt_typetag::custom))
+	{
+		// `{}` with no type in the program and no type in the cookie.
+		binfmt_malformed();
+	}
+	auto const ct{t - 1u};
+	binfmt_field<char_type> f{binfmt_default_field<char_type>};
+	f.ctype = ct;
+	switch (ct)
+	{
+	case binfmt_ct_u32:
+	case binfmt_ct_u64:
+		binfmt_emit_int(dev, f, binfmt_conv_u, ce);
+		return;
+	case binfmt_ct_i32:
+	case binfmt_ct_i64:
+		binfmt_emit_int(dev, f, binfmt_conv_d, ce);
+		return;
+#if defined(__SIZEOF_INT128__)
+	case binfmt_ct_u128:
+		binfmt_emit_int(dev, f, binfmt_conv_u, ce);
+		return;
+	case binfmt_ct_i128:
+		binfmt_emit_int(dev, f, binfmt_conv_d, ce);
+		return;
+#endif
+	default:
+		binfmt_emit_field(dev, f, ce);
+		return;
+	}
+}
+// fast `13 00` node (i.e. `{}`): auto-arg — bind the next cookie element.
+template <::std::integral char_type>
+[[gnu::always_inline]] inline void binfmt_emit_default_node(
+	basic_binfmt_device<char_type> dev, void const *cookie,
+	::std::size_t elements_count, ::std::size_t &next_arg) throws
+{
+	auto const idx{next_arg++};
+	if (idx >= elements_count)
+	{
+		binfmt_malformed();
+	}
+	binfmt_emit_default_at(dev, binfmt_cookie_at(cookie, idx));
+}
+
+// fast `{ctype=...,type=...}` node (printf `%zu` etc): the program carries
+// the C type, so the cookie typetag is only an override.
+template <::std::integral char_type>
+[[gnu::always_inline]] inline void binfmt_emit_plain_node(
+	basic_binfmt_device<char_type> dev, void const *cookie,
+	::std::size_t elements_count, ::std::size_t &next_arg,
+	binfmt_field<char_type> base) throws
+{
+	auto const idx{next_arg++};
+	if (idx >= elements_count)
+	{
+		binfmt_malformed();
+	}
+	auto const &ce{binfmt_cookie_at(cookie, idx)};
+	auto const t{static_cast<::std::uint_least32_t>(ce.typetag)};
+	binfmt_field<char_type> f{base};
+	if (t != static_cast<::std::uint_least32_t>(binfmt_typetag::from_format))
+	{
+		if (t == static_cast<::std::uint_least32_t>(binfmt_typetag::custom))
+		{
+			binfmt_malformed();
+		}
+		f.ctype = t - 1u;
+	}
+	binfmt_emit_field(dev, f, ce);
+}
+
 template <::std::integral char_type>
 inline void binfmt_emit_char(basic_binfmt_device<char_type> dev,
-							 binfmt_field<char_type> const &f, void const *elem) throws
+							 binfmt_field<char_type> const &f,
+							 binfmt_cookie_element const &ce) throws
 {
 	char_type ch{};
 	switch (f.ctype)
@@ -815,21 +1002,21 @@ inline void binfmt_emit_char(basic_binfmt_device<char_type> dev,
 		{
 			binfmt_malformed();
 		}
-		ch = static_cast<char_type>(binfmt_load<::std::uint_least8_t>(elem));
+		ch = static_cast<char_type>(static_cast<::std::uint_least8_t>(ce.field1));
 		break;
 	case binfmt_ct_c16:
 		if (sizeof(char_type) != 2)
 		{
 			binfmt_malformed();
 		}
-		ch = static_cast<char_type>(binfmt_load<::std::uint_least16_t>(elem));
+		ch = static_cast<char_type>(static_cast<::std::uint_least16_t>(ce.field1));
 		break;
 	case binfmt_ct_c32:
 		if (sizeof(char_type) != 4)
 		{
 			binfmt_malformed();
 		}
-		ch = static_cast<char_type>(binfmt_load<::std::uint_least32_t>(elem));
+		ch = static_cast<char_type>(static_cast<::std::uint_least32_t>(ce.field1));
 		break;
 	default:
 		binfmt_malformed();
@@ -840,7 +1027,8 @@ inline void binfmt_emit_char(basic_binfmt_device<char_type> dev,
 
 template <::std::integral char_type>
 inline void binfmt_emit_string(basic_binfmt_device<char_type> dev,
-							   binfmt_field<char_type> const &f, void const *elem) throws
+							   binfmt_field<char_type> const &f,
+							   binfmt_cookie_element const &ce) throws
 {
 	char_type const *sp{};
 	::std::size_t sl{};
@@ -853,7 +1041,7 @@ inline void binfmt_emit_string(basic_binfmt_device<char_type> dev,
 		{
 			binfmt_malformed();
 		}
-		sp = static_cast<char_type const *>(binfmt_load<void const *>(elem));
+		sp = reinterpret_cast<char_type const *>(ce.field1);
 		if (sp == nullptr)
 		{
 			binfmt_malformed();
@@ -865,7 +1053,7 @@ inline void binfmt_emit_string(basic_binfmt_device<char_type> dev,
 		{
 			binfmt_malformed();
 		}
-		sp = static_cast<char_type const *>(binfmt_load<void const *>(elem));
+		sp = reinterpret_cast<char_type const *>(ce.field1);
 		if (sp == nullptr)
 		{
 			binfmt_malformed();
@@ -877,7 +1065,7 @@ inline void binfmt_emit_string(basic_binfmt_device<char_type> dev,
 		{
 			binfmt_malformed();
 		}
-		sp = static_cast<char_type const *>(binfmt_load<void const *>(elem));
+		sp = reinterpret_cast<char_type const *>(ce.field1);
 		if (sp == nullptr)
 		{
 			binfmt_malformed();
@@ -890,13 +1078,8 @@ inline void binfmt_emit_string(basic_binfmt_device<char_type> dev,
 	case binfmt_ct_c16view:
 	case binfmt_ct_c32view:
 	{
-		auto const v{binfmt_load<binfmt_str_view>(elem)};
-		if (v.ptr == nullptr)
-		{
-			binfmt_malformed();
-		}
-		sp = static_cast<char_type const *>(v.ptr);
-		sl = v.len;
+		sp = reinterpret_cast<char_type const *>(ce.field1);
+		sl = static_cast<::std::size_t>(ce.field2);
 		break;
 	}
 	default:
@@ -912,18 +1095,17 @@ inline void binfmt_emit_string(basic_binfmt_device<char_type> dev,
 
 template <::std::integral char_type>
 inline void binfmt_emit_pointer(basic_binfmt_device<char_type> dev,
-								binfmt_field<char_type> const &f, void const *elem) throws
+								binfmt_field<char_type> const &f,
+								binfmt_cookie_element const &ce) throws
 {
 	if (f.ctype != binfmt_ct_ptr && f.ctype != binfmt_ct_fptr)
 	{
 		binfmt_malformed();
 	}
-	auto const v{binfmt_load<void const *>(elem)};
 	char_type content[192];
 	::std::size_t prefix_len{};
 	auto const len{binfmt_format_uint<char_type>(content, false,
-												static_cast<::std::uintptr_t>(
-													reinterpret_cast<::std::uintptr_t>(v)),
+												static_cast<::std::uintptr_t>(ce.field1),
 												16, false, true, 0,
 												__builtin_addressof(prefix_len))};
 	binfmt_write_padded(dev, content, len, prefix_len, f.fill, f.fill_len,
@@ -932,26 +1114,30 @@ inline void binfmt_emit_pointer(basic_binfmt_device<char_type> dev,
 
 template <::std::integral char_type>
 [[gnu::always_inline]] inline void binfmt_emit_field(basic_binfmt_device<char_type> dev,
-							  binfmt_field<char_type> const &f, void const *elem) throws
+							  binfmt_field<char_type> const &f,
+							  binfmt_cookie_element const &ce) throws
 {
-	switch (f.type)
+	// `type` is optional on the wire ({} is `13 00`); fall back to the
+	// natural conversion for the C type.
+	auto const ty{f.type != 0u ? f.type : binfmt_default_type(f.ctype)};
+	switch (ty)
 	{
 	case binfmt_conv_d:
 	case binfmt_conv_u:
 	case binfmt_conv_o:
 	case binfmt_conv_x:
 	case binfmt_conv_b:
-		binfmt_emit_int(dev, f, elem);
+		binfmt_emit_int(dev, f, ty, ce);
 		return;
 	case binfmt_conv_c:
-		binfmt_emit_char(dev, f, elem);
+		binfmt_emit_char(dev, f, ce);
 		return;
 	case binfmt_conv_s:
-		binfmt_emit_string(dev, f, elem);
+		binfmt_emit_string(dev, f, ce);
 		return;
 	case binfmt_conv_p:
 	case binfmt_conv_addr:
-		binfmt_emit_pointer(dev, f, elem);
+		binfmt_emit_pointer(dev, f, ce);
 		return;
 	default:
 		// debug / mth / floats / ranges — not in the no-float core
@@ -974,6 +1160,84 @@ inline void binfmt_vprint_impl(basic_binfmt_device<char_type> dev,
 	::std::size_t next_arg{};
 	while (p.cur != p.end)
 	{
+		auto const c{p.cur};
+		auto const rem{static_cast<::std::size_t>(p.end - c)};
+		// fast path: memcmp the raw prefix against the shapes fmt/printf
+		// compile the overwhelming majority of formats to. A hit skips the
+		// uleb tag/param decode and the 72-byte field zero-init.
+		//
+		// Ordered by frequency: `13 00` ({} — no type on the wire) is by far
+		// the most common node, so it is the very first test and needs only a
+		// 2-byte compare. The literal arm is next (any `0a <len> <bytes>`),
+		// then the rarer fully-parameterised printf shapes.
+		if (rem >= 2 && c[0] == 0x13u && c[1] == 0x00u)
+		{
+			// {} — empty field param list; conversion from the cookie type.
+			if (rem >= sizeof(binfmt_pat_empty_nl) &&
+				::std::memcmp(c, binfmt_pat_empty_nl, sizeof(binfmt_pat_empty_nl)) == 0)
+			{
+				p.cur += sizeof(binfmt_pat_empty_nl);
+				binfmt_emit_default_node(dev, cookie, elements_count, next_arg);
+				char_type nl{static_cast<char_type>(u8'\n')};
+				binfmt_write_units(dev, __builtin_addressof(nl), 1);
+			}
+			else
+			{
+				p.cur += sizeof(binfmt_pat_empty);
+				binfmt_emit_default_node(dev, cookie, elements_count, next_arg);
+			}
+			continue;
+		}
+		if (rem >= 3 && c[0] == 0x0au)
+		{
+			// literal: 0a <len:1 byte> <bytes> — the second most common node.
+			auto const l{static_cast<::std::size_t>(static_cast<::std::uint_least8_t>(c[1]))};
+			if (l < 0x80u && rem >= 2 + l && l % sizeof(char_type) == 0)
+			{
+				p.cur += 2 + l;
+				binfmt_write_units(dev,
+								   reinterpret_cast<char_type const *>(c + 2),
+								   l / sizeof(char_type));
+				continue;
+			}
+		}
+		else if (c[0] == 0x13u)
+		{
+			if (rem >= sizeof(binfmt_pat_arg) &&
+				::std::memcmp(c, binfmt_pat_arg, sizeof(binfmt_pat_arg)) == 0)
+			{
+				// {N}: one arg param, index in the next byte (< 0x80).
+				auto const a{static_cast<::std::size_t>(static_cast<::std::uint_least8_t>(c[3]))};
+				if (a < 0x80u)
+				{
+					p.cur += sizeof(binfmt_pat_arg) + 1u;
+					if (a >= elements_count)
+					{
+						binfmt_malformed();
+					}
+					binfmt_emit_default_at(dev, binfmt_cookie_at(cookie, a));
+					continue;
+				}
+			}
+			if (rem >= sizeof(binfmt_pat_u64_nl) &&
+				::std::memcmp(c, binfmt_pat_u64_nl, sizeof(binfmt_pat_u64_nl)) == 0)
+			{
+				p.cur += sizeof(binfmt_pat_u64_nl);
+				binfmt_emit_plain_node(dev, cookie, elements_count, next_arg,
+									   binfmt_plain_u64_field<char_type>);
+				char_type nl{static_cast<char_type>(u8'\n')};
+				binfmt_write_units(dev, __builtin_addressof(nl), 1);
+				continue;
+			}
+			if (rem >= sizeof(binfmt_pat_u64) &&
+				::std::memcmp(c, binfmt_pat_u64, sizeof(binfmt_pat_u64)) == 0)
+			{
+				p.cur += sizeof(binfmt_pat_u64);
+				binfmt_emit_plain_node(dev, cookie, elements_count, next_arg,
+									   binfmt_plain_u64_field<char_type>);
+				continue;
+			}
+		}
 		auto const tag{binfmt_get_uleb(p)};
 		auto const code{static_cast<::std::uint_least32_t>(tag >> 3)};
 		auto const kind{static_cast<::std::uint_least32_t>(tag & 7u)};
@@ -1009,7 +1273,18 @@ inline void binfmt_vprint_impl(basic_binfmt_device<char_type> dev,
 			{
 				binfmt_malformed();
 			}
-			binfmt_emit_field(dev, f, binfmt_cookie_element(cookie, idx));
+			auto const &ce{binfmt_cookie_at(cookie, idx)};
+			auto const tag{static_cast<::std::uint_least32_t>(ce.typetag)};
+			if (tag != static_cast<::std::uint_least32_t>(binfmt_typetag::from_format))
+			{
+				// fmt `{}`: the type lives in the cookie, not the program.
+				if (tag == static_cast<::std::uint_least32_t>(binfmt_typetag::custom))
+				{
+					binfmt_malformed();
+				}
+				f.ctype = tag - 1u;
+			}
+			binfmt_emit_field(dev, f, ce);
 			break;
 		}
 		default:

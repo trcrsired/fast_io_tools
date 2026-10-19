@@ -147,6 +147,87 @@ inline constexpr ::std::uint_least32_t binfmt_ct_mthptr_m4{42};
 inline constexpr ::std::uint_least32_t binfmt_ct_error{43};
 
 // ---------------------------------------------------------------------------
+// cookie element — how the caller packs one type-erased argument
+// ---------------------------------------------------------------------------
+//
+// The caller passes `elements_count` of these, densely, as one array:
+//
+//     struct binfmt_cookie_element
+//     {
+//         binfmt_typetag typetag;
+//         ::std::size_t field1;
+//         ::std::size_t field2;
+//     };
+//
+// fmt's `{}` is type-erased at the call site, so the format *program* for
+// it carries no type; the argument's type therefore rides in typetag. The
+// value lives in field1/field2 — 16 contiguous bytes, so a 128-bit integer
+// or a {ptr, len} view loads straight out of the pair:
+//
+//     typetag 0   use the type embedded in the format program (C printf)
+//     typetag 1   caller-defined / opaque type
+//     typetag >=2 a standard type, equal to its binfmt_ct_* code + 1
+//
+// So u64 is typetag 6 (binfmt_ct_u64 == 5). There are no per-element
+// offsets: element i is simply cookie[i].
+
+enum class binfmt_typetag : ::std::uint_least32_t
+{
+	from_format = 0,
+	custom = 1,
+	i32 = binfmt_ct_i32 + 1u,
+	i64 = binfmt_ct_i64 + 1u,
+	i128 = binfmt_ct_i128 + 1u,
+	u32 = binfmt_ct_u32 + 1u,
+	u64 = binfmt_ct_u64 + 1u,
+	u128 = binfmt_ct_u128 + 1u,
+	f16 = binfmt_ct_f16 + 1u,
+	bf16 = binfmt_ct_bf16 + 1u,
+	f32 = binfmt_ct_f32 + 1u,
+	f64 = binfmt_ct_f64 + 1u,
+	f80 = binfmt_ct_f80 + 1u,
+	f128 = binfmt_ct_f128 + 1u,
+	cf16 = binfmt_ct_cf16 + 1u,
+	cbf16 = binfmt_ct_cbf16 + 1u,
+	cf32 = binfmt_ct_cf32 + 1u,
+	cf64 = binfmt_ct_cf64 + 1u,
+	cf80 = binfmt_ct_cf80 + 1u,
+	cf128 = binfmt_ct_cf128 + 1u,
+	c8 = binfmt_ct_c8 + 1u,
+	c16 = binfmt_ct_c16 + 1u,
+	c32 = binfmt_ct_c32 + 1u,
+	cebc = binfmt_ct_cebc + 1u,
+	c8ptr = binfmt_ct_c8ptr + 1u,
+	c16ptr = binfmt_ct_c16ptr + 1u,
+	c32ptr = binfmt_ct_c32ptr + 1u,
+	ebcptr = binfmt_ct_ebcptr + 1u,
+	gbptr = binfmt_ct_gbptr + 1u,
+	c8view = binfmt_ct_c8view + 1u,
+	c16view = binfmt_ct_c16view + 1u,
+	c32view = binfmt_ct_c32view + 1u,
+	ebcview = binfmt_ct_ebcview + 1u,
+	gbview = binfmt_ct_gbview + 1u,
+	ptr = binfmt_ct_ptr + 1u,
+	fptr = binfmt_ct_fptr + 1u,
+	fldptr_i = binfmt_ct_fldptr_i + 1u,
+	mthptr_i = binfmt_ct_mthptr_i + 1u,
+	fldptr_m1 = binfmt_ct_fldptr_m1 + 1u,
+	fldptr_m2 = binfmt_ct_fldptr_m2 + 1u,
+	mthptr_m1 = binfmt_ct_mthptr_m1 + 1u,
+	mthptr_m2 = binfmt_ct_mthptr_m2 + 1u,
+	mthptr_m3 = binfmt_ct_mthptr_m3 + 1u,
+	mthptr_m4 = binfmt_ct_mthptr_m4 + 1u,
+	error = binfmt_ct_error + 1u,
+};
+
+struct binfmt_cookie_element
+{
+	binfmt_typetag typetag;
+	::std::size_t field1;
+	::std::size_t field2;
+};
+
+// ---------------------------------------------------------------------------
 // align / sign operands
 // ---------------------------------------------------------------------------
 

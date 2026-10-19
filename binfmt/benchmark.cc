@@ -28,12 +28,9 @@ namespace
 inline constexpr char program[]{"\x13\x02\x61\x05\x69\x02\x0a\x01\x0a"};
 inline constexpr ::std::size_t program_len{sizeof(program) - 1};
 
-// cookie: [element-0 offset][element-0 bytes] — element 0 is the size_t
-struct alignas(::std::size_t) cookie_t
-{
-	::std::size_t off;
-	::std::size_t value;
-};
+// cookie: one element. typetag stays from_format (0) because this program
+// is the C printf front-end — the type (u64) is embedded in the program.
+using cookie_t = ::fast_io::binfmt::binfmt_cookie_element;
 
 constexpr ::std::size_t N{10000000};
 
@@ -46,13 +43,12 @@ void run() throws
 		auto oref{::fast_io::containers::io_strlike_ref(::fast_io::io_alias, out)};
 		auto dev{::fast_io::binfmt::binfmt_device_of(oref)};
 
-		cookie_t ck;
-		ck.off = sizeof(::std::size_t);
+		cookie_t ck{};
 
 		auto const t0{::fast_io::posix_clock_gettime(::fast_io::posix_clock_id::realtime)};
 		for (::std::size_t i{}; i != N; ++i)
 		{
-			ck.value = i;
+			ck.field1 = i;
 			::fast_io::binfmt::binfmt_vprint(dev, program, program_len, 1, &ck);
 		}
 		auto const t1{::fast_io::posix_clock_gettime(::fast_io::posix_clock_id::realtime)};
