@@ -615,8 +615,10 @@ inline void binfmt_pack_one(binfmt_cookie_element &ce, Arg const &a) noexcept
 		}
 		else
 		{
+			// <= 64-bit scalars carry their whole value in field1; the
+			// interpreter never reads field2 for these tags, so it stays
+			// indeterminate and we skip the store.
 			ce.field1 = static_cast<::std::size_t>(v);
-			ce.field2 = 0u;
 		}
 	}
 }
