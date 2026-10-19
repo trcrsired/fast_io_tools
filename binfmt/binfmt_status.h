@@ -670,7 +670,7 @@ inline void binfmt_run_interpreter(basic_binfmt_device<char_type> dev, char8_t c
 // ---------------------------------------------------------------------------
 
 template <bool line, typename stream_type, typename... Args>
-inline void binfmt_print_unlocked(stream_type &&stm, Args... args) throws
+inline void binfmt_print_unlocked(stream_type &&stm, Args const &...args) throws
 {
 	auto &&s{stm};
 	using char_type = typename ::std::remove_reference_t<decltype(s)>::output_char_type;
@@ -695,7 +695,7 @@ inline void binfmt_print_unlocked(stream_type &&stm, Args... args) throws
 	}
 	else if constexpr (k != 0u || line)
 	{
-		constexpr auto prog{binfmt_make_prog<line, char_type, Args...>()};
+		static constexpr auto prog{binfmt_make_prog<line, char_type, Args...>()};
 		constexpr ::std::size_t cookie_n{k != 0u ? k : 1u};
 		binfmt_cookie_element cookie[cookie_n] FAST_IO_INDETERMINATE;
 		template for (constexpr auto i : ::fast_io::details::index_array_range<0, k>)
@@ -707,7 +707,7 @@ inline void binfmt_print_unlocked(stream_type &&stm, Args... args) throws
 }
 
 template <bool line, typename output, typename... Args>
-inline void binfmt_print_all(binfmt_indirector<output> ind, Args... args) throws
+inline void binfmt_print_all(binfmt_indirector<output> ind, Args const &...args) throws
 {
 	if constexpr (sizeof...(Args) == 0u && !line)
 	{
@@ -748,7 +748,7 @@ inline constexpr auto indirect(stm &&out) throws
 }
 
 template <bool line, typename output, typename... Args>
-inline constexpr void status_print_define(binfmt_indirector<output> ind, Args... args) throws
+inline constexpr void status_print_define(binfmt_indirector<output> ind, Args const &...args) throws
 {
 	details::binfmt_print_all<line>(ind, args...);
 }
