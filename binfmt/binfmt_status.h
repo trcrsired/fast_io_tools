@@ -669,12 +669,9 @@ inline void binfmt_run_interpreter(basic_binfmt_device<char_type> dev, char8_t c
 // it degenerates to a single scatter write.
 // ---------------------------------------------------------------------------
 
-template <bool line, typename stream_type, typename... Args>
-inline void binfmt_print_unlocked(stream_type &&stm, Args const &...args) throws
+template <bool line, ::std::integral char_type, typename... Args>
+inline void binfmt_emit(basic_binfmt_device<char_type> dev, Args... args) throws
 {
-	auto &&s{stm};
-	using char_type = typename ::std::remove_reference_t<decltype(s)>::output_char_type;
-	auto const dev{binfmt_device_of(s)};
 	constexpr ::std::size_t k{sizeof...(Args)};
 	constexpr bool all_scatter{
 		k != 0u && (binfmt_is_scatter_of<char_type, ::std::remove_cvref_t<Args>> && ...)};
@@ -707,27 +704,27 @@ inline void binfmt_print_unlocked(stream_type &&stm, Args const &...args) throws
 }
 
 template <bool line, typename output, typename... Args>
-inline void binfmt_print_all(binfmt_indirector<output> ind, Args const &...args) throws
+inline void binfmt_print_all(binfmt_indirector<output> ind, Args... args) throws
 {
+	using stream_type = ::std::remove_cvref_t<output>;
 	if constexpr (sizeof...(Args) == 0u && !line)
 	{
 		return;
 	}
 	else if constexpr (::fast_io::operations::decay::defines::
-						   has_output_or_io_stream_mutex_ref_define<
-							   ::std::remove_cvref_t<output>>)
+						   has_output_or_io_stream_mutex_ref_define<stream_type>)
 	{
 		// the stream is lockable, so take the lock and run against the
 		// unlocked handle — the status hook is reached before fast_io's own
 		// locking path, so it has to do this itself.
 		::fast_io::operations::decay::stream_ref_decay_lock_guard lg{
 			::fast_io::operations::decay::output_stream_mutex_ref_decay(ind.handle)};
-		binfmt_print_unlocked<line>(
-			::fast_io::operations::decay::output_stream_unlocked_ref_decay(ind.handle), args...);
+		auto unlocked{::fast_io::operations::decay::output_stream_unlocked_ref_decay(ind.handle)};
+		binfmt_emit<line>(binfmt_device_of(unlocked), args...);
 	}
 	else
 	{
-		binfmt_print_unlocked<line>(ind.handle, args...);
+		binfmt_emit<line>(binfmt_device_of(ind.handle), args...);
 	}
 }
 
@@ -748,7 +745,7 @@ inline constexpr auto indirect(stm &&out) throws
 }
 
 template <bool line, typename output, typename... Args>
-inline constexpr void status_print_define(binfmt_indirector<output> ind, Args const &...args) throws
+inline constexpr void status_print_define(binfmt_indirector<output> ind, Args... args) throws
 {
 	details::binfmt_print_all<line>(ind, args...);
 }
