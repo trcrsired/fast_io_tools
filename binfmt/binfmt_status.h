@@ -29,13 +29,13 @@
 //
 // C++26 only: this uses `template for` and pack indexing.
 
-#include <array>
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
 
 #include <fast_io.h>
+#include <fast_io_dsal/array.h>
 
 #include "binfmt.h"
 #include "binfmt_print.h"
@@ -496,7 +496,7 @@ consteval ::std::size_t binfmt_prog_size() noexcept
 template <typename... Args>
 consteval auto binfmt_make_prog() noexcept
 {
-	::std::array<char8_t, binfmt_prog_size<Args...>()> a{};
+	::fast_io::array<char8_t, binfmt_prog_size<Args...>()> a{};
 	::std::size_t n{};
 	template for (constexpr auto i : ::fast_io::details::index_array_range<0, sizeof...(Args)>)
 	{
