@@ -62,36 +62,40 @@ ticks, mid 16.2 ms ≈ 1 tick).
 
 ### Small — 995 B, 64 connections
 
-| variant | rps | MB/s | p50 ms | p99 ms | CPU % | idle MiB | peak MiB | final MiB |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| linux-tuned | 41 838 | 51.7 | 1.47 | 2.05 | 78.6 | 3.1 | 27.7 | 27.7 |
-| wasm nomtg | 31 809 | 39.1 | 0.148 | 1.91 | 310.1 | 104.3 | 121.1 | 121.1 |
-| wasm memtag | 29 952 | 36.8 | 0.148 | 1.84 | 287.6 | 170.6 | 195.8 | 186.1 |
-| linux (default) | 12 830 | 15.9 | 4.86 | 6.24 | 92.1 | 3.1 | 12.6 | 4.6 |
-| node http-server | 11 118 | 14.7 | 5.23 | 10.80 | 126.0 | 71.9 | 242.7 | 162.5 |
-| wine (IOCP) | 2 025 | 2.50 | 31.52 | 36.55 | 46.7 | 9.8 | 28.7 | 24.6 |
+| variant | binary | rps | MB/s | p50 ms | p99 ms | CPU % | idle MiB | peak MiB | final MiB |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| linux-tuned | 102 KiB | 41 838 | 51.7 | 1.47 | 2.05 | 78.6 | 3.1 | 27.7 | 27.7 |
+| wasm nomtg | 134 KiB | 31 809 | 39.1 | 0.148 | 1.91 | 310.1 | 104.3 | 121.1 | 121.1 |
+| wasm memtag | 138 KiB | 29 952 | 36.8 | 0.148 | 1.84 | 287.6 | 170.6 | 195.8 | 186.1 |
+| linux (default) | 102 KiB | 12 830 | 15.9 | 4.86 | 6.24 | 92.1 | 3.1 | 12.6 | 4.6 |
+| node http-server | 122 KiB¹ | 11 118 | 14.7 | 5.23 | 10.80 | 126.0 | 71.9 | 242.7 | 162.5 |
+| wine (IOCP) | 109 KiB | 2 025 | 2.50 | 31.52 | 36.55 | 46.7 | 9.8 | 28.7 | 24.6 |
 
 ### Mid — 64 KiB, 32 connections
 
-| variant | rps | MB/s | p50 ms | p99 ms | CPU % |
-|---|---:|---:|---:|---:|---:|
-| linux-tuned | 42 600 | 2 802 | 0.74 | 0.94 | 165.2 |
-| linux (default) | 42 343 | 2 785 | 0.75 | 0.95 | 165.0 |
-| wasm nomtg | 27 794 | 1 828 | 0.190 | 2.36 | 355.6 |
-| wasm memtag | 26 116 | 1 718 | 0.190 | 2.61 | 332.1 |
-| node http-server | 9 113 | 600 | 3.17 | 7.25 | 173.6 |
-| wine (IOCP) | 1 972 | 130 | 16.22 | 18.72 | 48.4 |
+| variant | binary | rps | MB/s | p50 ms | p99 ms | CPU % |
+|---|---:|---:|---:|---:|---:|---:|
+| linux-tuned | 102 KiB | 42 600 | 2 802 | 0.74 | 0.94 | 165.2 |
+| linux (default) | 102 KiB | 42 343 | 2 785 | 0.75 | 0.95 | 165.0 |
+| wasm nomtg | 134 KiB | 27 794 | 1 828 | 0.190 | 2.36 | 355.6 |
+| wasm memtag | 138 KiB | 26 116 | 1 718 | 0.190 | 2.61 | 332.1 |
+| node http-server | 122 KiB¹ | 9 113 | 600 | 3.17 | 7.25 | 173.6 |
+| wine (IOCP) | 109 KiB | 1 972 | 130 | 16.22 | 18.72 | 48.4 |
 
 ### Large — 877 KiB, 16 connections
 
-| variant | rps | MB/s | p50 ms | p99 ms | CPU % |
-|---|---:|---:|---:|---:|---:|
-| linux-tuned | 7 771 | 6 817 | 1.91 | 4.12 | 87.5 |
-| linux (default) | 7 316 | 6 418 | 2.02 | 4.46 | 86.6 |
-| wasm nomtg | 3 999 | 3 509 | 2.35 | 26.97 | 507.9 |
-| wasm memtag | 3 900 | 3 422 | 2.29 | 25.16 | 487.2 |
-| node http-server | 1 720 | 1 510 | 8.74 | 14.63 | 183.1 |
-| wine (IOCP) | 719 | 631 | 22.21 | 25.74 | 57.1 |
+| variant | binary | rps | MB/s | p50 ms | p99 ms | CPU % |
+|---|---:|---:|---:|---:|---:|---:|
+| linux-tuned | 102 KiB | 7 771 | 6 817 | 1.91 | 4.12 | 87.5 |
+| linux (default) | 102 KiB | 7 316 | 6 418 | 2.02 | 4.46 | 86.6 |
+| wasm nomtg | 134 KiB | 3 999 | 3 509 | 2.35 | 26.97 | 507.9 |
+| wasm memtag | 138 KiB | 3 900 | 3 422 | 2.29 | 25.16 | 487.2 |
+| node http-server | 122 KiB¹ | 1 720 | 1 510 | 8.74 | 14.63 | 183.1 |
+| wine (IOCP) | 109 KiB | 719 | 631 | 22.21 | 25.74 | 57.1 |
+
+Binary is the stripped LTO ELF for the Linux rows, the `.wasm` module for
+WASI, the `.exe` for Wine, and node's `http-server` package (¹ node itself
+is 59 MiB).
 
 ## Other simple servers (same harness)
 
