@@ -102,24 +102,34 @@ sets nodelay), Rust `simple-http-server` and Simple-Web-Server left at
 their defaults. Throughput is mean rps at 64/32/16 conns; CPU is per size
 in percent of one core; peak RSS is `VmHWM`.
 
-| server (concurrency model) | binary | small rps | mid rps | large rps | large GB/s | p50 small | CPU % sm/mid/lg | peak RSS |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| cpp-httplib (8-thread pool) | 400 KiB | 121 567 | 54 146 | 6 267 | 5.5 | 0.33 ms | 432/347/336 | 10.8 MiB |
-| Go net/http FileServer (goroutines) | 8.4 MiB | 77 706 | 49 424 | 7 157 | 6.3 | 0.73 ms | 575/392/105 | 24.2 MiB |
-| Mongoose (single event loop) | 202 KiB | 63 673 | 11 298 | 1 168 | 1.0 | 0.99 ms | 84/81/85 | 3.9 MiB |
-| Simple-Web-Server (1 io_context thread) | 525 KiB | 54 021 | 4 452 | 332 | 0.3 | 1.11 ms | 88/96/97 | 21.5 MiB |
-| Python ThreadingHTTPServer (thread per conn) | 482 B | 5 813 | 5 506 | 3 308 | 2.9 | 6.86 ms | 133/144/315 | 47.8 MiB |
-| Rust simple-http-server (axum/tokio, 3 workers) | 3.3 MiB | 1 548 | 31 419 | 4 555 | 4.0 | 41.38 ms | 18/552/597 | 15.3 MiB |
-| *reference:* fast_io linux-tuned (1 event loop) | 102 KiB | 41 838 | 42 600 | 7 771 | 6.7 | 1.47 ms | 79/165/88 | 27.7 MiB |
-| *reference:* fast_io WASM untagged (thread pool) | 134 KiB | 31 809 | 27 794 | 3 999 | 3.5 | 0.15 ms | 310/356/508 | 121.1 MiB |
-| *reference:* node http-server | 122 KiB¹ | 11 118 | 9 113 | 1 720 | 1.5 | 5.23 ms | 126/174/183 | 242.7 MiB |
-| *reference:* Wine IOCP | 109 KiB | 2 025 | 1 972 | 719 | 0.6 | 31.52 ms | 47/48/57 | 28.7 MiB |
+| server (concurrency model) | binary | OS threads | small rps | mid rps | large rps | large GB/s | p50 small | CPU % sm/mid/lg | peak RSS |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| cpp-httplib (thread pool) | 400 KiB | 12→45 | 121 567 | 54 146 | 6 267 | 5.5 | 0.33 ms | 432/347/336 | 10.8 MiB |
+| Go net/http FileServer (goroutines) | 8.4 MiB | 6→18 | 77 706 | 49 424 | 7 157 | 6.3 | 0.73 ms | 575/392/105 | 24.2 MiB |
+| Mongoose (single event loop) | 202 KiB | 1 | 63 673 | 11 298 | 1 168 | 1.0 | 0.99 ms | 84/81/85 | 3.9 MiB |
+| Simple-Web-Server (1 io_context thread) | 525 KiB | 1 | 54 021 | 4 452 | 332 | 0.3 | 1.11 ms | 88/96/97 | 21.5 MiB |
+| Python ThreadingHTTPServer (thread per conn) | 482 B | 1→47 | 5 813 | 5 506 | 3 308 | 2.9 | 6.86 ms | 133/144/315 | 47.8 MiB |
+| Rust simple-http-server (axum/tokio, 3 workers) | 3.3 MiB | 4→7 | 1 548 | 31 419 | 4 555 | 4.0 | 41.38 ms | 18/552/597 | 15.3 MiB |
+| *reference:* fast_io linux-tuned (1 event loop) | 102 KiB | 1→5 | 41 838 | 42 600 | 7 771 | 6.7 | 1.47 ms | 79/165/88 | 27.7 MiB |
+| *reference:* fast_io WASM untagged (thread pool) | 134 KiB | 5→20 | 31 809 | 27 794 | 3 999 | 3.5 | 0.15 ms | 310/356/508 | 121.1 MiB |
+| *reference:* node http-server | 122 KiB¹ | 7→11 | 11 118 | 9 113 | 1 720 | 1.5 | 5.23 ms | 126/174/183 | 242.7 MiB |
+| *reference:* Wine IOCP | 109 KiB | 1 | 2 025 | 1 972 | 719 | 0.6 | 31.52 ms | 47/48/57 | 28.7 MiB |
 
 Binary is the linked artifact (fast_io's Linux and Wine builds are
 LTO+stripped; the others are not), the `.wasm` module for WASI, and the
 server script/package for interpreted servers. The fast_io WASM memtag
 build is 138 KiB. ¹ Node's own executable is 59 MiB; CPython's
 interpreter is excluded from the Python row.
+
+OS threads are `Threads:` in `/proc/<pid>/status`, sampled every 200 ms
+from just after listen until 5 s of the 64-connection small load, shown as
+idle→peak (a single number when it did not change). For WAVM and Wine this
+is the host process. Goroutines are not threads: Go's 18 are runtime
+threads (M's), not its ~64 goroutines. cpp-httplib's default pool starts at
+`max(8, cores-1)` = 11 workers and grows to 4× that (44) under 64
+keep-alive connections; Python is one thread per connection. fast_io's
+io_uring row adds up to 4 kernel `iou-wrk-*` threads for ops the ring punts
+to io-wq.
 
 - **Aggregate winner is multi-threaded**: cpp-httplib leads small and mid
   (54k vs fast_io's 42.6k on mid); on large, fast_io's spliced path now
@@ -297,10 +307,11 @@ python3 harness/bench.py httplib 19111
 - Single machine; load generator shares cores with the server, so absolute
   rps is a lower bound for all rows. Comparisons are same-machine and stable
   across the two runs (spread < 8 % except where noted).
-- The other-server rows use each project's default concurrency (8 httplib
-  threads, 1 Mongoose loop, 1 Simple-Web-Server thread, Python thread per
-  connection, all Go cores, axum/tokio workers). Aggregate rps therefore
-  reflects thread count as much as per-request cost.
+- The other-server rows use each project's default concurrency (httplib's
+  `max(8, cores-1)` pool growing to 4×, 1 Mongoose loop, 1 Simple-Web-Server
+  thread, Python thread per connection, all Go cores, axum/tokio workers).
+  Aggregate rps therefore reflects thread count as much as per-request
+  cost.
 - WAVM/Wine RSS is the host process, not guest/Windows accounting.
 - No production workload: 1 KiB–877 KiB static files, no TLS, no logging,
   no disk pressure (files are cached).
