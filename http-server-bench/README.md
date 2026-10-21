@@ -102,18 +102,24 @@ sets nodelay), Rust `simple-http-server` and Simple-Web-Server left at
 their defaults. Throughput is mean rps at 64/32/16 conns; CPU is per size
 in percent of one core; peak RSS is `VmHWM`.
 
-| server (concurrency model) | small rps | mid rps | large rps | large GB/s | p50 small | CPU % sm/mid/lg | peak RSS |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| cpp-httplib (8-thread pool) | 121 567 | 54 146 | 6 267 | 5.5 | 0.33 ms | 432/347/336 | 10.8 MiB |
-| Go net/http FileServer (goroutines) | 77 706 | 49 424 | 7 157 | 6.3 | 0.73 ms | 575/392/105 | 24.2 MiB |
-| Mongoose (single event loop) | 63 673 | 11 298 | 1 168 | 1.0 | 0.99 ms | 84/81/85 | 3.9 MiB |
-| Simple-Web-Server (1 io_context thread) | 54 021 | 4 452 | 332 | 0.3 | 1.11 ms | 88/96/97 | 21.5 MiB |
-| Python ThreadingHTTPServer (thread per conn) | 5 813 | 5 506 | 3 308 | 2.9 | 6.86 ms | 133/144/315 | 47.8 MiB |
-| Rust simple-http-server (axum/tokio, 3 workers) | 1 548 | 31 419 | 4 555 | 4.0 | 41.38 ms | 18/552/597 | 15.3 MiB |
-| *reference:* fast_io linux-tuned (1 event loop) | 41 838 | 42 600 | 7 771 | 6.7 | 1.47 ms | 79/165/88 | 27.7 MiB |
-| *reference:* fast_io WASM untagged (thread pool) | 31 809 | 27 794 | 3 999 | 3.5 | 0.15 ms | 310/356/508 | 121.1 MiB |
-| *reference:* node http-server | 11 118 | 9 113 | 1 720 | 1.5 | 5.23 ms | 126/174/183 | 242.7 MiB |
-| *reference:* Wine IOCP | 2 025 | 1 972 | 719 | 0.6 | 31.52 ms | 47/48/57 | 28.7 MiB |
+| server (concurrency model) | binary | small rps | mid rps | large rps | large GB/s | p50 small | CPU % sm/mid/lg | peak RSS |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| cpp-httplib (8-thread pool) | 400 KiB | 121 567 | 54 146 | 6 267 | 5.5 | 0.33 ms | 432/347/336 | 10.8 MiB |
+| Go net/http FileServer (goroutines) | 8.4 MiB | 77 706 | 49 424 | 7 157 | 6.3 | 0.73 ms | 575/392/105 | 24.2 MiB |
+| Mongoose (single event loop) | 202 KiB | 63 673 | 11 298 | 1 168 | 1.0 | 0.99 ms | 84/81/85 | 3.9 MiB |
+| Simple-Web-Server (1 io_context thread) | 525 KiB | 54 021 | 4 452 | 332 | 0.3 | 1.11 ms | 88/96/97 | 21.5 MiB |
+| Python ThreadingHTTPServer (thread per conn) | 482 B | 5 813 | 5 506 | 3 308 | 2.9 | 6.86 ms | 133/144/315 | 47.8 MiB |
+| Rust simple-http-server (axum/tokio, 3 workers) | 3.3 MiB | 1 548 | 31 419 | 4 555 | 4.0 | 41.38 ms | 18/552/597 | 15.3 MiB |
+| *reference:* fast_io linux-tuned (1 event loop) | 102 KiB | 41 838 | 42 600 | 7 771 | 6.7 | 1.47 ms | 79/165/88 | 27.7 MiB |
+| *reference:* fast_io WASM untagged (thread pool) | 134 KiB | 31 809 | 27 794 | 3 999 | 3.5 | 0.15 ms | 310/356/508 | 121.1 MiB |
+| *reference:* node http-server | 122 KiB¹ | 11 118 | 9 113 | 1 720 | 1.5 | 5.23 ms | 126/174/183 | 242.7 MiB |
+| *reference:* Wine IOCP | 109 KiB | 2 025 | 1 972 | 719 | 0.6 | 31.52 ms | 47/48/57 | 28.7 MiB |
+
+Binary is the linked artifact (fast_io's Linux and Wine builds are
+LTO+stripped; the others are not), the `.wasm` module for WASI, and the
+server script/package for interpreted servers. The fast_io WASM memtag
+build is 138 KiB. ¹ Node's own executable is 59 MiB; CPython's
+interpreter is excluded from the Python row.
 
 - **Aggregate winner is multi-threaded**: cpp-httplib leads small and mid
   (54k vs fast_io's 42.6k on mid); on large, fast_io's spliced path now
