@@ -1,0 +1,20 @@
+{"variant": "python", "cmd": ["python3", "/tmp/bench/others/py_http.py", "19113", "/tmp/bench/root"], "port": 19113, "pid": 598647, "idle_rss": 20410368, "small": [{"requests": 87169.0, "duration_s": 15.0, "rps": 5811.3, "bytes": 102950123.0, "mbps": 6.86, "mean_ms": 9.228, "p50_ms": 6.652, "p90_ms": 13.636, "p99_ms": 21.384, "p999_ms": 30.761, "max_ms": 13663.585, "errors": 0.0, "connects": 64.0, "client_cpu_s": 1.336, "samples": 87169.0, "server_cpu_pct": 133.33333333333331, "server_rss_before": 38125568, "server_rss_after": 35811328}, {"requests": 87206.0, "duration_s": 15.0, "rps": 5813.7, "bytes": 102993262.0, "mbps": 6.87, "mean_ms": 9.725, "p50_ms": 7.073, "p90_ms": 14.452, "p99_ms": 22.594, "p999_ms": 31.747, "max_ms": 13489.816, "errors": 0.0, "connects": 64.0, "client_cpu_s": 1.328, "samples": 87206.0, "server_cpu_pct": 133.26666666666668, "server_rss_before": 35811328, "server_rss_after": 38223872}], "mid": [{"requests": 82954.0, "duration_s": 15.0, "rps": 5530.3, "bytes": 5453315442.0, "mbps": 363.55, "mean_ms": 5.501, "p50_ms": 5.11, "p90_ms": 9.02, "p99_ms": 13.199, "p999_ms": 16.982, "max_ms": 846.479, "errors": 0.0, "connects": 32.0, "client_cpu_s": 2.019, "samples": 82954.0, "server_cpu_pct": 143.26666666666665, "server_rss_before": 38223872, "server_rss_after": 49238016}, {"requests": 82223.0, "duration_s": 15.0, "rps": 5481.5, "bytes": 5405259827.0, "mbps": 360.35, "mean_ms": 5.517, "p50_ms": 5.127, "p90_ms": 9.121, "p99_ms": 13.315, "p999_ms": 16.977, "max_ms": 859.06, "errors": 0.0, "connects": 32.0, "client_cpu_s": 2.002, "samples": 82223.0, "server_cpu_pct": 144.53333333333333, "server_rss_before": 49238016, "server_rss_after": 43782144}], "large": [{"requests": 50751.0, "duration_s": 15.0, "rps": 3383.4, "bytes": 44526009648.0, "mbps": 2968.4, "mean_ms": 4.554, "p50_ms": 4.521, "p90_ms": 6.253, "p99_ms": 7.909, "p999_ms": 9.321, "max_ms": 211.28, "errors": 0.0, "connects": 16.0, "client_cpu_s": 8.275, "samples": 50751.0, "server_cpu_pct": 310.79999999999995, "server_rss_before": 43438080, "server_rss_after": 43384832}, {"requests": 48487.0, "duration_s": 15.0, "rps": 3232.5, "bytes": 42539427773.0, "mbps": 2835.96, "mean_ms": 4.751, "p50_ms": 4.732, "p90_ms": 6.543, "p99_ms": 8.269, "p999_ms": 9.708, "max_ms": 215.371, "errors": 0.0, "connects": 16.0, "client_cpu_s": 7.893, "samples": 48487.0, "server_cpu_pct": 318.53333333333336, "server_rss_before": 42860544, "server_rss_after": 39968768}], "peak_rss": 50167808, "final_rss": 39968768}
+"mbps": 2835.96,
+   "mean_ms": 4.751,
+   "p50_ms": 4.732,
+   "p90_ms": 6.543,
+   "p99_ms": 8.269,
+   "p999_ms": 9.708,
+   "max_ms": 215.371,
+   "errors": 0.0,
+   "connects": 16.0,
+   "client_cpu_s": 7.893,
+   "samples": 48487.0,
+   "server_cpu_pct": 318.53333333333336,
+   "server_rss_before": 42860544,
+   "server_rss_after": 39968768
+  }
+ ],
+ "peak_rss": 50167808,
+ "final_rss": 39968768
+}

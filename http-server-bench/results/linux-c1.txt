@@ -1,0 +1,3 @@
+single-connection keep-alive, 995 B index.html
+requests=193861 duration_s=8.000 rps=24232.6 bytes=239612196 mbps=29.95 mean_ms=0.035 p50_ms=0.034 p90_ms=0.042 p99_ms=0.054 p999_ms=0.099 max_ms=0.827 errors=0 connects=1 client_cpu_s=2.621 samples=193861
+requests=266453 duration_s=8.000 rps=33306.6 bytes=329347476 mbps=41.17 mean_ms=1.916 p50_ms=1.913 p90_ms=2.183 p99_ms=2.496 p999_ms=2.893 max_ms=19.031 errors=0 connects=64 client_cpu_s=2.843 samples=266453
