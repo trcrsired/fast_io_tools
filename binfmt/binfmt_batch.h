@@ -595,13 +595,132 @@ inline void binfmt_batch_emit_pointer(binfmt_batch_writer<char_type> &w,
 						f.flag_zero, true);
 }
 
+template <::std::integral char_type>
+inline void binfmt_batch_put_float_units(binfmt_batch_writer<char_type> &w,
+										 char const *p, ::std::size_t n) throws
+{
+	if constexpr (::std::same_as<char_type, char>)
+	{
+		binfmt_batch_put(w, reinterpret_cast<char_type const *>(p), n);
+	}
+	else
+	{
+		char_type buf[128];
+		while (n != 0)
+		{
+			auto const k{n < 128u ? n : 128u};
+			for (::std::size_t i{}; i != k; ++i)
+			{
+				buf[i] = static_cast<char_type>(static_cast<unsigned char>(p[i]));
+			}
+			binfmt_batch_put(w, buf, k);
+			p += k;
+			n -= k;
+		}
+	}
+}
+
+template <::std::integral char_type>
+inline void binfmt_batch_float_padded(binfmt_batch_writer<char_type> &w,
+									  char const *content, binfmt_float_result res,
+									  char_type const *fill, ::std::size_t fill_len,
+									  ::std::size_t width, ::std::uint_least32_t align,
+									  bool flag_zero) throws
+{
+	if constexpr (::std::same_as<char_type, char>)
+	{
+		binfmt_batch_padded(w, reinterpret_cast<char_type const *>(content), res.len,
+							res.prefix_len, fill, fill_len, width, align, flag_zero,
+							!res.nonfinite);
+	}
+	else
+	{
+		auto const pad{width > res.len ? width - res.len : 0u};
+		char_type space{static_cast<char_type>(u8' ')};
+		if (fill_len == 0)
+		{
+			fill = __builtin_addressof(space);
+			fill_len = 1;
+		}
+		if (pad == 0)
+		{
+			binfmt_batch_put_float_units(w, content, res.len);
+			return;
+		}
+		if (flag_zero && !res.nonfinite && align != binfmt_align_left)
+		{
+			binfmt_batch_put_float_units(w, content, res.prefix_len);
+			char_type fillbuf[64];
+			for (auto &c : fillbuf)
+			{
+				c = static_cast<char_type>(u8'0');
+			}
+			auto left{pad};
+			while (left != 0)
+			{
+				auto const k{left < 64u ? left : 64u};
+				binfmt_batch_put(w, fillbuf, k);
+				left -= k;
+			}
+			binfmt_batch_put_float_units(w, content + res.prefix_len, res.len - res.prefix_len);
+			return;
+		}
+		auto put_fill{[&](::std::size_t count) throws {
+			while (count != 0)
+			{
+				auto const k{count < fill_len ? count : fill_len};
+				binfmt_batch_put(w, fill, k);
+				count -= k;
+			}
+		}};
+		switch (align)
+		{
+		case binfmt_align_left:
+			binfmt_batch_put_float_units(w, content, res.len);
+			put_fill(pad);
+			break;
+		case binfmt_align_center:
+		{
+			auto const left{pad / 2};
+			put_fill(left);
+			binfmt_batch_put_float_units(w, content, res.len);
+			put_fill(pad - left);
+			break;
+		}
+		default:
+			put_fill(pad);
+			binfmt_batch_put_float_units(w, content, res.len);
+			break;
+		}
+	}
+}
+
+template <::std::integral char_type>
+inline void binfmt_batch_emit_float(binfmt_batch_writer<char_type> &w,
+									binfmt_field const &f, ::std::uint_least32_t ty,
+									binfmt_cookie_element const &ce) throws
+{
+	char content[binfmt_float_capacity];
+	binfmt_float_request const r{
+		.bits0 = ce.field1,
+		.bits1 = ce.field2,
+		.ctype = f.ctype,
+		.conv = ty,
+		.sign = f.sign,
+		.prec = f.prec_from_cookie ? static_cast<::std::size_t>(ce.field2) : f.prec,
+		.upper = f.flag_upper,
+		.showbase = ty == binfmt_conv_hexf || ty == binfmt_conv_hexfp};
+	auto const res{binfmt_float_format(content, r)};
+	binfmt_batch_float_padded(w, content, res, binfmt_field_fill<char_type>(f),
+							  binfmt_field_fill_len<char_type>(f), f.width, f.align,
+							  f.flag_zero);
+}
+
 template <binfmt_policy policy, ::std::integral char_type>
 inline void binfmt_batch_emit_field(binfmt_batch_writer<char_type> &w,
 									binfmt_field const &f,
 									binfmt_cookie_element const &ce) throws
 {
-	static_assert(!policy.floating_point,
-				  "binfmt: floating-point fields are not implemented yet");
 	auto const ty{f.type != 0u ? f.type : binfmt_default_type(f.ctype)};
 	switch (ty)
 	{
@@ -622,6 +741,22 @@ inline void binfmt_batch_emit_field(binfmt_batch_writer<char_type> &w,
 	case binfmt_conv_addr:
 		binfmt_batch_emit_pointer(w, f, ce);
 		return;
+	case binfmt_conv_dec:
+	case binfmt_conv_decp:
+	case binfmt_conv_fix:
+	case binfmt_conv_fixp:
+	case binfmt_conv_sci:
+	case binfmt_conv_scip:
+	case binfmt_conv_gen:
+	case binfmt_conv_genp:
+	case binfmt_conv_hexf:
+	case binfmt_conv_hexfp:
+		if constexpr (policy.floating_point)
+		{
+			binfmt_batch_emit_float(w, f, ty, ce);
+			return;
+		}
+		binfmt_malformed();
 	default:
 		binfmt_malformed();
 	}
@@ -829,5 +964,17 @@ inline void u32binfmt_vprint_batched(u32binfmt_device dev, void const *base,
 {
 	details::binfmt_vprint_batched_impl<policy>(dev, base, len, elements_count, cookie);
 }
+
+// floating-point-enabled batched entries, defined once in binfmt_float.cc.
+void binfmt_status_batch_vprint_float(binfmt_device dev, void const *base, ::std::size_t len,
+									  ::std::size_t elements_count, void const *cookie) throws;
+void wbinfmt_status_batch_vprint_float(wbinfmt_device dev, void const *base, ::std::size_t len,
+									   ::std::size_t elements_count, void const *cookie) throws;
+void u8binfmt_status_batch_vprint_float(u8binfmt_device dev, void const *base, ::std::size_t len,
+										::std::size_t elements_count, void const *cookie) throws;
+void u16binfmt_status_batch_vprint_float(u16binfmt_device dev, void const *base, ::std::size_t len,
+										 ::std::size_t elements_count, void const *cookie) throws;
+void u32binfmt_status_batch_vprint_float(u32binfmt_device dev, void const *base, ::std::size_t len,
+										 ::std::size_t elements_count, void const *cookie) throws;
 
 } // namespace fast_io::binfmt

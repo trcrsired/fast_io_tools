@@ -61,12 +61,37 @@ void u16binfmt_status_vprint(u16binfmt_device dev, void const *base, ::std::size
 void u32binfmt_status_vprint(u32binfmt_device dev, void const *base, ::std::size_t len,
 							 ::std::size_t elements_count, void const *cookie) throws;
 
+// floating-point-enabled twin entries — defined once in binfmt_float.cc
+// (libbinfmt_float), the only image that carries the float helper and its
+// fast_io floating-module dependency.
+void binfmt_status_vprint_float(binfmt_device dev, void const *base, ::std::size_t len,
+								::std::size_t elements_count, void const *cookie) throws;
+void wbinfmt_status_vprint_float(wbinfmt_device dev, void const *base, ::std::size_t len,
+								 ::std::size_t elements_count, void const *cookie) throws;
+void u8binfmt_status_vprint_float(u8binfmt_device dev, void const *base, ::std::size_t len,
+								  ::std::size_t elements_count, void const *cookie) throws;
+void u16binfmt_status_vprint_float(u16binfmt_device dev, void const *base, ::std::size_t len,
+								   ::std::size_t elements_count, void const *cookie) throws;
+void u32binfmt_status_vprint_float(u32binfmt_device dev, void const *base, ::std::size_t len,
+								   ::std::size_t elements_count, void const *cookie) throws;
+
 // ---------------------------------------------------------------------------
 // the indirector — bound to a real fast_io output stream
 // ---------------------------------------------------------------------------
 
 template <typename stm>
 struct binfmt_indirector
+{
+	using handle_type = stm;
+	using output_char_type = typename handle_type::output_char_type;
+	handle_type handle{};
+};
+
+// the floating-point-enabled indirector. Same shape, distinct type so it
+// selects the status hook that dispatches to the float interpreter entries
+// (binfmt_float.cc) instead of the integer/string-only ones.
+template <typename stm>
+struct binfmt_float_indirector
 {
 	using handle_type = stm;
 	using output_char_type = typename handle_type::output_char_type;
@@ -98,6 +123,9 @@ struct binfmt_arg_desc
 	bool group{};
 	bool upper{};
 	bool plus{};
+	// float precision manipulators: the precision is a runtime value, so the
+	// program carries a marker and the element's field2 carries the value.
+	bool prec_cookie{};
 };
 
 // integral ctype tag (binfmt_ct_* + 1), chosen by size and signedness
@@ -134,6 +162,50 @@ consteval ::std::uint_least32_t binfmt_integral_tag() noexcept
 		{
 			return static_cast<::std::uint_least32_t>(binfmt_typetag::u128);
 		}
+	}
+}
+
+// float ctype tag (binfmt_ct_* + 1), chosen by the IEC 559 mantissa width.
+// 0 means "no native wire shape" — the argument rides the custom path.
+template <typename T>
+consteval ::std::uint_least32_t binfmt_float_tag() noexcept
+{
+	using U = ::std::remove_cv_t<T>;
+	if constexpr (::fast_io::details::my_floating_point<U>)
+	{
+		constexpr ::std::size_t mbits{::fast_io::details::iec559_traits<U>::mbits};
+		if constexpr (mbits == 10u)
+		{
+			return static_cast<::std::uint_least32_t>(binfmt_typetag::f16);
+		}
+		else if constexpr (mbits == 7u)
+		{
+			return static_cast<::std::uint_least32_t>(binfmt_typetag::bf16);
+		}
+		else if constexpr (mbits == 23u)
+		{
+			return static_cast<::std::uint_least32_t>(binfmt_typetag::f32);
+		}
+		else if constexpr (mbits == 52u)
+		{
+			return static_cast<::std::uint_least32_t>(binfmt_typetag::f64);
+		}
+		else if constexpr (mbits == 63u)
+		{
+			return static_cast<::std::uint_least32_t>(binfmt_typetag::f80);
+		}
+		else if constexpr (mbits == 112u)
+		{
+			return static_cast<::std::uint_least32_t>(binfmt_typetag::f128);
+		}
+		else
+		{
+			return 0u;
+		}
+	}
+	else
+	{
+		return 0u;
 	}
 }
 
@@ -181,8 +253,95 @@ constexpr ::std::uint_least32_t binfmt_default_conv(::std::uint_least32_t tag) n
 	case static_cast<::std::uint_least32_t>(binfmt_typetag::c16):
 	case static_cast<::std::uint_least32_t>(binfmt_typetag::c32):
 		return binfmt_conv_c;
+	case static_cast<::std::uint_least32_t>(binfmt_typetag::f16):
+	case static_cast<::std::uint_least32_t>(binfmt_typetag::bf16):
+	case static_cast<::std::uint_least32_t>(binfmt_typetag::f32):
+	case static_cast<::std::uint_least32_t>(binfmt_typetag::f64):
+	case static_cast<::std::uint_least32_t>(binfmt_typetag::f80):
+	case static_cast<::std::uint_least32_t>(binfmt_typetag::f128):
+		return binfmt_conv_dec;
 	default:
 		return 0u;
+	}
+}
+
+// a float scalar manipulator: decode the conversion and flags. `precision`
+// says the call site is a precision manipulator, whose precision is a runtime
+// value carried in the cookie element rather than the program. 16-byte floats
+// need both cookie words for their value bits, so a precision call on those
+// stays dynamic.
+template <::fast_io::manipulators::scalar_flags flags, typename T, bool precision>
+consteval binfmt_arg_desc binfmt_float_desc() noexcept
+{
+	binfmt_arg_desc d{};
+	if constexpr (!::fast_io::details::my_floating_point<T>)
+	{
+		return d;
+	}
+	else if constexpr (flags.base != 10u || flags.alphabet || flags.comma ||
+					   flags.percentage != ::fast_io::manipulators::percentage_flag::none ||
+					   flags.time_flag != ::fast_io::manipulators::lc_time_flag::none ||
+					   flags.line || (precision && sizeof(::std::remove_cv_t<T>) > 8u))
+	{
+		return d;
+	}
+	else
+	{
+		constexpr auto tag{binfmt_float_tag<T>()};
+		if constexpr (tag == 0u)
+		{
+			return d;
+		}
+		else
+		{
+			d.kind = binfmt_arg_kind::scalar;
+			d.tag = tag;
+			switch (flags.floating)
+			{
+			case ::fast_io::manipulators::floating_format::decimal:
+				d.conv = precision ? binfmt_conv_decp : binfmt_conv_dec;
+				break;
+			case ::fast_io::manipulators::floating_format::fixed:
+				d.conv = precision ? binfmt_conv_fixp : binfmt_conv_fix;
+				break;
+			case ::fast_io::manipulators::floating_format::scientific:
+				d.conv = precision ? binfmt_conv_scip : binfmt_conv_sci;
+				break;
+			case ::fast_io::manipulators::floating_format::general:
+				d.conv = precision ? binfmt_conv_genp : binfmt_conv_gen;
+				break;
+			case ::fast_io::manipulators::floating_format::hexfloat:
+				d.conv = precision ? binfmt_conv_hexfp : binfmt_conv_hexf;
+				// only hexfloat has a base prefix to show
+				d.alt = flags.showbase;
+				break;
+			default:
+				d.kind = binfmt_arg_kind::dynamic;
+				return d;
+			}
+			// fast_io renders a float's digits, exponent letter and base
+			// prefix independently; the interpreter applies one uppercase
+			// pass. The public manipulators flip all of them together, so
+			// this is exact for every reachable combination.
+			d.upper = flags.uppercase || flags.uppercase_e || flags.uppercase_showbase;
+			d.plus = flags.showpos;
+			d.prec_cookie = precision;
+			switch (flags.placement)
+			{
+			case ::fast_io::manipulators::scalar_placement::left:
+				d.align = binfmt_align_left;
+				break;
+			case ::fast_io::manipulators::scalar_placement::right:
+				d.align = binfmt_align_right;
+				break;
+			case ::fast_io::manipulators::scalar_placement::middle:
+				d.align = binfmt_align_center;
+				break;
+			default:
+				break;
+			}
+			return d;
+		}
 	}
 }
 
@@ -193,7 +352,11 @@ template <::fast_io::manipulators::scalar_flags flags, typename T>
 consteval binfmt_arg_desc binfmt_scalar_desc() noexcept
 {
 	binfmt_arg_desc d{};
-	if constexpr (!::std::integral<T> ||
+	if constexpr (::fast_io::details::my_floating_point<T>)
+	{
+		return binfmt_float_desc<flags, T, false>();
+	}
+	else if constexpr (!::std::integral<T> ||
 				  flags.alphabet ||
 				  flags.percentage != ::fast_io::manipulators::percentage_flag::none ||
 				  flags.floating != ::fast_io::manipulators::floating_format::fixed ||
@@ -293,6 +456,14 @@ struct binfmt_arg_traits<::fast_io::manipulators::scalar_manip_t<flags, T>>
 	inline static constexpr binfmt_arg_desc desc{binfmt_scalar_desc<flags, T>()};
 };
 
+// a precision float manipulator: the value is still a scalar, but the
+// precision rides in cookie field2 (wire marker binfmt_fp_prec_cookie).
+template <::fast_io::manipulators::scalar_flags flags, typename T>
+struct binfmt_arg_traits<::fast_io::manipulators::scalar_manip_precision_t<flags, T>>
+{
+	inline static constexpr binfmt_arg_desc desc{binfmt_float_desc<flags, T, true>()};
+};
+
 // a single-character view (a one-character literal like "\n") is a native
 // character field, not an opaque custom element.
 template <typename C>
@@ -369,7 +540,7 @@ constexpr void binfmt_put_uleb(char8_t *b, ::std::size_t &n,
 constexpr bool binfmt_is_plain(binfmt_arg_desc const &d) noexcept
 {
 	return d.conv == binfmt_default_conv(d.tag) && d.align == 0u && !d.alt && !d.zero &&
-		   !d.group && !d.upper && !d.plus;
+		   !d.group && !d.upper && !d.plus && !d.prec_cookie;
 }
 
 constexpr ::std::size_t binfmt_field_node_size(binfmt_arg_desc const &d) noexcept
@@ -405,7 +576,12 @@ constexpr ::std::size_t binfmt_field_node_size(binfmt_arg_desc const &d) noexcep
 	}
 	if (d.upper)
 	{
-		++s;
+		// flag params carry no value: the tag itself is the whole payload.
+		s += binfmt_uleb_len((binfmt_fp_flag_upper << 3) | binfmt_kind_none);
+	}
+	if (d.prec_cookie)
+	{
+		s += binfmt_uleb_len((binfmt_fp_prec_cookie << 3) | binfmt_kind_none);
 	}
 	return s;
 }
@@ -448,6 +624,10 @@ constexpr void binfmt_emit_field_node(char8_t *b, ::std::size_t &n,
 	{
 		++cnt;
 	}
+	if (d.prec_cookie)
+	{
+		++cnt;
+	}
 	b[n++] = static_cast<char8_t>((binfmt_op_field << 3) | binfmt_kind_list);
 	binfmt_put_uleb(b, n, cnt);
 	if (d.conv != 0u)
@@ -479,7 +659,11 @@ constexpr void binfmt_emit_field_node(char8_t *b, ::std::size_t &n,
 	}
 	if (d.upper)
 	{
-		b[n++] = static_cast<char8_t>((binfmt_fp_flag_upper << 3) | binfmt_kind_none);
+		binfmt_put_uleb(b, n, (binfmt_fp_flag_upper << 3) | binfmt_kind_none);
+	}
+	if (d.prec_cookie)
+	{
+		binfmt_put_uleb(b, n, (binfmt_fp_prec_cookie << 3) | binfmt_kind_none);
 	}
 }
 
@@ -605,7 +789,25 @@ inline void binfmt_pack_one(binfmt_cookie_element &ce, Arg const &a) noexcept
 	{
 		ce.typetag = static_cast<::fast_io::binfmt::binfmt_typetag>(d.tag);
 		auto const v{a.reference};
-		if constexpr (sizeof(v) > 8u)
+		using V = ::std::remove_cvref_t<decltype(v)>;
+		if constexpr (::fast_io::details::my_floating_point<V>)
+		{
+			// a float is a bit pattern, not an integer value: copy its raw
+			// bytes. 16-byte formats spread over field1/field2 in memory
+			// order, which the helper's memcpy decode reconstructs exactly.
+			::std::memcpy(__builtin_addressof(ce.field1), __builtin_addressof(v), sizeof(v));
+			if constexpr (sizeof(v) > 8u)
+			{
+				::std::memcpy(__builtin_addressof(ce.field2),
+							  reinterpret_cast<char const *>(__builtin_addressof(v)) + 8u,
+							  sizeof(v) - 8u);
+			}
+			if constexpr (d.prec_cookie)
+			{
+				ce.field2 = a.precision;
+			}
+		}
+		else if constexpr (sizeof(v) > 8u)
 		{
 #if defined(__SIZEOF_INT128__)
 			auto const uv{static_cast<unsigned __int128>(v)};
@@ -664,6 +866,38 @@ inline void binfmt_run_interpreter(basic_binfmt_device<char_type> dev, char8_t c
 	}
 }
 
+// the same dispatch for programs that may carry binary float fields.
+template <::std::integral char_type>
+inline void binfmt_run_interpreter_float(basic_binfmt_device<char_type> dev,
+										 char8_t const *prog, ::std::size_t prog_len,
+										 ::std::size_t elements_count, void const *cookie) throws
+{
+	if constexpr (::std::same_as<char_type, char>)
+	{
+		binfmt_status_vprint_float(dev, prog, prog_len, elements_count, cookie);
+	}
+	else if constexpr (::std::same_as<char_type, wchar_t>)
+	{
+		wbinfmt_status_vprint_float(dev, prog, prog_len, elements_count, cookie);
+	}
+	else if constexpr (::std::same_as<char_type, char8_t>)
+	{
+		u8binfmt_status_vprint_float(dev, prog, prog_len, elements_count, cookie);
+	}
+	else if constexpr (::std::same_as<char_type, char16_t>)
+	{
+		u16binfmt_status_vprint_float(dev, prog, prog_len, elements_count, cookie);
+	}
+	else if constexpr (::std::same_as<char_type, char32_t>)
+	{
+		u32binfmt_status_vprint_float(dev, prog, prog_len, elements_count, cookie);
+	}
+	else
+	{
+		binfmt_vprint_impl<binfmt_policy_float>(dev, prog, prog_len, elements_count, cookie);
+	}
+}
+
 // ---------------------------------------------------------------------------
 // the whole call. All arguments collapse to one program + one dense cookie +
 // one interpreter call; a `println` newline is part of that program. When
@@ -713,6 +947,42 @@ inline void binfmt_emit(basic_binfmt_device<char_type> dev, Args... args) throws
 	}
 }
 
+// the float-enabled twin of binfmt_emit: identical packing and program, but
+// the interpreter call dispatches to the float entries. The program contents
+// are policy-independent, so it shares the same variable template.
+template <bool line, ::std::integral char_type, typename... Args>
+inline void binfmt_emit_float_status(basic_binfmt_device<char_type> dev, Args... args) throws
+{
+	constexpr ::std::size_t k{sizeof...(Args)};
+	constexpr bool all_scatter{
+		k != 0u && (binfmt_is_scatter_of<char_type, ::std::remove_cvref_t<Args>> && ...)};
+	if constexpr (all_scatter)
+	{
+		constexpr ::std::size_t n{k + (line ? 1u : 0u)};
+		::fast_io::array<::fast_io::basic_io_scatter_t<char_type>, n> sc FAST_IO_INDETERMINATE;
+		template for (constexpr auto i : ::fast_io::details::index_array_range<0, k>)
+		{
+			sc.index_unchecked(i) = {args...[i].base, args...[i].len};
+		}
+		if constexpr (line)
+		{
+			sc.index_unchecked(k) = {__builtin_addressof(binfmt_newline<char_type>), 1u};
+		}
+		scatter_write_all(dev, sc.data(), n);
+	}
+	else if constexpr (k != 0u || line)
+	{
+		::fast_io::array<binfmt_cookie_element, k> cookie FAST_IO_INDETERMINATE;
+		template for (constexpr auto i : ::fast_io::details::index_array_range<0, k>)
+		{
+			binfmt_pack_one<char_type>(cookie.index_unchecked(i), args...[i]);
+		}
+		binfmt_run_interpreter_float(dev, binfmt_program<line, char_type, Args...>.data(),
+									 binfmt_program<line, char_type, Args...>.size(), k,
+									 cookie.data());
+	}
+}
+
 template <bool line, typename output, typename... Args>
 inline void binfmt_print_all(binfmt_indirector<output> ind, Args... args) throws
 {
@@ -738,6 +1008,28 @@ inline void binfmt_print_all(binfmt_indirector<output> ind, Args... args) throws
 	}
 }
 
+template <bool line, typename output, typename... Args>
+inline void binfmt_print_all_float(binfmt_float_indirector<output> ind, Args... args) throws
+{
+	using stream_type = ::std::remove_cvref_t<output>;
+	if constexpr (sizeof...(Args) == 0u && !line)
+	{
+		return;
+	}
+	else if constexpr (::fast_io::operations::decay::defines::
+						   has_output_or_io_stream_mutex_ref_define<stream_type>)
+	{
+		::fast_io::operations::decay::stream_ref_decay_lock_guard lg{
+			::fast_io::operations::decay::output_stream_mutex_ref_decay(ind.handle)};
+		auto unlocked{::fast_io::operations::decay::output_stream_unlocked_ref_decay(ind.handle)};
+		binfmt_emit_float_status<line>(binfmt_device_of(unlocked), args...);
+	}
+	else
+	{
+		binfmt_emit_float_status<line>(binfmt_device_of(ind.handle), args...);
+	}
+}
+
 } // namespace details
 
 template <typename stm>
@@ -760,6 +1052,28 @@ inline constexpr void status_print_define(binfmt_indirector<output> ind, Args...
 	details::binfmt_print_all<line>(ind, args...);
 }
 
+template <typename stm>
+inline constexpr binfmt_float_indirector<stm>
+output_stream_ref_define(binfmt_float_indirector<stm> t) noexcept
+{
+	return t;
+}
+
+template <typename stm>
+	requires(::std::is_lvalue_reference_v<stm> || ::std::is_trivially_copyable_v<stm>)
+inline constexpr auto indirect_float(stm &&out) throws
+{
+	using reftype = decltype(::fast_io::operations::output_stream_ref(out));
+	return binfmt_float_indirector<reftype>{::fast_io::operations::output_stream_ref(out)};
+}
+
+template <bool line, typename output, typename... Args>
+inline constexpr void status_print_define(binfmt_float_indirector<output> ind,
+										  Args... args) throws
+{
+	details::binfmt_print_all_float<line>(ind, args...);
+}
+
 } // namespace fast_io::binfmt
 
 namespace fast_io::manipulators
@@ -770,6 +1084,13 @@ template <typename stm>
 inline constexpr auto binfmt(stm &&out) throws
 {
 	return ::fast_io::binfmt::indirect(static_cast<stm &&>(out));
+}
+
+template <typename stm>
+	requires(::std::is_lvalue_reference_v<stm> || ::std::is_trivially_copyable_v<stm>)
+inline constexpr auto binfmt_float(stm &&out) throws
+{
+	return ::fast_io::binfmt::indirect_float(static_cast<stm &&>(out));
 }
 
 } // namespace fast_io::manipulators

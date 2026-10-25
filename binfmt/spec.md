@@ -156,6 +156,7 @@ real C++ arg type wins.
 | 14 | chrono | bytes | nested pct node sequence | — | `{:%H:%M}` |
 | 15 | element | bytes | node seq = element's field params (no `arg`) — range types only | — | `{::^8x}` |
 | 16 | flag-upper | none | uppercase digits/prefix/exponent | `E F G A X B` | `{:X}` |
+| 17 | prec-cookie | none | precision lives in the cookie's `field2`, not in the program | `%.*f` via runtime prec | `mnp::fixed(v, n)` — runtime `n` |
 
 **ctype enum** — the C arg type, declared as `i`/`u`/`f` fixed-width codes
 instead of the length-modifier zoo. printf source always emits it;
@@ -288,6 +289,26 @@ decompiled to printf always emits `d`):
 - **`fieldptrvw` shares `addr`** — member-object-ptr emit is identical
   (`0x`+full hex); only `methodvw` differs (multiword + signed adjust),
   so it gets `mth`
+
+### Float arguments and runtime precision
+
+The ten float convs (`dec`…`hexfp`, codes 12–21) take the ctype codes
+7–12 (`f16` `bf16` `f32` `f64` `f80` `f128`) as their arg. A float arg
+is type-erased to its raw bits, not converted: cookie entries are
+`{binfmt_typetag typetag; size_t field1, field2}` (24 bytes), and for a
+float the bits are memcpy'd into `field1` (plus `field2` for `f80`/
+`f128`), with `typetag = binfmt_ct_* + 1` (≥ 2) naming the format. The
+interpreter reconstructs the exact memory image, so the packing is
+endian-neutral. An absent ctype on a float arg defaults to `dec`.
+
+Param 17 (`prec-cookie`) is how a runtime precision rides along without
+a custom thunk: the tag is a bare marker, and the *cookie* entry's
+`field2` holds the precision. Cookie `field2` is otherwise omitted for
+integer args ≤ 64 bits; float precision is the deliberate exception.
+A 16-byte float with a runtime precision cannot use `field2` (occupied
+by the upper bits) and falls back to a custom thunk (`typetag = 1`).
+`prec-cookie` is accepted only when the policy enables floating point;
+elsewhere it is malformed.
 
 **`element` (param 15)** — range types only; payload is a node sequence
 of the element's field params (same grammar as field children, minus

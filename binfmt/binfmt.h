@@ -67,6 +67,11 @@ inline constexpr ::std::uint_least32_t binfmt_fp_type{13};
 inline constexpr ::std::uint_least32_t binfmt_fp_chrono{14};
 inline constexpr ::std::uint_least32_t binfmt_fp_element{15};
 inline constexpr ::std::uint_least32_t binfmt_fp_flag_upper{16};
+// Presented precision lives in cookie field2 instead of the program. The
+// status path cannot bake a runtime precision into a compile-time program,
+// so it emits this marker and stores `scalar_manip_precision_t::precision`
+// in the element. Only valid for float elements whose value fits field1.
+inline constexpr ::std::uint_least32_t binfmt_fp_prec_cookie{17};
 
 // ---------------------------------------------------------------------------
 // conv_type / type enum (spec Part 3)

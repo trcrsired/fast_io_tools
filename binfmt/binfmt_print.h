@@ -36,6 +36,7 @@
 #include <cstring>
 
 #include "binfmt.h"
+#include "binfmt_float.h"
 
 namespace fast_io::binfmt
 {
@@ -48,10 +49,11 @@ namespace fast_io::binfmt
 // fast paths and rejects any `ctype` parameter, so a fmt-only build carries no
 // printf machinery at all. fmt is the default; C-style is opt-in.
 //
-// `floating_point` would accept binary float fields. It is not implemented yet
-// — enabling it is rejected at compile time (see the static_assert in
-// binfmt_emit_field) so nobody ships a build that silently cannot print a
-// double. The hook exists so enabling it later is a one-line change.
+// `floating_point` accepts binary float fields. It is opt-in because the
+// float helper is a separate out-of-line image (binfmt_float.cc), so a
+// build that never prints a float needs neither the helper nor its
+// fast_io floating module dependency. With the flag off, a float field is
+// rejected at run time like any other unsupported conversion.
 // ---------------------------------------------------------------------------
 
 struct binfmt_policy
@@ -64,6 +66,10 @@ struct binfmt_policy
 inline constexpr binfmt_policy binfmt_policy_default{false, false};
 // accept programs that carry an explicit C type (the printf front-end).
 inline constexpr binfmt_policy binfmt_policy_c_style{true, false};
+// fmt front-end + binary floating-point fields.
+inline constexpr binfmt_policy binfmt_policy_float{false, true};
+// printf front-end + binary floating-point fields.
+inline constexpr binfmt_policy binfmt_policy_c_style_float{true, true};
 
 // ---------------------------------------------------------------------------
 // output buffer pointer pair — what get_output_buffer_ptrs hands back
@@ -347,6 +353,7 @@ struct binfmt_field
 	bool flag_locale;
 	bool flag_outdigits;
 	bool flag_upper;
+	bool prec_from_cookie;
 };
 
 // `type` is optional on the wire: `{}` compiles to an empty field param list
@@ -386,6 +393,13 @@ binfmt_default_type(::std::uint_least32_t ct) noexcept
 	case binfmt_ct_ptr:
 	case binfmt_ct_fptr:
 		return binfmt_conv_p;
+	case binfmt_ct_f16:
+	case binfmt_ct_bf16:
+	case binfmt_ct_f32:
+	case binfmt_ct_f64:
+	case binfmt_ct_f80:
+	case binfmt_ct_f128:
+		return binfmt_conv_dec;
 	default:
 		return 0;
 	}
@@ -409,7 +423,8 @@ inline constexpr binfmt_field binfmt_default_field{
 	.flag_group = false,
 	.flag_locale = false,
 	.flag_outdigits = false,
-	.flag_upper = false};
+	.flag_upper = false,
+	.prec_from_cookie = false};
 
 inline constexpr binfmt_field binfmt_plain_u64_field{
 	.fill = nullptr,
@@ -427,7 +442,8 @@ inline constexpr binfmt_field binfmt_plain_u64_field{
 	.flag_group = false,
 	.flag_locale = false,
 	.flag_outdigits = false,
-	.flag_upper = false};
+	.flag_upper = false,
+	.prec_from_cookie = false};
 
 // The fill string is stored as raw bytes; a write site turns it back into its
 // own character flavour. fill_bytes is always a whole number of char_type units
@@ -612,6 +628,16 @@ inline void binfmt_parse_field(binfmt_prog &p, binfmt_field &f) throws
 			break;
 		case binfmt_fp_flag_upper:
 			f.flag_upper = true;
+			break;
+		case binfmt_fp_prec_cookie:
+			if constexpr (policy.floating_point)
+			{
+				f.prec_from_cookie = true;
+			}
+			else
+			{
+				binfmt_malformed();
+			}
 			break;
 		case binfmt_fp_fill:
 		{
@@ -1244,16 +1270,113 @@ inline void binfmt_emit_pointer(basic_binfmt_device<char_type> dev,
 						f.flag_zero, true);
 }
 
+// ---------------------------------------------------------------------------
+// floating point. The value is formatted once, in `char`, by the
+// out-of-line helper (binfmt_float.cc); a non-char flavour only widens the
+// ASCII run while writing it out. Keeping the formatter char-only is what
+// stops the interpreter from instantiating the (large) float templates per
+// character flavour.
+// ---------------------------------------------------------------------------
+
+template <::std::integral char_type>
+inline void binfmt_write_float_units(basic_binfmt_device<char_type> dev,
+									 char const *p, ::std::size_t n) throws
+{
+	if constexpr (::std::same_as<char_type, char>)
+	{
+		binfmt_write_units(dev, reinterpret_cast<char_type const *>(p), n);
+	}
+	else
+	{
+		char_type buf[128];
+		while (n != 0)
+		{
+			auto const k{n < 128u ? n : 128u};
+			for (::std::size_t i{}; i != k; ++i)
+			{
+				buf[i] = static_cast<char_type>(static_cast<unsigned char>(p[i]));
+			}
+			binfmt_write_units(dev, buf, k);
+			p += k;
+			n -= k;
+		}
+	}
+}
+
+template <::std::integral char_type>
+inline void binfmt_write_float_padded(basic_binfmt_device<char_type> dev,
+									  char const *content, binfmt_float_result res,
+									  char_type const *fill, ::std::size_t fill_len,
+									  ::std::size_t width, ::std::uint_least32_t align,
+									  bool flag_zero) throws
+{
+	auto const pad{width > res.len ? width - res.len : 0u};
+	char_type space{static_cast<char_type>(u8' ')};
+	if (fill_len == 0)
+	{
+		fill = __builtin_addressof(space);
+		fill_len = 1;
+	}
+	if (pad == 0)
+	{
+		binfmt_write_float_units(dev, content, res.len);
+		return;
+	}
+	if (flag_zero && !res.nonfinite && align != binfmt_align_left)
+	{
+		binfmt_write_float_units(dev, content, res.prefix_len);
+		char_type zero{static_cast<char_type>(u8'0')};
+		binfmt_write_fill(dev, __builtin_addressof(zero), 1, pad);
+		binfmt_write_float_units(dev, content + res.prefix_len, res.len - res.prefix_len);
+		return;
+	}
+	switch (align)
+	{
+	case binfmt_align_left:
+		binfmt_write_float_units(dev, content, res.len);
+		binfmt_write_fill(dev, fill, fill_len, pad);
+		break;
+	case binfmt_align_center:
+	{
+		auto const left{pad / 2};
+		binfmt_write_fill(dev, fill, fill_len, left);
+		binfmt_write_float_units(dev, content, res.len);
+		binfmt_write_fill(dev, fill, fill_len, pad - left);
+		break;
+	}
+	default:
+		binfmt_write_fill(dev, fill, fill_len, pad);
+		binfmt_write_float_units(dev, content, res.len);
+		break;
+	}
+}
+
+template <::std::integral char_type>
+inline void binfmt_emit_float(basic_binfmt_device<char_type> dev,
+							  binfmt_field const &f, ::std::uint_least32_t ty,
+							  binfmt_cookie_element const &ce) throws
+{
+	char content[binfmt_float_capacity];
+	binfmt_float_request const r{
+		.bits0 = ce.field1,
+		.bits1 = ce.field2,
+		.ctype = f.ctype,
+		.conv = ty,
+		.sign = f.sign,
+		.prec = f.prec_from_cookie ? static_cast<::std::size_t>(ce.field2) : f.prec,
+		.upper = f.flag_upper,
+		.showbase = ty == binfmt_conv_hexf || ty == binfmt_conv_hexfp};
+	auto const res{binfmt_float_format(content, r)};
+	binfmt_write_float_padded(dev, content, res, binfmt_field_fill<char_type>(f),
+							  binfmt_field_fill_len<char_type>(f), f.width, f.align,
+							  f.flag_zero);
+}
+
 template <binfmt_policy policy, ::std::integral char_type>
 inline void binfmt_emit_field(basic_binfmt_device<char_type> dev,
 							  binfmt_field const &f,
 							  binfmt_cookie_element const &ce) throws
 {
-	// Floating point is not implemented yet. The policy hook exists so a build
-	// can opt in later, but enabling it now is a hard compile error rather
-	// than a build that quietly cannot print a double.
-	static_assert(!policy.floating_point,
-				  "binfmt: floating-point fields are not implemented yet");
 	// `type` is optional on the wire ({} is `13 00`); fall back to the
 	// natural conversion for the C type.
 	auto const ty{f.type != 0u ? f.type : binfmt_default_type(f.ctype)};
@@ -1276,8 +1399,24 @@ inline void binfmt_emit_field(basic_binfmt_device<char_type> dev,
 	case binfmt_conv_addr:
 		binfmt_emit_pointer(dev, f, ce);
 		return;
+	case binfmt_conv_dec:
+	case binfmt_conv_decp:
+	case binfmt_conv_fix:
+	case binfmt_conv_fixp:
+	case binfmt_conv_sci:
+	case binfmt_conv_scip:
+	case binfmt_conv_gen:
+	case binfmt_conv_genp:
+	case binfmt_conv_hexf:
+	case binfmt_conv_hexfp:
+		if constexpr (policy.floating_point)
+		{
+			binfmt_emit_float(dev, f, ty, ce);
+			return;
+		}
+		binfmt_malformed();
 	default:
-		// debug / mth / floats / ranges — not in the no-float core
+		// debug / mth / ranges — not in this build
 		binfmt_malformed();
 	}
 }
@@ -1482,5 +1621,22 @@ inline void u32binfmt_vprint(u32binfmt_device dev, void const *base, ::std::size
 {
 	details::binfmt_vprint_impl<policy>(dev, base, len, elements_count, cookie);
 }
+
+// ---------------------------------------------------------------------------
+// floating-point-enabled interpreter entries. Defined once, out of line, in
+// binfmt_float.cc (libbinfmt_float), because only that image carries the
+// float helper and its fast_io floating module dependency.
+// ---------------------------------------------------------------------------
+
+void binfmt_status_vprint_float(binfmt_device dev, void const *base, ::std::size_t len,
+								::std::size_t elements_count, void const *cookie) throws;
+void wbinfmt_status_vprint_float(wbinfmt_device dev, void const *base, ::std::size_t len,
+								 ::std::size_t elements_count, void const *cookie) throws;
+void u8binfmt_status_vprint_float(u8binfmt_device dev, void const *base, ::std::size_t len,
+								  ::std::size_t elements_count, void const *cookie) throws;
+void u16binfmt_status_vprint_float(u16binfmt_device dev, void const *base, ::std::size_t len,
+								   ::std::size_t elements_count, void const *cookie) throws;
+void u32binfmt_status_vprint_float(u32binfmt_device dev, void const *base, ::std::size_t len,
+								   ::std::size_t elements_count, void const *cookie) throws;
 
 } // namespace fast_io::binfmt

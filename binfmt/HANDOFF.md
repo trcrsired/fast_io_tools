@@ -4,7 +4,8 @@ This document is a complete state dump so another agent can pick up without the
 original conversation. It covers the goal, the design rules, the code map, the
 current committed state, measurements, and open items.
 
-Last updated: 2026-10-20. Working tree baseline commit: `a00b76e`.
+Last updated: 2026-10-26. Working tree baseline commit: HEAD (the float work is
+committed on top of `bec1c5a`).
 
 ---
 
@@ -77,6 +78,19 @@ $CXX $FLAGS $INC -fPIC -shared binfmt_split.cc -o bench/build/libbinfmt_split.so
 $CXX $FLAGS $INC $FMT_INC bench/bench_status_batch.cc \
   -o bench/build/bench_status_batch \
   -L bench/build -lbinfmt_batch -lbinfmt -Wl,-rpath,$PWD/bench/build $FMT_LIB $LD
+
+# float support: the fast_io float emitters live out-of-line in the module, so
+# a PIC object of fast_io_floating.cppm is required, then the float lib
+$CXX $FLAGS $INC -fPIC -c /home/cqwrteur/libraries/fast_io_kilo/fast_io/share/fast_io/fast_io_floating.cppm \
+  -o bench/build/fast_io_floating_pic.o
+$CXX $FLAGS $INC -fPIC -shared binfmt_float.cc -o bench/build/libbinfmt_float.so \
+  bench/build/fast_io_floating_pic.o $LD
+
+# float tests
+$CXX $FLAGS $INC bench/float_status_test.cc bench/build/fast_io_floating_pic.o \
+  -L bench/build -lbinfmt_float -Wl,-rpath,$PWD/bench/build $LD -o bench/build/float_status_test
+$CXX $FLAGS $INC bench/float_check.cc bench/build/fast_io_floating_pic.o \
+  -L bench/build -lbinfmt_float -Wl,-rpath,$PWD/bench/build $LD -o bench/build/float_check
 ```
 
 Do not use `/tmp`. Put throwaway diagnostics in `binfmt/bench/build/` (ignored);
@@ -141,6 +155,10 @@ put committed test/bench sources in `binfmt/bench/` (tracked).
 | `binfmt_batch.h` | **Batched interpreter**: hoisted-cursor writer; re-implements the write half only. Committed. |
 | `binfmt_batch.cc` | Out-of-line batched entries: `binfmt_status_batch_vprint*`. Committed. |
 | `binfmt_status_batch.h` | Batched status path + `mnp::binfmt_batch`, reusing stock arg mapping/program/cookie packing. Committed. |
+| `binfmt_float.h` | Float-format helper interface (no fast_io includes): capacity, request/result structs, `binfmt_float_format`. |
+| `binfmt_float.cc` | Out-of-line float emitters for all 10 convs × 6 ctypes; also the float-enabled stock/batch entry symbols. |
+| `bench/float_status_test.cc` | Native vs `mnp::binfmt_float` vs `mnp::binfmt_batch_float`, all types/convs/char types + max precision. |
+| `bench/float_check.cc` | Compiles fmt/printf programs, runs them via `binfmt_status_vprint_float`, compares to native; raw f16/bf16/f80/f128 cookies. |
 | `spec.md` | Binary program format spec. |
 
 ### Cookie model
@@ -161,7 +179,13 @@ struct binfmt_cookie_element {   // 24 bytes
 
 - `binfmt_ct_u64 + 1 == 6`, `binfmt_ct_c8view + 1 == 29`,
   `binfmt_ct_c16view + 1 == 30`, `binfmt_ct_c32view + 1 == 31`.
-- Dynamic args (floats, pointers, exotic manipulators) become
+- Floats are **not** custom thunks any more: the raw bits go into
+  `field1` (plus `field2` for 16-byte formats, or the precision when
+  `prec-cookie` is set), and the typetag is `binfmt_ct_* + 1`
+  (`f16=8, bf16=9, f32=10, f64=11, f80=12, f128=13`). `field2` for a
+  16-byte float *with* runtime precision cannot hold both, so that one
+  combination falls back to `{typetag=custom, field1=thunk, field2=&arg}`.
+- Other dynamic args (exotic manipulators) still become
   `{typetag=custom, field1=thunk, field2=&arg}`; the interpreter calls
   `binfmt_custom_write_fn<char_type>`.
 
@@ -193,11 +217,18 @@ Nothing pre-existing was modified. Earlier commits in the series:
 `997faab`, `04591ae`, `ad5b532`, `dca9615`, `8e1be6c`, `9b3e1a8`, `eca643b`,
 `824ec96`, `806c37b`, `e254f8c`, `5fb9780`, `a6e78d8`.
 
-Deliberately **not** committed (still untracked on disk):
+The float work (section 7) is committed on top of it:
+
+- `binfmt_float.h`, `binfmt_float.cc`
+- `bench/float_check.cc`, `bench/float_status_test.cc`
+- edits to `binfmt.h`, `binfmt_print.h`, `binfmt_batch.h`,
+  `binfmt_status.h`, `binfmt_status_batch.h`, `spec.md`, this file
+
+Still untracked on disk (deliberately not committed):
 
 - `binfmt_split.cc`, `binfmt_split.h`, `binfmt_status_split.h` — dead end.
-- Pre-existing untracked: `bench/float_check.cc`, `binfmt.o`, `binfmt.s`,
-  `main.cc`, plus `async/`, `print_freestanding_cxx26/`, `transmit/` elsewhere.
+- Pre-existing untracked: `binfmt.o`, `binfmt.s`, `main.cc`, plus `async/`,
+  `print_freestanding_cxx26/`, `transmit/` elsewhere.
   **Leave these alone unless the user says otherwise.**
 
 `bench/build/` is gitignored (`bench/.gitignore` contains `build/`).
@@ -258,7 +289,52 @@ stock `details::binfmt_program`, `binfmt_pack_one`, `binfmt_is_scatter_of`.
 
 ---
 
-## 7. Measurements
+## 7. Floating point support
+
+Implemented behind `binfmt_policy.floating_point` (no more static_assert).
+
+- **Policies** (`binfmt_print.h`): `binfmt_policy_float{false, true}` and
+  `binfmt_policy_c_style_float{true, true}`. All ten float entry symbols —
+  `binfmt_status_vprint_float*` and `binfmt_status_batch_vprint_float*`, in
+  `binfmt_float.cc` — use `binfmt_policy_c_style_float`, so the printf front-end
+  (`%f`, `%.2f`, `%a`, …) and the fmt front-end both work.
+- **Wire**: conv codes 12–21 (`dec`…`hexfp`), ctype 7–12
+  (`f16`/`bf16`/`f32`/`f64`/`f80`/`f128`). Runtime precision is the bare
+  marker `binfmt_fp_prec_cookie` (17); the precision itself rides in the
+  cookie entry's `field2`. The marker is only accepted when the policy
+  enables floating point. A plain float field defaults to `dec`.
+- **Args**: raw bits memcpy'd into cookie `field1`(+`field2`), typetag
+  `binfmt_ct_* + 1`. No thunk, no lossy conversion; reconstructing the bits
+  makes this endian-neutral. 16-byte float + runtime precision is the one
+  case that falls back to a custom thunk (see cookie model above).
+- **Formatting** (`binfmt_float.cc`, char-only, out-of-line): a runtime
+  switch over the ten convs calls fast_io's own out-of-line emitters
+  (`print_rsvflt_define_impl`, `print_rsvhexfloat_define_impl`,
+  `print_precision_flt_define_impl`, `print_precision_hexfloat_define_impl`)
+  with every flag false; binfmt does sign, `0x`/`0X`, zero-padding and
+  uppercase itself. `binary16`/`bfloat16` have local `iec559_traits`
+  stand-ins since fast_io does not expose them to this TU. `f80`/`f128` are
+  passed as `{bits0, bits1}` and decoded by memcpy.
+- **Capacity**: `binfmt_float_max_precision = 11566`,
+  `binfmt_float_capacity = 28104` (sign + `0x` + integer + point + frac +
+  exponent). Verified at max precision for fixed/scientific/hexfloat.
+- **Uppercase quirk**: fast_io's 128-bit-mantissa hexfloat path (`f80`
+  via cast to `__float128`, and `f128`) recurses with uppercase off, so
+  the mantissa digits stay lowercase while the `0X` prefix and `P`
+  exponent letter are uppercase. binfmt reproduces exactly that, with a
+  conditional uppercase post-pass that starts at the `p`/`P` for
+  `f80`/`f128` hexfloat finite values.
+
+Tests: `bench/float_status_test.cc` (native vs `mnp::binfmt_float` vs
+`mnp::binfmt_batch_float` for float/double/long double and all five char
+types, including inf/nan and max precision) and `bench/float_check.cc`
+(fmt/printf programs through `binfmt_status_vprint_float`, plus hand-built
+raw f16/bf16/f32/f64/f80/f128 cookies). Both print `PASS (0 failures)`;
+the six non-float regression tests still pass unchanged.
+
+---
+
+## 8. Measurements
 
 All N = 10,000,000, into a `fast_io::string` via `io_strlike_ref`, best of 3.
 Output verified byte-identical to native fast_io.
@@ -304,7 +380,7 @@ default and deleting the old write half should remove that overhead.
 
 ---
 
-## 8. Correctness tests
+## 9. Correctness tests
 
 `bench/binfmt_batch_verify.cc` (ex-`batch_smoke.cc`): compares the stock and
 batched interpreters byte-for-byte on the **same** program + cookie, on **both a
@@ -325,7 +401,7 @@ because the status front-end does not currently emit width/fill.
 
 ---
 
-## 9. Open items / natural next steps
+## 10. Open items / natural next steps
 
 1. **Make batching the default.** Currently it is a side-by-side duplicate
    (`mnp::binfmt_batch`). Folding it in means:
@@ -335,9 +411,9 @@ because the status front-end does not currently emit width/fill.
    - then `libbinfmt.so` should be ≤ the current 84 KB.
    Ask the user before touching the old code — the standing rule is duplicate,
    don't modify.
-2. **Floating point** is not implemented. `binfmt_policy.floating_point`
-   static_asserts false. A test-only `double` custom thunk references an
-   undefined `fast_io::details::to_decimal_binary64` when linked standalone.
+2. ~~**Floating point** is not implemented.~~ Implemented; see section 7.
+   Remaining float follow-ups: no grouping/locale on floats either, and
+   there is no `long double`-as-`cf128` (complex) path anywhere.
 3. **Grouping / locale** are not handled by the interpreter (group flag is
    parsed but ignored). Not in the API by design for locale.
 4. **Split files** (`binfmt_split.*`) are an uncommitted dead end. Decide whether
@@ -348,7 +424,7 @@ because the status front-end does not currently emit width/fill.
 
 ---
 
-## 10. Environment gotchas
+## 11. Environment gotchas
 
 - `FAST_IO_INDETERMINATE` is not visible after `<fast_io.h>`.
   `binfmt_status.h` brackets it with `push_macros.h`/`pop_macros.h` (no include
@@ -370,10 +446,17 @@ because the status front-end does not currently emit width/fill.
 - `fmt::format_to(back_inserter(s), "...", ...)` uses a runtime format string
   (no `FMT_COMPILE`); keep that in mind when comparing to fmt.
 - `fmt` static lib must appear after the source file on the link line.
+- Float emitters are out-of-line in fast_io's floating module; link
+  `bench/build/fast_io_floating_pic.o` (built `-fPIC`) into
+  `libbinfmt_float.so`, otherwise the shared lib fails with
+  `R_X86_64_PC32 against floating_decimal_cache`.
+- A flag/marker param tag at code ≥ 16 encodes to ≥ 2 ULEB bytes
+  (`(16<<3)|kind_none = 128`). Write it with `binfmt_put_uleb` and size it
+  with `binfmt_uleb_len`, never as one raw byte.
 
 ---
 
-## 11. Verified claims from this session
+## 12. Verified claims from this session
 
 - Stock call site cost ≈ 0: real call site ≈ direct status-program vprint.
 - Per-node device interactions: 5–6 per mixed line for stock.
@@ -381,3 +464,6 @@ because the status front-end does not currently emit width/fill.
 - Batched status path beats fmt on single / mixed / all-spans.
 - Remaining gap to fast_io is interpreter dispatch + per-call cookie packing;
   only full static specialization (fast_io) removes it, at the cost of code size.
+- Float output is byte-identical to native fast_io for all 10 convs across
+  float/double/long double, all five char types, signs, showbase,
+  zero-padding, uppercase, inf/nan, and max precision (11566).
