@@ -13,9 +13,13 @@ Baseline: C++23 freestanding. `<ranges>`, `<iterator>`, `std::to_address`,
 Header layout: one algorithm family per header.
 
 - `common.h`: shared index helpers, flag lookup, iterator/range concepts.
+- `compare.h`: the default `compare_three_way` comparator.
 - `for_each.h`: the `for_each` family; includes `common.h`.
 - `find.h`: the `find` family; includes `common.h`.
+- `heap.h`: the heap family; includes `common.h` and `compare.h`.
 - `impl.h`: umbrella that includes every algorithm header.
+- `tests/`: one test translation unit per family. Tests include the headers
+  with relative paths so the directory can move into `fast_io` unchanged.
 
 ## Non-negotiable decisions
 
@@ -268,6 +272,31 @@ No-throw detection for iterators is deliberately minimal and lives in
 - `throws` includes move construction and destruction (relocate has no index
   entry point).
 
+## `heap`
+
+- APIs: `is_heap_until_iters` / `is_heap_until`, `is_heap_iters` / `is_heap`,
+  `make_heap_iters` / `make_heap`, `push_heap_iters` / `push_heap`,
+  `pop_heap_iters` / `pop_heap`, `sort_heap_iters` / `sort_heap`.
+- `is_heap_until` returns the first iterator that breaks the heap property;
+  `is_heap` is `is_heap_until(first, last) == last`.
+- Random-access iterators only. The comparator is the last parameter and uses a
+  defaulted template argument plus a defaulted value (`Cmp cmp = Cmp{}`), so the
+  single-function-per-name rule still holds.
+- `make_heap` builds the heap bottom-up; `push_heap` sifts the last element up;
+  `pop_heap` swaps the root with the last element and sifts down; `sort_heap`
+  repeatedly pops the root onto the shrinking tail.
+- Sift-down uses the hole technique: one move construction and one move
+  assignment per level, never a swap chain.
+- Contiguous non-pointer iterators decay to pointers. Non-contiguous
+  random-access iterators (for example `std::deque`) stay on the indexed path.
+- `throws` includes the comparator invocation and the by-value comparator pass;
+  the mutating algorithms additionally include element move construction and
+  move assignment. `is_heap` / `is_heap_until` only compare.
+- The defaulted form requires `Cmp` to be nothrow default-constructible; the
+  pass-by-value contract requires nothrow copy and move construction.
+- No `_index` entry point: heap algorithms are whole-range or iterator based and
+  the container violation policy does not apply.
+
 ## Comparator design
 
 ### Contract
@@ -283,8 +312,9 @@ Algorithms only use:
 - `cmp.compare(a, b) < 0`
 - `cmp.compare(a, b) == 0`
 
-The default comparator is a named empty type built on fast_io’s own
-`compare_three_way`, because the standard one is not marked for herbceptions.
+The default comparator is `::fast_io::algorithms::compare_three_way` from
+`compare.h`, a named empty type built on fast_io’s own `compare_three_way`,
+because the standard one is not marked for herbceptions.
 
 Comparators are taken by value.
 
