@@ -129,6 +129,25 @@ concept iter_no_throw =
     { ++it } noexcept;
   };
 
+template<typename Iter>
+concept decrement_iter_no_throw =
+  ::fast_io::details::algorithms::iter_no_throw<Iter> &&
+  requires(Iter& it) {
+    { --it } noexcept;
+  };
+
+template<typename T>
+inline constexpr bool move_no_throw{
+  ::std::is_nothrow_move_constructible_v<T> &&
+  ::std::is_nothrow_move_assignable_v<T> &&
+  ::std::is_nothrow_destructible_v<T>};
+
+template<typename T>
+inline constexpr bool copy_trivial_v{
+  ::std::is_trivially_copyable_v<T> &&
+  ::std::is_copy_constructible_v<T> &&
+  ::std::is_copy_assignable_v<T>};
+
 template<typename Iter, typename Snt>
 concept sentinel_no_throw =
   ::fast_io::details::algorithms::iter_no_throw<Iter> &&

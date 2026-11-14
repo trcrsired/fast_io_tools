@@ -19,6 +19,8 @@ struct throwing_deque
 int main()
 {
 	throwing_deque d{};
+	bool caught{};
+
 	try
 	{
 		::fast_io::algorithms::for_each_index(d, 0, 1, [](int &) noexcept {});
@@ -26,7 +28,22 @@ int main()
 	catch throws(::std::error ec)
 	{
 		(void)ec;
-		return 0;
+		caught = true;
 	}
-	return 2;
+	if (!caught)
+	{
+		return 2;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::reverse_index(d, 0, 2);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	return caught ? 0 : 3;
 }

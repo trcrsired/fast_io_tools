@@ -2,6 +2,7 @@
 
 #include "common.h"
 #include "compare.h"
+#include "reverse.h"
 
 // Unstable in-place sort, ported from ipnsort by Lukas Bergdoll and Orson
 // Peters (sort-research-rs).
@@ -77,23 +78,11 @@ inline constexpr bool sort_elements_equal(Cmp cmp, T const &a, T const &b)
   }
 }
 
-template<typename T>
-inline constexpr bool sort_move_no_throw{
-  ::std::is_nothrow_move_constructible_v<T> &&
-  ::std::is_nothrow_move_assignable_v<T> &&
-  ::std::is_nothrow_destructible_v<T>};
-
-template<typename T>
-inline constexpr bool sort_copy_trivial_v{
-  ::std::is_trivially_copyable_v<T> &&
-  ::std::is_copy_constructible_v<T> &&
-  ::std::is_copy_assignable_v<T>};
-
 template<typename Cmp, typename T>
 concept sort_ops_no_throw =
   ::fast_io::details::algorithms::sort_comparator_pass_no_throw<Cmp> &&
   ::fast_io::details::algorithms::sort_compare_no_throw<Cmp, T> &&
-  ::fast_io::details::algorithms::sort_move_no_throw<T>;
+  ::fast_io::details::algorithms::move_no_throw<T>;
 
 template<typename Cmp, typename T>
 concept sort_copy_ops_no_throw =
@@ -121,21 +110,15 @@ inline constexpr bool sort_equal_iter_no_throw_v{
   ::fast_io::details::algorithms::sort_equal_no_throw_v<
     Cmp, ::std::iter_value_t<Iter>>};
 
-template<typename Iter>
-inline constexpr bool sort_move_iter_no_throw{
-  ::fast_io::details::algorithms::iter_no_throw<Iter> &&
-  ::fast_io::details::algorithms::sort_move_no_throw<
-    ::std::iter_value_t<Iter>>};
-
 template<typename Iter, typename Cmp>
 concept sort_iters_no_throw =
   ::std::random_access_iterator<Iter> &&
-  ::fast_io::details::algorithms::iter_no_throw<Iter> &&
+  ::fast_io::details::algorithms::decrement_iter_no_throw<Iter> &&
   ::fast_io::details::algorithms::sort_compare_no_throw<
     Cmp, ::std::iter_value_t<Iter>> &&
   ::fast_io::details::algorithms::sort_equal_no_throw_v<
     Cmp, ::std::iter_value_t<Iter>> &&
-  ::fast_io::details::algorithms::sort_move_no_throw<
+  ::fast_io::details::algorithms::move_no_throw<
     ::std::iter_value_t<Iter>>;
 
 template<typename T>
@@ -182,7 +165,7 @@ inline constexpr bool sort_small_ops_no_throw = []() constexpr
 template<typename T>
 inline void sort_swap(T &a, T &b)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::sort_move_no_throw<T>)
+    !::fast_io::details::algorithms::move_no_throw<T>)
 {
   T temp{::std::move(a)};
   a = ::std::move(b);
@@ -857,7 +840,7 @@ inline ::std::iter_difference_t<Iter> sort_partition_lomuto(
         right_is_lt = cmp.compare(base[right], *pivot_ptr) < 0;
       }
       difference_type const left{num_lt};
-      if constexpr (::fast_io::details::algorithms::sort_copy_trivial_v<value_type>)
+      if constexpr (::fast_io::details::algorithms::copy_trivial_v<value_type>)
       {
         base[gap_pos] = base[left];
         base[left] = base[right];
@@ -887,7 +870,7 @@ inline ::std::iter_difference_t<Iter> sort_partition_lomuto(
       right_is_lt = cmp.compare(base[right], *pivot_ptr) < 0;
     }
     difference_type const left{num_lt};
-    if constexpr (::fast_io::details::algorithms::sort_copy_trivial_v<value_type>)
+    if constexpr (::fast_io::details::algorithms::copy_trivial_v<value_type>)
     {
       base[gap_pos] = base[left];
       base[left] = base[right];
@@ -914,7 +897,7 @@ inline ::std::iter_difference_t<Iter> sort_partition_lomuto(
     final_is_lt = cmp.compare(gap_value, *pivot_ptr) < 0;
   }
   difference_type const left{num_lt};
-  if constexpr (::fast_io::details::algorithms::sort_copy_trivial_v<value_type>)
+  if constexpr (::fast_io::details::algorithms::copy_trivial_v<value_type>)
   {
     base[gap_pos] = base[left];
     base[left] = gap_value;
@@ -1210,51 +1193,6 @@ inline ::fast_io::details::algorithms::sort_run sort_find_existing_run(
   return {static_cast<::std::ptrdiff_t>(run_len), descending};
 }
 
-template<typename Iter>
-inline void sort_reverse(Iter first, ::std::iter_difference_t<Iter> len)
-  FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::sort_move_iter_no_throw<Iter>)
-{
-  using difference_type = ::std::iter_difference_t<Iter>;
-  using value_type = ::std::iter_value_t<Iter>;
-  difference_type i{0};
-  difference_type j{static_cast<difference_type>(len - 1)};
-  if constexpr (::fast_io::details::algorithms::sort_copy_trivial_v<value_type> &&
-                sizeof(value_type) <= 16)
-  {
-    // Block reversal lets the compiler use vector loads/stores and element
-    // shuffles. ipnsort gets the same code from LLVM's auto-vectorizer; the
-    // generic C++ swap loop below does not.
-    while (j - i >= 7)
-    {
-      value_type a0{::std::move(first[i + 0])};
-      value_type a1{::std::move(first[i + 1])};
-      value_type a2{::std::move(first[i + 2])};
-      value_type a3{::std::move(first[i + 3])};
-      value_type b0{::std::move(first[j - 0])};
-      value_type b1{::std::move(first[j - 1])};
-      value_type b2{::std::move(first[j - 2])};
-      value_type b3{::std::move(first[j - 3])};
-      first[i + 0] = ::std::move(b0);
-      first[i + 1] = ::std::move(b1);
-      first[i + 2] = ::std::move(b2);
-      first[i + 3] = ::std::move(b3);
-      first[j - 0] = ::std::move(a0);
-      first[j - 1] = ::std::move(a1);
-      first[j - 2] = ::std::move(a2);
-      first[j - 3] = ::std::move(a3);
-      i += 4;
-      j -= 4;
-    }
-  }
-  while (i < j)
-  {
-    ::fast_io::details::algorithms::sort_swap(first[i], first[j]);
-    ++i;
-    --j;
-  }
-}
-
 inline ::std::ptrdiff_t sort_floor_log2(::std::size_t n) noexcept
 {
   ::std::ptrdiff_t r{};
@@ -1299,7 +1237,15 @@ inline void sort_iters_impl(Iter first, Iter last, Cmp cmp)
     {
       if (run.reversed)
       {
-        ::fast_io::details::algorithms::sort_reverse(first, len);
+        if constexpr (::std::is_pointer_v<Iter>)
+        {
+          ::fast_io::details::algorithms::reverse_ptr(first, len);
+        }
+        else
+        {
+          ::fast_io::details::algorithms::reverse_iters_impl(
+            first, first + len);
+        }
       }
       return;
     }

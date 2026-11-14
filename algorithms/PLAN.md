@@ -12,16 +12,25 @@ Baseline: C++23 freestanding. `<ranges>`, `<iterator>`, `std::to_address`,
 
 Header layout: one algorithm family per header.
 
-- `common.h`: shared index helpers, flag lookup, iterator/range concepts.
+- `common.h`: shared index helpers, flag lookup, iterator/range concepts, and
+  element traits shared by several families.
 - `compare.h`: the default `compare_three_way` comparator.
 - `for_each.h`: the `for_each` family; includes `common.h`.
 - `find.h`: the `find` family; includes `common.h`.
 - `heap.h`: the heap family; includes `common.h` and `compare.h`.
-- `sort.h`: the unstable sort; includes `common.h` and `compare.h`.
+- `reverse.h`: the `reverse` family; includes `common.h`.
+- `sort.h`: the unstable sort; includes `common.h`, `compare.h` and
+  `reverse.h`.
 - `impl.h`: umbrella that includes every algorithm header.
 - `tests/`: one test translation unit per family. Tests include the headers
   with relative paths so the directory can move into `fast_io` unchanged.
 - `benchmarks/`: C++ and Rust benchmark harnesses for `sort`.
+
+One family per header does not mean a family must reimplement its
+dependencies. Families call each other's internal implementation when that
+avoids a second copy of the same code, which keeps binary size and
+instruction-cache pressure down. `sort` uses `reverse` for a fully descending
+input; both share the same instantiation instead of carrying a private reverse.
 
 ## Non-negotiable decisions
 
@@ -302,6 +311,26 @@ No-throw detection for iterators is deliberately minimal and lives in
 - No `_index` entry point: heap algorithms are whole-range or iterator based and
   the container violation policy does not apply.
 
+## `reverse`
+
+- APIs: `reverse_iters` / `reverse` / `reverse_index`.
+- `reverse_iters` takes a bidirectional iterator/sentinel pair; `reverse` takes
+  a `bidirectional_range`; `reverse_index` reverses `[firstidx, lastidx)` of a
+  random-access range and validates the indices.
+- Contiguous ranges decay to pointers and reverse from both ends. A
+  non-common sized sentinel is walked to the last element once and then handled
+  as an iterator pair. Non-contiguous bidirectional ranges (`std::list`) swap
+  in place while walking inward.
+- Trivially copyable elements up to 16 bytes use a 4-element block swap at each
+  end. This lets the compiler emit vector loads/stores with element shuffles
+  instead of a scalar swap chain. Larger and non-trivial elements use the
+  ordinary hole-free swap.
+- `throws` covers the iterator increment and decrement plus element move
+  construction, move assignment and destruction.
+- `sort` calls `reverse`'s implementation for a fully descending input so the
+  two families share one instantiation instead of each carrying a private
+  reverse.
+
 ## `sort`
 
 - APIs: `sort_iters` / `sort`.
@@ -329,9 +358,11 @@ No-throw detection for iterators is deliberately minimal and lives in
 - The run-detection scan is unrolled by two for element sizes above 8 bytes.
   For 8-byte elements the single-element form is faster in the full sort; the
   unrolled form regresses the fully ascending case there.
-- A fully descending run is reversed with a 4-element block loop for
-  trivially copyable elements up to 16 bytes. LLVM turns the block loop into
-  element shuffles, which is faster than the scalar pairwise swap.
+- A fully descending run is reversed through `reverse.h`: `reverse_ptr` for
+  the pointer iterator case and `reverse_iters_impl` for non-contiguous
+  random-access iterators. This reuses the reverse family's 4-element block
+  loop, which LLVM turns into element shuffles, and keeps a second reverse out
+  of `sort.h`.
 - Small sorts: sorting networks plus bidirectional merge for trivially
   copyable elements up to 8 bytes; the same merge scheme with 4/8 element
   stable networks for trivially copyable elements up to 85 bytes; insertion
