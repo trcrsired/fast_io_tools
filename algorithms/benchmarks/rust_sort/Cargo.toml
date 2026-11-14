@@ -1,0 +1,13 @@
+[package]
+name = "sort_bench"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ipnsort = { path = "../../../../sort-research-rs/ipnsort" }
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+panic = "abort"

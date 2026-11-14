@@ -17,9 +17,11 @@ Header layout: one algorithm family per header.
 - `for_each.h`: the `for_each` family; includes `common.h`.
 - `find.h`: the `find` family; includes `common.h`.
 - `heap.h`: the heap family; includes `common.h` and `compare.h`.
+- `sort.h`: the unstable sort; includes `common.h` and `compare.h`.
 - `impl.h`: umbrella that includes every algorithm header.
 - `tests/`: one test translation unit per family. Tests include the headers
   with relative paths so the directory can move into `fast_io` unchanged.
+- `benchmarks/`: C++ and Rust benchmark harnesses for `sort`.
 
 ## Non-negotiable decisions
 
@@ -43,6 +45,9 @@ Header layout: one algorithm family per header.
 - `operator()` is only accepted as a lambda adapter input, and is erased to a
   function pointer at the API boundary.
 - Unrecoverable internal failure uses `__builtin_trap()`.
+- Construction into uninitialized storage uses placement new. `std::construct_at`
+  is not used; placement new works under herbceptions and in constant
+  evaluation.
 - All `throws` specifications must be correct.
 - Use `FAST_IO_HERBCEPTIONS_THROWS_IF(cond)` on every function.
 - With herbceptions enabled it is `throws(cond)`; `throws(false)` is
@@ -297,6 +302,72 @@ No-throw detection for iterators is deliberately minimal and lives in
 - No `_index` entry point: heap algorithms are whole-range or iterator based and
   the container violation policy does not apply.
 
+## `sort`
+
+- APIs: `sort_iters` / `sort`.
+- Unstable, in-place, `O(N log N)` worst case, random-access iterators only.
+- Ported from ipnsort (sort-research-rs) by Lukas Bergdoll and Orson Peters.
+- Entry: return for `N < 2`; insertion sort for `N <= 20`; detect a fully
+  ascending or descending run; otherwise quicksort with a depth limit of
+  `2 * floor(log2(N))` and a heapsort fallback.
+- Pivot selection is the glidesort adaptive pseudomedian sampler (median of 3
+  below 64 elements, recursive sampling of roughly `N^0.528` elements above).
+- Quicksort recurses into the left side and loops on the right. The ancestor
+  pivot of the parent partition is tracked. When the chosen pivot is equal to
+  the ancestor, the slice is split with an equal-element partition and only the
+  strictly greater side is sorted. This gives `O(N log K)` comparisons for `K`
+  distinct values.
+- Partition: branchless cyclic Lomuto for `sizeof(T) <= 96`, branchy cyclic
+  Hoare for larger elements. Both use one moving gap instead of a swap chain.
+- The Lomuto loop is unrolled by two for element sizes up to 16 bytes, giving
+  two independent comparison chains per iteration (as in ipnsort).
+- For trivially copyable elements the pivot is copied into local storage
+  before partitioning. Otherwise the compiler cannot prove that writes to
+  `first[1..]` do not alias `first[0]` and reloads the pivot on every
+  comparison. Non-trivial elements keep a reference to the pivot.
+- Small sorts: sorting networks plus bidirectional merge for trivially
+  copyable elements up to 8 bytes; the same merge scheme with 4/8 element
+  stable networks for trivially copyable elements up to 85 bytes; insertion
+  sort otherwise. The two fast paths are in-place (fixed stack scratch, at
+  most 4 KiB) and never allocate.
+- The fallback heapsort interleaves heap construction and extraction and uses
+  the branchless child selection from ipnsort.
+- Comparators are taken by value. Every comparison goes through
+  `cmp.compare(a, b)` and a three-way test such as `< 0`.
+- Equality checks use `cmp.equal(a, b)` when the comparator provides it, and
+  fall back to `cmp.compare(a, b) == 0` otherwise. The ancestor-pivot check is
+  the equality site in the algorithm. `compare_three_way` provides `equal`.
+- Contiguous non-pointer iterators decay to pointers. Non-contiguous
+  random-access iterators (for example `std::deque`) use the generic indexed
+  path.
+- `throws` includes the by-value comparator pass, `compare`, `equal` when used,
+  move construction/assignment/destruction, and the iterator `++` gate.
+- A broken strict weak ordering detected by the merge invariant traps with
+  `__builtin_trap()`.
+- The element copy paths are restricted to trivially copyable *and* copy
+  constructible/assignable types. A move-only type can still be trivially
+  copyable in the standard sense, so the check must include copyability, not
+  only `is_trivially_copyable_v`.
+
+Benchmarks live in `benchmarks/`:
+
+- `bench_sort.cc` compares `fast_io::algorithms::sort` with libc++ `std::sort`
+  using the same comparator, pattern, size and repetition policy.
+- `rust_sort/` compares `ipnsort::sort` with `slice::sort_unstable` on the same
+  generated data. Both harnesses use the same xorshift generator and the same
+  pattern definitions, so rows can be matched across languages.
+- Patterns: ascending, descending, random, d20, p5 (95% zero), s95 (95%
+  ascending followed by random values).
+- Reported numbers are the best of several repetitions of nanoseconds per
+  element. The work buffer is reset outside the timed region.
+
+Reference results on the development machine (`-O3 -march=native`, 1e6 `u64`
+random): `fast_io::algorithms::sort` ~17.8 ns/element, Rust `ipnsort`
+~17.5 ns/element, libc++ `std::sort` ~56.6 ns/element. For 16-byte records at
+1e5 random: ~20 ns/element versus Rust ipnsort ~19.5 ns/element and libc++
+`std::sort` ~52 ns/element. The geometric mean across the full pattern and
+size matrix is ~1.04x the time of ipnsort.
+
 ## Comparator design
 
 ### Contract
@@ -311,6 +382,15 @@ Algorithms only use:
 
 - `cmp.compare(a, b) < 0`
 - `cmp.compare(a, b) == 0`
+
+A comparator may additionally provide:
+
+- `cmp.equal(a, b)`
+
+`equal` is an optional equality fast path. When it exists, equality checks
+prefer it; otherwise they fall back to `cmp.compare(a, b) == 0`. The default
+comparator provides `equal`. The algorithm's `throws` condition includes
+`equal` when it is the selected path.
 
 The default comparator is `::fast_io::algorithms::compare_three_way` from
 `compare.h`, a named empty type built on fast_io’s own `compare_three_way`,
