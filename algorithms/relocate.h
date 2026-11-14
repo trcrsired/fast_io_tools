@@ -25,13 +25,8 @@ inline constexpr bool relocate_destroy_no_throw =
 
 template<typename Iter, typename Snt, typename OIter>
 concept relocate_iters_no_throw =
-  ::std::input_iterator<Iter> && ::std::sentinel_for<Snt, Iter> &&
-  ::std::output_iterator<OIter, ::std::iter_value_t<Iter>> &&
-  requires(Iter& first, Snt& last, OIter& dest) {
-    { first != last } noexcept;
-    { ++first } noexcept;
-    { ++dest } noexcept;
-  } &&
+  ::fast_io::details::algorithms::sentinel_no_throw<Iter, Snt> &&
+  ::fast_io::details::algorithms::output_iter_no_throw<OIter, ::std::iter_value_t<Iter>> &&
   (::fast_io::details::algorithms::relocate_byte_copyable<
      ::std::iter_value_t<Iter>, ::std::iter_value_t<OIter>> ||
    (::fast_io::details::algorithms::relocate_construct_no_throw<Iter, OIter> &&
@@ -39,12 +34,8 @@ concept relocate_iters_no_throw =
 
 template<typename Iter, typename OIter>
 concept relocate_n_iters_no_throw =
-  ::std::input_iterator<Iter> &&
-  ::std::output_iterator<OIter, ::std::iter_value_t<Iter>> &&
-  requires(Iter& first, OIter& dest) {
-    { ++first } noexcept;
-    { ++dest } noexcept;
-  } &&
+  ::fast_io::details::algorithms::iter_no_throw<Iter> &&
+  ::fast_io::details::algorithms::output_iter_no_throw<OIter, ::std::iter_value_t<Iter>> &&
   (::fast_io::details::algorithms::relocate_byte_copyable<
      ::std::iter_value_t<Iter>, ::std::iter_value_t<OIter>> ||
    (::fast_io::details::algorithms::relocate_construct_no_throw<Iter, OIter> &&
@@ -52,25 +43,16 @@ concept relocate_n_iters_no_throw =
 
 template<typename Iter, typename Snt, typename OIter>
 concept uninitialized_move_iters_no_throw =
-  ::std::input_iterator<Iter> && ::std::sentinel_for<Snt, Iter> &&
-  ::std::output_iterator<OIter, ::std::iter_value_t<Iter>> &&
-  requires(Iter& first, Snt& last, OIter& dest) {
-    { first != last } noexcept;
-    { ++first } noexcept;
-    { ++dest } noexcept;
-  } &&
+  ::fast_io::details::algorithms::sentinel_no_throw<Iter, Snt> &&
+  ::fast_io::details::algorithms::output_iter_no_throw<OIter, ::std::iter_value_t<Iter>> &&
   (::fast_io::details::algorithms::relocate_byte_copyable<
      ::std::iter_value_t<Iter>, ::std::iter_value_t<OIter>> ||
    ::fast_io::details::algorithms::relocate_construct_no_throw<Iter, OIter>);
 
 template<typename Iter, typename OIter>
 concept uninitialized_move_n_iters_no_throw =
-  ::std::input_iterator<Iter> &&
-  ::std::output_iterator<OIter, ::std::iter_value_t<Iter>> &&
-  requires(Iter& first, OIter& dest) {
-    { ++first } noexcept;
-    { ++dest } noexcept;
-  } &&
+  ::fast_io::details::algorithms::iter_no_throw<Iter> &&
+  ::fast_io::details::algorithms::output_iter_no_throw<OIter, ::std::iter_value_t<Iter>> &&
   (::fast_io::details::algorithms::relocate_byte_copyable<
      ::std::iter_value_t<Iter>, ::std::iter_value_t<OIter>> ||
    ::fast_io::details::algorithms::relocate_construct_no_throw<Iter, OIter>);
@@ -561,10 +543,7 @@ inline constexpr OIter uninitialized_relocate_iters(Iter first, Snt last, OIter 
 
 template<::std::ranges::range R, typename OIter>
 inline constexpr OIter uninitialized_relocate(R&& r, OIter dest)
-  FAST_IO_HERBCEPTIONS_THROWS_IF(!(requires(R& range) {
-    { ::std::ranges::begin(range) } noexcept;
-    { ::std::ranges::end(range) } noexcept;
-  }) || !::fast_io::details::algorithms::relocate_iters_no_throw<
+  FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::relocate_iters_no_throw<
     ::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>, OIter>)
 {
   return ::fast_io::algorithms::uninitialized_relocate_iters(
@@ -580,9 +559,7 @@ inline constexpr OIter uninitialized_relocate_n_iters(Iter first, ::std::size_t 
 
 template<::std::ranges::input_range R, typename OIter>
 inline constexpr OIter uninitialized_relocate_n(R&& r, ::std::size_t count, OIter dest)
-  FAST_IO_HERBCEPTIONS_THROWS_IF(!(requires(R& range) {
-    { ::std::ranges::begin(range) } noexcept;
-  }) || !::fast_io::details::algorithms::relocate_n_iters_no_throw<
+  FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::relocate_n_iters_no_throw<
     ::std::ranges::iterator_t<R>, OIter>)
 {
   return ::fast_io::algorithms::uninitialized_relocate_n_iters(
@@ -591,40 +568,27 @@ inline constexpr OIter uninitialized_relocate_n(R&& r, ::std::size_t count, OIte
 
 template<::std::bidirectional_iterator Iter, ::std::bidirectional_iterator OIter>
 inline constexpr OIter uninitialized_relocate_backward_iters(Iter first, Iter last, OIter d_last)
-  FAST_IO_HERBCEPTIONS_THROWS_IF(!(::std::bidirectional_iterator<Iter> &&
-    ::std::bidirectional_iterator<OIter> &&
-    requires(Iter& source_last, OIter& dest_last) {
-      { --source_last } noexcept;
-      { --dest_last } noexcept;
-    } &&
+  FAST_IO_HERBCEPTIONS_THROWS_IF(!(::fast_io::details::algorithms::iter_no_throw<Iter> &&
+    ::fast_io::details::algorithms::iter_no_throw<OIter> &&
     (::fast_io::details::algorithms::relocate_byte_copyable<
        ::std::iter_value_t<Iter>, ::std::iter_value_t<OIter>> ||
      (::fast_io::details::algorithms::relocate_construct_no_throw<Iter, OIter> &&
-      ::fast_io::details::algorithms::relocate_destroy_no_throw<Iter>))) &&
-    (!(::std::contiguous_iterator<Iter> && ::std::contiguous_iterator<OIter>) ||
-     (requires(Iter& source_last, OIter& dest_last, ::std::iter_difference_t<OIter> difference) {
-        { ::std::to_address(source_last) } noexcept;
-        { ::std::to_address(dest_last) } noexcept;
-        { dest_last - difference } noexcept;
-      })))
+      ::fast_io::details::algorithms::relocate_destroy_no_throw<Iter>))))
 {
   return ::fast_io::details::algorithms::uninitialized_relocate_backward_iters_impl(first, last, d_last);
 }
 
 template<::std::ranges::bidirectional_range R, typename OIter>
 inline constexpr OIter uninitialized_relocate_backward(R&& r, OIter d_last)
-  FAST_IO_HERBCEPTIONS_THROWS_IF(!(requires(R& range) {
-    { ::std::ranges::begin(range) } noexcept;
-    { ::std::ranges::end(range) } noexcept;
-  }) || !(requires(::std::ranges::iterator_t<R>& source_last, OIter& dest_last) {
-    { --source_last } noexcept;
-    { --dest_last } noexcept;
-  }) || !(::fast_io::details::algorithms::relocate_byte_copyable<
-           ::std::ranges::range_value_t<R>, ::std::iter_value_t<OIter>> ||
-         (::fast_io::details::algorithms::relocate_construct_no_throw<
-            ::std::ranges::iterator_t<R>, OIter> &&
-          ::fast_io::details::algorithms::relocate_destroy_no_throw<
-            ::std::ranges::iterator_t<R>>)))
+  FAST_IO_HERBCEPTIONS_THROWS_IF(!(::std::bidirectional_iterator<OIter> &&
+    ::fast_io::details::algorithms::iter_no_throw<::std::ranges::iterator_t<R>> &&
+    ::fast_io::details::algorithms::iter_no_throw<OIter> &&
+    (::fast_io::details::algorithms::relocate_byte_copyable<
+       ::std::ranges::range_value_t<R>, ::std::iter_value_t<OIter>> ||
+     (::fast_io::details::algorithms::relocate_construct_no_throw<
+        ::std::ranges::iterator_t<R>, OIter> &&
+      ::fast_io::details::algorithms::relocate_destroy_no_throw<
+        ::std::ranges::iterator_t<R>>))))
 {
   return ::fast_io::algorithms::uninitialized_relocate_backward_iters(
     ::std::ranges::begin(r), ::std::ranges::end(r), d_last);
@@ -639,10 +603,7 @@ inline constexpr OIter uninitialized_move_iters(Iter first, Snt last, OIter dest
 
 template<::std::ranges::range R, typename OIter>
 inline constexpr OIter uninitialized_move(R&& r, OIter dest)
-  FAST_IO_HERBCEPTIONS_THROWS_IF(!(requires(R& range) {
-    { ::std::ranges::begin(range) } noexcept;
-    { ::std::ranges::end(range) } noexcept;
-  }) || !::fast_io::details::algorithms::uninitialized_move_iters_no_throw<
+  FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::uninitialized_move_iters_no_throw<
     ::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>, OIter>)
 {
   return ::fast_io::algorithms::uninitialized_move_iters(
@@ -658,9 +619,7 @@ inline constexpr OIter uninitialized_move_n_iters(Iter first, ::std::size_t coun
 
 template<::std::ranges::input_range R, typename OIter>
 inline constexpr OIter uninitialized_move_n(R&& r, ::std::size_t count, OIter dest)
-  FAST_IO_HERBCEPTIONS_THROWS_IF(!(requires(R& range) {
-    { ::std::ranges::begin(range) } noexcept;
-  }) || !::fast_io::details::algorithms::uninitialized_move_n_iters_no_throw<
+  FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::uninitialized_move_n_iters_no_throw<
     ::std::ranges::iterator_t<R>, OIter>)
 {
   return ::fast_io::algorithms::uninitialized_move_n_iters(
@@ -669,37 +628,24 @@ inline constexpr OIter uninitialized_move_n(R&& r, ::std::size_t count, OIter de
 
 template<::std::bidirectional_iterator Iter, ::std::bidirectional_iterator OIter>
 inline constexpr OIter uninitialized_move_backward_iters(Iter first, Iter last, OIter d_last)
-  FAST_IO_HERBCEPTIONS_THROWS_IF(!(::std::bidirectional_iterator<Iter> &&
-    ::std::bidirectional_iterator<OIter> &&
-    requires(Iter& source_last, OIter& dest_last) {
-      { --source_last } noexcept;
-      { --dest_last } noexcept;
-    } &&
+  FAST_IO_HERBCEPTIONS_THROWS_IF(!(::fast_io::details::algorithms::iter_no_throw<Iter> &&
+    ::fast_io::details::algorithms::iter_no_throw<OIter> &&
     (::fast_io::details::algorithms::relocate_byte_copyable<
        ::std::iter_value_t<Iter>, ::std::iter_value_t<OIter>> ||
-     ::fast_io::details::algorithms::relocate_construct_no_throw<Iter, OIter>)) &&
-    (!(::std::contiguous_iterator<Iter> && ::std::contiguous_iterator<OIter>) ||
-     (requires(Iter& source_last, OIter& dest_last, ::std::iter_difference_t<OIter> difference) {
-        { ::std::to_address(source_last) } noexcept;
-        { ::std::to_address(dest_last) } noexcept;
-        { dest_last - difference } noexcept;
-      })))
+     ::fast_io::details::algorithms::relocate_construct_no_throw<Iter, OIter>)))
 {
   return ::fast_io::details::algorithms::uninitialized_move_backward_iters_impl(first, last, d_last);
 }
 
 template<::std::ranges::bidirectional_range R, typename OIter>
 inline constexpr OIter uninitialized_move_backward(R&& r, OIter d_last)
-  FAST_IO_HERBCEPTIONS_THROWS_IF(!(requires(R& range) {
-    { ::std::ranges::begin(range) } noexcept;
-    { ::std::ranges::end(range) } noexcept;
-  }) || !(requires(::std::ranges::iterator_t<R>& source_last, OIter& dest_last) {
-    { --source_last } noexcept;
-    { --dest_last } noexcept;
-  }) || !(::fast_io::details::algorithms::relocate_byte_copyable<
-           ::std::ranges::range_value_t<R>, ::std::iter_value_t<OIter>> ||
-         ::fast_io::details::algorithms::relocate_construct_no_throw<
-           ::std::ranges::iterator_t<R>, OIter>))
+  FAST_IO_HERBCEPTIONS_THROWS_IF(!(::std::bidirectional_iterator<OIter> &&
+    ::fast_io::details::algorithms::iter_no_throw<::std::ranges::iterator_t<R>> &&
+    ::fast_io::details::algorithms::iter_no_throw<OIter> &&
+    (::fast_io::details::algorithms::relocate_byte_copyable<
+       ::std::ranges::range_value_t<R>, ::std::iter_value_t<OIter>> ||
+     ::fast_io::details::algorithms::relocate_construct_no_throw<
+       ::std::ranges::iterator_t<R>, OIter>)))
 {
   return ::fast_io::algorithms::uninitialized_move_backward_iters(
     ::std::ranges::begin(r), ::std::ranges::end(r), d_last);

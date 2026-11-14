@@ -87,28 +87,10 @@ using algo_index_iters = ::fast_io::details::algorithms::iter_pairs<
   ::fast_io::details::algorithms::algo_index_iterator<R>,
   ::fast_io::details::algorithms::algo_index_iterator<R>>;
 
-template<typename R>
-inline constexpr bool algo_index_source_no_throw = []() constexpr
-{
-  if constexpr(::std::ranges::contiguous_range<R>)
-  {
-    return noexcept(::std::ranges::data(::std::declval<R&>())) &&
-           noexcept(::std::ranges::size(::std::declval<R&>())) &&
-           noexcept(::std::to_address(::std::ranges::data(::std::declval<R&>())));
-  }
-  else
-  {
-    return noexcept(::std::ranges::begin(::std::declval<R&>())) &&
-           noexcept(::std::ranges::size(::std::declval<R&>())) &&
-           noexcept(::std::ranges::begin(::std::declval<R&>()) + ::std::declval<::std::size_t>());
-  }
-}();
-
 template<::std::ranges::random_access_range R>
 inline constexpr ::fast_io::details::algorithms::algo_index_iters<R> algo_index_to_iters(
   R&& r, ::std::size_t firstidx, ::std::size_t lastidx)
-  FAST_IO_HERBCEPTIONS_THROWS_IF(::fast_io::details::algorithms::range_throws_on_violations<R> ||
-    !::fast_io::details::algorithms::algo_index_source_no_throw<R>)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(::fast_io::details::algorithms::range_throws_on_violations<R>)
 {
   constexpr bool throwing_violations{
     ::fast_io::details::algorithms::range_throws_on_violations<R>};
@@ -141,68 +123,21 @@ inline constexpr ::fast_io::details::algorithms::algo_index_iters<R> algo_index_
   }
 }
 
-template<typename Iter, typename Snt, bool decay_contiguous, bool decay_sized>
-struct iter_types_impl
-{
-  using iterator = Iter;
-  using sentinel = Snt;
-  static inline constexpr bool decays{};
-};
+template<typename Iter>
+concept iter_no_throw =
+  requires(Iter& it) {
+    { ++it } noexcept;
+  };
 
 template<typename Iter, typename Snt>
-struct iter_types_impl<Iter, Snt, true, false>
-{
-  using iterator = decltype(::std::to_address(::std::declval<Iter&>()));
-  using sentinel = decltype(::std::to_address(::std::declval<Snt&>()));
-  static inline constexpr bool decays{true};
-};
+concept sentinel_no_throw =
+  ::fast_io::details::algorithms::iter_no_throw<Iter> &&
+  ::std::sentinel_for<Snt, Iter>;
 
-template<typename Iter, typename Snt>
-struct iter_types_impl<Iter, Snt, false, true>
-{
-  using iterator = decltype(::std::to_address(::std::declval<Iter&>()));
-  using sentinel = iterator;
-  static inline constexpr bool decays{true};
-};
-
-template<typename Iter, typename Snt>
-using iter_types = iter_types_impl<
-  Iter, Snt,
-  ::std::contiguous_iterator<Iter> && !::std::is_pointer_v<Iter> && ::std::contiguous_iterator<Snt>,
-  ::std::contiguous_iterator<Iter> && !::std::is_pointer_v<Iter> && !::std::contiguous_iterator<Snt> && ::std::sized_sentinel_for<Snt, Iter>>;
-
-template<typename Iter, typename Snt>
-concept iter_decay_source_no_throw =
-  (::std::contiguous_iterator<Iter> && !::std::is_pointer_v<Iter> && ::std::contiguous_iterator<Snt> &&
-   requires(Iter& first, Snt& last)
-   {
-     { ::std::to_address(first) } noexcept;
-     { ::std::to_address(last) } noexcept;
-   }) ||
-  (::std::contiguous_iterator<Iter> && !::std::is_pointer_v<Iter> && !::std::contiguous_iterator<Snt> &&
-   ::std::sized_sentinel_for<Snt, Iter> &&
-   requires(Iter& first, Snt& last)
-   {
-     { ::std::to_address(first) } noexcept;
-     { last - first } noexcept;
-   });
-
-template<typename Iter, typename Snt>
-inline constexpr bool copy_source_last_no_throw =
-  (::std::same_as<Iter, Snt> &&
-   requires(Iter& it) {
-     { ::std::to_address(it) } noexcept;
-   }) ||
-  (::std::contiguous_iterator<Snt> &&
-   requires(Iter& first, Snt& last) {
-     { ::std::to_address(first) } noexcept;
-     { ::std::to_address(last) } noexcept;
-   }) ||
-  (::std::sized_sentinel_for<Snt, Iter> &&
-   requires(Iter& first, Snt& last) {
-     { ::std::to_address(first) } noexcept;
-     { last - first } noexcept;
-   });
+template<typename OIter, typename T>
+concept output_iter_no_throw =
+  ::std::output_iterator<OIter, T> &&
+  ::fast_io::details::algorithms::iter_no_throw<OIter>;
 
 template<typename Iter, typename Snt>
 inline constexpr auto copy_source_last(Iter first, Snt last) noexcept
@@ -221,11 +156,9 @@ template<typename Iter, typename Snt, typename OIter>
 inline constexpr bool copy_can_decay{
   ::std::contiguous_iterator<Iter> &&
   ::std::contiguous_iterator<OIter> &&
-  ::fast_io::details::algorithms::copy_source_last_no_throw<Iter, Snt> &&
-  requires(OIter& dest, ::std::iter_difference_t<OIter> difference) {
-    { ::std::to_address(dest) } noexcept;
-    { dest + difference } noexcept;
-  }};
+  (::std::same_as<Iter, Snt> ||
+   ::std::contiguous_iterator<Snt> ||
+   ::std::sized_sentinel_for<Snt, Iter>)};
 
 template<typename OIter, typename T>
 struct uninitialized_guard

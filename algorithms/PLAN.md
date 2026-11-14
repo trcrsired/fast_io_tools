@@ -145,6 +145,22 @@ instantiation.
 Decay happens after the violation policy has been read from the original
 range/container.
 
+## Iterator noexcept detection
+
+No-throw detection for iterators is deliberately minimal and lives in
+`common.h`.
+
+- `iter_no_throw<Iter>` only checks that `++it` is `noexcept`.
+- `sentinel_no_throw<Iter, Snt>` adds `sentinel_for<Snt, Iter>`.
+- `output_iter_no_throw<OIter, T>` adds `output_iterator` and uses the same
+  `++it` check.
+- `!=`, `to_address`, iterator arithmetic, and sentinel subtraction are assumed
+  non-throwing. If an iterator throws from those operations it is unsupported.
+- Ranges are checked through their iterator: `iter_no_throw<iterator_t<R>>`.
+- Element operations stay in the algorithm concepts: callback invocation,
+  comparison, assignment, construction, and destruction.
+- `algo_index_to_iters` is only marked `throws` for the violation policy.
+
 ## `for_each_iters`
 
 - No checks.
@@ -204,8 +220,8 @@ range/container.
   types).
 - `_index` validates through `algo_index_to_iters`, so `lastidx < firstidx` and
   `size < lastidx` are violations; `lastidx == size` is allowed.
-- `throws` includes violation policy, iterator operations, decay operations,
-  comparison, and the final `found - first`.
+- `throws` includes the violation policy, the comparison, and the final
+  `found - first`.
 
 ## `copy`
 
@@ -225,10 +241,10 @@ range/container.
 - Byte fast path: both value types trivially copyable and either the same value
   type or both integral/`std::byte` with equal size. Constant evaluation takes
   the typed loop instead of the `memmove`/`memcpy` call.
-- Contiguous iterators decay to pointers; the destination must support
-  `to_address` and `+ difference` without throwing for the decay path.
-- `throws` includes iterator operations, assignment/construction/destruction,
-  decay operations, and the violation policy (copy has no index entry point).
+- Contiguous iterators decay to pointers; `to_address` and iterator arithmetic
+  are assumed non-throwing.
+- `throws` includes assignment/construction/destruction (copy has no index
+  entry point).
 
 ## `relocate`
 
@@ -249,8 +265,8 @@ range/container.
 - Container-specific `uninitialized_relocate_define` /
   `uninitialized_relocate_backward_define` customization points are deferred
   until these algorithms move into `fast_io` core.
-- `throws` includes move construction, destruction, iterator operations, decay
-  operations, and the violation policy.
+- `throws` includes move construction and destruction (relocate has no index
+  entry point).
 
 ## Comparator design
 

@@ -5,50 +5,38 @@
 namespace fast_io::details::algorithms
 {
 
-template<typename Iter, typename Snt, typename F>
-concept iter_impl_no_throw =
-  ::std::input_iterator<Iter> && ::std::sentinel_for<Snt, Iter> &&
-  requires(Iter& first, Snt& last, F& f)
+template<typename Iter, typename F>
+concept for_each_iter_no_throw =
+  ::fast_io::details::algorithms::iter_no_throw<Iter> &&
+  requires(Iter& first, F& f)
 {
-  { first != last } noexcept;
-  { ++first } noexcept;
   { f(*first) } noexcept;
 };
 
 template<typename Iter, typename Snt, typename F>
-concept iter_no_throw =
-  (iter_types<Iter, Snt>::decays &&
-   iter_decay_source_no_throw<Iter, Snt> &&
-   iter_impl_no_throw<
-     typename iter_types<Iter, Snt>::iterator,
-     typename iter_types<Iter, Snt>::sentinel, F>) ||
-  (!iter_types<Iter, Snt>::decays &&
-   iter_impl_no_throw<Iter, Snt, F>);
+concept for_each_iters_no_throw =
+  ::fast_io::details::algorithms::sentinel_no_throw<Iter, Snt> &&
+  ::fast_io::details::algorithms::for_each_iter_no_throw<Iter, F>;
 
 template<typename R, typename F>
 concept ranges_no_throw =
   ::std::ranges::range<R> &&
-  requires(R& r)
-  {
-    { ::std::ranges::begin(r) } noexcept;
-    { ::std::ranges::end(r) } noexcept;
-  } &&
+  ::fast_io::details::algorithms::iter_no_throw<::std::ranges::iterator_t<R>> &&
   ::std::is_nothrow_move_constructible_v<F> &&
-  iter_no_throw<::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>, F>;
+  ::fast_io::details::algorithms::for_each_iter_no_throw<
+    ::std::ranges::iterator_t<R>, F>;
 
 template<typename R, typename F>
 concept for_each_index_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
-  ::fast_io::details::algorithms::algo_index_source_no_throw<R> &&
   ::std::is_nothrow_move_constructible_v<F> &&
-  iter_no_throw<
-    ::fast_io::details::algorithms::algo_index_iterator<R>,
+  ::fast_io::details::algorithms::for_each_iter_no_throw<
     ::fast_io::details::algorithms::algo_index_iterator<R>, F>;
 
 template<::std::input_iterator Iter, ::std::sentinel_for<Iter> Snt, typename F>
 inline constexpr void for_each_iters_impl(Iter first, Snt last, F& f)
-  FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::iter_no_throw<Iter, Snt, F>)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::for_each_iters_no_throw<Iter, Snt, F>)
 {
   if constexpr(::std::contiguous_iterator<Iter> && !::std::is_pointer_v<Iter> &&
     ::std::contiguous_iterator<Snt>)
@@ -84,7 +72,7 @@ namespace fast_io::algorithms
 {
 template<::std::input_iterator Iter, ::std::sentinel_for<Iter> Snt, typename F>
 inline constexpr void for_each_iters(Iter first, Snt last, F f)
-  FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::iter_no_throw<Iter, Snt, F>)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::for_each_iters_no_throw<Iter, Snt, F>)
 {
   ::fast_io::details::algorithms::for_each_iters_impl(first, last, f);
 }

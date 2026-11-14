@@ -241,68 +241,35 @@ inline constexpr T* find_ptr(T* first, T* last, V const& value)
   }
 }
 
-template<typename Iter, typename Snt, typename V>
-concept find_impl_no_throw =
-  ::std::input_iterator<Iter> && ::std::sentinel_for<Snt, Iter> &&
-  requires(Iter& first, Snt& last, V const& value)
+template<typename Iter, typename V>
+concept find_iter_no_throw =
+  ::fast_io::details::algorithms::iter_no_throw<Iter> &&
+  requires(Iter& first, V const& value)
 {
-  { first != last } noexcept;
-  { ++first } noexcept;
   { *first == value } noexcept;
 };
 
-template<typename Iter, typename Snt>
-concept find_decay_source_no_throw =
-  (::std::contiguous_iterator<Iter> && !::std::is_pointer_v<Iter> && ::std::contiguous_iterator<Snt> &&
-   requires(Iter& first, Snt& last, ::std::iter_difference_t<Iter> difference)
-   {
-     { ::std::to_address(first) } noexcept;
-     { ::std::to_address(last) } noexcept;
-     { first + difference } noexcept;
-   }) ||
-  (::std::contiguous_iterator<Iter> && !::std::is_pointer_v<Iter> && !::std::contiguous_iterator<Snt> &&
-   ::std::sized_sentinel_for<Snt, Iter> &&
-   requires(Iter& first, Snt& last, ::std::iter_difference_t<Iter> difference)
-   {
-     { ::std::to_address(first) } noexcept;
-     { last - first } noexcept;
-     { first + difference } noexcept;
-   });
-
 template<typename Iter, typename Snt, typename V>
-concept find_iter_no_throw =
-  (iter_types<Iter, Snt>::decays &&
-   find_decay_source_no_throw<Iter, Snt> &&
-   find_impl_no_throw<
-     typename iter_types<Iter, Snt>::iterator,
-     typename iter_types<Iter, Snt>::sentinel, V>) ||
-  (!iter_types<Iter, Snt>::decays &&
-   find_impl_no_throw<Iter, Snt, V>);
+concept find_iters_no_throw =
+  ::fast_io::details::algorithms::sentinel_no_throw<Iter, Snt> &&
+  ::fast_io::details::algorithms::find_iter_no_throw<Iter, V>;
 
 template<typename R, typename T>
 concept find_ranges_no_throw =
   ::std::ranges::range<R> &&
-  requires(R& r)
-  {
-    { ::std::ranges::begin(r) } noexcept;
-    { ::std::ranges::end(r) } noexcept;
-  } &&
-  find_iter_no_throw<::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>, T>;
+  ::fast_io::details::algorithms::find_iter_no_throw<
+    ::std::ranges::iterator_t<R>, T>;
 
 template<typename R, typename T>
 concept find_index_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
-  ::fast_io::details::algorithms::algo_index_source_no_throw<R> &&
-  noexcept(::std::declval<::fast_io::details::algorithms::algo_index_iterator<R>>() -
-    ::std::declval<::fast_io::details::algorithms::algo_index_iterator<R>>()) &&
-  find_iter_no_throw<
-    ::fast_io::details::algorithms::algo_index_iterator<R>,
+  ::fast_io::details::algorithms::find_iter_no_throw<
     ::fast_io::details::algorithms::algo_index_iterator<R>, T>;
 
 template<typename Iter, typename Snt, typename V>
 inline constexpr Iter find_iters_value_impl(Iter first, Snt last, V const& value)
-  FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::find_iter_no_throw<Iter, Snt, V>)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::find_iters_no_throw<Iter, Snt, V>)
 {
   if constexpr (::std::is_pointer_v<Iter> && ::std::same_as<Iter, Snt>)
   {
@@ -340,7 +307,7 @@ inline constexpr Iter find_iters_value_impl(Iter first, Snt last, V const& value
 
 template<typename Iter, typename Snt, typename T>
 inline constexpr Iter find_iters_impl(Iter first, Snt last, T const& value)
-  FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::find_iter_no_throw<Iter, Snt, T>)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::find_iters_no_throw<Iter, Snt, T>)
 {
   using value_type = ::std::remove_cvref_t<T>;
   if constexpr (::fast_io::details::algorithms::find_small_trivially_copyable<value_type>)
@@ -360,7 +327,7 @@ namespace fast_io::algorithms
 {
 template<::std::input_iterator Iter, ::std::sentinel_for<Iter> Snt, typename T>
 inline constexpr Iter find_iters(Iter first, Snt last, T const& value)
-  FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::find_iter_no_throw<Iter, Snt, T>)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::find_iters_no_throw<Iter, Snt, T>)
 {
   return ::fast_io::details::algorithms::find_iters_impl(first, last, value);
 }
