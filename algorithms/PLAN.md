@@ -10,6 +10,12 @@ icache pressure under control.
 Baseline: C++23 freestanding. `<ranges>`, `<iterator>`, `std::to_address`,
 `std::bit_cast` and `if consteval` are all available and allowed.
 
+Header layout: one algorithm family per header.
+
+- `common.h`: shared index helpers, flag lookup, iterator/range concepts.
+- `for_each.h`: the `for_each` family; includes `common.h`.
+- `impl.h`: umbrella that includes every algorithm header.
+
 ## Non-negotiable decisions
 
 - Namespace is `fast_io::algorithms`.
@@ -404,7 +410,7 @@ herbceptions.
   - projection invocation through `compare_by`
   - move / swap / assignment inside the algorithm
 
-## Defects in the current `algorithms.h`
+## Defects in the original `algorithms.h`
 
 - Full-width commas `，` on lines 21 and 29.
 - Raw `throws(...)` in several signatures; must use the fast_io macros.
