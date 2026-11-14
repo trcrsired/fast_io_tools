@@ -13,14 +13,43 @@ inline constexpr bool find_small_trivially_copyable{
   sizeof(T) <= 2 * sizeof(::std::size_t)};
 
 template<typename T>
-inline constexpr bool find_simd_value_type{
+inline constexpr bool find_bitwise_value{
   !::std::is_volatile_v<T> &&
   ::std::is_trivially_copyable_v<T> &&
-  ::std::has_unique_object_representations_v<T> &&
+  ::std::has_unique_object_representations_v<T>};
+
+template<typename T>
+inline constexpr bool find_simd_value_type{
+  ::fast_io::details::algorithms::find_bitwise_value<T> &&
   (sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4 ||
    sizeof(T) == 8 || sizeof(T) == 16) &&
   sizeof(T) <= 2 * sizeof(::std::size_t) &&
   ::fast_io::intrinsics::optimal_simd_vector_run_with_cpu_instruction_size != 0};
+
+inline constexpr bool find_hosted_memchr{
+#if (__STDC_HOSTED__ == 1 && (!defined(_GLIBCXX_HOSTED) || _GLIBCXX_HOSTED == 1)) && !defined(_LIBCPP_FREESTANDING)
+#if defined(__GLIBC__) && defined(__GLIBC_MINOR__)
+#if (__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 26))
+  true
+#endif
+#endif
+#endif
+};
+
+template<typename T, typename V>
+inline constexpr bool find_use_memchr{
+  ::fast_io::details::algorithms::find_hosted_memchr &&
+  sizeof(::std::remove_cv_t<T>) == 1 &&
+  ::std::same_as<::std::remove_cvref_t<V>, ::std::remove_cv_t<T>> &&
+  ::fast_io::details::algorithms::find_bitwise_value<::std::remove_cv_t<T>>};
+
+template<typename T, typename V>
+inline constexpr bool find_use_wmemchr{
+  ::fast_io::details::algorithms::find_hosted_memchr &&
+  sizeof(::std::remove_cv_t<T>) == 4 && sizeof(wchar_t) == 4 &&
+  alignof(::std::remove_cv_t<T>) >= alignof(wchar_t) &&
+  ::std::same_as<::std::remove_cvref_t<V>, ::std::remove_cv_t<T>> &&
+  ::fast_io::details::algorithms::find_bitwise_value<::std::remove_cv_t<T>>};
 
 template<typename T, typename V>
 inline constexpr bool find_use_simd{
@@ -70,16 +99,8 @@ inline constexpr T* find_ptr_simd(T* first, T* last, ::std::remove_cv_t<T> const
     }
     simd_vector_type needle;
     needle.load(pattern);
-    for (; static_cast<::std::size_t>(last - first) >= elements_per_vector;
-         first += elements_per_vector)
+    auto const lane_offset = [](simd_vector_type const &compared) constexpr noexcept -> ::std::size_t
     {
-      simd_vector_type haystack;
-      haystack.load(first);
-      auto const compared{haystack == needle};
-      if (::fast_io::intrinsics::is_all_zeros(compared))
-      {
-        continue;
-      }
       unit_type mask[lane_count];
       compared.store(mask);
       for (::std::size_t i{}; i < lane_count; i += unit_count)
@@ -94,8 +115,62 @@ inline constexpr T* find_ptr_simd(T* first, T* last, ::std::remove_cv_t<T> const
         }
         if (j == unit_count)
         {
-          return first + i / unit_count;
+          return i / unit_count;
         }
+      }
+      return elements_per_vector;
+    };
+    constexpr ::std::size_t unroll{4};
+    for (; static_cast<::std::size_t>(last - first) >= unroll * elements_per_vector;
+         first += unroll * elements_per_vector)
+    {
+      simd_vector_type h0;
+      simd_vector_type h1;
+      simd_vector_type h2;
+      simd_vector_type h3;
+      h0.load(first);
+      h1.load(first + elements_per_vector);
+      h2.load(first + 2 * elements_per_vector);
+      h3.load(first + 3 * elements_per_vector);
+      auto const c0{h0 == needle};
+      auto const c1{h1 == needle};
+      auto const c2{h2 == needle};
+      auto const c3{h3 == needle};
+      auto const any{(c0 | c1) | (c2 | c3)};
+      if (::fast_io::intrinsics::is_all_zeros(any))
+      {
+        continue;
+      }
+      if (auto const offset{lane_offset(c0)}; offset != elements_per_vector)
+      {
+        return first + offset;
+      }
+      if (auto const offset{lane_offset(c1)}; offset != elements_per_vector)
+      {
+        return first + elements_per_vector + offset;
+      }
+      if (auto const offset{lane_offset(c2)}; offset != elements_per_vector)
+      {
+        return first + 2 * elements_per_vector + offset;
+      }
+      if (auto const offset{lane_offset(c3)}; offset != elements_per_vector)
+      {
+        return first + 3 * elements_per_vector + offset;
+      }
+    }
+    for (; static_cast<::std::size_t>(last - first) >= elements_per_vector;
+         first += elements_per_vector)
+    {
+      simd_vector_type haystack;
+      haystack.load(first);
+      auto const compared{haystack == needle};
+      if (::fast_io::intrinsics::is_all_zeros(compared))
+      {
+        continue;
+      }
+      if (auto const offset{lane_offset(compared)}; offset != elements_per_vector)
+      {
+        return first + offset;
       }
     }
   }
@@ -111,6 +186,8 @@ inline constexpr T* find_ptr_simd(T* first, T* last, ::std::remove_cv_t<T> const
 
 template<typename T, typename V>
 inline constexpr bool find_ptr_no_throw =
+  ::fast_io::details::algorithms::find_use_memchr<T, V> ||
+  ::fast_io::details::algorithms::find_use_wmemchr<T, V> ||
   ::fast_io::details::algorithms::find_use_simd<T, V> ||
   noexcept(*::std::declval<T*>() == ::std::declval<V const&>());
 
@@ -118,6 +195,35 @@ template<typename T, typename V>
 inline constexpr T* find_ptr(T* first, T* last, V const& value)
   FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::find_ptr_no_throw<T, V>)
 {
+  if constexpr (::fast_io::details::algorithms::find_use_memchr<T, V>)
+  {
+    FAST_IO_IF_NOT_CONSTEVAL
+    {
+      auto const count{static_cast<::std::size_t>(last - first)};
+      if (count == 0)
+      {
+        return first;
+      }
+      void *const found{__builtin_memchr(
+        first, static_cast<int>(static_cast<unsigned char>(value)), count)};
+      return found == nullptr ? last : static_cast<T *>(found);
+    }
+  }
+  else if constexpr (::fast_io::details::algorithms::find_use_wmemchr<T, V>)
+  {
+    FAST_IO_IF_NOT_CONSTEVAL
+    {
+      auto const count{static_cast<::std::size_t>(last - first)};
+      if (count == 0)
+      {
+        return first;
+      }
+      auto const needle{::std::bit_cast<wchar_t>(value)};
+      void *const found{__builtin_wmemchr(
+        reinterpret_cast<wchar_t const *>(first), needle, count)};
+      return found == nullptr ? last : static_cast<T *>(found);
+    }
+  }
   if constexpr (::fast_io::details::algorithms::find_use_simd<T, V>)
   {
     return ::fast_io::details::algorithms::find_ptr_simd(first, last, value);

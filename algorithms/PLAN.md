@@ -186,11 +186,19 @@ range/container.
 - The value is decayed to `T` internally when `T` is trivially copyable,
   non-array, and `sizeof(T) <= 2 * sizeof(std::size_t)`.
 - Contiguous iterators decay to pointers and re-enter the pointer path.
+- Hosted glibc builds forward 1-byte searches to `__builtin_memchr` and 4-byte
+  searches to `__builtin_wmemchr` when the value is a bitwise-searchable type
+  with matching size/alignment. This mirrors `std::find` and avoids losing to
+  libc's runtime-dispatched AVX2 code in non-`-march=native` builds. The
+  forwarding is skipped during constant evaluation.
 - SIMD path: used only when the element type is trivially copyable,
   `has_unique_object_representations_v<T>` is true, the element size is
   1/2/4/8/16, the element size is at most two `size_t`s, and a SIMD width is
   available. It loads `simd_vector` blocks and scans the lane mask for the
   first matching element.
+- The SIMD loop is unrolled four vectors at a time and ORs the comparison
+  masks before the first branch, so a full scan costs one branch per four
+  vectors.
 - SIMD compares object representations bitwise; the scalar fallback preserves
   normal `operator==` semantics (for example `-0.0f == 0.0f` and padded
   types).
