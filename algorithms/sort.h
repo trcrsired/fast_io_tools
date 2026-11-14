@@ -824,7 +824,8 @@ inline ::std::iter_difference_t<Iter> sort_choose_pivot(
 // `equal` selects the equal-element partition: elements <= pivot go left.
 template<bool equal, typename Iter, typename Cmp>
 inline ::std::iter_difference_t<Iter> sort_partition_lomuto(
-  Iter first, ::std::iter_difference_t<Iter> len, Cmp cmp)
+  Iter first, ::std::iter_difference_t<Iter> len,
+  ::std::iter_value_t<Iter> const *__restrict pivot_ptr, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::sort_ops_iter_no_throw<Iter, Cmp>)
 {
@@ -832,19 +833,6 @@ inline ::std::iter_difference_t<Iter> sort_partition_lomuto(
   using value_type = ::std::iter_value_t<Iter>;
   difference_type const m{static_cast<difference_type>(len - 1)};
   Iter const base{first + 1};
-  // Keeping the pivot in a local for trivially copyable elements lets the
-  // compiler prove that the partition writes cannot alias it. Otherwise the
-  // pivot is reloaded from the array on every comparison.
-  alignas(value_type) ::std::byte pivot_storage[sizeof(value_type)];
-  value_type const *pivot_ptr;
-  if constexpr (::fast_io::details::algorithms::sort_copy_trivial_v<value_type>)
-  {
-    pivot_ptr = ::new (static_cast<void *>(pivot_storage)) value_type(first[0]);
-  }
-  else
-  {
-    pivot_ptr = ::std::addressof(first[0]);
-  }
   value_type gap_value{::std::move(base[0])};
   difference_type gap_pos{0};
   difference_type num_lt{0};
@@ -972,7 +960,8 @@ struct sort_gap
 // than pairwise swapping, which matters when copies are expensive.
 template<bool equal, typename Iter, typename Cmp>
 inline ::std::iter_difference_t<Iter> sort_partition_hoare(
-  Iter first, ::std::iter_difference_t<Iter> len, Cmp cmp)
+  Iter first, ::std::iter_difference_t<Iter> len,
+  ::std::iter_value_t<Iter> const *__restrict pivot_ptr, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::sort_ops_iter_no_throw<Iter, Cmp>)
 {
@@ -980,16 +969,6 @@ inline ::std::iter_difference_t<Iter> sort_partition_hoare(
   using value_type = ::std::iter_value_t<Iter>;
   difference_type const m{static_cast<difference_type>(len - 1)};
   Iter const base{first + 1};
-  alignas(value_type) ::std::byte pivot_storage[sizeof(value_type)];
-  value_type const *pivot_ptr;
-  if constexpr (::fast_io::details::algorithms::sort_copy_trivial_v<value_type>)
-  {
-    pivot_ptr = ::new (static_cast<void *>(pivot_storage)) value_type(first[0]);
-  }
-  else
-  {
-    pivot_ptr = ::std::addressof(first[0]);
-  }
   difference_type left{0};
   difference_type right{m};
   ::fast_io::details::algorithms::sort_gap<value_type> gap;
@@ -1080,15 +1059,16 @@ inline ::std::iter_difference_t<Iter> sort_partition(
     ::fast_io::details::algorithms::sort_swap(first[0], first[pivot_pos]);
   }
   difference_type num_lt;
+  auto const *const pivot_ptr{::std::addressof(first[0])};
   if constexpr (sizeof(value_type) <= 96)
   {
     num_lt = ::fast_io::details::algorithms::sort_partition_lomuto<equal>(
-      first, len, cmp);
+      first, len, pivot_ptr, cmp);
   }
   else
   {
     num_lt = ::fast_io::details::algorithms::sort_partition_hoare<equal>(
-      first, len, cmp);
+      first, len, pivot_ptr, cmp);
   }
   if (num_lt != 0)
   {
@@ -1164,20 +1144,67 @@ inline ::fast_io::details::algorithms::sort_run sort_find_existing_run(
   {
     return {static_cast<::std::ptrdiff_t>(len), false};
   }
+  using value_type = ::std::iter_value_t<Iter>;
   difference_type run_len{2};
   bool const descending{cmp.compare(first[1], first[0]) < 0};
   if (descending)
   {
-    while (run_len < len && cmp.compare(first[run_len], first[run_len - 1]) < 0)
+    if constexpr (sizeof(value_type) > 8)
     {
-      ++run_len;
+      while (run_len + 1 < len)
+      {
+        if (!(cmp.compare(first[run_len], first[run_len - 1]) < 0))
+        {
+          break;
+        }
+        ++run_len;
+        if (!(cmp.compare(first[run_len], first[run_len - 1]) < 0))
+        {
+          break;
+        }
+        ++run_len;
+      }
+      if (run_len < len && cmp.compare(first[run_len], first[run_len - 1]) < 0)
+      {
+        ++run_len;
+      }
+    }
+    else
+    {
+      while (run_len < len && cmp.compare(first[run_len], first[run_len - 1]) < 0)
+      {
+        ++run_len;
+      }
     }
   }
   else
   {
-    while (run_len < len && !(cmp.compare(first[run_len], first[run_len - 1]) < 0))
+    if constexpr (sizeof(value_type) > 8)
     {
-      ++run_len;
+      while (run_len + 1 < len)
+      {
+        if (cmp.compare(first[run_len], first[run_len - 1]) < 0)
+        {
+          break;
+        }
+        ++run_len;
+        if (cmp.compare(first[run_len], first[run_len - 1]) < 0)
+        {
+          break;
+        }
+        ++run_len;
+      }
+      if (run_len < len && !(cmp.compare(first[run_len], first[run_len - 1]) < 0))
+      {
+        ++run_len;
+      }
+    }
+    else
+    {
+      while (run_len < len && !(cmp.compare(first[run_len], first[run_len - 1]) < 0))
+      {
+        ++run_len;
+      }
     }
   }
   return {static_cast<::std::ptrdiff_t>(run_len), descending};
@@ -1189,10 +1216,42 @@ inline void sort_reverse(Iter first, ::std::iter_difference_t<Iter> len)
     !::fast_io::details::algorithms::sort_move_iter_no_throw<Iter>)
 {
   using difference_type = ::std::iter_difference_t<Iter>;
-  for (difference_type i{0}; i < len / 2; ++i)
+  using value_type = ::std::iter_value_t<Iter>;
+  difference_type i{0};
+  difference_type j{static_cast<difference_type>(len - 1)};
+  if constexpr (::fast_io::details::algorithms::sort_copy_trivial_v<value_type> &&
+                sizeof(value_type) <= 16)
   {
-    ::fast_io::details::algorithms::sort_swap(
-      first[i], first[static_cast<difference_type>(len - 1 - i)]);
+    // Block reversal lets the compiler use vector loads/stores and element
+    // shuffles. ipnsort gets the same code from LLVM's auto-vectorizer; the
+    // generic C++ swap loop below does not.
+    while (j - i >= 7)
+    {
+      value_type a0{::std::move(first[i + 0])};
+      value_type a1{::std::move(first[i + 1])};
+      value_type a2{::std::move(first[i + 2])};
+      value_type a3{::std::move(first[i + 3])};
+      value_type b0{::std::move(first[j - 0])};
+      value_type b1{::std::move(first[j - 1])};
+      value_type b2{::std::move(first[j - 2])};
+      value_type b3{::std::move(first[j - 3])};
+      first[i + 0] = ::std::move(b0);
+      first[i + 1] = ::std::move(b1);
+      first[i + 2] = ::std::move(b2);
+      first[i + 3] = ::std::move(b3);
+      first[j - 0] = ::std::move(a0);
+      first[j - 1] = ::std::move(a1);
+      first[j - 2] = ::std::move(a2);
+      first[j - 3] = ::std::move(a3);
+      i += 4;
+      j -= 4;
+    }
+  }
+  while (i < j)
+  {
+    ::fast_io::details::algorithms::sort_swap(first[i], first[j]);
+    ++i;
+    --j;
   }
 }
 

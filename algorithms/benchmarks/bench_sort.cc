@@ -144,7 +144,7 @@ double bench(std::vector<T> const &original, Cmp cmp, bool use_std, int reps)
 	std::uint64_t sink{};
 	for (int r{}; r != reps; ++r)
 	{
-		std::copy(original.begin(), original.end(), work.begin());
+		std::memcpy(work.data(), original.data(), original.size() * sizeof(T));
 		auto const start{std::chrono::steady_clock::now()};
 		if (use_std)
 		{

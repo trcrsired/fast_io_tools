@@ -321,10 +321,17 @@ No-throw detection for iterators is deliberately minimal and lives in
   Hoare for larger elements. Both use one moving gap instead of a swap chain.
 - The Lomuto loop is unrolled by two for element sizes up to 16 bytes, giving
   two independent comparison chains per iteration (as in ipnsort).
-- For trivially copyable elements the pivot is copied into local storage
-  before partitioning. Otherwise the compiler cannot prove that writes to
-  `first[1..]` do not alias `first[0]` and reloads the pivot on every
-  comparison. Non-trivial elements keep a reference to the pivot.
+- The pivot is passed to the partition helpers as a `T const *__restrict`
+  parameter. The partition never writes index 0, so the promise is valid and
+  the compiler keeps the pivot in a register. A local `__restrict` pointer or
+  a reference is not sufficient: the attribute has to be on a function
+  parameter to survive inlining as `noalias`.
+- The run-detection scan is unrolled by two for element sizes above 8 bytes.
+  For 8-byte elements the single-element form is faster in the full sort; the
+  unrolled form regresses the fully ascending case there.
+- A fully descending run is reversed with a 4-element block loop for
+  trivially copyable elements up to 16 bytes. LLVM turns the block loop into
+  element shuffles, which is faster than the scalar pairwise swap.
 - Small sorts: sorting networks plus bidirectional merge for trivially
   copyable elements up to 8 bytes; the same merge scheme with 4/8 element
   stable networks for trivially copyable elements up to 85 bytes; insertion
@@ -362,11 +369,13 @@ Benchmarks live in `benchmarks/`:
   element. The work buffer is reset outside the timed region.
 
 Reference results on the development machine (`-O3 -march=native`, 1e6 `u64`
-random): `fast_io::algorithms::sort` ~17.8 ns/element, Rust `ipnsort`
-~17.5 ns/element, libc++ `std::sort` ~56.6 ns/element. For 16-byte records at
-1e5 random: ~20 ns/element versus Rust ipnsort ~19.5 ns/element and libc++
-`std::sort` ~52 ns/element. The geometric mean across the full pattern and
-size matrix is ~1.04x the time of ipnsort.
+random): `fast_io::algorithms::sort` ~17.5 ns/element, Rust `ipnsort`
+~17.4 ns/element, libc++ `std::sort` ~56.6 ns/element. For 16-byte records at
+1e5 random: ~20 ns/element versus Rust ipnsort ~18.7 ns/element and libc++
+`std::sort` ~50 ns/element. The geometric mean across the full pattern and
+size matrix is about parity (~0.99x the time of ipnsort); the C++ port is
+faster on descending and large-element inputs, and within a few percent on
+random records.
 
 ## Comparator design
 

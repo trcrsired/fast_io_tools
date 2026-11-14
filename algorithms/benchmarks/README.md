@@ -40,22 +40,29 @@ Patterns:
 `fast_io::algorithms::sort` is a direct port of `ipnsort`, so the interesting
 comparison is `fast/ipn`: values near 1.0 mean the C++ port and the Rust
 implementation do the same amount of work. On the development machine the
-geometric mean over all rows is about 1.04.
+geometric mean over all rows is about parity (~0.99). The C++ port is faster
+on descending and large-element inputs and within a few percent on random
+16-byte records.
 
-Two details were needed to reach parity:
+These details were needed to reach and pass parity:
 
 - The branchless Lomuto partition loop is unrolled by two for elements up to
   16 bytes.
-- For trivially copyable elements the pivot is copied into local storage. With
-  a reference into the array the compiler must assume that the writes to the
-  partition suffix can alias `first[0]`, and reloads the pivot on every
-  comparison. Copying it once per partition keeps it in a register.
-
-The largest remaining gap is `descending`, where the C++ port uses a simple
-pairwise reverse instead of a specialized slice reverse.
+- The pivot is passed to the partition helpers as a `T const *__restrict`
+  parameter. With a reference or a local `__restrict` pointer the compiler
+  cannot keep the pivot in a register across the partition writes and reloads
+  it on every comparison. Only a restrict-qualified function parameter
+  survives inlining as a `noalias` promise.
+- The run scan is unrolled by two for element sizes above 8 bytes. For 8-byte
+  elements the single-element loop is faster in the full sort; unrolling it
+  there regresses the fully ascending case.
+- A fully descending run is reversed with a 4-element block loop for
+  trivially copyable elements up to 16 bytes. This vectorizes to element
+  shuffles and is faster than the scalar pairwise swap (and faster than
+  Rust's `slice::reverse` here).
 
 `libc++ std::sort` is much faster than both on `s95`, because its
 pattern-defeating / partial insertion path exploits the long sorted prefix.
 `ipnsort` and this port deliberately use a single pass for run detection and
 then sort normally; they do not have the same `s95` optimization. They win by
-a wide margin on `random`, `d20` and `p5`.
+a wide margin on `random`, `d20`, `p5` and `descending`.
