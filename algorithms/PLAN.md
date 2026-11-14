@@ -108,13 +108,16 @@ Requirements:
 - Contiguous branch must use `to_address(ranges::data(r))`, not assume
   `ranges::data(r)` is already a pointer.
 
-Open semantics:
+Resolved semantics (matches `vector::erase_index`):
 
 - `[firstidx, lastidx)` is half-open.
-- Decide whether `firstidx == lastidx` is a valid empty range.
-- Decide whether `lastidx == npos` means “to end”, matching `index_span::subspan`.
-- Suggested check if empty ranges and `npos` are allowed:
-  `n < firstidx`, or `lastidx != npos && (n < lastidx || lastidx < firstidx)`.
+- `firstidx == lastidx` is a valid empty range.
+- `lastidx == size` is valid; the upper bound is inclusive of `size`.
+- `npos` is not special-cased.
+- The check is: `lastidx < firstidx || n < lastidx`.
+- The exposed flag member is a static
+  `::fast_io::allocator_adapter_flags allocator_flags`.
+  If absent, the range is treated as `none` (termination).
 
 ## Contiguous decay
 
@@ -416,19 +419,17 @@ herbceptions.
 - Non-contiguous branch duplicates the bounds check per iterator type.
 - `bit_cast` layout assumptions are not asserted.
 - Header has no includes.
-- `contract_violation_report` currently lives in `fast_io_dsal`, which is a
+- `violation_report` currently lives in `fast_io_dsal`, which is a
   layering problem once this header moves into core.
 
 ## Remaining decisions
 
-1. Exact name of the exposed allocator flag member.
-2. Empty `_index` range: allowed or not.
-3. `npos` as `lastidx`: supported or not.
-4. Comparator erased-signature shape and whether named comparators bypass
+1. Comparator erased-signature shape and whether named comparators bypass
    erasure.
-5. Whether the trivial-element byte core is part of the first implementation.
-6. Core-level home for the contract-violation reporter.
-7. Return values for the three public functions (`void` or final state).
+2. Whether the trivial-element byte core is part of the first implementation.
+3. Core-level home for the contract-violation reporter.
+4. Return values for the three public functions (`void` or final state).
+5. Exposing `allocator_flags` on the fast_io containers themselves.
 
 ## Implementation order
 
