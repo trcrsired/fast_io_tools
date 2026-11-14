@@ -15,52 +15,6 @@ concept iter_impl_no_throw =
   { f(*first) } noexcept;
 };
 
-template<typename Iter, typename Snt, bool decay_contiguous, bool decay_sized>
-struct iter_types_impl
-{
-  using iterator = Iter;
-  using sentinel = Snt;
-  static inline constexpr bool decays{};
-};
-
-template<typename Iter, typename Snt>
-struct iter_types_impl<Iter, Snt, true, false>
-{
-  using iterator = decltype(::std::to_address(::std::declval<Iter&>()));
-  using sentinel = decltype(::std::to_address(::std::declval<Snt&>()));
-  static inline constexpr bool decays{true};
-};
-
-template<typename Iter, typename Snt>
-struct iter_types_impl<Iter, Snt, false, true>
-{
-  using iterator = decltype(::std::to_address(::std::declval<Iter&>()));
-  using sentinel = iterator;
-  static inline constexpr bool decays{true};
-};
-
-template<typename Iter, typename Snt>
-using iter_types = iter_types_impl<
-  Iter, Snt,
-  ::std::contiguous_iterator<Iter> && !::std::is_pointer_v<Iter> && ::std::contiguous_iterator<Snt>,
-  ::std::contiguous_iterator<Iter> && !::std::is_pointer_v<Iter> && !::std::contiguous_iterator<Snt> && ::std::sized_sentinel_for<Snt, Iter>>;
-
-template<typename Iter, typename Snt>
-concept iter_decay_source_no_throw =
-  (::std::contiguous_iterator<Iter> && !::std::is_pointer_v<Iter> && ::std::contiguous_iterator<Snt> &&
-   requires(Iter& first, Snt& last)
-   {
-     { ::std::to_address(first) } noexcept;
-     { ::std::to_address(last) } noexcept;
-   }) ||
-  (::std::contiguous_iterator<Iter> && !::std::is_pointer_v<Iter> && !::std::contiguous_iterator<Snt> &&
-   ::std::sized_sentinel_for<Snt, Iter> &&
-   requires(Iter& first, Snt& last)
-   {
-     { ::std::to_address(first) } noexcept;
-     { last - first } noexcept;
-   });
-
 template<typename Iter, typename Snt, typename F>
 concept iter_no_throw =
   (iter_types<Iter, Snt>::decays &&

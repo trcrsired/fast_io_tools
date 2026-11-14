@@ -14,6 +14,7 @@ Header layout: one algorithm family per header.
 
 - `common.h`: shared index helpers, flag lookup, iterator/range concepts.
 - `for_each.h`: the `for_each` family; includes `common.h`.
+- `find.h`: the `find` family; includes `common.h`.
 - `impl.h`: umbrella that includes every algorithm header.
 
 ## Non-negotiable decisions
@@ -156,9 +157,9 @@ range/container.
   - increment
   - comparison
   - any conversion used by decay
-- The recursive decay call currently drops `f`; fix it.
-- The decay path currently assumes `to_address(last)` is valid; fix per the
-  rules above.
+- The decay path forwards `f` by reference through the recursive call.
+- The decay path converts `last` with `to_address` (contiguous sentinel) or
+  computes the pointer end from `last - first` (sized sentinel).
 
 ## `for_each`
 
@@ -171,9 +172,32 @@ range/container.
 - Checked entry point.
 - Read the range’s allocator flag to select `throwing_violations`.
 - Obtain the iterator/pointer pair from `algo_index_to_iters` with both indices.
-  The current call omits `firstidx` and `lastidx`; fix it.
 - Delegate to `for_each_iters`.
 - `throws` includes the violation policy and the callback.
+
+## `find`
+
+- API: `find_iters(first, last, value)`, `find(r, value)`,
+  `find_index(r, firstidx, lastidx, value)`.
+- `find_iters` returns `Iter`; `find` returns `ranges::iterator_t<R>`;
+  `find_index` returns `std::size_t` and uses `lastidx` as the not-found
+  sentinel.
+- Comparison is `operator==`, not `<=>`.
+- The value is decayed to `T` internally when `T` is trivially copyable,
+  non-array, and `sizeof(T) <= 2 * sizeof(std::size_t)`.
+- Contiguous iterators decay to pointers and re-enter the pointer path.
+- SIMD path: used only when the element type is trivially copyable,
+  `has_unique_object_representations_v<T>` is true, the element size is
+  1/2/4/8/16, the element size is at most two `size_t`s, and a SIMD width is
+  available. It loads `simd_vector` blocks and scans the lane mask for the
+  first matching element.
+- SIMD compares object representations bitwise; the scalar fallback preserves
+  normal `operator==` semantics (for example `-0.0f == 0.0f` and padded
+  types).
+- `_index` validates through `algo_index_to_iters`, so `lastidx < firstidx` and
+  `size < lastidx` are violations; `lastidx == size` is allowed.
+- `throws` includes violation policy, iterator operations, decay operations,
+  comparison, and the final `found - first`.
 
 ## Comparator design
 
