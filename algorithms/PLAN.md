@@ -207,6 +207,51 @@ range/container.
 - `throws` includes violation policy, iterator operations, decay operations,
   comparison, and the final `found - first`.
 
+## `copy`
+
+- API pairs: `copy_iters` / `copy`, `copy_n_iters` / `copy_n`,
+  `copy_backward_iters` / `copy_backward`, `non_overlapped_copy_iters` /
+  `non_overlapped_copy`, `non_overlapped_copy_n_iters` /
+  `non_overlapped_copy_n`, `uninitialized_copy_iters` / `uninitialized_copy`,
+  `uninitialized_copy_n_iters` / `uninitialized_copy_n`,
+  `uninitialized_copy_backward_iters` / `uninitialized_copy_backward`.
+- `_iters` variants take iterators in every position; the unprefixed variants
+  take a range plus the destination. The `_n` range variants copy the first
+  `count` elements of the range.
+- Assignment paths use `copy` (overlap-safe, `my_memmove`) and
+  `non_overlapped_copy` (overlap not allowed, `my_memcpy`).
+- `uninitialized_copy*` placement-constructs into uninitialized storage and
+  destroys the partial result on failure through `uninitialized_guard`.
+- Byte fast path: both value types trivially copyable and either the same value
+  type or both integral/`std::byte` with equal size. Constant evaluation takes
+  the typed loop instead of the `memmove`/`memcpy` call.
+- Contiguous iterators decay to pointers; the destination must support
+  `to_address` and `+ difference` without throwing for the decay path.
+- `throws` includes iterator operations, assignment/construction/destruction,
+  decay operations, and the violation policy (copy has no index entry point).
+
+## `relocate`
+
+- API pairs: `uninitialized_relocate_iters` / `uninitialized_relocate`,
+  `uninitialized_relocate_n_iters` / `uninitialized_relocate_n`,
+  `uninitialized_relocate_backward_iters` / `uninitialized_relocate_backward`,
+  `uninitialized_move_iters` / `uninitialized_move`,
+  `uninitialized_move_n_iters` / `uninitialized_move_n`,
+  `uninitialized_move_backward_iters` / `uninitialized_move_backward`.
+- Relocate move-constructs into uninitialized storage and then destroys the
+  source elements; move only constructs.
+- Byte fast path: both value types satisfy
+  `is_trivially_copyable_or_relocatable_v` and either the same value type or
+  both integral/`std::byte` with equal size. Uses `my_memmove`, so overlapping
+  in-place shifts are handled.
+- Generic path constructs through `uninitialized_guard` and destroys the source
+  element after each successful construction.
+- Container-specific `uninitialized_relocate_define` /
+  `uninitialized_relocate_backward_define` customization points are deferred
+  until these algorithms move into `fast_io` core.
+- `throws` includes move construction, destruction, iterator operations, decay
+  operations, and the violation policy.
+
 ## Comparator design
 
 ### Contract

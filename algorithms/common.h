@@ -187,4 +187,61 @@ concept iter_decay_source_no_throw =
      { last - first } noexcept;
    });
 
+template<typename Iter, typename Snt>
+inline constexpr bool copy_source_last_no_throw =
+  (::std::same_as<Iter, Snt> &&
+   requires(Iter& it) {
+     { ::std::to_address(it) } noexcept;
+   }) ||
+  (::std::contiguous_iterator<Snt> &&
+   requires(Iter& first, Snt& last) {
+     { ::std::to_address(first) } noexcept;
+     { ::std::to_address(last) } noexcept;
+   }) ||
+  (::std::sized_sentinel_for<Snt, Iter> &&
+   requires(Iter& first, Snt& last) {
+     { ::std::to_address(first) } noexcept;
+     { last - first } noexcept;
+   });
+
+template<typename Iter, typename Snt>
+inline constexpr auto copy_source_last(Iter first, Snt last) noexcept
+{
+  if constexpr (::std::same_as<Iter, Snt> || ::std::contiguous_iterator<Snt>)
+  {
+    return ::std::to_address(last);
+  }
+  else
+  {
+    return ::std::to_address(first) + (last - first);
+  }
+}
+
+template<typename Iter, typename Snt, typename OIter>
+inline constexpr bool copy_can_decay{
+  ::std::contiguous_iterator<Iter> &&
+  ::std::contiguous_iterator<OIter> &&
+  ::fast_io::details::algorithms::copy_source_last_no_throw<Iter, Snt> &&
+  requires(OIter& dest, ::std::iter_difference_t<OIter> difference) {
+    { ::std::to_address(dest) } noexcept;
+    { dest + difference } noexcept;
+  }};
+
+template<typename OIter, typename T>
+struct uninitialized_guard
+{
+  OIter first;
+  OIter current;
+  inline constexpr ~uninitialized_guard() noexcept
+  {
+    if constexpr (!::std::is_trivially_destructible_v<T>)
+    {
+      for (; first != current; ++first)
+      {
+        __builtin_addressof(*first)->~T();
+      }
+    }
+  }
+};
+
 }
