@@ -3,6 +3,7 @@
 #include "common.h"
 #include "compare.h"
 #include "copy.h"
+#include "fill.h"
 #include "find.h"
 #include "for_each.h"
 #include "heap.h"

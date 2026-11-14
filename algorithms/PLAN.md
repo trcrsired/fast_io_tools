@@ -15,6 +15,7 @@ Header layout: one algorithm family per header.
 - `common.h`: shared index helpers, flag lookup, iterator/range concepts, and
   element traits shared by several families.
 - `compare.h`: the default `compare_three_way` comparator.
+- `fill.h`: the `fill` family; includes `common.h`.
 - `for_each.h`: the `for_each` family; includes `common.h`.
 - `find.h`: the `find` family; includes `common.h`.
 - `heap.h`: the heap family; includes `common.h` and `compare.h`.
@@ -263,6 +264,29 @@ No-throw detection for iterators is deliberately minimal and lives in
   are assumed non-throwing.
 - `throws` includes assignment/construction/destruction (copy has no index
   entry point).
+
+## `fill`
+
+- API pairs: `fill_iters` / `fill`, `fill_n_iters` / `fill_n`, plus
+  `fill_index`.
+- `fill_iters` takes an iterator/sentinel pair and returns the end iterator;
+  `fill` takes a range and returns `ranges::iterator_t<R>`. `fill_n` fills the
+  first `count` elements of a range and returns the iterator one past the last
+  element written, matching `copy_n`.
+- `fill_index(r, firstidx, lastidx, value)` validates the indices through
+  `algo_index_to_iters` and fills `[firstidx, lastidx)`.
+- Contiguous iterators decay to pointers and re-enter the pointer path, so
+  `fill(vec, value)` and `fill(vec.data(), vec.data() + vec.size(), value)`
+  share one instantiation.
+- A one-byte element whose value is also one byte is filled with
+  `my_memset`: every target byte receives the same byte, which is exactly what
+  element assignment produces. This covers `char`, `std::byte`, and the fixed
+  width byte integers. The call is skipped during constant evaluation.
+- Wider elements use a plain assignment loop. Clang turns the loop into a
+  broadcast store plus unrolled vector stores for 4/8/16-byte elements, so no
+  explicit SIMD path is needed.
+- `throws` includes the iterator increment, the element assignment, and, for
+  `fill_index`, the violation policy and the final index arithmetic.
 
 ## `relocate`
 

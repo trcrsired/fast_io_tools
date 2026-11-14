@@ -45,5 +45,20 @@ int main()
 		(void)ec;
 		caught = true;
 	}
-	return caught ? 0 : 3;
+	if (!caught)
+	{
+		return 3;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::fill_index(d, 0, 2, 7);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	return caught ? 0 : 4;
 }
