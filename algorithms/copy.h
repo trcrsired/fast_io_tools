@@ -588,6 +588,37 @@ inline constexpr OIter uninitialized_copy_backward_iters_impl(Iter first, Snt la
   }
 }
 
+template<typename Iter, typename Snt, typename OIter, typename F>
+concept copy_if_iters_no_throw =
+  ::fast_io::details::algorithms::sentinel_no_throw<Iter, Snt> &&
+  ::fast_io::details::algorithms::output_iter_no_throw<
+    OIter, ::std::iter_value_t<Iter>> &&
+  requires(Iter &it, F &f)
+{
+  { static_cast<bool>(f(*it)) } noexcept;
+} &&
+  (::fast_io::details::algorithms::copy_byte_copyable<
+     ::std::iter_value_t<Iter>, ::std::iter_value_t<OIter>> ||
+   ::fast_io::details::algorithms::copy_assign_no_throw<Iter, OIter>);
+
+template<typename Iter, typename Snt, typename OIter, typename F>
+inline constexpr OIter copy_if_iters_impl(
+  Iter first, Snt last, OIter dest, F &f)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::copy_if_iters_no_throw<
+      Iter, Snt, OIter, F>)
+{
+  for (; first != last; ++first)
+  {
+    if (static_cast<bool>(f(*first)))
+    {
+      *dest = *first;
+      ++dest;
+    }
+  }
+  return dest;
+}
+
 }
 
 namespace fast_io::algorithms
@@ -733,6 +764,32 @@ inline constexpr OIter uninitialized_copy_backward(R&& r, OIter d_last)
 {
   return ::fast_io::algorithms::uninitialized_copy_backward_iters(
     ::std::ranges::begin(r), ::std::ranges::end(r), d_last);
+}
+
+
+// Copy only the elements for which `f` returns true.
+template<::std::input_iterator Iter, ::std::sentinel_for<Iter> Snt,
+  typename OIter, typename F>
+inline constexpr OIter copy_if_iters(
+  Iter first, Snt last, OIter dest, F f)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::copy_if_iters_no_throw<
+      Iter, Snt, OIter, F>)
+{
+  return ::fast_io::details::algorithms::copy_if_iters_impl(
+    first, last, dest, f);
+}
+
+template<::std::ranges::input_range R, typename OIter, typename F>
+inline constexpr OIter copy_if(R &&r, OIter dest, F f)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::copy_if_iters_no_throw<
+      ::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>,
+      OIter, F>)
+{
+  return ::fast_io::algorithms::copy_if_iters(
+    ::std::ranges::begin(r), ::std::ranges::end(r), dest,
+    ::std::move(f));
 }
 
 }

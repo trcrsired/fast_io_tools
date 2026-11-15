@@ -14,6 +14,8 @@ Header layout: one algorithm family per header.
 
 - `advance.h`: `advance_iters`.
 - `all_of.h`: the `all_of` / `any_of` / `none_of` quantifier family.
+- `binary_search.h`: the binary-search family (`lower_bound`, `upper_bound`,
+  `equal_range`, `binary_search`).
 - `common.h`: shared index helpers, flag lookup, iterator/range concepts,
   comparator pass/equality helpers, and element traits shared by several
   families.
@@ -22,18 +24,36 @@ Header layout: one algorithm family per header.
 - `copy.h`: the copy family, including the uninitialized copy variants.
 - `count.h`: the `count` / `count_if` family.
 - `destroy.h`: the destruction family (`destroy_at`, `destroy`, `destroy_n`).
+- `equal.h`: the two-range `equal` family.
 - `fill.h`: the `fill` family, including the uninitialized fill variants.
 - `find.h`: the `find` family.
 - `for_each.h`: the `for_each` family.
+- `generate.h`: the `generate` / `generate_n` family.
 - `heap.h`: the heap family.
+- `is_sorted.h`: the `is_sorted` / `is_sorted_until` family.
 - `lexicographical_compare.h`: the lexicographical comparison family.
+- `merge.h`: `merge` and `inplace_merge`.
+- `minmax.h`: `min` / `max` / `minmax` / `clamp` and the element variants.
 - `mismatch.h`: the two-range `mismatch` family.
+- `move.h`: `move` and `move_backward`.
+- `nth_element.h`: `nth_element`.
+- `partial_sort.h`: `partial_sort` and `partial_sort_copy`.
+- `partition.h`: the partition family, including `stable_partition` and
+  `partition_point`.
+- `permutation.h`: `is_permutation`, `next_permutation`, `prev_permutation`.
 - `relocate.h`: the relocate family, including the uninitialized move variants.
 - `remove.h`: the `remove` / `remove_if` family.
-- `reverse.h`: the `reverse` family.
+- `replace.h`: the `replace` and `replace_copy` families.
+- `reverse.h`: the `reverse` family, including `reverse_copy`.
 - `search.h`: the search family (`adjacent_find`, `find_end`,
   `find_first_of`, `search`, `search_n`).
+- `set_operations.h`: the sorted-set family (`includes`, `set_union`,
+  `set_intersection`, `set_difference`, `set_symmetric_difference`).
+- `shift.h`: `shift_left` and `shift_right`.
 - `sort.h`: the unstable sort.
+- `swap_ranges.h`: `swap_ranges`.
+- `transform.h`: the unary and binary `transform` family.
+- `unique.h`: `unique` and `unique_copy`.
 - `impl.h`: umbrella. It is the only header that uses `#include`. It includes
   `common.h` and `compare.h` first and then every algorithm header in
   dependency order. Family headers contain no includes at all and are not meant
@@ -41,6 +61,16 @@ Header layout: one algorithm family per header.
 - `tests/`: one test translation unit per family. Tests include `../impl.h`
   with a relative path so the directory can move into `fast_io` unchanged.
 - `benchmarks/`: C++ and Rust benchmark harnesses for `sort`.
+
+All `<algorithm>` families are implemented except the random-number algorithms
+(`random_shuffle`, `shuffle`, `sample`) and `stable_sort`, which are deferred.
+`partial_sort` and `nth_element` currently delegate to the full sort; sorting
+satisfies their postconditions. `partial_sort_copy` sorts the copied prefix and
+then performs insertion into that sorted prefix. `inplace_merge` is a correct
+rotate-based merge, not a buffered optimal one. `is_permutation` compares
+multiset counts without auxiliary storage. `next_permutation` and
+`prev_permutation` materialize the sentinel as an iterator once so a
+non-random-access sentinel can be used.
 
 One family per header does not mean a family must reimplement its
 dependencies. Families call each other's internal implementation when that

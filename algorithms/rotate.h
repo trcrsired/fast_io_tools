@@ -519,6 +519,35 @@ concept rotate_index_no_throw =
     ::fast_io::details::algorithms::algo_index_iterator<R>,
     ::fast_io::details::algorithms::algo_index_iterator<R>>;
 
+
+template<typename Iter, typename Snt, typename OIter>
+concept rotate_copy_iters_no_throw =
+  ::fast_io::details::algorithms::sentinel_no_throw<Iter, Snt> &&
+  ::fast_io::details::algorithms::output_iter_no_throw<
+    OIter, ::std::iter_value_t<Iter>> &&
+  requires(Iter &it, OIter &dest)
+{
+  { *dest = *it } noexcept;
+};
+
+template<typename Iter, typename Snt, typename OIter>
+inline constexpr OIter rotate_copy_iters_impl(
+  Iter first, Iter middle, Snt last, OIter dest)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::rotate_copy_iters_no_throw<
+      Iter, Snt, OIter>)
+{
+  for (Iter it{middle}; it != last; ++it, ++dest)
+  {
+    *dest = *it;
+  }
+  for (Iter it{first}; it != middle; ++it, ++dest)
+  {
+    *dest = *it;
+  }
+  return dest;
+}
+
 } // namespace fast_io::details::algorithms
 
 namespace fast_io::algorithms
@@ -565,6 +594,56 @@ inline constexpr ::std::size_t rotate_index(
   ::fast_io::algorithms::rotate_iters(
     first, first + (middleidx - firstidx), last_it);
   return firstidx + (last - middleidx);
+}
+
+
+// Copy `[first, last)` to `dest` rotated so that `middle` becomes first.
+template<::std::forward_iterator Iter, ::std::sentinel_for<Iter> Snt,
+  typename OIter>
+inline constexpr OIter rotate_copy_iters(
+  Iter first, Iter middle, Snt last, OIter dest)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::rotate_copy_iters_no_throw<
+      Iter, Snt, OIter>)
+{
+  return ::fast_io::details::algorithms::rotate_copy_iters_impl(
+    first, middle, last, dest);
+}
+
+template<::std::ranges::forward_range R, typename OIter>
+inline constexpr OIter rotate_copy(R &&r, ::std::ranges::iterator_t<R> middle,
+  OIter dest)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::rotate_copy_iters_no_throw<
+      ::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>,
+      OIter>)
+{
+  return ::fast_io::algorithms::rotate_copy_iters(
+    ::std::ranges::begin(r), middle, ::std::ranges::end(r), dest);
+}
+
+template<::std::ranges::random_access_range R, typename OIter>
+inline constexpr OIter rotate_copy_index(
+  R &&r, ::std::size_t firstidx, ::std::size_t middleidx,
+  ::std::size_t lastidx, OIter dest)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::rotate_copy_iters_no_throw<
+      ::fast_io::details::algorithms::algo_index_iterator<R>,
+      ::fast_io::details::algorithms::algo_index_iterator<R>, OIter> &&
+    !::fast_io::details::algorithms::range_throws_on_violations<R>)
+{
+  auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
+    ::std::forward<R>(r), firstidx, lastidx);
+  if (middleidx < firstidx || lastidx < middleidx) [[unlikely]]
+  {
+    ::fast_io::containers::details::violation_report_on_invalid_argument<
+      ::fast_io::details::algorithms::range_throws_on_violations<R>>();
+  }
+  return ::fast_io::algorithms::rotate_copy_iters(
+    first, first + static_cast<::std::iter_difference_t<
+      ::fast_io::details::algorithms::algo_index_iterator<R>>>(
+      middleidx - firstidx),
+    last, dest);
 }
 
 } // namespace fast_io::algorithms

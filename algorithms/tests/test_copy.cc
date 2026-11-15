@@ -56,8 +56,24 @@ constexpr bool constexpr_uninitialized_copy_test()
 
 static_assert(constexpr_uninitialized_copy_test());
 
+
+static_assert(noexcept(::fast_io::algorithms::copy_if(
+	::std::declval<std::vector<int> &>(), ::std::declval<int *>(),
+	[](int value) noexcept { return value == 1; })));
+
 int main()
 {
+	{
+		int const source[]{1, 2, 1, 3};
+		int out[4]{};
+		auto const end{::fast_io::algorithms::copy_if_iters(
+			source, source + 4, out,
+			[](int value) noexcept { return value == 1; })};
+		if (end != out + 2 || out[0] != 1 || out[1] != 1)
+		{
+			return 9;
+		}
+	}
 	// copy + overlap via copy (memmove semantics)
 	int a[8]{0, 1, 2, 3, 4, 5, 6, 7};
 	::fast_io::algorithms::copy_n_iters(a, 4, a + 2);

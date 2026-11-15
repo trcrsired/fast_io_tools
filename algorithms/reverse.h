@@ -123,6 +123,37 @@ inline constexpr void reverse_iters_impl(Iter first, Snt last)
   }
 }
 
+
+template<typename Iter, typename Snt, typename OIter>
+concept reverse_copy_iters_no_throw =
+  ::fast_io::details::algorithms::sentinel_no_throw<Iter, Snt> &&
+  ::fast_io::details::algorithms::output_iter_no_throw<
+    OIter, ::std::iter_value_t<Iter>> &&
+  requires(Iter &it, OIter &dest)
+{
+  { *dest = *it } noexcept;
+};
+
+template<typename Iter, typename Snt, typename OIter>
+inline constexpr OIter reverse_copy_iters_impl(
+  Iter first, Snt last, OIter dest)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::reverse_copy_iters_no_throw<
+      Iter, Snt, OIter>)
+{
+  Iter last_iter{first};
+  for (; last_iter != last; ++last_iter)
+  {
+  }
+  while (last_iter != first)
+  {
+    --last_iter;
+    *dest = *last_iter;
+    ++dest;
+  }
+  return dest;
+}
+
 } // namespace fast_io::details::algorithms
 
 namespace fast_io::algorithms
@@ -155,6 +186,30 @@ inline constexpr void reverse_index(
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
   ::fast_io::algorithms::reverse_iters(first, last);
+}
+
+
+// Copy `[first, last)` to `dest` in reverse order.
+template<::std::bidirectional_iterator Iter, ::std::sentinel_for<Iter> Snt,
+  typename OIter>
+inline constexpr OIter reverse_copy_iters(Iter first, Snt last, OIter dest)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::reverse_copy_iters_no_throw<
+      Iter, Snt, OIter>)
+{
+  return ::fast_io::details::algorithms::reverse_copy_iters_impl(
+    first, last, dest);
+}
+
+template<::std::ranges::bidirectional_range R, typename OIter>
+inline constexpr OIter reverse_copy(R &&r, OIter dest)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::reverse_copy_iters_no_throw<
+      ::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>,
+      OIter>)
+{
+  return ::fast_io::algorithms::reverse_copy_iters(
+    ::std::ranges::begin(r), ::std::ranges::end(r), dest);
 }
 
 } // namespace fast_io::algorithms

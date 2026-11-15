@@ -368,8 +368,25 @@ static_assert(!noexcept(::fast_io::algorithms::rotate(
 	::std::declval<std::forward_list<int> &>(),
 	::std::declval<std::forward_list<int>::iterator>())));
 
+
+static_assert(noexcept(::fast_io::algorithms::rotate_copy(
+	::std::declval<std::vector<int> &>(),
+	::std::declval<std::vector<int> &>().begin(),
+	::std::declval<int *>())));
+
 int main()
 {
+	{
+		int const source[]{1, 2, 3, 4};
+		int out[4]{};
+		auto const end{::fast_io::algorithms::rotate_copy_iters(
+			source, source + 2, source + 4, out)};
+		if (end != out + 4 || out[0] != 3 || out[1] != 4 ||
+			out[2] != 1 || out[3] != 2)
+		{
+			return 9;
+		}
+	}
 	if (!check_all_sizes())
 	{
 		return 1;

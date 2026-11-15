@@ -221,8 +221,22 @@ static_assert(!noexcept(::fast_io::algorithms::reverse(
 static_assert(!noexcept(::fast_io::algorithms::reverse(
 	::std::declval<std::deque<int> &>())));
 
+
+static_assert(noexcept(::fast_io::algorithms::reverse_copy(
+	::std::declval<std::vector<int> &>(), ::std::declval<int *>())));
+
 int main()
 {
+	{
+		int const source[]{1, 2, 3};
+		int out[3]{};
+		auto const end{::fast_io::algorithms::reverse_copy_iters(
+			source, source + 3, out)};
+		if (end != out + 3 || out[0] != 3 || out[1] != 2 || out[2] != 1)
+		{
+			return 9;
+		}
+	}
 	if (!check_all_sizes())
 	{
 		return 1;
