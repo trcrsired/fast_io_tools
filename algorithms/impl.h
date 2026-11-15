@@ -11,6 +11,7 @@
 #include "common.h"
 #include "customization.h"
 #include "compare.h"
+#include "operations.h"
 #include "swap.h"
 
 #include "advance.h"
@@ -24,6 +25,17 @@
 #include "find.h"
 #include "for_each.h"
 #include "generate.h"
+
+// Numeric family. `scan.h` reuses the `partial_sum` implementation, so it is
+// included after `partial_sum.h`.
+#include "adjacent_difference.h"
+#include "inner_product.h"
+#include "integer.h"
+#include "iota.h"
+#include "reduce.h"
+#include "partial_sum.h"
+#include "scan.h"
+
 #include "heap.h"
 #include "is_sorted.h"
 #include "lexicographical_compare.h"

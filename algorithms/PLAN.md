@@ -13,6 +13,7 @@ Baseline: C++23 freestanding. `<ranges>`, `<iterator>`, `std::to_address`,
 Header layout: one algorithm family per header.
 
 - `advance.h`: `advance_iters`.
+- `adjacent_difference.h`: `adjacent_difference`.
 - `all_of.h`: the `all_of` / `any_of` / `none_of` quantifier family.
 - `binary_search.h`: the binary-search family (`lower_bound`, `upper_bound`,
   `equal_range`, `binary_search`).
@@ -31,6 +32,9 @@ Header layout: one algorithm family per header.
 - `for_each.h`: the `for_each` family.
 - `generate.h`: the `generate` / `generate_n` family.
 - `heap.h`: the heap family.
+- `inner_product.h`: `inner_product`.
+- `integer.h`: `gcd` and `lcm`.
+- `iota.h`: `iota`.
 - `is_sorted.h`: the `is_sorted` / `is_sorted_until` family.
 - `lexicographical_compare.h`: the lexicographical comparison family.
 - `merge.h`: `merge` and `inplace_merge`.
@@ -41,14 +45,20 @@ Header layout: one algorithm family per header.
 - `mismatch.h`: the two-range `mismatch` family.
 - `move.h`: `move` and `move_backward`.
 - `nth_element.h`: `nth_element`.
+- `operations.h`: the `field_ops` operation objects (`add`, `minus`,
+  `multiply`, `divide`, `modulo`, `negate`, the bit/logical operations, and
+  `minimum` / `maximum`).
 - `partial_sort.h`: `partial_sort` and `partial_sort_copy`.
+- `partial_sum.h`: `partial_sum`.
 - `partition.h`: the partition family, including `stable_partition` and
   `partition_point`.
 - `permutation.h`: `is_permutation`, `next_permutation`, `prev_permutation`.
+- `reduce.h`: `reduce` and `accumulate`.
 - `relocate.h`: the relocate family, including the uninitialized move variants.
 - `remove.h`: the `remove` / `remove_if` family.
 - `replace.h`: the `replace` and `replace_copy` families.
 - `reverse.h`: the `reverse` family, including `reverse_copy`.
+- `scan.h`: `inclusive_scan` and `exclusive_scan`.
 - `search.h`: the search family (`adjacent_find`, `find_end`,
   `find_first_of`, `search`, `search_n`).
 - `set_operations.h`: the sorted-set family (`includes`, `set_union`,
@@ -59,15 +69,17 @@ Header layout: one algorithm family per header.
 - `transform.h`: the unary and binary `transform` family.
 - `unique.h`: `unique` and `unique_copy`.
 - `impl.h`: umbrella. It is the only header that uses `#include`. It includes
-  `common.h` and `compare.h` first and then every algorithm header in
-  dependency order. Family headers contain no includes at all and are not meant
-  to be included on their own.
+  `common.h`, `compare.h` and `operations.h` first and then every algorithm
+  header in dependency order. Family headers contain no includes at all and are
+  not meant to be included on their own.
 - `tests/`: one test translation unit per family. Tests include `../impl.h`
   with a relative path so the directory can move into `fast_io` unchanged.
 - `benchmarks/`: C++ and Rust benchmark harnesses for `sort`.
 
 All `<algorithm>` families are implemented except the random-number algorithms
 (`random_shuffle`, `shuffle`, `sample`) and `stable_sort`, which are deferred.
+The numeric families are split out of the standard `<numeric>` header and live
+here too; see the numeric section below.
 `partial_sort` uses a max-heap of the `middle - first` smallest elements seen
 so far: heapify the prefix, scan the remainder and replace the root whenever a
 smaller element appears, then heap-sort the prefix. `partial_sort_copy` does the
@@ -110,6 +122,9 @@ time instead of carrying a second advance loop.
 - Comparators are named types with a `compare` member. Lambdas and `operator()`
   callables are not accepted and are not adapted or erased. A one-off ordering
   is written as a small named struct.
+- Numeric operations are named types with a `compute` member. Lambdas and
+  `operator()` callables are rejected there too; `field_ops` provides the
+  default operation objects.
 - Unrecoverable internal failure uses `__builtin_trap()`.
 - Construction into uninitialized storage uses placement new. `std::construct_at`
   is not used; placement new works under herbceptions and in constant
@@ -821,6 +836,103 @@ random records.
   partition directions (`<=` before `nth`, `>=` after), not that the whole
   range is sorted.
 
+## Numeric family
+
+The standard library splits numeric algorithms into `<numeric>`. There is no
+reason for that split here: they are ordinary algorithm families with the same
+naming, index, customization, and `throws` rules. `<cmath>` and the
+random-number engines stay out of scope.
+
+### Operation objects
+
+Numeric algorithms take operation objects from
+`::fast_io::algorithms::field_ops`. An operation is a named type with a
+`compute` member:
+
+- unary form: `op.compute(value)`
+- binary form: `op.compute(lhs, rhs)`
+
+`operator()` is never used, so a lambda cannot be passed where an operation is
+expected. The objects are not class templates:
+
+- `field_ops::add`
+- `field_ops::minus`
+- `field_ops::multiply`
+- `field_ops::divide`
+- `field_ops::modulo`
+- `field_ops::negate`
+- `field_ops::bit_and`, `field_ops::bit_or`, `field_ops::bit_xor`,
+  `field_ops::bit_not`
+- `field_ops::logical_and`, `field_ops::logical_or`, `field_ops::logical_not`
+- `field_ops::minimum`, `field_ops::maximum`
+
+`compute` deduces both operand types, so there is no `field_ops::add<T>`.
+Operations are passed by value; public entries add
+`operation_pass_no_throw<Op>` exactly as comparator entries add
+`comparator_pass_no_throw<Cmp>`. `minimum` / `maximum` return a value; they do
+not replace the removed reference-returning `min` / `max`.
+
+### API shape
+
+Each family has `_iters`, range, and `*_index_range` entry points where an input
+range exists. There is no `*_index_of` form: no numeric algorithm returns a
+data-dependent position. `gcd` and `lcm` take no ranges.
+
+| Family | Entries |
+| --- | --- |
+| `iota` | `iota_iters`, `iota`, `iota_index_range` |
+| `reduce` | `reduce_iters`, `reduce`, `reduce_index_range` |
+| `accumulate` | `accumulate_iters`, `accumulate`, `accumulate_index_range` |
+| `inner_product` | `inner_product_iters`, `inner_product`, `inner_product_index_range` |
+| `adjacent_difference` | `adjacent_difference_iters`, `adjacent_difference`, `adjacent_difference_index_range` |
+| `partial_sum` | `partial_sum_iters`, `partial_sum`, `partial_sum_index_range` |
+| `inclusive_scan` | `inclusive_scan_iters`, `inclusive_scan`, `inclusive_scan_index_range` |
+| `exclusive_scan` | `exclusive_scan_iters`, `exclusive_scan`, `exclusive_scan_index_range` |
+| `gcd` / `lcm` | `gcd`, `lcm` |
+
+Defaults are default template arguments, not overloads: `Op = field_ops::add`
+for folds and scans, `Op = field_ops::minus` for `adjacent_difference`,
+`Op1 = field_ops::add` / `Op2 = field_ops::multiply` for `inner_product`.
+
+Implementation notes:
+
+- `iota` assigns `value`, then `++value`, and returns the value after the last
+  increment. An empty range returns the initial value. Contiguous iterators
+  decay to pointers and re-enter the pointer path.
+- `reduce` and `accumulate` share one left-fold implementation. `accumulate` is
+  strict left-to-right by contract; `reduce` permits regrouping, but there is no
+  parallel backend yet, so both currently produce the same values.
+- `inner_product` takes both ends of the second range and stops at whichever
+  range ends first. This avoids the standard form's requirement that the second
+  range be at least as long as the first.
+- `adjacent_difference` copies the first element and then computes
+  `op.compute(current, previous)`. `dest` may equal `first`; the previous value
+  is cached before the write.
+- `partial_sum` writes the running value and may run in place. `inclusive_scan`
+  has the same contract and reuses the `partial_sum` implementation.
+- `exclusive_scan` writes `init` first, then the fold of `init` and the
+  preceding elements. The output range must not overlap the input. As in
+  libc++, the final input element is folded once and the result is discarded,
+  so `Op` must tolerate that extra invocation; the output count is still
+  `last - first`.
+- Seeded inclusive scan (`std::inclusive_scan` with an `init` argument) has no
+  separate entry yet. `partial_sum` covers the unseeded case; a seeded form is
+  added only when a concrete need appears.
+- `gcd` and `lcm` operate on the magnitudes through the unsigned counterpart of
+  `T`, so the most negative signed value is handled. `gcd(0, 0)` is 0 and
+  `lcm(0, n)` is 0. A result that does not fit `T` is undefined, matching the
+  standard contract.
+
+Hooks: `iota_iters_define`, `reduce_iters_define`,
+`accumulate_iters_define`, `inner_product_iters_define`,
+`adjacent_difference_iters_define`, `partial_sum_iters_define`,
+`inclusive_scan_iters_define`, `exclusive_scan_iters_define`. `gcd` and `lcm`
+have no iterator form and therefore no hook.
+
+`throws` includes the operation invocation, the by-value operation pass, element
+assignment or construction, iterator increment gates, the violation policy for
+index forms, and result construction.
+
 ## Customization
 
 - Every public `*_iters` entry starts with `FAST_IO_ALGORITHMS_CUSTOMIZE_IF`.
@@ -1111,6 +1223,11 @@ herbceptions.
 4. Correct `for_each_iters` decay, callback semantics, and iterator `throws`.
 5. `compare_by` is implemented; extend it only when a concrete projection need
    appears.
+6. Numeric families are implemented: `iota`, `reduce` / `accumulate`,
+   `inner_product`, `adjacent_difference`, `partial_sum`, `inclusive_scan`,
+   `exclusive_scan`, `gcd` / `lcm`. Still deferred: `transform_reduce`,
+   `transform_inclusive_scan`, `transform_exclusive_scan`, seeded inclusive
+   scan, `midpoint`, and the random-number algorithms.
 
 ## Open dialogs (processed / dropped)
 
@@ -1120,3 +1237,5 @@ herbceptions.
 - No overload sets.
 - No lambda comparators. Comparators are named types with `.compare`; callable
   adaptation and erasure are rejected as a source of hidden cost and confusion.
+- Operation member name is `compute`. `apply` was rejected because it reads like
+  `std::apply` and invites the callable association that comparators reject.

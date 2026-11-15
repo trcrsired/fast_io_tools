@@ -90,6 +90,7 @@ struct range
 
 inline int copy_calls{};
 inline int find_calls{};
+inline int reduce_calls{};
 inline int sort_calls{};
 inline int nth_calls{};
 
@@ -124,6 +125,16 @@ inline constexpr Iter find_iters_define(
 		}
 	}
 	return first;
+}
+
+template<typename Iter, typename Snt, typename T, typename Op>
+inline constexpr T reduce_iters_define(
+	::fast_io::io_algorithm_t,
+	Iter first, Snt last, T init, Op op) noexcept
+{
+	++reduce_calls;
+	return ::fast_io::details::algorithms::reduce_iters_impl(
+		first.ptr, last.ptr, init, op);
 }
 
 template<typename Iter, typename Cmp>
@@ -181,6 +192,13 @@ int main()
 	if (user::nth_calls != 1 || nth_source[2] != 3)
 	{
 		return 4;
+	}
+
+	int reduce_source[]{1, 2, 3, 4};
+	user::range rr{user::iter{reduce_source}, user::iter{reduce_source + 4}};
+	if (::fast_io::algorithms::reduce(rr, 0) != 10 || user::reduce_calls != 1)
+	{
+		return 5;
 	}
 	return 0;
 }

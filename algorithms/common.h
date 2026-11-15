@@ -208,6 +208,15 @@ concept comparator_pass_no_throw =
   ::std::is_nothrow_move_constructible_v<Cmp> &&
   ::std::is_nothrow_default_constructible_v<Cmp>;
 
+// Operations are passed by value and invoked through their `compute` member,
+// mirroring comparators. A closure has no `compute` member, so lambdas are
+// rejected rather than adapted.
+template<typename Op>
+concept operation_pass_no_throw =
+  ::std::is_nothrow_copy_constructible_v<Op> &&
+  ::std::is_nothrow_move_constructible_v<Op> &&
+  ::std::is_nothrow_default_constructible_v<Op>;
+
 // Comparators may provide `equal(a, b)` as a cheaper equality test. When it is
 // absent, equality falls back to `compare(a, b) == 0`.
 template<typename Cmp, typename T, typename U>
