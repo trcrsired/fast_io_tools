@@ -57,14 +57,14 @@ constexpr bool constexpr_uninitialized_fill_test()
 
 static_assert(constexpr_uninitialized_fill_test());
 
-constexpr bool constexpr_uninitialized_fill_index_test()
+constexpr bool constexpr_uninitialized_fill_index_range_test()
 {
 	int a[6]{1, 2, 3, 4, 5, 6};
-	::fast_io::algorithms::uninitialized_fill_index(a, 1, 5, 0);
+	::fast_io::algorithms::uninitialized_fill_index_range(a, 1, 5, 0);
 	return a[0] == 1 && a[1] == 0 && a[4] == 0 && a[5] == 6;
 }
 
-static_assert(constexpr_uninitialized_fill_index_test());
+static_assert(constexpr_uninitialized_fill_index_range_test());
 
 constexpr bool constexpr_fill_test()
 {
@@ -109,21 +109,21 @@ constexpr bool constexpr_fill_n_test()
 
 static_assert(constexpr_fill_n_test());
 
-constexpr bool constexpr_fill_index_test()
+constexpr bool constexpr_fill_index_range_test()
 {
 	int a[8]{1, 2, 3, 4, 5, 6, 7, 8};
-	::fast_io::algorithms::fill_index(a, 1, 5, 0);
+	::fast_io::algorithms::fill_index_range(a, 1, 5, 0);
 	if (a[0] != 1 || a[1] != 0 || a[4] != 0 || a[5] != 6 || a[7] != 8)
 	{
 		return false;
 	}
-	::fast_io::algorithms::fill_index(a, 0, 0, 99);
+	::fast_io::algorithms::fill_index_range(a, 0, 0, 99);
 	return a[0] == 1;
 }
 
-static_assert(constexpr_fill_index_test());
+static_assert(constexpr_fill_index_range_test());
 
-bool check_index()
+bool check_index_range()
 {
 	for (std::size_t n{}; n != 40; ++n)
 	{
@@ -138,7 +138,7 @@ bool check_index()
 			{
 				std::vector<std::uint64_t> actual{source};
 				std::vector<std::uint64_t> expected{source};
-				::fast_io::algorithms::fill_index(actual, first, last, 0xdeadbeefull);
+				::fast_io::algorithms::fill_index_range(actual, first, last, 0xdeadbeefull);
 				for (std::size_t i{first}; i != last; ++i)
 				{
 					expected[i] = 0xdeadbeefull;
@@ -263,7 +263,7 @@ bool check_uninitialized_fill() throws(true)
 
 	{
 		raw_storage<std::string, 6> storage;
-		::fast_io::algorithms::uninitialized_fill_index(
+		::fast_io::algorithms::uninitialized_fill_index_range(
 			storage, 1, 5, std::string{"xy"});
 		for (std::size_t i{}; i != storage.size(); ++i)
 		{
@@ -275,7 +275,7 @@ bool check_uninitialized_fill() throws(true)
 				}
 			}
 		}
-		::fast_io::algorithms::destroy_index(storage, 1, 5);
+		::fast_io::algorithms::destroy_index_range(storage, 1, 5);
 	}
 	return true;
 }
@@ -291,7 +291,7 @@ static_assert(!noexcept(::fast_io::algorithms::fill(
 	::std::declval<std::string const &>())));
 static_assert(noexcept(::fast_io::algorithms::fill_n(
 	::std::declval<std::vector<int> &>(), std::size_t{}, 1)));
-static_assert(noexcept(::fast_io::algorithms::fill_index(
+static_assert(noexcept(::fast_io::algorithms::fill_index_range(
 	::std::declval<std::vector<int> &>(), std::size_t{}, std::size_t{}, 1)));
 static_assert(!noexcept(::fast_io::algorithms::fill(
 	::std::declval<std::deque<int> &>(), 1)));
@@ -305,7 +305,7 @@ static_assert(noexcept(::fast_io::algorithms::uninitialized_fill_n_iters(
 	::std::declval<int *>(), std::size_t{}, 1)));
 static_assert(!noexcept(::fast_io::algorithms::uninitialized_fill_n_iters(
 	::std::declval<throwing_value *>(), std::size_t{}, 0)));
-static_assert(noexcept(::fast_io::algorithms::uninitialized_fill_index(
+static_assert(noexcept(::fast_io::algorithms::uninitialized_fill_index_range(
 	::std::declval<std::vector<int> &>(), std::size_t{}, std::size_t{}, 1)));
 
 int main()
@@ -365,7 +365,7 @@ int main()
 	{
 		return 9;
 	}
-	if (!check_index())
+	if (!check_index_range())
 	{
 		return 10;
 	}

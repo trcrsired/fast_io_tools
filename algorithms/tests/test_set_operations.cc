@@ -74,7 +74,7 @@ bool check_random()
 		}
 		std::vector<int> expected(2 * n), actual(2 * n);
 		auto e{std::set_union(a.begin(), a.end(), b.begin(), b.end(), expected.begin())};
-		auto r{::fast_io::algorithms::set_union_index(
+		auto r{::fast_io::algorithms::set_union_index_range(
 			a, 0, n, b, 0, n, actual.begin())};
 		if (!std::equal(expected.begin(), e, actual.begin(), r))
 		{

@@ -33,7 +33,7 @@ concept shift_right_ranges_no_throw =
     ::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>>;
 
 template<typename R>
-concept shift_left_index_no_throw =
+concept shift_left_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::shift_left_iters_no_throw<
@@ -41,7 +41,7 @@ concept shift_left_index_no_throw =
     ::fast_io::details::algorithms::algo_index_iterator<R>>;
 
 template<typename R>
-concept shift_right_index_no_throw =
+concept shift_right_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::shift_right_iters_no_throw<
@@ -145,8 +145,9 @@ inline constexpr Iter shift_left_iters(
     !::fast_io::details::algorithms::shift_left_iters_no_throw<
       Iter, Snt>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::shift_left_tag, first, last, n);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    shift_left_iters_define, first, last, n);
   return ::fast_io::details::algorithms::shift_left_iters_impl(
     first, last, n);
 }
@@ -162,11 +163,11 @@ inline constexpr ::std::ranges::iterator_t<R> shift_left(
 }
 
 template<::std::ranges::random_access_range R>
-inline constexpr ::std::size_t shift_left_index(
+inline constexpr ::std::size_t shift_left_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx,
   ::std::size_t n)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::shift_left_index_no_throw<R>)
+    !::fast_io::details::algorithms::shift_left_index_range_no_throw<R>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
@@ -177,6 +178,18 @@ inline constexpr ::std::size_t shift_left_index(
   return firstidx + static_cast<::std::size_t>(result - first);
 }
 
+template<::std::ranges::random_access_range R>
+inline constexpr ::std::size_t shift_left_index_of(
+  R &&r, ::std::ranges::range_difference_t<R> n)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::shift_left_ranges_no_throw<R>)
+{
+  auto const first{::std::ranges::begin(r)};
+  auto const result{::fast_io::algorithms::shift_left(
+    ::std::forward<R>(r), n)};
+  return static_cast<::std::size_t>(result - first);
+}
+
 template<::std::bidirectional_iterator Iter, ::std::sentinel_for<Iter> Snt>
 inline constexpr Iter shift_right_iters(
   Iter first, Snt last, ::std::iter_difference_t<Iter> n)
@@ -184,8 +197,9 @@ inline constexpr Iter shift_right_iters(
     !::fast_io::details::algorithms::shift_right_iters_no_throw<
       Iter, Snt>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::shift_right_tag, first, last, n);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    shift_right_iters_define, first, last, n);
   return ::fast_io::details::algorithms::shift_right_iters_impl(
     first, last, n);
 }
@@ -201,11 +215,11 @@ inline constexpr ::std::ranges::iterator_t<R> shift_right(
 }
 
 template<::std::ranges::random_access_range R>
-inline constexpr ::std::size_t shift_right_index(
+inline constexpr ::std::size_t shift_right_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx,
   ::std::size_t n)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::shift_right_index_no_throw<R>)
+    !::fast_io::details::algorithms::shift_right_index_range_no_throw<R>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
@@ -214,6 +228,18 @@ inline constexpr ::std::size_t shift_right_index(
     static_cast<::std::iter_difference_t<
       ::fast_io::details::algorithms::algo_index_iterator<R>>>(n))};
   return firstidx + static_cast<::std::size_t>(result - first);
+}
+
+template<::std::ranges::random_access_range R>
+inline constexpr ::std::size_t shift_right_index_of(
+  R &&r, ::std::ranges::range_difference_t<R> n)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::shift_right_ranges_no_throw<R>)
+{
+  auto const first{::std::ranges::begin(r)};
+  auto const result{::fast_io::algorithms::shift_right(
+    ::std::forward<R>(r), n)};
+  return static_cast<::std::size_t>(result - first);
 }
 
 } // namespace fast_io::algorithms

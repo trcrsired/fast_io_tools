@@ -5,25 +5,25 @@
 
 #include <vector>
 
-constexpr bool constexpr_index_test()
+constexpr bool constexpr_index_range_test()
 {
 	int a[8]{1, 2, 3, 4, 5, 6, 7, 8};
 	int sum{};
-	::fast_io::algorithms::for_each_index(
+	::fast_io::algorithms::for_each_index_range(
 		a, 1, 8, [&](int &x) noexcept { sum += x; });
 	return sum == 2 + 3 + 4 + 5 + 6 + 7 + 8;
 }
 
-static_assert(constexpr_index_test());
+static_assert(constexpr_index_range_test());
 
 static_assert(noexcept(::fast_io::algorithms::for_each(
 	::std::declval<::std::vector<int> &>(), [](int &) noexcept {})));
 static_assert(!noexcept(::fast_io::algorithms::for_each(
 	::std::declval<::std::vector<int> &>(), [](int &) {})));
-static_assert(noexcept(::fast_io::algorithms::for_each_index(
+static_assert(noexcept(::fast_io::algorithms::for_each_index_range(
 	::std::declval<::std::vector<int> &>(), ::std::size_t{}, ::std::size_t{},
 	[](int &) noexcept {})));
-static_assert(!noexcept(::fast_io::algorithms::for_each_index(
+static_assert(!noexcept(::fast_io::algorithms::for_each_index_range(
 	::std::declval<::std::vector<int> &>(), ::std::size_t{}, ::std::size_t{},
 	[](int &) {})));
 

@@ -22,7 +22,7 @@ concept adjacent_find_ranges_no_throw =
     ::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>, Cmp>;
 
 template<typename R, typename Cmp>
-concept adjacent_find_index_no_throw =
+concept adjacent_find_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::adjacent_find_iters_no_throw<
@@ -48,7 +48,7 @@ concept search_ranges_no_throw =
     ::std::ranges::iterator_t<R2>, ::std::ranges::sentinel_t<R2>, Cmp>;
 
 template<typename R1, typename R2, typename Cmp>
-concept search_index_no_throw =
+concept search_index_range_no_throw =
   ::std::ranges::random_access_range<R1> &&
   ::std::ranges::random_access_range<R2> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R1> &&
@@ -74,7 +74,7 @@ concept search_n_ranges_no_throw =
     ::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>, T, Cmp>;
 
 template<typename R, typename T, typename Cmp>
-concept search_n_index_no_throw =
+concept search_n_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::search_n_iters_no_throw<
@@ -257,8 +257,9 @@ inline constexpr Iter adjacent_find_iters(
     !::fast_io::details::algorithms::adjacent_find_iters_no_throw<
       Iter, Snt, Cmp>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::adjacent_find_tag, first, last, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    adjacent_find_iters_define, first, last, cmp);
   return ::fast_io::details::algorithms::adjacent_find_iters_impl(
     first, last, cmp);
 }
@@ -276,16 +277,29 @@ inline constexpr ::std::ranges::iterator_t<R> adjacent_find(
 
 template<::std::ranges::random_access_range R,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr ::std::size_t adjacent_find_index(
+inline constexpr ::std::size_t adjacent_find_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::adjacent_find_index_no_throw<R, Cmp>)
+    !::fast_io::details::algorithms::adjacent_find_index_range_no_throw<R, Cmp>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
   auto const found{::fast_io::algorithms::adjacent_find_iters(
     first, last, cmp)};
   return firstidx + static_cast<::std::size_t>(found - first);
+}
+
+template<::std::ranges::random_access_range R,
+  typename Cmp = ::fast_io::algorithms::compare_three_way>
+inline constexpr ::std::size_t adjacent_find_index_of(
+  R &&r, Cmp cmp = Cmp{})
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::adjacent_find_ranges_no_throw<R, Cmp>)
+{
+  auto const first{::std::ranges::begin(r)};
+  auto const found{::fast_io::algorithms::adjacent_find(
+    ::std::forward<R>(r), cmp)};
+  return static_cast<::std::size_t>(found - first);
 }
 
 // Find the last occurrence of `[first2, last2)` in `[first1, last1)`.
@@ -298,8 +312,9 @@ inline constexpr Iter1 find_end_iters(
     !::fast_io::details::algorithms::search_iters_no_throw<
       Iter1, Snt1, Iter2, Snt2, Cmp>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::find_end_tag, first1, last1, first2, last2, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first1), decltype(first2)>),
+    find_end_iters_define, first1, last1, first2, last2, cmp);
   return ::fast_io::details::algorithms::find_end_iters_impl(
     first1, last1, first2, last2, cmp);
 }
@@ -319,12 +334,12 @@ inline constexpr ::std::ranges::iterator_t<R1> find_end(
 template<::std::ranges::random_access_range R1,
   ::std::ranges::random_access_range R2,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr ::std::size_t find_end_index(
+inline constexpr ::std::size_t find_end_index_range(
   R1 &&r1, ::std::size_t firstidx1, ::std::size_t lastidx1,
   R2 &&r2, ::std::size_t firstidx2, ::std::size_t lastidx2,
   Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::search_index_no_throw<R1, R2, Cmp>)
+    !::fast_io::details::algorithms::search_index_range_no_throw<R1, R2, Cmp>)
 {
   auto [first1, last1] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R1>(r1), firstidx1, lastidx1);
@@ -333,6 +348,20 @@ inline constexpr ::std::size_t find_end_index(
   auto const found{::fast_io::algorithms::find_end_iters(
     first1, last1, first2, last2, cmp)};
   return firstidx1 + static_cast<::std::size_t>(found - first1);
+}
+
+template<::std::ranges::random_access_range R1,
+  ::std::ranges::random_access_range R2,
+  typename Cmp = ::fast_io::algorithms::compare_three_way>
+inline constexpr ::std::size_t find_end_index_of(
+  R1 &&r1, R2 &&r2, Cmp cmp = Cmp{})
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::search_ranges_no_throw<R1, R2, Cmp>)
+{
+  auto const first{::std::ranges::begin(r1)};
+  auto const found{::fast_io::algorithms::find_end(
+    ::std::forward<R1>(r1), ::std::forward<R2>(r2), cmp)};
+  return static_cast<::std::size_t>(found - first);
 }
 
 // Find the first element of `[first1, last1)` that also appears in
@@ -346,8 +375,9 @@ inline constexpr Iter1 find_first_of_iters(
     !::fast_io::details::algorithms::search_iters_no_throw<
       Iter1, Snt1, Iter2, Snt2, Cmp>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::find_first_of_tag, first1, last1, first2, last2, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first1), decltype(first2)>),
+    find_first_of_iters_define, first1, last1, first2, last2, cmp);
   return ::fast_io::details::algorithms::find_first_of_iters_impl(
     first1, last1, first2, last2, cmp);
 }
@@ -367,12 +397,12 @@ inline constexpr ::std::ranges::iterator_t<R1> find_first_of(
 template<::std::ranges::random_access_range R1,
   ::std::ranges::random_access_range R2,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr ::std::size_t find_first_of_index(
+inline constexpr ::std::size_t find_first_of_index_range(
   R1 &&r1, ::std::size_t firstidx1, ::std::size_t lastidx1,
   R2 &&r2, ::std::size_t firstidx2, ::std::size_t lastidx2,
   Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::search_index_no_throw<R1, R2, Cmp>)
+    !::fast_io::details::algorithms::search_index_range_no_throw<R1, R2, Cmp>)
 {
   auto [first1, last1] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R1>(r1), firstidx1, lastidx1);
@@ -381,6 +411,20 @@ inline constexpr ::std::size_t find_first_of_index(
   auto const found{::fast_io::algorithms::find_first_of_iters(
     first1, last1, first2, last2, cmp)};
   return firstidx1 + static_cast<::std::size_t>(found - first1);
+}
+
+template<::std::ranges::random_access_range R1,
+  ::std::ranges::random_access_range R2,
+  typename Cmp = ::fast_io::algorithms::compare_three_way>
+inline constexpr ::std::size_t find_first_of_index_of(
+  R1 &&r1, R2 &&r2, Cmp cmp = Cmp{})
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::search_ranges_no_throw<R1, R2, Cmp>)
+{
+  auto const first{::std::ranges::begin(r1)};
+  auto const found{::fast_io::algorithms::find_first_of(
+    ::std::forward<R1>(r1), ::std::forward<R2>(r2), cmp)};
+  return static_cast<::std::size_t>(found - first);
 }
 
 // Find the first occurrence of `[first2, last2)` in `[first1, last1)`.
@@ -393,8 +437,9 @@ inline constexpr Iter1 search_iters(
     !::fast_io::details::algorithms::search_iters_no_throw<
       Iter1, Snt1, Iter2, Snt2, Cmp>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::search_tag, first1, last1, first2, last2, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first1), decltype(first2)>),
+    search_iters_define, first1, last1, first2, last2, cmp);
   return ::fast_io::details::algorithms::search_iters_impl(
     first1, last1, first2, last2, cmp);
 }
@@ -414,12 +459,12 @@ inline constexpr ::std::ranges::iterator_t<R1> search(
 template<::std::ranges::random_access_range R1,
   ::std::ranges::random_access_range R2,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr ::std::size_t search_index(
+inline constexpr ::std::size_t search_index_range(
   R1 &&r1, ::std::size_t firstidx1, ::std::size_t lastidx1,
   R2 &&r2, ::std::size_t firstidx2, ::std::size_t lastidx2,
   Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::search_index_no_throw<R1, R2, Cmp>)
+    !::fast_io::details::algorithms::search_index_range_no_throw<R1, R2, Cmp>)
 {
   auto [first1, last1] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R1>(r1), firstidx1, lastidx1);
@@ -428,6 +473,20 @@ inline constexpr ::std::size_t search_index(
   auto const found{::fast_io::algorithms::search_iters(
     first1, last1, first2, last2, cmp)};
   return firstidx1 + static_cast<::std::size_t>(found - first1);
+}
+
+template<::std::ranges::random_access_range R1,
+  ::std::ranges::random_access_range R2,
+  typename Cmp = ::fast_io::algorithms::compare_three_way>
+inline constexpr ::std::size_t search_index_of(
+  R1 &&r1, R2 &&r2, Cmp cmp = Cmp{})
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::search_ranges_no_throw<R1, R2, Cmp>)
+{
+  auto const first{::std::ranges::begin(r1)};
+  auto const found{::fast_io::algorithms::search(
+    ::std::forward<R1>(r1), ::std::forward<R2>(r2), cmp)};
+  return static_cast<::std::size_t>(found - first);
 }
 
 // Find `count` consecutive elements equal to `value`.
@@ -440,8 +499,9 @@ inline constexpr Iter search_n_iters(
     !::fast_io::details::algorithms::search_n_iters_no_throw<
       Iter, Snt, T, Cmp>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::search_n_tag, first, last, count, value, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    search_n_iters_define, first, last, count, value, cmp);
   return ::fast_io::details::algorithms::search_n_iters_impl(
     first, last, count, value, cmp);
 }
@@ -459,17 +519,30 @@ inline constexpr ::std::ranges::iterator_t<R> search_n(
 
 template<::std::ranges::random_access_range R, typename T,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr ::std::size_t search_n_index(
+inline constexpr ::std::size_t search_n_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx,
   ::std::size_t count, T const &value, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::search_n_index_no_throw<R, T, Cmp>)
+    !::fast_io::details::algorithms::search_n_index_range_no_throw<R, T, Cmp>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
   auto const found{::fast_io::algorithms::search_n_iters(
     first, last, count, value, cmp)};
   return firstidx + static_cast<::std::size_t>(found - first);
+}
+
+template<::std::ranges::random_access_range R, typename T,
+  typename Cmp = ::fast_io::algorithms::compare_three_way>
+inline constexpr ::std::size_t search_n_index_of(
+  R &&r, ::std::size_t count, T const &value, Cmp cmp = Cmp{})
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::search_n_ranges_no_throw<R, T, Cmp>)
+{
+  auto const first{::std::ranges::begin(r)};
+  auto const found{::fast_io::algorithms::search_n(
+    ::std::forward<R>(r), count, value, cmp)};
+  return static_cast<::std::size_t>(found - first);
 }
 
 } // namespace fast_io::algorithms

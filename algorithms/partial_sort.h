@@ -17,7 +17,7 @@ concept partial_sort_ranges_no_throw =
     ::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>, Cmp>;
 
 template<typename R, typename Cmp>
-concept partial_sort_index_no_throw =
+concept partial_sort_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::partial_sort_iters_no_throw<
@@ -47,7 +47,7 @@ concept partial_sort_copy_ranges_no_throw =
     ::std::ranges::iterator_t<R2>, ::std::ranges::sentinel_t<R2>, Cmp>;
 
 template<typename R1, typename R2, typename Cmp>
-concept partial_sort_copy_index_no_throw =
+concept partial_sort_copy_index_range_no_throw =
   ::std::ranges::random_access_range<R1> &&
   ::std::ranges::random_access_range<R2> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R1> &&
@@ -146,8 +146,9 @@ inline constexpr void partial_sort_iters(
     !::fast_io::details::algorithms::partial_sort_iters_no_throw<
       Iter, Snt, Cmp>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::partial_sort_tag, first, middle, last, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    partial_sort_iters_define, first, middle, last, cmp);
   ::fast_io::details::algorithms::partial_sort_iters_impl(
     first, middle, last, cmp);
 }
@@ -165,11 +166,11 @@ inline constexpr void partial_sort(
 
 template<::std::ranges::random_access_range R,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr void partial_sort_index(
+inline constexpr void partial_sort_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t middleidx,
   ::std::size_t lastidx, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::partial_sort_index_no_throw<R, Cmp>)
+    !::fast_io::details::algorithms::partial_sort_index_range_no_throw<R, Cmp>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
@@ -196,8 +197,9 @@ inline constexpr OIter partial_sort_copy_iters(
     !::fast_io::details::algorithms::partial_sort_copy_iters_no_throw<
       Iter, Snt, OIter, OSnt, Cmp>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::partial_sort_copy_tag, first, last, d_first, d_last, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(d_first)>),
+    partial_sort_copy_iters_define, first, last, d_first, d_last, cmp);
   return ::fast_io::details::algorithms::partial_sort_copy_iters_impl(
     first, last, d_first, d_last, cmp);
 }
@@ -219,12 +221,12 @@ inline constexpr ::std::ranges::iterator_t<R2> partial_sort_copy(
 template<::std::ranges::random_access_range R1,
   ::std::ranges::random_access_range R2,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr ::std::size_t partial_sort_copy_index(
+inline constexpr ::std::size_t partial_sort_copy_index_range(
   R1 &&r1, ::std::size_t firstidx1, ::std::size_t lastidx1,
   R2 &&r2, ::std::size_t firstidx2, ::std::size_t lastidx2,
   Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::partial_sort_copy_index_no_throw<
+    !::fast_io::details::algorithms::partial_sort_copy_index_range_no_throw<
       R1, R2, Cmp>)
 {
   auto [first1, last1] = ::fast_io::details::algorithms::algo_index_to_iters(

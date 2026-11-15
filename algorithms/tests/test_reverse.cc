@@ -152,7 +152,7 @@ bool check_all_sizes()
 	return true;
 }
 
-bool check_index()
+bool check_index_range()
 {
 	std::uint64_t state{0x1234567890abcdefull};
 	for (std::size_t n{}; n != 40; ++n)
@@ -170,7 +170,7 @@ bool check_index()
 				std::reverse(expected.begin() + static_cast<std::ptrdiff_t>(first),
 					expected.begin() + static_cast<std::ptrdiff_t>(last));
 				std::vector<std::uint64_t> actual{source};
-				::fast_io::algorithms::reverse_index(actual, first, last);
+				::fast_io::algorithms::reverse_index_range(actual, first, last);
 				if (!equal_ranges(expected, actual))
 				{
 					return false;
@@ -189,7 +189,7 @@ constexpr bool constexpr_reverse_test()
 	{
 		return false;
 	}
-	::fast_io::algorithms::reverse_index(a, 1, 8);
+	::fast_io::algorithms::reverse_index_range(a, 1, 8);
 	return a[0] == 9 && a[1] == 2 && a[7] == 8 && a[8] == 1;
 }
 
@@ -214,7 +214,7 @@ static_assert(noexcept(::fast_io::algorithms::reverse(
 	::std::declval<std::vector<std::string> &>())));
 static_assert(noexcept(::fast_io::algorithms::reverse_iters(
 	::std::declval<int *>(), ::std::declval<int *>())));
-static_assert(noexcept(::fast_io::algorithms::reverse_index(
+static_assert(noexcept(::fast_io::algorithms::reverse_index_range(
 	::std::declval<std::vector<int> &>(), std::size_t{}, std::size_t{})));
 static_assert(!noexcept(::fast_io::algorithms::reverse(
 	::std::declval<std::list<int> &>())));
@@ -241,7 +241,7 @@ int main()
 	{
 		return 1;
 	}
-	if (!check_index())
+	if (!check_index_range())
 	{
 		return 2;
 	}
@@ -279,7 +279,7 @@ int main()
 			}
 			--expected;
 		}
-		::fast_io::algorithms::reverse_index(deque_values, 1, 8);
+		::fast_io::algorithms::reverse_index_range(deque_values, 1, 8);
 	}
 	catch throws(::std::error)
 	{

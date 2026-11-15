@@ -33,7 +33,7 @@ concept heap_iters_no_throw =
   ::fast_io::details::algorithms::heap_move_no_throw<::std::iter_value_t<Iter>>;
 
 template<typename R, typename Cmp>
-concept is_heap_index_no_throw =
+concept is_heap_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::is_heap_iters_no_throw<
@@ -41,7 +41,7 @@ concept is_heap_index_no_throw =
   ::fast_io::details::algorithms::heap_comparator_pass_no_throw<Cmp>;
 
 template<typename R, typename Cmp>
-concept heap_index_no_throw =
+concept heap_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::heap_iters_no_throw<
@@ -254,8 +254,9 @@ inline constexpr Iter is_heap_until_iters(Iter first, Iter last, Cmp cmp = Cmp{}
     !(::fast_io::details::algorithms::is_heap_iters_no_throw<Iter, Cmp> &&
       ::fast_io::details::algorithms::heap_comparator_pass_no_throw<Cmp>))
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::is_heap_until_tag, first, last, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    is_heap_until_iters_define, first, last, cmp);
   return ::fast_io::details::algorithms::is_heap_until_iters_impl(first, last, cmp);
 }
 
@@ -278,8 +279,9 @@ inline constexpr bool is_heap_iters(Iter first, Iter last, Cmp cmp = Cmp{})
     !(::fast_io::details::algorithms::is_heap_iters_no_throw<Iter, Cmp> &&
       ::fast_io::details::algorithms::heap_comparator_pass_no_throw<Cmp>))
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::is_heap_tag, first, last, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    is_heap_iters_define, first, last, cmp);
   return ::fast_io::details::algorithms::is_heap_until_iters_impl(first, last, cmp) == last;
 }
 
@@ -302,8 +304,9 @@ inline constexpr void make_heap_iters(Iter first, Iter last, Cmp cmp = Cmp{})
     !(::fast_io::details::algorithms::heap_iters_no_throw<Iter, Cmp> &&
       ::fast_io::details::algorithms::heap_comparator_pass_no_throw<Cmp>))
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::make_heap_tag, first, last, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    make_heap_iters_define, first, last, cmp);
   ::fast_io::details::algorithms::make_heap_iters_impl(first, last, cmp);
 }
 
@@ -326,8 +329,9 @@ inline constexpr void push_heap_iters(Iter first, Iter last, Cmp cmp = Cmp{})
     !(::fast_io::details::algorithms::heap_iters_no_throw<Iter, Cmp> &&
       ::fast_io::details::algorithms::heap_comparator_pass_no_throw<Cmp>))
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::push_heap_tag, first, last, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    push_heap_iters_define, first, last, cmp);
   ::fast_io::details::algorithms::push_heap_iters_impl(first, last, cmp);
 }
 
@@ -350,8 +354,9 @@ inline constexpr void pop_heap_iters(Iter first, Iter last, Cmp cmp = Cmp{})
     !(::fast_io::details::algorithms::heap_iters_no_throw<Iter, Cmp> &&
       ::fast_io::details::algorithms::heap_comparator_pass_no_throw<Cmp>))
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::pop_heap_tag, first, last, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    pop_heap_iters_define, first, last, cmp);
   ::fast_io::details::algorithms::pop_heap_iters_impl(first, last, cmp);
 }
 
@@ -374,8 +379,9 @@ inline constexpr void sort_heap_iters(Iter first, Iter last, Cmp cmp = Cmp{})
     !(::fast_io::details::algorithms::heap_iters_no_throw<Iter, Cmp> &&
       ::fast_io::details::algorithms::heap_comparator_pass_no_throw<Cmp>))
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::sort_heap_tag, first, last, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    sort_heap_iters_define, first, last, cmp);
   ::fast_io::details::algorithms::sort_heap_iters_impl(first, last, cmp);
 }
 
@@ -393,10 +399,10 @@ inline constexpr void sort_heap(R &&r, Cmp cmp = Cmp{})
 
 template<::std::ranges::random_access_range R,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr ::std::size_t is_heap_until_index(
+inline constexpr ::std::size_t is_heap_until_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::is_heap_index_no_throw<R, Cmp>)
+    !::fast_io::details::algorithms::is_heap_index_range_no_throw<R, Cmp>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
@@ -407,10 +413,25 @@ inline constexpr ::std::size_t is_heap_until_index(
 
 template<::std::ranges::random_access_range R,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr bool is_heap_index(
+inline constexpr ::std::size_t is_heap_until_index_of(
+  R &&r, Cmp cmp = Cmp{})
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !(::fast_io::details::algorithms::is_heap_iters_no_throw<
+        ::std::ranges::iterator_t<R>, Cmp> &&
+      ::fast_io::details::algorithms::heap_comparator_pass_no_throw<Cmp>))
+{
+  auto const first{::std::ranges::begin(r)};
+  auto const found{::fast_io::algorithms::is_heap_until(
+    ::std::forward<R>(r), cmp)};
+  return static_cast<::std::size_t>(found - first);
+}
+
+template<::std::ranges::random_access_range R,
+  typename Cmp = ::fast_io::algorithms::compare_three_way>
+inline constexpr bool is_heap_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::is_heap_index_no_throw<R, Cmp>)
+    !::fast_io::details::algorithms::is_heap_index_range_no_throw<R, Cmp>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
@@ -419,10 +440,10 @@ inline constexpr bool is_heap_index(
 
 template<::std::ranges::random_access_range R,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr void make_heap_index(
+inline constexpr void make_heap_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::heap_index_no_throw<R, Cmp>)
+    !::fast_io::details::algorithms::heap_index_range_no_throw<R, Cmp>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
@@ -431,10 +452,10 @@ inline constexpr void make_heap_index(
 
 template<::std::ranges::random_access_range R,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr void push_heap_index(
+inline constexpr void push_heap_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::heap_index_no_throw<R, Cmp>)
+    !::fast_io::details::algorithms::heap_index_range_no_throw<R, Cmp>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
@@ -443,10 +464,10 @@ inline constexpr void push_heap_index(
 
 template<::std::ranges::random_access_range R,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr void pop_heap_index(
+inline constexpr void pop_heap_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::heap_index_no_throw<R, Cmp>)
+    !::fast_io::details::algorithms::heap_index_range_no_throw<R, Cmp>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
@@ -455,10 +476,10 @@ inline constexpr void pop_heap_index(
 
 template<::std::ranges::random_access_range R,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr void sort_heap_index(
+inline constexpr void sort_heap_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::heap_index_no_throw<R, Cmp>)
+    !::fast_io::details::algorithms::heap_index_range_no_throw<R, Cmp>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);

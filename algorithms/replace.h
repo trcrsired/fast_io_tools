@@ -24,7 +24,7 @@ concept replace_ranges_no_throw =
     ::std::ranges::iterator_t<R>, T>;
 
 template<typename R, typename T>
-concept replace_index_no_throw =
+concept replace_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::replace_iter_no_throw<
@@ -52,7 +52,7 @@ concept replace_if_ranges_no_throw =
     ::std::ranges::iterator_t<R>, F, T>;
 
 template<typename R, typename F, typename T>
-concept replace_if_index_no_throw =
+concept replace_if_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::std::is_nothrow_move_constructible_v<F> &&
@@ -184,8 +184,9 @@ inline constexpr void replace_iters(
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::replace_iters_no_throw<Iter, Snt, T>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::replace_tag, first, last, old_value, new_value);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    replace_iters_define, first, last, old_value, new_value);
   ::fast_io::details::algorithms::replace_iters_impl(
     first, last, old_value, new_value);
 }
@@ -202,11 +203,11 @@ inline constexpr void replace(
 }
 
 template<::std::ranges::random_access_range R, typename T>
-inline constexpr void replace_index(
+inline constexpr void replace_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx,
   T const &old_value, T const &new_value)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::replace_index_no_throw<R, T>)
+    !::fast_io::details::algorithms::replace_index_range_no_throw<R, T>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
@@ -222,8 +223,9 @@ inline constexpr void replace_if_iters(
     !::fast_io::details::algorithms::replace_if_iters_no_throw<
       Iter, Snt, F, T>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::replace_if_tag, first, last, f, new_value);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    replace_if_iters_define, first, last, f, new_value);
   ::fast_io::details::algorithms::replace_if_iters_impl(
     first, last, f, new_value);
 }
@@ -239,11 +241,11 @@ inline constexpr void replace_if(R &&r, F f, T const &new_value)
 }
 
 template<::std::ranges::random_access_range R, typename F, typename T>
-inline constexpr void replace_if_index(
+inline constexpr void replace_if_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, F f,
   T const &new_value)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::replace_if_index_no_throw<
+    !::fast_io::details::algorithms::replace_if_index_range_no_throw<
       R, F, T>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
@@ -261,8 +263,9 @@ inline constexpr OIter replace_copy_iters(
     !::fast_io::details::algorithms::replace_copy_iters_no_throw<
       Iter, Snt, OIter, T>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::replace_copy_tag, first, last, dest, old_value, new_value);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(dest)>),
+    replace_copy_iters_define, first, last, dest, old_value, new_value);
   return ::fast_io::details::algorithms::replace_copy_iters_impl(
     first, last, dest, old_value, new_value);
 }
@@ -287,8 +290,9 @@ inline constexpr OIter replace_copy_if_iters(
     !::fast_io::details::algorithms::replace_copy_if_iters_no_throw<
       Iter, Snt, OIter, F, T>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::replace_copy_if_tag, first, last, dest, f, new_value);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(dest)>),
+    replace_copy_if_iters_define, first, last, dest, f, new_value);
   return ::fast_io::details::algorithms::replace_copy_if_iters_impl(
     first, last, dest, f, new_value);
 }

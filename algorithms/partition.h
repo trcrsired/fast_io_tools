@@ -24,7 +24,7 @@ concept partition_ranges_no_throw =
     ::std::ranges::iterator_t<R>, F>;
 
 template<typename R, typename F>
-concept partition_index_no_throw =
+concept partition_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::std::is_nothrow_move_constructible_v<F> &&
@@ -72,7 +72,7 @@ concept stable_partition_ranges_no_throw =
     ::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>, F>;
 
 template<typename R, typename F>
-concept stable_partition_index_no_throw =
+concept stable_partition_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::std::is_nothrow_move_constructible_v<F> &&
@@ -243,8 +243,9 @@ inline constexpr bool is_partitioned_iters(Iter first, Snt last, F f)
     !::fast_io::details::algorithms::partition_iters_no_throw<
       Iter, Snt, F>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::is_partitioned_tag, first, last, f);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    is_partitioned_iters_define, first, last, f);
   return ::fast_io::details::algorithms::is_partitioned_iters_impl(
     first, last, f);
 }
@@ -259,10 +260,10 @@ inline constexpr bool is_partitioned(R &&r, F f)
 }
 
 template<::std::ranges::random_access_range R, typename F>
-inline constexpr bool is_partitioned_index(
+inline constexpr bool is_partitioned_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::partition_index_no_throw<R, F>)
+    !::fast_io::details::algorithms::partition_index_range_no_throw<R, F>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
@@ -277,8 +278,9 @@ inline constexpr Iter partition_iters(Iter first, Snt last, F f)
     !::fast_io::details::algorithms::partition_swap_iters_no_throw<
       Iter, Snt, F>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::partition_tag, first, last, f);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    partition_iters_define, first, last, f);
   return ::fast_io::details::algorithms::partition_iters_impl(
     first, last, f);
 }
@@ -294,16 +296,28 @@ inline constexpr ::std::ranges::iterator_t<R> partition(R &&r, F f)
 }
 
 template<::std::ranges::random_access_range R, typename F>
-inline constexpr ::std::size_t partition_index(
+inline constexpr ::std::size_t partition_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::partition_index_no_throw<R, F>)
+    !::fast_io::details::algorithms::partition_index_range_no_throw<R, F>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
   auto const result{::fast_io::algorithms::partition_iters(
     first, last, ::std::move(f))};
   return firstidx + static_cast<::std::size_t>(result - first);
+}
+
+template<::std::ranges::random_access_range R, typename F>
+inline constexpr ::std::size_t partition_index_of(R &&r, F f)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::partition_swap_iters_no_throw<
+      ::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>, F>)
+{
+  auto const first{::std::ranges::begin(r)};
+  auto const result{::fast_io::algorithms::partition(
+    ::std::forward<R>(r), ::std::move(f))};
+  return static_cast<::std::size_t>(result - first);
 }
 
 template<::std::forward_iterator Iter, ::std::sentinel_for<Iter> Snt,
@@ -314,8 +328,9 @@ inline constexpr ::std::pair<OIter1, OIter2> partition_copy_iters(
     !::fast_io::details::algorithms::partition_copy_iters_no_throw<
       Iter, Snt, OIter1, OIter2, F>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::partition_copy_tag, first, last, dest_true, dest_false, f);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(dest_true), decltype(dest_false)>),
+    partition_copy_iters_define, first, last, dest_true, dest_false, f);
   return ::fast_io::details::algorithms::partition_copy_iters_impl(
     first, last, dest_true, dest_false, f);
 }
@@ -340,8 +355,9 @@ inline constexpr Iter stable_partition_iters(Iter first, Snt last, F f)
     !::fast_io::details::algorithms::stable_partition_iters_no_throw<
       Iter, Snt, F>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::stable_partition_tag, first, last, f);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    stable_partition_iters_define, first, last, f);
   return ::fast_io::details::algorithms::stable_partition_iters_impl(
     first, last, f);
 }
@@ -358,16 +374,27 @@ inline constexpr ::std::ranges::iterator_t<R> stable_partition(
 }
 
 template<::std::ranges::random_access_range R, typename F>
-inline constexpr ::std::size_t stable_partition_index(
+inline constexpr ::std::size_t stable_partition_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::stable_partition_index_no_throw<R, F>)
+    !::fast_io::details::algorithms::stable_partition_index_range_no_throw<R, F>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
   auto const result{::fast_io::algorithms::stable_partition_iters(
     first, last, ::std::move(f))};
   return firstidx + static_cast<::std::size_t>(result - first);
+}
+
+template<::std::ranges::random_access_range R, typename F>
+inline constexpr ::std::size_t stable_partition_index_of(R &&r, F f)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::stable_partition_ranges_no_throw<R, F>)
+{
+  auto const first{::std::ranges::begin(r)};
+  auto const result{::fast_io::algorithms::stable_partition(
+    ::std::forward<R>(r), ::std::move(f))};
+  return static_cast<::std::size_t>(result - first);
 }
 
 template<::std::forward_iterator Iter, ::std::sentinel_for<Iter> Snt,
@@ -377,8 +404,9 @@ inline constexpr Iter partition_point_iters(Iter first, Snt last, F f)
     !::fast_io::details::algorithms::partition_iters_no_throw<
       Iter, Snt, F>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::partition_point_tag, first, last, f);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    partition_point_iters_define, first, last, f);
   return ::fast_io::details::algorithms::partition_point_iters_impl(
     first, last, f);
 }
@@ -394,16 +422,27 @@ inline constexpr ::std::ranges::iterator_t<R> partition_point(
 }
 
 template<::std::ranges::random_access_range R, typename F>
-inline constexpr ::std::size_t partition_point_index(
+inline constexpr ::std::size_t partition_point_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::partition_index_no_throw<R, F>)
+    !::fast_io::details::algorithms::partition_index_range_no_throw<R, F>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
   auto const result{::fast_io::algorithms::partition_point_iters(
     first, last, ::std::move(f))};
   return firstidx + static_cast<::std::size_t>(result - first);
+}
+
+template<::std::ranges::random_access_range R, typename F>
+inline constexpr ::std::size_t partition_point_index_of(R &&r, F f)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::partition_ranges_no_throw<R, F>)
+{
+  auto const first{::std::ranges::begin(r)};
+  auto const result{::fast_io::algorithms::partition_point(
+    ::std::forward<R>(r), ::std::move(f))};
+  return static_cast<::std::size_t>(result - first);
 }
 
 } // namespace fast_io::algorithms

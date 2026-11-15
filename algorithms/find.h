@@ -259,7 +259,7 @@ concept find_ranges_no_throw =
     ::std::ranges::iterator_t<R>, T>;
 
 template<typename R, typename T>
-concept find_index_no_throw =
+concept find_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::find_iter_no_throw<
@@ -340,7 +340,7 @@ concept find_if_ranges_no_throw =
     ::std::ranges::iterator_t<R>, F>;
 
 template<typename R, typename F>
-concept find_if_index_no_throw =
+concept find_if_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::std::is_nothrow_move_constructible_v<F> &&
@@ -385,8 +385,9 @@ template<::std::input_iterator Iter, ::std::sentinel_for<Iter> Snt, typename T>
 inline constexpr Iter find_iters(Iter first, Snt last, T const& value)
   FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::find_iters_no_throw<Iter, Snt, T>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::find_tag, first, last, value);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    find_iters_define, first, last, value);
   return ::fast_io::details::algorithms::find_iters_impl(first, last, value);
 }
 
@@ -398,12 +399,23 @@ inline constexpr ::std::ranges::iterator_t<R> find(R&& r, T const& value)
 }
 
 template<::std::ranges::random_access_range R, typename T>
-inline constexpr ::std::size_t find_index(R&& r, ::std::size_t firstidx, ::std::size_t lastidx, T const& value)
-  FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::find_index_no_throw<R, T>)
+inline constexpr ::std::size_t find_index_range(R&& r, ::std::size_t firstidx, ::std::size_t lastidx, T const& value)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::find_index_range_no_throw<R, T>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(::std::forward<R>(r), firstidx, lastidx);
   auto const found{::fast_io::algorithms::find_iters(first, last, value)};
   return firstidx + static_cast<::std::size_t>(found - first);
+}
+
+template<::std::ranges::random_access_range R, typename T>
+inline constexpr ::std::size_t find_index_of(R &&r, T const &value)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::find_ranges_no_throw<R, T>)
+{
+  auto const first{::std::ranges::begin(r)};
+  auto const found{::fast_io::algorithms::find(
+    ::std::forward<R>(r), value)};
+  return static_cast<::std::size_t>(found - first);
 }
 
 // Find the first element for which `f` returns true.
@@ -413,8 +425,9 @@ inline constexpr Iter find_if_iters(Iter first, Snt last, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::find_if_iters_no_throw<Iter, Snt, F>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::find_if_tag, first, last, f);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    find_if_iters_define, first, last, f);
   return ::fast_io::details::algorithms::find_if_iters_impl(first, last, f);
 }
 
@@ -428,16 +441,27 @@ inline constexpr ::std::ranges::iterator_t<R> find_if(R &&r, F f)
 }
 
 template<::std::ranges::random_access_range R, typename F>
-inline constexpr ::std::size_t find_if_index(
+inline constexpr ::std::size_t find_if_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::find_if_index_no_throw<R, F>)
+    !::fast_io::details::algorithms::find_if_index_range_no_throw<R, F>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
   auto const found{::fast_io::algorithms::find_if_iters(
     first, last, ::std::move(f))};
   return firstidx + static_cast<::std::size_t>(found - first);
+}
+
+template<::std::ranges::random_access_range R, typename F>
+inline constexpr ::std::size_t find_if_index_of(R &&r, F f)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::find_if_ranges_no_throw<R, F>)
+{
+  auto const first{::std::ranges::begin(r)};
+  auto const found{::fast_io::algorithms::find_if(
+    ::std::forward<R>(r), ::std::move(f))};
+  return static_cast<::std::size_t>(found - first);
 }
 
 // Find the first element for which `f` returns false.
@@ -447,8 +471,9 @@ inline constexpr Iter find_if_not_iters(Iter first, Snt last, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::find_if_iters_no_throw<Iter, Snt, F>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::find_if_not_tag, first, last, f);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    find_if_not_iters_define, first, last, f);
   return ::fast_io::details::algorithms::find_if_not_iters_impl(
     first, last, f);
 }
@@ -463,16 +488,27 @@ inline constexpr ::std::ranges::iterator_t<R> find_if_not(R &&r, F f)
 }
 
 template<::std::ranges::random_access_range R, typename F>
-inline constexpr ::std::size_t find_if_not_index(
+inline constexpr ::std::size_t find_if_not_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::find_if_index_no_throw<R, F>)
+    !::fast_io::details::algorithms::find_if_index_range_no_throw<R, F>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
   auto const found{::fast_io::algorithms::find_if_not_iters(
     first, last, ::std::move(f))};
   return firstidx + static_cast<::std::size_t>(found - first);
+}
+
+template<::std::ranges::random_access_range R, typename F>
+inline constexpr ::std::size_t find_if_not_index_of(R &&r, F f)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::find_if_ranges_no_throw<R, F>)
+{
+  auto const first{::std::ranges::begin(r)};
+  auto const found{::fast_io::algorithms::find_if_not(
+    ::std::forward<R>(r), ::std::move(f))};
+  return static_cast<::std::size_t>(found - first);
 }
 
 }

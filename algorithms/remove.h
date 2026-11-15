@@ -27,7 +27,7 @@ concept remove_ranges_no_throw =
     ::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>, T>;
 
 template<typename R, typename T>
-concept remove_index_no_throw =
+concept remove_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::remove_iters_no_throw<
@@ -59,7 +59,7 @@ concept remove_if_ranges_no_throw =
     ::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>, F>;
 
 template<typename R, typename F>
-concept remove_if_index_no_throw =
+concept remove_if_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::std::is_nothrow_move_constructible_v<F> &&
@@ -237,8 +237,9 @@ inline constexpr Iter remove_iters(Iter first, Snt last, T const &value)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::remove_iters_no_throw<Iter, Snt, T>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::remove_tag, first, last, value);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    remove_iters_define, first, last, value);
   return ::fast_io::details::algorithms::remove_iters_impl(first, last, value);
 }
 
@@ -254,15 +255,26 @@ inline constexpr ::std::ranges::iterator_t<R> remove(R &&r, T const &value)
 // Remove `[firstidx, lastidx)` elements equal to `value`. Returns the index of
 // the new logical end.
 template<::std::ranges::random_access_range R, typename T>
-inline constexpr ::std::size_t remove_index(
+inline constexpr ::std::size_t remove_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, T const &value)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::remove_index_no_throw<R, T>)
+    !::fast_io::details::algorithms::remove_index_range_no_throw<R, T>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
   auto const result{::fast_io::algorithms::remove_iters(first, last, value)};
   return firstidx + static_cast<::std::size_t>(result - first);
+}
+
+template<::std::ranges::random_access_range R, typename T>
+inline constexpr ::std::size_t remove_index_of(R &&r, T const &value)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::remove_ranges_no_throw<R, T>)
+{
+  auto const first{::std::ranges::begin(r)};
+  auto const result{::fast_io::algorithms::remove(
+    ::std::forward<R>(r), value)};
+  return static_cast<::std::size_t>(result - first);
 }
 
 // Remove every element for which `f` returns true, preserving the relative
@@ -273,8 +285,9 @@ inline constexpr Iter remove_if_iters(Iter first, Snt last, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::remove_if_iters_no_throw<Iter, Snt, F>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::remove_if_tag, first, last, f);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    remove_if_iters_define, first, last, f);
   return ::fast_io::details::algorithms::remove_if_iters_impl(first, last, f);
 }
 
@@ -290,16 +303,27 @@ inline constexpr ::std::ranges::iterator_t<R> remove_if(R &&r, F f)
 // Remove `[firstidx, lastidx)` elements for which `f` returns true. Returns
 // the index of the new logical end.
 template<::std::ranges::random_access_range R, typename F>
-inline constexpr ::std::size_t remove_if_index(
+inline constexpr ::std::size_t remove_if_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::remove_if_index_no_throw<R, F>)
+    !::fast_io::details::algorithms::remove_if_index_range_no_throw<R, F>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
   auto const result{::fast_io::algorithms::remove_if_iters(
     first, last, ::std::move(f))};
   return firstidx + static_cast<::std::size_t>(result - first);
+}
+
+template<::std::ranges::random_access_range R, typename F>
+inline constexpr ::std::size_t remove_if_index_of(R &&r, F f)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::remove_if_ranges_no_throw<R, F>)
+{
+  auto const first{::std::ranges::begin(r)};
+  auto const result{::fast_io::algorithms::remove_if(
+    ::std::forward<R>(r), ::std::move(f))};
+  return static_cast<::std::size_t>(result - first);
 }
 
 } // namespace fast_io::algorithms

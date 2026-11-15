@@ -163,7 +163,7 @@ bool check_non_contiguous() throws(true)
 	return move_it == move_end;
 }
 
-bool check_index()
+bool check_index_range()
 {
 	for (std::size_t n{}; n != 40; ++n)
 	{
@@ -191,7 +191,7 @@ bool check_index()
 
 					std::vector<std::uint64_t> actual{source};
 					auto const actual_size{
-						::fast_io::algorithms::remove_index(
+						::fast_io::algorithms::remove_index_range(
 							actual, first, last, value)};
 					if (expected_size != actual_size)
 					{
@@ -213,7 +213,7 @@ bool check_index()
 
 				std::vector<std::uint64_t> actual{source};
 				auto const actual_size{
-					::fast_io::algorithms::remove_if_index(
+					::fast_io::algorithms::remove_if_index_range(
 						actual, first, last,
 						[](std::uint64_t v) noexcept { return (v % 2) == 0; })};
 				if (expected_size != actual_size)
@@ -264,7 +264,7 @@ constexpr bool constexpr_test()
 	}
 
 	int c[5]{1, 2, 3, 4, 5};
-	if (::fast_io::algorithms::remove_index(c, 1, 4, 3) != 3)
+	if (::fast_io::algorithms::remove_index_range(c, 1, 4, 3) != 3)
 	{
 		return false;
 	}
@@ -280,7 +280,7 @@ static_assert(noexcept(::fast_io::algorithms::remove(
 static_assert(noexcept(::fast_io::algorithms::remove_if(
 	::std::declval<std::vector<int> &>(),
 	[](int value) noexcept { return value == 1; })));
-static_assert(noexcept(::fast_io::algorithms::remove_index(
+static_assert(noexcept(::fast_io::algorithms::remove_index_range(
 	::std::declval<std::vector<int> &>(), std::size_t{}, std::size_t{}, 1)));
 
 int main()
@@ -305,7 +305,7 @@ int main()
 		(void)ec;
 		return 5;
 	}
-	if (!check_index())
+	if (!check_index_range())
 	{
 		return 4;
 	}

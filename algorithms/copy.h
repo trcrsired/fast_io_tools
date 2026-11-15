@@ -628,8 +628,9 @@ template<::std::input_iterator Iter, ::std::sentinel_for<Iter> Snt, typename OIt
 inline constexpr OIter copy_iters(Iter first, Snt last, OIter dest)
   FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::copy_iters_no_throw<Iter, Snt, OIter>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::copy_tag, first, last, dest);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(dest)>),
+    copy_iters_define, first, last, dest);
   return ::fast_io::details::algorithms::copy_iters_impl(first, last, dest);
 }
 
@@ -645,8 +646,9 @@ template<::std::input_iterator Iter, typename OIter>
 inline constexpr OIter copy_n_iters(Iter first, ::std::size_t count, OIter dest)
   FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::copy_n_iters_no_throw<Iter, OIter>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::copy_n_tag, first, count, dest);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(dest)>),
+    copy_n_iters_define, first, count, dest);
   return ::fast_io::details::algorithms::copy_n_iters_impl(first, count, dest);
 }
 
@@ -666,8 +668,9 @@ inline constexpr OIter copy_backward_iters(Iter first, Iter last, OIter d_last)
        ::std::iter_value_t<Iter>, ::std::iter_value_t<OIter>> ||
      noexcept(*d_last = *last))))
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::copy_backward_tag, first, last, d_last);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(d_last)>),
+    copy_backward_iters_define, first, last, d_last);
   return ::fast_io::details::algorithms::copy_backward_iters_impl(first, last, d_last);
 }
 
@@ -688,8 +691,9 @@ template<::std::input_iterator Iter, ::std::sentinel_for<Iter> Snt, typename OIt
 inline constexpr OIter non_overlapped_copy_iters(Iter first, Snt last, OIter dest)
   FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::copy_iters_no_throw<Iter, Snt, OIter>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::non_overlapped_copy_tag, first, last, dest);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(dest)>),
+    non_overlapped_copy_iters_define, first, last, dest);
   return ::fast_io::details::algorithms::non_overlapped_copy_iters_impl(first, last, dest);
 }
 
@@ -706,8 +710,9 @@ template<::std::input_iterator Iter, typename OIter>
 inline constexpr OIter non_overlapped_copy_n_iters(Iter first, ::std::size_t count, OIter dest)
   FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::copy_n_iters_no_throw<Iter, OIter>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::non_overlapped_copy_n_tag, first, count, dest);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(dest)>),
+    non_overlapped_copy_n_iters_define, first, count, dest);
   return ::fast_io::details::algorithms::non_overlapped_copy_n_iters_impl(first, count, dest);
 }
 
@@ -724,8 +729,9 @@ template<::std::input_iterator Iter, ::std::sentinel_for<Iter> Snt, typename OIt
 inline constexpr OIter uninitialized_copy_iters(Iter first, Snt last, OIter dest)
   FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::uninitialized_copy_iters_no_throw<Iter, Snt, OIter>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::uninitialized_copy_tag, first, last, dest);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(dest)>),
+    uninitialized_copy_iters_define, first, last, dest);
   return ::fast_io::details::algorithms::uninitialized_copy_iters_impl(first, last, dest);
 }
 
@@ -742,8 +748,9 @@ template<::std::input_iterator Iter, typename OIter>
 inline constexpr OIter uninitialized_copy_n_iters(Iter first, ::std::size_t count, OIter dest)
   FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::uninitialized_copy_n_iters_no_throw<Iter, OIter>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::uninitialized_copy_n_tag, first, count, dest);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(dest)>),
+    uninitialized_copy_n_iters_define, first, count, dest);
   return ::fast_io::details::algorithms::uninitialized_copy_n_iters_impl(first, count, dest);
 }
 
@@ -764,8 +771,9 @@ inline constexpr OIter uninitialized_copy_backward_iters(Iter first, Iter last, 
       ::std::iter_value_t<OIter>, ::std::iter_reference_t<Iter>> &&
     ::std::is_nothrow_destructible_v<::std::iter_value_t<OIter>>))
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::uninitialized_copy_backward_tag, first, last, d_last);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(d_last)>),
+    uninitialized_copy_backward_iters_define, first, last, d_last);
   return ::fast_io::details::algorithms::uninitialized_copy_backward_iters_impl(first, last, d_last);
 }
 
@@ -792,8 +800,9 @@ inline constexpr OIter copy_if_iters(
     !::fast_io::details::algorithms::copy_if_iters_no_throw<
       Iter, Snt, OIter, F>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::copy_if_tag, first, last, dest, f);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(dest)>),
+    copy_if_iters_define, first, last, dest, f);
   return ::fast_io::details::algorithms::copy_if_iters_impl(
     first, last, dest, f);
 }

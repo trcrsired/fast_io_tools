@@ -22,7 +22,7 @@ concept transform_ranges_no_throw =
     OIter, F>;
 
 template<typename R, typename OIter, typename F>
-concept transform_index_no_throw =
+concept transform_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::std::is_nothrow_move_constructible_v<F> &&
@@ -53,7 +53,7 @@ concept transform_binary_ranges_no_throw =
     OIter, F>;
 
 template<typename R1, typename R2, typename OIter, typename F>
-concept transform_binary_index_no_throw =
+concept transform_binary_index_range_no_throw =
   ::std::ranges::random_access_range<R1> &&
   ::std::ranges::random_access_range<R2> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R1> &&
@@ -108,8 +108,9 @@ inline constexpr OIter transform_iters(
     !::fast_io::details::algorithms::transform_iters_no_throw<
       Iter, Snt, OIter, F>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::transform_tag, first, last, dest, f);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(dest)>),
+    transform_iters_define, first, last, dest, f);
   return ::fast_io::details::algorithms::transform_iters_impl(
     first, last, dest, f);
 }
@@ -126,10 +127,10 @@ inline constexpr OIter transform(R &&r, OIter dest, F f)
 }
 
 template<::std::ranges::random_access_range R, typename OIter, typename F>
-inline constexpr OIter transform_index(
+inline constexpr OIter transform_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, OIter dest, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::transform_index_no_throw<
+    !::fast_io::details::algorithms::transform_index_range_no_throw<
       R, OIter, F>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
@@ -148,8 +149,9 @@ inline constexpr OIter transform_binary_iters(
     !::fast_io::details::algorithms::transform_binary_iters_no_throw<
       Iter1, Snt1, Iter2, Snt2, OIter, F>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::transform_binary_tag, first1, last1, first2, last2, dest, f);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first1), decltype(first2), decltype(dest)>),
+    transform_binary_iters_define, first1, last1, first2, last2, dest, f);
   return ::fast_io::details::algorithms::transform_binary_iters_impl(
     first1, last1, first2, last2, dest, f);
 }
@@ -170,12 +172,12 @@ inline constexpr OIter transform_binary(
 
 template<::std::ranges::random_access_range R1,
   ::std::ranges::random_access_range R2, typename OIter, typename F>
-inline constexpr OIter transform_binary_index(
+inline constexpr OIter transform_binary_index_range(
   R1 &&r1, ::std::size_t firstidx1, ::std::size_t lastidx1,
   R2 &&r2, ::std::size_t firstidx2, ::std::size_t lastidx2,
   OIter dest, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::transform_binary_index_no_throw<
+    !::fast_io::details::algorithms::transform_binary_index_range_no_throw<
       R1, R2, OIter, F>)
 {
   auto [first1, last1] = ::fast_io::details::algorithms::algo_index_to_iters(

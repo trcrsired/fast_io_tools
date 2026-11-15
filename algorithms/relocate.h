@@ -536,8 +536,9 @@ template<::std::input_iterator Iter, ::std::sentinel_for<Iter> Snt, typename OIt
 inline constexpr OIter uninitialized_relocate_iters(Iter first, Snt last, OIter dest)
   FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::relocate_iters_no_throw<Iter, Snt, OIter>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::uninitialized_relocate_tag, first, last, dest);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(dest)>),
+    uninitialized_relocate_iters_define, first, last, dest);
   return ::fast_io::details::algorithms::uninitialized_relocate_iters_impl(first, last, dest);
 }
 
@@ -554,8 +555,9 @@ template<::std::input_iterator Iter, typename OIter>
 inline constexpr OIter uninitialized_relocate_n_iters(Iter first, ::std::size_t count, OIter dest)
   FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::relocate_n_iters_no_throw<Iter, OIter>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::uninitialized_relocate_n_tag, first, count, dest);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(dest)>),
+    uninitialized_relocate_n_iters_define, first, count, dest);
   return ::fast_io::details::algorithms::uninitialized_relocate_n_iters_impl(first, count, dest);
 }
 
@@ -577,8 +579,9 @@ inline constexpr OIter uninitialized_relocate_backward_iters(Iter first, Iter la
      (::fast_io::details::algorithms::relocate_construct_no_throw<Iter, OIter> &&
       ::fast_io::details::algorithms::relocate_destroy_no_throw<Iter>))))
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::uninitialized_relocate_backward_tag, first, last, d_last);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(d_last)>),
+    uninitialized_relocate_backward_iters_define, first, last, d_last);
   return ::fast_io::details::algorithms::uninitialized_relocate_backward_iters_impl(first, last, d_last);
 }
 
@@ -602,8 +605,9 @@ template<::std::input_iterator Iter, ::std::sentinel_for<Iter> Snt, typename OIt
 inline constexpr OIter uninitialized_move_iters(Iter first, Snt last, OIter dest)
   FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::uninitialized_move_iters_no_throw<Iter, Snt, OIter>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::uninitialized_move_tag, first, last, dest);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(dest)>),
+    uninitialized_move_iters_define, first, last, dest);
   return ::fast_io::details::algorithms::uninitialized_move_iters_impl(first, last, dest);
 }
 
@@ -620,8 +624,9 @@ template<::std::input_iterator Iter, typename OIter>
 inline constexpr OIter uninitialized_move_n_iters(Iter first, ::std::size_t count, OIter dest)
   FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::uninitialized_move_n_iters_no_throw<Iter, OIter>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::uninitialized_move_n_tag, first, count, dest);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(dest)>),
+    uninitialized_move_n_iters_define, first, count, dest);
   return ::fast_io::details::algorithms::uninitialized_move_n_iters_impl(first, count, dest);
 }
 
@@ -642,8 +647,9 @@ inline constexpr OIter uninitialized_move_backward_iters(Iter first, Iter last, 
        ::std::iter_value_t<Iter>, ::std::iter_value_t<OIter>> ||
      ::fast_io::details::algorithms::relocate_construct_no_throw<Iter, OIter>)))
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::uninitialized_move_backward_tag, first, last, d_last);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(d_last)>),
+    uninitialized_move_backward_iters_define, first, last, d_last);
   return ::fast_io::details::algorithms::uninitialized_move_backward_iters_impl(first, last, d_last);
 }
 

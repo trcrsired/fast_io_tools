@@ -80,12 +80,6 @@ inline constexpr iter::difference_type operator-(
 	return a.ptr - b.ptr;
 }
 
-struct number
-{
-	int value{};
-	inline constexpr auto operator<=>(number const &) const noexcept = default;
-};
-
 struct range
 {
 	iter first;
@@ -98,13 +92,14 @@ inline int copy_calls{};
 inline int find_calls{};
 inline int sort_calls{};
 inline int nth_calls{};
-inline int min_calls{};
 
-template<typename Tag, typename Iter, typename Snt, typename OIter>
-	requires std::same_as<Tag,
-		::fast_io::algorithms::customization::copy_tag>
-inline constexpr OIter algorithms_define(
-	::fast_io::algorithms::customization::define_type<Tag>,
+// Customizations are ordinary overloads named after the public entry. The
+// first parameter is the shared io_algorithm_t tag; the remaining parameters
+// identify the iterator types, so ADL finds these in namespace user.
+
+template<typename Iter, typename Snt, typename OIter>
+inline constexpr OIter copy_iters_define(
+	::fast_io::io_algorithm_t,
 	Iter first, Snt last, OIter dest) noexcept
 {
 	++copy_calls;
@@ -115,12 +110,10 @@ inline constexpr OIter algorithms_define(
 	return dest;
 }
 
-template<typename Tag, typename Iter, typename Snt>
-	requires std::same_as<Tag,
-		::fast_io::algorithms::customization::find_tag>
-inline constexpr Iter algorithms_define(
-	::fast_io::algorithms::customization::define_type<Tag>,
-	Iter first, Snt last, int const &value) noexcept
+template<typename Iter, typename Snt, typename T>
+inline constexpr Iter find_iters_define(
+	::fast_io::io_algorithm_t,
+	Iter first, Snt last, T const &value) noexcept
 {
 	++find_calls;
 	for (; first != last; ++first)
@@ -133,11 +126,9 @@ inline constexpr Iter algorithms_define(
 	return first;
 }
 
-template<typename Tag, typename Iter, typename Cmp>
-	requires std::same_as<Tag,
-		::fast_io::algorithms::customization::sort_tag>
-inline constexpr void algorithms_define(
-	::fast_io::algorithms::customization::define_type<Tag>,
+template<typename Iter, typename Cmp>
+inline constexpr void sort_iters_define(
+	::fast_io::io_algorithm_t,
 	Iter first, Iter last, Cmp cmp) noexcept
 {
 	++sort_calls;
@@ -145,27 +136,14 @@ inline constexpr void algorithms_define(
 		first.ptr, last.ptr, cmp);
 }
 
-template<typename Tag, typename Iter, typename Cmp>
-	requires std::same_as<Tag,
-		::fast_io::algorithms::customization::nth_element_tag>
-inline constexpr void algorithms_define(
-	::fast_io::algorithms::customization::define_type<Tag>,
+template<typename Iter, typename Cmp>
+inline constexpr void nth_element_iters_define(
+	::fast_io::io_algorithm_t,
 	Iter first, Iter nth, Iter last, Cmp cmp) noexcept
 {
 	++nth_calls;
 	::fast_io::details::algorithms::nth_element_iters_impl(
 		first.ptr, nth.ptr, last.ptr, cmp);
-}
-
-template<typename Tag, typename T, typename Cmp>
-	requires std::same_as<Tag,
-		::fast_io::algorithms::customization::min_tag>
-inline constexpr T const &algorithms_define(
-	::fast_io::algorithms::customization::define_type<Tag>,
-	T const &a, T const &b, Cmp cmp) noexcept
-{
-	++min_calls;
-	return 0 > cmp.compare(b, a) ? b : a;
 }
 
 } // namespace user
@@ -203,14 +181,6 @@ int main()
 	if (user::nth_calls != 1 || nth_source[2] != 3)
 	{
 		return 4;
-	}
-
-	user::number a{9};
-	user::number b{4};
-	user::number const &smallest{::fast_io::algorithms::min(a, b)};
-	if (user::min_calls != 1 || smallest.value != 4)
-	{
-		return 5;
 	}
 	return 0;
 }

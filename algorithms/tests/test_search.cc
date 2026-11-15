@@ -110,7 +110,7 @@ bool check_search_families()
 	return true;
 }
 
-bool check_index()
+bool check_index_range()
 {
 	std::vector<std::uint64_t> haystack{
 		1, 2, 1, 2, 1, 2, 3, 1, 2, 4};
@@ -123,21 +123,21 @@ bool check_index()
 				haystack.begin() + static_cast<std::ptrdiff_t>(f1)};
 			auto const he{
 				haystack.begin() + static_cast<std::ptrdiff_t>(l1)};
-			if (::fast_io::algorithms::search_index(
+			if (::fast_io::algorithms::search_index_range(
 					haystack, f1, l1, needle, 0, needle.size()) !=
 				f1 + static_cast<std::size_t>(
 					std::search(hb, he, needle.begin(), needle.end()) - hb))
 			{
 				return false;
 			}
-			if (::fast_io::algorithms::find_end_index(
+			if (::fast_io::algorithms::find_end_index_range(
 					haystack, f1, l1, needle, 0, needle.size()) !=
 				f1 + static_cast<std::size_t>(
 					std::find_end(hb, he, needle.begin(), needle.end()) - hb))
 			{
 				return false;
 			}
-			if (::fast_io::algorithms::find_first_of_index(
+			if (::fast_io::algorithms::find_first_of_index_range(
 					haystack, f1, l1, needle, 0, 1) !=
 				f1 + static_cast<std::size_t>(
 					std::find_first_of(hb, he, needle.begin(),
@@ -145,7 +145,7 @@ bool check_index()
 			{
 				return false;
 			}
-			if (::fast_io::algorithms::adjacent_find_index(
+			if (::fast_io::algorithms::adjacent_find_index_range(
 					haystack, f1, l1) !=
 				f1 + static_cast<std::size_t>(
 					std::adjacent_find(hb, he) - hb))
@@ -154,7 +154,7 @@ bool check_index()
 			}
 			for (std::size_t count{}; count != 4; ++count)
 			{
-				if (::fast_io::algorithms::search_n_index(
+				if (::fast_io::algorithms::search_n_index_range(
 						haystack, f1, l1, count, std::uint64_t{1}) !=
 					f1 + static_cast<std::size_t>(
 						std::search_n(hb, he, count, std::uint64_t{1}) - hb))
@@ -217,17 +217,17 @@ constexpr bool constexpr_test()
 	{
 		return false;
 	}
-	if (::fast_io::algorithms::search_index(
+	if (::fast_io::algorithms::search_index_range(
 			haystack, 1, 8, needle, 0, 2) != 3)
 	{
 		return false;
 	}
-	if (::fast_io::algorithms::find_end_index(
+	if (::fast_io::algorithms::find_end_index_range(
 			haystack, 0, 6, needle, 0, 2) != 3)
 	{
 		return false;
 	}
-	return ::fast_io::algorithms::search_n_index(
+	return ::fast_io::algorithms::search_n_index_range(
 		haystack, 1, 6, 1, 3) == 2;
 }
 
@@ -263,7 +263,7 @@ static_assert(noexcept(::fast_io::algorithms::adjacent_find(
 	::std::declval<std::vector<int> &>())));
 static_assert(noexcept(::fast_io::algorithms::search_n(
 	::std::declval<std::vector<int> &>(), std::size_t{}, 1)));
-static_assert(noexcept(::fast_io::algorithms::search_index(
+static_assert(noexcept(::fast_io::algorithms::search_index_range(
 	::std::declval<std::vector<int> &>(), std::size_t{}, std::size_t{},
 	::std::declval<std::vector<int> &>(), std::size_t{}, std::size_t{})));
 
@@ -273,7 +273,7 @@ int main()
 	{
 		return 1;
 	}
-	if (!check_index())
+	if (!check_index_range())
 	{
 		return 2;
 	}

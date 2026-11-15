@@ -1,175 +1,152 @@
 #pragma once
-// ADL customization points for the algorithms in this directory.
-//
-// A container or iterator author can provide an overload of
-// `algorithms_define` in a namespace associated with the iterator or the tag:
-//
-//   template<typename... Args>
-//   auto algorithms_define(
-//     ::fast_io::algorithms::customization::define_type<
-//       ::fast_io::algorithms::customization::copy_tag, Args...>,
-//     ...) noexcept -> ...;
-//
-// The overload must be `noexcept`. A throwing overload is ignored and the
-// generic implementation is used. The tag types below are the stable spelling
-// users should overload on. The algorithm arguments are passed separately.
-namespace fast_io::algorithms::customization
+
+namespace fast_io
 {
 
-template<typename Tag>
-struct define_type
+// Tag for the algorithm customization points. The function name selects the
+// operation; this tag only makes the call visible to ADL and keeps the
+// customization namespace stable, mirroring io_reserve_type_t.
+struct io_algorithm_t
 {
-  explicit constexpr define_type() noexcept = default;
+  inline explicit constexpr io_algorithm_t() noexcept = default;
 };
+inline constexpr io_algorithm_t io_algorithm{};
 
-template<typename Tag>
-inline constexpr define_type<Tag> define{};
+} // namespace fast_io
 
-// Makes the customization name visible to the parser without providing a
-// viable fallback. User overloads are found by ADL on the tag (whose namespace
-// is this one) and on the algorithm arguments.
-struct customization_probe;
-template<typename... Args>
-void algorithms_define(customization_probe, Args&&...) = delete;
-
-// Matches only noexcept overloads so the generic algorithms keep their
-// existing noexcept contract. Associated namespaces of the tag and of every
-// argument are searched by ADL.
-template<typename Tag, typename... Args>
-concept has_define = requires(Args&&... args)
+namespace fast_io::algorithms
 {
-  { algorithms_define(define_type<Tag>(), ::std::forward<Args>(args)...) } noexcept;
-};
 
-template<typename Tag, typename... Args>
-inline constexpr bool has_define_args(Args&&...)
-{
-  return has_define<Tag, Args...>;
-}
+// Probe declarations make each customization name visible during parsing and
+// are never viable: no algorithm argument converts to the probe type. Real
+// overloads are found by ADL at instantiation time.
+#define FAST_IO_ALGORITHMS_DEFINE_PROBE(name) \
+  struct name##_probe;                        \
+  template<typename... Args>                  \
+  void name(name##_probe, Args&&...) = delete;
 
-template<typename Tag, typename... Args>
-inline constexpr decltype(auto) dispatch_define(Args&&... args) noexcept
-{
-  return algorithms_define(define_type<Tag>(), ::std::forward<Args>(args)...);
-}
-struct adjacent_find_tag {};
-struct advance_tag {};
-struct all_of_tag {};
-struct any_of_tag {};
-struct binary_search_tag {};
-struct clamp_tag {};
-struct compare_tag {};
-struct copy_tag {};
-struct copy_backward_tag {};
-struct copy_if_tag {};
-struct copy_n_tag {};
-struct count_tag {};
-struct count_if_tag {};
-struct destroy_tag {};
-struct destroy_at_tag {};
-struct destroy_n_tag {};
-struct equal_tag {};
-struct equal_range_tag {};
-struct fill_tag {};
-struct fill_n_tag {};
-struct find_tag {};
-struct find_end_tag {};
-struct find_first_of_tag {};
-struct find_if_tag {};
-struct find_if_not_tag {};
-struct for_each_tag {};
-struct for_each_n_tag {};
-struct generate_tag {};
-struct generate_n_tag {};
-struct includes_tag {};
-struct set_union_tag {};
-struct set_symmetric_difference_tag {};
-struct set_intersection_tag {};
-struct set_difference_tag {};
-struct inplace_merge_tag {};
-struct is_heap_tag {};
-struct is_heap_until_tag {};
-struct is_partitioned_tag {};
-struct is_permutation_tag {};
-struct is_permutation_prefix_tag {};
-struct is_sorted_tag {};
-struct is_sorted_until_tag {};
-struct iter_swap_tag {};
-struct lexicographical_compare_tag {};
-struct lexicographical_compare_three_way_tag {};
-struct lower_bound_tag {};
-struct make_heap_tag {};
-struct max_tag {};
-struct max_element_tag {};
-struct merge_tag {};
-struct min_tag {};
-struct min_element_tag {};
-struct minmax_tag {};
-struct minmax_element_tag {};
-struct mismatch_tag {};
-struct move_tag {};
-struct move_backward_tag {};
-struct next_permutation_tag {};
-struct non_overlapped_copy_tag {};
-struct non_overlapped_copy_n_tag {};
-struct none_of_tag {};
-struct nth_element_tag {};
-struct partial_sort_tag {};
-struct partial_sort_copy_tag {};
-struct partition_tag {};
-struct partition_copy_tag {};
-struct partition_point_tag {};
-struct pop_heap_tag {};
-struct prev_permutation_tag {};
-struct push_heap_tag {};
-struct remove_tag {};
-struct remove_if_tag {};
-struct replace_tag {};
-struct replace_copy_tag {};
-struct replace_copy_if_tag {};
-struct replace_if_tag {};
-struct reverse_tag {};
-struct reverse_copy_tag {};
-struct rotate_tag {};
-struct rotate_copy_tag {};
-struct search_tag {};
-struct search_n_tag {};
-struct shift_left_tag {};
-struct shift_right_tag {};
-struct sort_tag {};
-struct sort_heap_tag {};
-struct stable_partition_tag {};
-struct swap_tag {};
-struct swap_ranges_tag {};
-struct transform_tag {};
-struct transform_binary_tag {};
-struct uninitialized_copy_tag {};
-struct uninitialized_copy_backward_tag {};
-struct uninitialized_copy_n_tag {};
-struct uninitialized_default_construct_tag {};
-struct uninitialized_default_construct_n_tag {};
-struct uninitialized_fill_tag {};
-struct uninitialized_fill_n_tag {};
-struct uninitialized_move_tag {};
-struct uninitialized_move_backward_tag {};
-struct uninitialized_move_n_tag {};
-struct uninitialized_relocate_tag {};
-struct uninitialized_relocate_backward_tag {};
-struct uninitialized_relocate_n_tag {};
-struct uninitialized_value_construct_tag {};
-struct uninitialized_value_construct_n_tag {};
-struct unique_tag {};
-struct unique_copy_tag {};
-struct upper_bound_tag {};
+FAST_IO_ALGORITHMS_DEFINE_PROBE(adjacent_find_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(advance_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(all_of_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(any_of_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(binary_search_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(copy_backward_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(copy_if_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(copy_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(copy_n_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(count_if_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(count_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(destroy_at_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(destroy_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(destroy_n_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(equal_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(equal_range_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(fill_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(fill_n_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(find_end_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(find_first_of_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(find_if_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(find_if_not_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(find_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(for_each_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(for_each_n_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(generate_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(generate_n_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(includes_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(inplace_merge_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(is_heap_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(is_heap_until_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(is_partitioned_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(is_permutation_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(is_permutation_prefix_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(is_sorted_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(is_sorted_until_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(iter_swap_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(lexicographical_compare_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(lexicographical_compare_three_way_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(lower_bound_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(make_heap_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(max_element_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(merge_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(min_element_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(minmax_element_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(mismatch_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(move_backward_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(move_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(next_permutation_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(non_overlapped_copy_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(non_overlapped_copy_n_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(none_of_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(nth_element_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(partial_sort_copy_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(partial_sort_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(partition_copy_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(partition_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(partition_point_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(pop_heap_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(prev_permutation_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(push_heap_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(remove_if_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(remove_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(replace_copy_if_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(replace_copy_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(replace_if_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(replace_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(reverse_copy_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(reverse_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(rotate_copy_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(rotate_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(search_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(search_n_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(set_difference_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(set_intersection_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(set_symmetric_difference_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(set_union_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(shift_left_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(shift_right_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(sort_heap_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(sort_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(stable_partition_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(swap_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(swap_ranges_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(transform_binary_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(transform_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(uninitialized_copy_backward_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(uninitialized_copy_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(uninitialized_copy_n_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(uninitialized_default_construct_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(uninitialized_default_construct_n_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(uninitialized_fill_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(uninitialized_fill_n_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(uninitialized_move_backward_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(uninitialized_move_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(uninitialized_move_n_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(uninitialized_relocate_backward_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(uninitialized_relocate_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(uninitialized_relocate_n_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(uninitialized_value_construct_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(uninitialized_value_construct_n_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(unique_copy_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(unique_iters_define)
+FAST_IO_ALGORITHMS_DEFINE_PROBE(upper_bound_iters_define)
 
-} // namespace fast_io::algorithms::customization
+#undef FAST_IO_ALGORITHMS_DEFINE_PROBE
 
-// Dispatch to an ADL customization when one exists. The customization must
-// return the same type as the enclosing algorithm and must be noexcept.
-#define FAST_IO_ALGORITHMS_CUSTOMIZE(tag, ...)                                 \
-  if constexpr (::fast_io::algorithms::customization::has_define_args<tag>(   \
-                  __VA_ARGS__))                                               \
-  {                                                                            \
-    return ::fast_io::algorithms::customization::dispatch_define<tag>(         \
-      __VA_ARGS__);                                                            \
+} // namespace fast_io::algorithms
+
+// Dispatch to a customization when one exists and is noexcept.
+#define FAST_IO_ALGORITHMS_CUSTOMIZE(name, ...)                               \
+  if constexpr (requires {                                                    \
+                  { name(::fast_io::io_algorithm, __VA_ARGS__) } noexcept;    \
+                })                                                            \
+  {                                                                           \
+    return name(::fast_io::io_algorithm, __VA_ARGS__);                        \
+  }
+
+// Same, but only when `cond` is true. Used to keep the contiguous pointer fast
+// paths out of the customization mechanism.
+#define FAST_IO_ALGORITHMS_CUSTOMIZE_IF(cond, name, ...) \
+  if constexpr (cond)                                    \
+  {                                                      \
+    FAST_IO_ALGORITHMS_CUSTOMIZE(name, __VA_ARGS__)      \
   }

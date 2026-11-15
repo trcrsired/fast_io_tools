@@ -24,7 +24,7 @@ concept all_of_ranges_no_throw =
     ::std::ranges::iterator_t<R>, F>;
 
 template<typename R, typename F>
-concept all_of_index_no_throw =
+concept all_of_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::std::is_nothrow_move_constructible_v<F> &&
@@ -87,8 +87,9 @@ inline constexpr bool all_of_iters(Iter first, Snt last, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::all_of_iters_no_throw<Iter, Snt, F>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::all_of_tag, first, last, f);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    all_of_iters_define, first, last, f);
   return ::fast_io::details::algorithms::all_of_iters_impl(first, last, f);
 }
 
@@ -102,10 +103,10 @@ inline constexpr bool all_of(R &&r, F f)
 }
 
 template<::std::ranges::random_access_range R, typename F>
-inline constexpr bool all_of_index(
+inline constexpr bool all_of_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::all_of_index_no_throw<R, F>)
+    !::fast_io::details::algorithms::all_of_index_range_no_throw<R, F>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
@@ -119,8 +120,9 @@ inline constexpr bool any_of_iters(Iter first, Snt last, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::all_of_iters_no_throw<Iter, Snt, F>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::any_of_tag, first, last, f);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    any_of_iters_define, first, last, f);
   return ::fast_io::details::algorithms::any_of_iters_impl(first, last, f);
 }
 
@@ -134,10 +136,10 @@ inline constexpr bool any_of(R &&r, F f)
 }
 
 template<::std::ranges::random_access_range R, typename F>
-inline constexpr bool any_of_index(
+inline constexpr bool any_of_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::all_of_index_no_throw<R, F>)
+    !::fast_io::details::algorithms::all_of_index_range_no_throw<R, F>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
@@ -151,8 +153,9 @@ inline constexpr bool none_of_iters(Iter first, Snt last, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::all_of_iters_no_throw<Iter, Snt, F>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::none_of_tag, first, last, f);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    none_of_iters_define, first, last, f);
   return ::fast_io::details::algorithms::none_of_iters_impl(first, last, f);
 }
 
@@ -166,10 +169,10 @@ inline constexpr bool none_of(R &&r, F f)
 }
 
 template<::std::ranges::random_access_range R, typename F>
-inline constexpr bool none_of_index(
+inline constexpr bool none_of_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::all_of_index_no_throw<R, F>)
+    !::fast_io::details::algorithms::all_of_index_range_no_throw<R, F>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);

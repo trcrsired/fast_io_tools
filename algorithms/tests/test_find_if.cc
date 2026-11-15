@@ -56,7 +56,7 @@ bool check_find_if_not()
 	return true;
 }
 
-bool check_index()
+bool check_index_range()
 {
 	std::vector<int> values{1, 2, 3, 4, 5, 6, 7, 8};
 	for (std::size_t first{}; first <= values.size(); ++first)
@@ -71,7 +71,7 @@ bool check_index()
 				return value > 4;
 			};
 			auto const expected{std::find_if(begin, end, predicate)};
-			if (::fast_io::algorithms::find_if_index(
+			if (::fast_io::algorithms::find_if_index_range(
 					values, first, last, predicate) !=
 				first + static_cast<std::size_t>(expected - begin))
 			{
@@ -82,7 +82,7 @@ bool check_index()
 			};
 			auto const expected_inverse{
 				std::find_if_not(begin, end, inverse)};
-			if (::fast_io::algorithms::find_if_not_index(
+			if (::fast_io::algorithms::find_if_not_index_range(
 					values, first, last, inverse) !=
 				first + static_cast<std::size_t>(
 					expected_inverse - begin))
@@ -123,13 +123,13 @@ constexpr bool constexpr_test()
 	{
 		return false;
 	}
-	if (::fast_io::algorithms::find_if_index(
+	if (::fast_io::algorithms::find_if_index_range(
 			a, 3, 6,
 			[](int value) constexpr noexcept { return value == 9; }) != 4)
 	{
 		return false;
 	}
-	return ::fast_io::algorithms::find_if_not_index(
+	return ::fast_io::algorithms::find_if_not_index_range(
 		a, 0, 3,
 		[](int value) constexpr noexcept { return value == 4; }) == 0;
 }
@@ -144,7 +144,7 @@ static_assert(noexcept(::fast_io::algorithms::find_if(
 static_assert(noexcept(::fast_io::algorithms::find_if_not(
 	::std::declval<int (&)[4]>(),
 	[](int value) noexcept { return value == 1; })));
-static_assert(noexcept(::fast_io::algorithms::find_if_index(
+static_assert(noexcept(::fast_io::algorithms::find_if_index_range(
 	::std::declval<std::vector<int> &>(), std::size_t{}, std::size_t{},
 	[](int value) noexcept { return value == 1; })));
 
@@ -158,7 +158,7 @@ int main()
 	{
 		return 2;
 	}
-	if (!check_index())
+	if (!check_index_range())
 	{
 		return 3;
 	}

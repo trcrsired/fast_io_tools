@@ -291,7 +291,7 @@ struct throwing_compare
 	}
 };
 
-bool check_sort_index()
+bool check_sort_index_range()
 {
 	std::uint64_t state{0x243f6a8885a308d3ull};
 	for (std::size_t n{}; n != 24; ++n)
@@ -313,7 +313,7 @@ bool check_sort_index()
 					expected.begin() + static_cast<std::ptrdiff_t>(first),
 					expected.begin() + static_cast<std::ptrdiff_t>(last));
 				auto actual{source};
-				::fast_io::algorithms::sort_index(actual, first, last);
+				::fast_io::algorithms::sort_index_range(actual, first, last);
 				if (actual != expected)
 				{
 					return false;
@@ -478,7 +478,7 @@ constexpr bool check_constexpr_sort()
 	// Bounds-checked subrange entry point.
 	{
 		int a[]{9, 8, 7, 6, 5, 4, 3};
-		::fast_io::algorithms::sort_index(a, 1, 6);
+		::fast_io::algorithms::sort_index_range(a, 1, 6);
 		if (a[0] != 9 || a[6] != 3)
 		{
 			return false;
@@ -503,7 +503,7 @@ static_assert(noexcept(::fast_io::algorithms::sort(
 	::std::declval<::std::vector<int> &>())));
 static_assert(noexcept(::fast_io::algorithms::sort_iters(
 	::std::declval<int *>(), ::std::declval<int *>())));
-static_assert(noexcept(::fast_io::algorithms::sort_index(
+static_assert(noexcept(::fast_io::algorithms::sort_index_range(
 	::std::declval<::std::vector<int> &>(), ::std::size_t{},
 	::std::size_t{})));
 static_assert(!noexcept(::fast_io::algorithms::sort_iters(
@@ -590,7 +590,7 @@ int main()
 		}
 	}
 
-	if (!check_sort_index())
+	if (!check_sort_index_range())
 	{
 		return 2;
 	}

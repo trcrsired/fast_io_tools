@@ -23,7 +23,7 @@ int main()
 
 	try
 	{
-		::fast_io::algorithms::for_each_index(d, 0, 1, [](int &) noexcept {});
+		::fast_io::algorithms::for_each_index_range(d, 0, 1, [](int &) noexcept {});
 	}
 	catch throws(::std::error ec)
 	{
@@ -38,7 +38,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::reverse_index(d, 0, 2);
+		::fast_io::algorithms::reverse_index_range(d, 0, 2);
 	}
 	catch throws(::std::error ec)
 	{
@@ -53,7 +53,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::fill_index(d, 0, 2, 7);
+		::fast_io::algorithms::fill_index_range(d, 0, 2, 7);
 	}
 	catch throws(::std::error ec)
 	{
@@ -68,7 +68,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::sort_index(d, 0, 2);
+		::fast_io::algorithms::sort_index_range(d, 0, 2);
 	}
 	catch throws(::std::error ec)
 	{
@@ -83,7 +83,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::sort_heap_index(d, 0, 2);
+		::fast_io::algorithms::sort_heap_index_range(d, 0, 2);
 	}
 	catch throws(::std::error ec)
 	{
@@ -98,7 +98,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::destroy_index(d, 0, 2);
+		::fast_io::algorithms::destroy_index_range(d, 0, 2);
 	}
 	catch throws(::std::error ec)
 	{
@@ -113,7 +113,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::uninitialized_fill_index(d, 0, 2, 7);
+		::fast_io::algorithms::uninitialized_fill_index_range(d, 0, 2, 7);
 	}
 	catch throws(::std::error ec)
 	{
@@ -128,7 +128,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::uninitialized_value_construct_index(d, 0, 2);
+		::fast_io::algorithms::uninitialized_value_construct_index_range(d, 0, 2);
 	}
 	catch throws(::std::error ec)
 	{
@@ -150,7 +150,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::rotate_index(populated, 1, 0, 4);
+		::fast_io::algorithms::rotate_index_range(populated, 1, 0, 4);
 	}
 	catch throws(::std::error ec)
 	{
@@ -166,7 +166,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::rotate_index(populated, 1, 5, 4);
+		::fast_io::algorithms::rotate_index_range(populated, 1, 5, 4);
 	}
 	catch throws(::std::error ec)
 	{
@@ -183,7 +183,7 @@ int main()
 	try
 	{
 		auto const result{
-			::fast_io::algorithms::rotate_index(populated, 1, 3, 4)};
+			::fast_io::algorithms::rotate_index_range(populated, 1, 3, 4)};
 		if (result != 2)
 		{
 			return 12;
@@ -202,7 +202,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::remove_index(d, 0, 2, 7);
+		::fast_io::algorithms::remove_index_range(d, 0, 2, 7);
 	}
 	catch throws(::std::error ec)
 	{
@@ -217,7 +217,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::lexicographical_compare_index(
+		::fast_io::algorithms::lexicographical_compare_index_range(
 			d, 0, 2, populated, 0, 1);
 	}
 	catch throws(::std::error ec)
@@ -233,7 +233,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::lexicographical_compare_index(
+		::fast_io::algorithms::lexicographical_compare_index_range(
 			populated, 0, 1, d, 0, 2);
 	}
 	catch throws(::std::error ec)
@@ -249,7 +249,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::all_of_index(
+		::fast_io::algorithms::all_of_index_range(
 			d, 0, 2, [](int) noexcept { return true; });
 	}
 	catch throws(::std::error ec)
@@ -265,7 +265,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::any_of_index(
+		::fast_io::algorithms::any_of_index_range(
 			d, 0, 2, [](int) noexcept { return false; });
 	}
 	catch throws(::std::error ec)
@@ -281,7 +281,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::none_of_index(
+		::fast_io::algorithms::none_of_index_range(
 			d, 0, 2, [](int) noexcept { return false; });
 	}
 	catch throws(::std::error ec)
@@ -297,7 +297,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::count_index(d, 0, 2, 1);
+		::fast_io::algorithms::count_index_range(d, 0, 2, 1);
 	}
 	catch throws(::std::error ec)
 	{
@@ -312,7 +312,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::count_if_index(
+		::fast_io::algorithms::count_if_index_range(
 			d, 0, 2, [](int) noexcept { return true; });
 	}
 	catch throws(::std::error ec)
@@ -328,7 +328,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::mismatch_index(
+		::fast_io::algorithms::mismatch_index_range(
 			d, 0, 2, populated, 0, 1);
 	}
 	catch throws(::std::error ec)
@@ -344,7 +344,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::find_if_index(
+		::fast_io::algorithms::find_if_index_range(
 			d, 0, 2, [](int) noexcept { return false; });
 	}
 	catch throws(::std::error ec)
@@ -360,7 +360,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::find_if_not_index(
+		::fast_io::algorithms::find_if_not_index_range(
 			d, 0, 2, [](int) noexcept { return true; });
 	}
 	catch throws(::std::error ec)
@@ -376,7 +376,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::adjacent_find_index(d, 0, 2);
+		::fast_io::algorithms::adjacent_find_index_range(d, 0, 2);
 	}
 	catch throws(::std::error ec)
 	{
@@ -391,7 +391,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::find_end_index(
+		::fast_io::algorithms::find_end_index_range(
 			d, 0, 2, populated, 0, 1);
 	}
 	catch throws(::std::error ec)
@@ -407,7 +407,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::find_first_of_index(
+		::fast_io::algorithms::find_first_of_index_range(
 			d, 0, 2, populated, 0, 1);
 	}
 	catch throws(::std::error ec)
@@ -423,7 +423,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::search_index(
+		::fast_io::algorithms::search_index_range(
 			d, 0, 2, populated, 0, 1);
 	}
 	catch throws(::std::error ec)
@@ -439,7 +439,7 @@ int main()
 	caught = false;
 	try
 	{
-		::fast_io::algorithms::search_n_index(d, 0, 2, 1, 1);
+		::fast_io::algorithms::search_n_index_range(d, 0, 2, 1, 1);
 	}
 	catch throws(::std::error ec)
 	{
@@ -468,84 +468,84 @@ int main()
 	}
 
 	FAST_IO_TEST_INDEX_THROWS(30,
-		::fast_io::algorithms::transform_index(d, 0, 2, populated.data.begin(),
+		::fast_io::algorithms::transform_index_range(d, 0, 2, populated.data.begin(),
 			[](int value) noexcept { return value + 1; }));
 	FAST_IO_TEST_INDEX_THROWS(31,
-		::fast_io::algorithms::transform_binary_index(d, 0, 2, populated, 0, 1,
+		::fast_io::algorithms::transform_binary_index_range(d, 0, 2, populated, 0, 1,
 			populated.data.begin(), [](int a, int b) noexcept { return a + b; }));
 	FAST_IO_TEST_INDEX_THROWS(32,
-		::fast_io::algorithms::generate_index(d, 0, 2, []() noexcept { return 1; }));
+		::fast_io::algorithms::generate_index_range(d, 0, 2, []() noexcept { return 1; }));
 	FAST_IO_TEST_INDEX_THROWS(33,
-		::fast_io::algorithms::replace_index(d, 0, 2, 1, 2));
+		::fast_io::algorithms::replace_index_range(d, 0, 2, 1, 2));
 	FAST_IO_TEST_INDEX_THROWS(34,
-		::fast_io::algorithms::replace_if_index(d, 0, 2,
+		::fast_io::algorithms::replace_if_index_range(d, 0, 2,
 			[](int value) noexcept { return value == 1; }, 2));
 	FAST_IO_TEST_INDEX_THROWS(35,
-		::fast_io::algorithms::swap_ranges_index(d, 0, 2, populated.data.begin()));
+		::fast_io::algorithms::swap_ranges_index_range(d, 0, 2, populated.data.begin()));
 	FAST_IO_TEST_INDEX_THROWS(36,
-		::fast_io::algorithms::shift_left_index(d, 0, 2, 1));
+		::fast_io::algorithms::shift_left_index_range(d, 0, 2, 1));
 	FAST_IO_TEST_INDEX_THROWS(37,
-		::fast_io::algorithms::shift_right_index(d, 0, 2, 1));
+		::fast_io::algorithms::shift_right_index_range(d, 0, 2, 1));
 	FAST_IO_TEST_INDEX_THROWS(38,
-		::fast_io::algorithms::unique_index(d, 0, 2));
+		::fast_io::algorithms::unique_index_range(d, 0, 2));
 	FAST_IO_TEST_INDEX_THROWS(39,
-		::fast_io::algorithms::is_partitioned_index(d, 0, 2,
+		::fast_io::algorithms::is_partitioned_index_range(d, 0, 2,
 			[](int value) noexcept { return value > 0; }));
 	FAST_IO_TEST_INDEX_THROWS(40,
-		::fast_io::algorithms::partition_index(d, 0, 2,
+		::fast_io::algorithms::partition_index_range(d, 0, 2,
 			[](int value) noexcept { return value > 0; }));
 	FAST_IO_TEST_INDEX_THROWS(41,
-		::fast_io::algorithms::stable_partition_index(d, 0, 2,
+		::fast_io::algorithms::stable_partition_index_range(d, 0, 2,
 			[](int value) noexcept { return value > 0; }));
 	FAST_IO_TEST_INDEX_THROWS(42,
-		::fast_io::algorithms::partition_point_index(d, 0, 2,
+		::fast_io::algorithms::partition_point_index_range(d, 0, 2,
 			[](int value) noexcept { return value > 0; }));
 	FAST_IO_TEST_INDEX_THROWS(43,
-		::fast_io::algorithms::is_sorted_index(d, 0, 2));
+		::fast_io::algorithms::is_sorted_index_range(d, 0, 2));
 	FAST_IO_TEST_INDEX_THROWS(44,
-		::fast_io::algorithms::is_sorted_until_index(d, 0, 2));
+		::fast_io::algorithms::is_sorted_until_index_range(d, 0, 2));
 	FAST_IO_TEST_INDEX_THROWS(45,
-		::fast_io::algorithms::lower_bound_index(d, 0, 2, 1));
+		::fast_io::algorithms::lower_bound_index_range(d, 0, 2, 1));
 	FAST_IO_TEST_INDEX_THROWS(46,
-		::fast_io::algorithms::upper_bound_index(d, 0, 2, 1));
+		::fast_io::algorithms::upper_bound_index_range(d, 0, 2, 1));
 	FAST_IO_TEST_INDEX_THROWS(47,
-		::fast_io::algorithms::equal_range_index(d, 0, 2, 1));
+		::fast_io::algorithms::equal_range_index_range(d, 0, 2, 1));
 	FAST_IO_TEST_INDEX_THROWS(48,
-		::fast_io::algorithms::binary_search_index(d, 0, 2, 1));
+		::fast_io::algorithms::binary_search_index_range(d, 0, 2, 1));
 	FAST_IO_TEST_INDEX_THROWS(49,
-		::fast_io::algorithms::includes_index(d, 0, 2, populated, 0, 1));
+		::fast_io::algorithms::includes_index_range(d, 0, 2, populated, 0, 1));
 	FAST_IO_TEST_INDEX_THROWS(50,
-		::fast_io::algorithms::set_union_index(d, 0, 2, populated, 0, 1,
+		::fast_io::algorithms::set_union_index_range(d, 0, 2, populated, 0, 1,
 			populated.data.begin()));
 	FAST_IO_TEST_INDEX_THROWS(51,
-		::fast_io::algorithms::set_difference_index(d, 0, 2, populated, 0, 1,
+		::fast_io::algorithms::set_difference_index_range(d, 0, 2, populated, 0, 1,
 			populated.data.begin()));
 	FAST_IO_TEST_INDEX_THROWS(52,
-		::fast_io::algorithms::set_intersection_index(d, 0, 2, populated, 0, 1,
+		::fast_io::algorithms::set_intersection_index_range(d, 0, 2, populated, 0, 1,
 			populated.data.begin()));
 	FAST_IO_TEST_INDEX_THROWS(53,
-		::fast_io::algorithms::set_symmetric_difference_index(d, 0, 2,
+		::fast_io::algorithms::set_symmetric_difference_index_range(d, 0, 2,
 			populated, 0, 1, populated.data.begin()));
 	FAST_IO_TEST_INDEX_THROWS(54,
-		::fast_io::algorithms::min_element_index(d, 0, 2));
+		::fast_io::algorithms::min_element_index_range(d, 0, 2));
 	FAST_IO_TEST_INDEX_THROWS(55,
-		::fast_io::algorithms::max_element_index(d, 0, 2));
+		::fast_io::algorithms::max_element_index_range(d, 0, 2));
 	FAST_IO_TEST_INDEX_THROWS(56,
-		::fast_io::algorithms::minmax_element_index(d, 0, 2));
+		::fast_io::algorithms::minmax_element_index_range(d, 0, 2));
 	FAST_IO_TEST_INDEX_THROWS(57,
-		::fast_io::algorithms::equal_index(d, 0, 2, populated, 0, 1));
+		::fast_io::algorithms::equal_index_range(d, 0, 2, populated, 0, 1));
 	FAST_IO_TEST_INDEX_THROWS(58,
-		::fast_io::algorithms::partial_sort_index(d, 0, 1, 2));
+		::fast_io::algorithms::partial_sort_index_range(d, 0, 1, 2));
 	FAST_IO_TEST_INDEX_THROWS(59,
-		::fast_io::algorithms::partial_sort_copy_index(d, 0, 2, populated, 0, 2));
+		::fast_io::algorithms::partial_sort_copy_index_range(d, 0, 2, populated, 0, 2));
 	FAST_IO_TEST_INDEX_THROWS(60,
-		::fast_io::algorithms::nth_element_index(d, 0, 1, 2));
+		::fast_io::algorithms::nth_element_index_range(d, 0, 1, 2));
 	FAST_IO_TEST_INDEX_THROWS(61,
-		::fast_io::algorithms::is_permutation_index(d, 0, 2, populated, 0, 1));
+		::fast_io::algorithms::is_permutation_index_range(d, 0, 2, populated, 0, 1));
 	FAST_IO_TEST_INDEX_THROWS(62,
-		::fast_io::algorithms::next_permutation_index(d, 0, 2));
+		::fast_io::algorithms::next_permutation_index_range(d, 0, 2));
 	FAST_IO_TEST_INDEX_THROWS(63,
-		::fast_io::algorithms::prev_permutation_index(d, 0, 2));
+		::fast_io::algorithms::prev_permutation_index_range(d, 0, 2));
 
 #undef FAST_IO_TEST_INDEX_THROWS
 

@@ -59,7 +59,7 @@ bool check_mismatch()
 	return true;
 }
 
-bool check_index()
+bool check_index_range()
 {
 	std::vector<std::uint64_t> a{0, 1, 2, 3, 4, 5, 6, 7};
 	std::vector<std::uint64_t> b{0, 1, 9, 3, 4, 5};
@@ -77,7 +77,7 @@ bool check_index()
 						b.begin() + static_cast<std::ptrdiff_t>(f2),
 						b.begin() + static_cast<std::ptrdiff_t>(l2))};
 					auto const actual{
-						::fast_io::algorithms::mismatch_index(
+						::fast_io::algorithms::mismatch_index_range(
 							a, f1, l1, b, f2, l2)};
 					if (actual.first != f1 + static_cast<std::size_t>(
 							expected.first -
@@ -127,7 +127,7 @@ constexpr bool constexpr_test()
 		return false;
 	}
 	auto const indexed{
-		::fast_io::algorithms::mismatch_index(a, 1, 4, b, 1, 4)};
+		::fast_io::algorithms::mismatch_index_range(a, 1, 4, b, 1, 4)};
 	return indexed.first == 2 && indexed.second == 2;
 }
 
@@ -149,7 +149,7 @@ static_assert(compare_only_test());
 static_assert(noexcept(::fast_io::algorithms::mismatch(
 	::std::declval<std::vector<int> &>(),
 	::std::declval<std::vector<int> &>())));
-static_assert(noexcept(::fast_io::algorithms::mismatch_index(
+static_assert(noexcept(::fast_io::algorithms::mismatch_index_range(
 	::std::declval<std::vector<int> &>(), std::size_t{}, std::size_t{},
 	::std::declval<std::vector<int> &>(), std::size_t{}, std::size_t{})));
 
@@ -159,7 +159,7 @@ int main()
 	{
 		return 1;
 	}
-	if (!check_index())
+	if (!check_index_range())
 	{
 		return 2;
 	}

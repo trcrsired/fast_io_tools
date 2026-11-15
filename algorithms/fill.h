@@ -34,7 +34,7 @@ concept fill_ranges_no_throw =
     ::std::ranges::iterator_t<R>, T>;
 
 template<typename R, typename T>
-concept fill_index_no_throw =
+concept fill_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::fill_iter_no_throw<
@@ -60,7 +60,7 @@ concept uninitialized_fill_ranges_no_throw =
   ::std::is_nothrow_destructible_v<::std::ranges::range_value_t<R>>;
 
 template<typename R, typename T>
-concept uninitialized_fill_index_no_throw =
+concept uninitialized_fill_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::uninitialized_fill_iters_no_throw<
@@ -377,8 +377,9 @@ inline constexpr Iter fill_iters(Iter first, Snt last, T const &value)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::fill_iters_no_throw<Iter, Snt, T>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::fill_tag, first, last, value);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    fill_iters_define, first, last, value);
   return ::fast_io::details::algorithms::fill_iters_impl(first, last, value);
 }
 
@@ -396,8 +397,9 @@ inline constexpr Iter fill_n_iters(Iter first, ::std::size_t count, T const &val
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::fill_iter_no_throw<Iter, T>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::fill_n_tag, first, count, value);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    fill_n_iters_define, first, count, value);
   return ::fast_io::details::algorithms::fill_n_iters_impl(first, count, value);
 }
 
@@ -413,10 +415,10 @@ inline constexpr ::std::ranges::iterator_t<R> fill_n(
 }
 
 template<::std::ranges::random_access_range R, typename T>
-inline constexpr void fill_index(
+inline constexpr void fill_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, T const &value)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::fill_index_no_throw<R, T>)
+    !::fast_io::details::algorithms::fill_index_range_no_throw<R, T>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
@@ -430,8 +432,9 @@ inline constexpr Iter uninitialized_fill_iters(
     !::fast_io::details::algorithms::uninitialized_fill_iters_no_throw<
       Iter, Snt, T>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::uninitialized_fill_tag, first, last, value);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    uninitialized_fill_iters_define, first, last, value);
   return ::fast_io::details::algorithms::uninitialized_fill_iters_impl(
     first, last, value);
 }
@@ -453,8 +456,9 @@ inline constexpr Iter uninitialized_fill_n_iters(
     !::fast_io::details::algorithms::uninitialized_fill_n_iters_no_throw<
       Iter, T>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::uninitialized_fill_n_tag, first, count, value);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    uninitialized_fill_n_iters_define, first, count, value);
   return ::fast_io::details::algorithms::uninitialized_fill_n_iters_impl(
     first, count, value);
 }
@@ -471,10 +475,10 @@ inline constexpr ::std::ranges::iterator_t<R> uninitialized_fill_n(
 }
 
 template<::std::ranges::random_access_range R, typename T>
-inline constexpr void uninitialized_fill_index(
+inline constexpr void uninitialized_fill_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, T const &value)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::uninitialized_fill_index_no_throw<R, T>)
+    !::fast_io::details::algorithms::uninitialized_fill_index_range_no_throw<R, T>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);

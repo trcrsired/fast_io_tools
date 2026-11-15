@@ -17,7 +17,7 @@ concept nth_element_ranges_no_throw =
     ::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>, Cmp>;
 
 template<typename R, typename Cmp>
-concept nth_element_index_no_throw =
+concept nth_element_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::nth_element_iters_no_throw<
@@ -177,8 +177,9 @@ inline constexpr void nth_element_iters(
     !::fast_io::details::algorithms::nth_element_iters_no_throw<
       Iter, Snt, Cmp>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::nth_element_tag, first, nth, last, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    nth_element_iters_define, first, nth, last, cmp);
   ::fast_io::details::algorithms::nth_element_iters_impl(
     first, nth, last, cmp);
 }
@@ -196,11 +197,11 @@ inline constexpr void nth_element(
 
 template<::std::ranges::random_access_range R,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr void nth_element_index(
+inline constexpr void nth_element_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t nthidx,
   ::std::size_t lastidx, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::nth_element_index_no_throw<R, Cmp>)
+    !::fast_io::details::algorithms::nth_element_index_range_no_throw<R, Cmp>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);

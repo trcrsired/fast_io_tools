@@ -70,10 +70,10 @@ constexpr bool constexpr_destroy_n_test()
 
 static_assert(constexpr_destroy_n_test());
 
-constexpr bool constexpr_destroy_index_test()
+constexpr bool constexpr_destroy_index_range_test()
 {
 	int a[5]{1, 2, 3, 4, 5};
-	::fast_io::algorithms::destroy_index(a, 1, 4);
+	::fast_io::algorithms::destroy_index_range(a, 1, 4);
 	for (int i{1}; i < 4; ++i)
 	{
 		::new (static_cast<void *>(a + i)) int{i};
@@ -81,7 +81,7 @@ constexpr bool constexpr_destroy_index_test()
 	return a[1] == 1 && a[3] == 3;
 }
 
-static_assert(constexpr_destroy_index_test());
+static_assert(constexpr_destroy_index_range_test());
 
 } // namespace
 
@@ -93,7 +93,7 @@ static_assert(noexcept(::fast_io::algorithms::destroy(
 	::std::declval<std::vector<int> &>())));
 static_assert(noexcept(::fast_io::algorithms::destroy_n_iters(
 	::std::declval<int *>(), std::size_t{})));
-static_assert(noexcept(::fast_io::algorithms::destroy_index(
+static_assert(noexcept(::fast_io::algorithms::destroy_index_range(
 	::std::declval<std::vector<int> &>(), std::size_t{}, std::size_t{})));
 
 int main()
@@ -199,19 +199,19 @@ int main()
 
 	{
 		raw_storage<counted, 6> storage;
-		::fast_io::algorithms::uninitialized_value_construct_index(
+		::fast_io::algorithms::uninitialized_value_construct_index_range(
 			storage, 0, 6);
 		if (counted::live != 6)
 		{
 			return 16;
 		}
-		::fast_io::algorithms::destroy_index(storage, 1, 4);
+		::fast_io::algorithms::destroy_index_range(storage, 1, 4);
 		if (counted::live != 3)
 		{
 			return 17;
 		}
-		::fast_io::algorithms::destroy_index(storage, 0, 1);
-		::fast_io::algorithms::destroy_index(storage, 4, 6);
+		::fast_io::algorithms::destroy_index_range(storage, 0, 1);
+		::fast_io::algorithms::destroy_index_range(storage, 4, 6);
 		if (counted::live != 0)
 		{
 			return 18;

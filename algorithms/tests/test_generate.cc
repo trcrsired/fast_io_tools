@@ -44,7 +44,7 @@ int main()
 {
 	std::vector<int> values(4);
 	counter c{7};
-	::fast_io::algorithms::generate_index(values, 1, 3, c);
+	::fast_io::algorithms::generate_index_range(values, 1, 3, c);
 	if (values[0] != 0 || values[1] != 7 || values[2] != 8 || values[3] != 0)
 	{
 		return 1;

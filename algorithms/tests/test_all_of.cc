@@ -64,7 +64,7 @@ bool check_none_of()
 	return ::fast_io::algorithms::none_of(empty, is_even{});
 }
 
-bool check_index()
+bool check_index_range()
 {
 	std::vector<int> values{1, 2, 3, 4, 5, 6};
 	for (std::size_t first{}; first <= values.size(); ++first)
@@ -74,7 +74,7 @@ bool check_index()
 			auto const predicate = [](int value) noexcept {
 				return value > 3;
 			};
-			if (::fast_io::algorithms::all_of_index(
+			if (::fast_io::algorithms::all_of_index_range(
 					values, first, last, predicate) !=
 				std::all_of(values.begin() + static_cast<std::ptrdiff_t>(first),
 					values.begin() + static_cast<std::ptrdiff_t>(last),
@@ -82,7 +82,7 @@ bool check_index()
 			{
 				return false;
 			}
-			if (::fast_io::algorithms::any_of_index(
+			if (::fast_io::algorithms::any_of_index_range(
 					values, first, last, predicate) !=
 				std::any_of(values.begin() + static_cast<std::ptrdiff_t>(first),
 					values.begin() + static_cast<std::ptrdiff_t>(last),
@@ -90,7 +90,7 @@ bool check_index()
 			{
 				return false;
 			}
-			if (::fast_io::algorithms::none_of_index(
+			if (::fast_io::algorithms::none_of_index_range(
 					values, first, last, predicate) !=
 				std::none_of(values.begin() + static_cast<std::ptrdiff_t>(first),
 					values.begin() + static_cast<std::ptrdiff_t>(last),
@@ -129,12 +129,12 @@ constexpr bool constexpr_test()
 	{
 		return false;
 	}
-	if (::fast_io::algorithms::all_of_index(
+	if (::fast_io::algorithms::all_of_index_range(
 			a, 1, 4, [](int value) constexpr noexcept { return value >= 4; }) != true)
 	{
 		return false;
 	}
-	return ::fast_io::algorithms::any_of_index(
+	return ::fast_io::algorithms::any_of_index_range(
 		a, 0, 3, [](int value) constexpr noexcept { return value == 6; });
 }
 
@@ -145,7 +145,7 @@ static_assert(constexpr_test());
 static_assert(noexcept(::fast_io::algorithms::all_of(
 	::std::declval<std::vector<int> &>(),
 	[](int value) noexcept { return value == 1; })));
-static_assert(noexcept(::fast_io::algorithms::any_of_index(
+static_assert(noexcept(::fast_io::algorithms::any_of_index_range(
 	::std::declval<std::vector<int> &>(), std::size_t{}, std::size_t{},
 	[](int value) noexcept { return value == 1; })));
 static_assert(noexcept(::fast_io::algorithms::none_of(
@@ -166,7 +166,7 @@ int main()
 	{
 		return 3;
 	}
-	if (!check_index())
+	if (!check_index_range())
 	{
 		return 4;
 	}

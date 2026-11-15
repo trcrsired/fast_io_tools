@@ -48,7 +48,7 @@ concept set_output_ranges_no_throw =
     OIter, Cmp>;
 
 template<typename R1, typename R2, typename Cmp>
-concept set_index_no_throw =
+concept set_index_range_no_throw =
   ::std::ranges::random_access_range<R1> &&
   ::std::ranges::random_access_range<R2> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R1> &&
@@ -60,7 +60,7 @@ concept set_index_no_throw =
     ::fast_io::details::algorithms::algo_index_iterator<R2>, Cmp>;
 
 template<typename R1, typename R2, typename OIter, typename Cmp>
-concept set_output_index_no_throw =
+concept set_output_index_range_no_throw =
   ::std::ranges::random_access_range<R1> &&
   ::std::ranges::random_access_range<R2> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R1> &&
@@ -255,9 +255,9 @@ inline constexpr bool includes_iters(
     !::fast_io::details::algorithms::set_iters_no_throw<
       Iter1, Snt1, Iter2, Snt2, Cmp>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::includes_tag, first1, last1,
-    first2, last2, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<Iter1, Iter2>),
+    includes_iters_define, first1, last1, first2, last2, cmp);
   return ::fast_io::details::algorithms::includes_iters_impl(
     first1, last1, first2, last2, cmp);
 }
@@ -276,12 +276,12 @@ inline constexpr bool includes(R1 &&r1, R2 &&r2, Cmp cmp = Cmp{})
 template<::std::ranges::random_access_range R1,
   ::std::ranges::random_access_range R2,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr bool includes_index(
+inline constexpr bool includes_index_range(
   R1 &&r1, ::std::size_t firstidx1, ::std::size_t lastidx1,
   R2 &&r2, ::std::size_t firstidx2, ::std::size_t lastidx2,
   Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::set_index_no_throw<R1, R2, Cmp>)
+    !::fast_io::details::algorithms::set_index_range_no_throw<R1, R2, Cmp>)
 {
   auto [first1, last1] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R1>(r1), firstidx1, lastidx1);
@@ -302,9 +302,10 @@ inline constexpr bool includes_index(
       !::fast_io::details::algorithms::set_output_iters_no_throw<            \
         Iter1, Snt1, Iter2, Snt2, OIter, Cmp>)                              \
   {                                                                          \
-    FAST_IO_ALGORITHMS_CUSTOMIZE(                                            \
-      ::fast_io::algorithms::customization::name##_tag, first1, last1,       \
-      first2, last2, dest, cmp);                                             \
+    FAST_IO_ALGORITHMS_CUSTOMIZE_IF(                                         \
+      (!::fast_io::details::algorithms::contiguous_iters<Iter1, Iter2,       \
+        OIter>),                                                             \
+      name##_iters_define, first1, last1, first2, last2, dest, cmp);         \
     return ::fast_io::details::algorithms::name##_iters_impl(                \
       first1, last1, first2, last2, dest, cmp);                              \
   }                                                                          \
@@ -314,7 +315,7 @@ inline constexpr bool includes_index(
     R1 &&r1, R2 &&r2, OIter dest, Cmp cmp = Cmp{})                           \
     FAST_IO_HERBCEPTIONS_THROWS_IF(                                          \
       !::fast_io::details::algorithms::set_output_ranges_no_throw<           \
-        R1, R2, OIter, Cmp>)                                                \
+        R1, R2, OIter, Cmp>)                                                 \
   {                                                                          \
     return ::fast_io::algorithms::name##_iters(                              \
       ::std::ranges::begin(r1), ::std::ranges::end(r1),                      \
@@ -323,13 +324,13 @@ inline constexpr bool includes_index(
   template<::std::ranges::random_access_range R1,                            \
     ::std::ranges::random_access_range R2, typename OIter,                   \
     typename Cmp = ::fast_io::algorithms::compare_three_way>                 \
-  inline constexpr OIter name##_index(                                       \
+  inline constexpr OIter name##_index_range(                                 \
     R1 &&r1, ::std::size_t firstidx1, ::std::size_t lastidx1,                \
     R2 &&r2, ::std::size_t firstidx2, ::std::size_t lastidx2,                \
     OIter dest, Cmp cmp = Cmp{})                                             \
     FAST_IO_HERBCEPTIONS_THROWS_IF(                                          \
-      !::fast_io::details::algorithms::set_output_index_no_throw<            \
-        R1, R2, OIter, Cmp>)                                                \
+      !::fast_io::details::algorithms::set_output_index_range_no_throw<      \
+        R1, R2, OIter, Cmp>)                                                 \
   {                                                                          \
     auto [first1, last1] =                                                   \
       ::fast_io::details::algorithms::algo_index_to_iters(                   \

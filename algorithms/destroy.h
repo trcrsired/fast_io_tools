@@ -29,7 +29,7 @@ concept destroy_ranges_no_throw =
   ::std::is_nothrow_destructible_v<::std::ranges::range_value_t<R>>;
 
 template<typename R>
-concept destroy_index_no_throw =
+concept destroy_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::destroy_iters_no_throw<
@@ -129,7 +129,7 @@ inline constexpr void destroy_at(T *location)
   FAST_IO_HERBCEPTIONS_THROWS_IF(!::std::is_nothrow_destructible_v<T>)
 {
   FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::destroy_at_tag, location);
+    destroy_at_define, location);
   ::fast_io::details::algorithms::destroy_at_impl(location);
 }
 
@@ -138,8 +138,9 @@ inline constexpr Iter destroy_iters(Iter first, Snt last)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::destroy_iters_no_throw<Iter, Snt>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::destroy_tag, first, last);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    destroy_iters_define, first, last);
   return ::fast_io::details::algorithms::destroy_iters_impl(first, last);
 }
 
@@ -157,8 +158,9 @@ inline constexpr Iter destroy_n_iters(Iter first, ::std::size_t count)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::destroy_n_iters_no_throw<Iter>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::destroy_n_tag, first, count);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    destroy_n_iters_define, first, count);
   return ::fast_io::details::algorithms::destroy_n_iters_impl(first, count);
 }
 
@@ -174,10 +176,10 @@ inline constexpr ::std::ranges::iterator_t<R> destroy_n(
 }
 
 template<::std::ranges::random_access_range R>
-inline constexpr void destroy_index(
+inline constexpr void destroy_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::destroy_index_no_throw<R>)
+    !::fast_io::details::algorithms::destroy_index_range_no_throw<R>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);

@@ -49,7 +49,7 @@ static_assert(noexcept(::fast_io::algorithms::replace_copy(
 int main()
 {
 	std::vector<std::string> values{"a", "b", "a"};
-	::fast_io::algorithms::replace_index(values, 0, 3, std::string{"a"}, std::string{"z"});
+	::fast_io::algorithms::replace_index_range(values, 0, 3, std::string{"a"}, std::string{"z"});
 	if (values[0] != "z" || values[1] != "b" || values[2] != "z")
 	{
 		return 1;

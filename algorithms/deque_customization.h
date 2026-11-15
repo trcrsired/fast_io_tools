@@ -7,7 +7,8 @@
 //
 // This header is included by impl.h after the algorithm family headers, and
 // only when <fast_io_dsal/deque.h> is available. User-defined containers get
-// the same treatment by providing their own `algorithms_define` overloads.
+// the same treatment by providing their own `*_iters_define` overloads in a
+// namespace associated with their iterator.
 
 namespace fast_io::details::algorithms
 {
@@ -313,14 +314,14 @@ struct deque_reverse_copy_segment
 
 } // namespace fast_io::details::algorithms
 
-namespace fast_io::algorithms::customization
+namespace fast_io::containers::details
 {
 
 using ::fast_io::details::algorithms::deque_algo_iterator;
 
 template<typename T, bool isconst, typename OIter>
-inline constexpr OIter algorithms_define(
-  define_type<copy_tag>, deque_algo_iterator<T, isconst> first,
+inline constexpr OIter copy_iters_define(
+  ::fast_io::io_algorithm_t, deque_algo_iterator<T, isconst> first,
   deque_algo_iterator<T, isconst> last, OIter dest)
   noexcept(noexcept(
     ::fast_io::details::algorithms::copy_iters_impl(
@@ -333,8 +334,8 @@ inline constexpr OIter algorithms_define(
 }
 
 template<typename T, bool isconst, typename OIter>
-inline constexpr OIter algorithms_define(
-  define_type<copy_n_tag>, deque_algo_iterator<T, isconst> first,
+inline constexpr OIter copy_n_iters_define(
+  ::fast_io::io_algorithm_t, deque_algo_iterator<T, isconst> first,
   ::std::size_t count, OIter dest)
   noexcept(noexcept(
     ::fast_io::details::algorithms::copy_n_iters_impl(
@@ -347,8 +348,8 @@ inline constexpr OIter algorithms_define(
 }
 
 template<typename T, bool isconst, typename OIter>
-inline constexpr OIter algorithms_define(
-  define_type<copy_backward_tag>, deque_algo_iterator<T, isconst> first,
+inline constexpr OIter copy_backward_iters_define(
+  ::fast_io::io_algorithm_t, deque_algo_iterator<T, isconst> first,
   deque_algo_iterator<T, isconst> last, OIter d_last)
   noexcept(noexcept(
     ::fast_io::details::algorithms::copy_backward_iters_impl(
@@ -361,8 +362,8 @@ inline constexpr OIter algorithms_define(
 }
 
 template<typename T, bool isconst, typename OIter>
-inline constexpr OIter algorithms_define(
-  define_type<non_overlapped_copy_tag>,
+inline constexpr OIter non_overlapped_copy_iters_define(
+  ::fast_io::io_algorithm_t,
   deque_algo_iterator<T, isconst> first,
   deque_algo_iterator<T, isconst> last, OIter dest)
   noexcept(noexcept(
@@ -376,8 +377,8 @@ inline constexpr OIter algorithms_define(
 }
 
 template<typename T, bool isconst, typename OIter>
-inline constexpr OIter algorithms_define(
-  define_type<non_overlapped_copy_n_tag>,
+inline constexpr OIter non_overlapped_copy_n_iters_define(
+  ::fast_io::io_algorithm_t,
   deque_algo_iterator<T, isconst> first, ::std::size_t count,
   OIter dest)
   noexcept(noexcept(
@@ -392,8 +393,8 @@ inline constexpr OIter algorithms_define(
 
 template<typename T, bool isconst, typename OIter>
   requires(!isconst)
-inline constexpr OIter algorithms_define(
-  define_type<move_tag>, deque_algo_iterator<T, isconst> first,
+inline constexpr OIter move_iters_define(
+  ::fast_io::io_algorithm_t, deque_algo_iterator<T, isconst> first,
   deque_algo_iterator<T, isconst> last, OIter dest)
   noexcept(noexcept(
     ::fast_io::details::algorithms::move_iters_impl(
@@ -407,8 +408,8 @@ inline constexpr OIter algorithms_define(
 
 template<typename T, bool isconst, typename OIter>
   requires(!isconst)
-inline constexpr OIter algorithms_define(
-  define_type<move_backward_tag>, deque_algo_iterator<T, isconst> first,
+inline constexpr OIter move_backward_iters_define(
+  ::fast_io::io_algorithm_t, deque_algo_iterator<T, isconst> first,
   deque_algo_iterator<T, isconst> last, OIter d_last)
   noexcept(noexcept(
     ::fast_io::details::algorithms::move_backward_iters_impl(
@@ -421,8 +422,8 @@ inline constexpr OIter algorithms_define(
 }
 
 template<typename T, bool isconst, typename OIter>
-inline constexpr OIter algorithms_define(
-  define_type<uninitialized_copy_tag>,
+inline constexpr OIter uninitialized_copy_iters_define(
+  ::fast_io::io_algorithm_t,
   deque_algo_iterator<T, isconst> first,
   deque_algo_iterator<T, isconst> last, OIter dest)
   noexcept(noexcept(
@@ -436,8 +437,8 @@ inline constexpr OIter algorithms_define(
 }
 
 template<typename T, bool isconst, typename OIter>
-inline constexpr OIter algorithms_define(
-  define_type<uninitialized_copy_n_tag>,
+inline constexpr OIter uninitialized_copy_n_iters_define(
+  ::fast_io::io_algorithm_t,
   deque_algo_iterator<T, isconst> first, ::std::size_t count,
   OIter dest)
   noexcept(noexcept(
@@ -451,8 +452,8 @@ inline constexpr OIter algorithms_define(
 }
 
 template<typename T, bool isconst, typename OIter>
-inline constexpr OIter algorithms_define(
-  define_type<uninitialized_copy_backward_tag>,
+inline constexpr OIter uninitialized_copy_backward_iters_define(
+  ::fast_io::io_algorithm_t,
   deque_algo_iterator<T, isconst> first,
   deque_algo_iterator<T, isconst> last, OIter d_last)
   noexcept(noexcept(
@@ -468,8 +469,8 @@ inline constexpr OIter algorithms_define(
 
 template<typename T, bool isconst, typename OIter>
   requires(!isconst)
-inline constexpr OIter algorithms_define(
-  define_type<uninitialized_move_tag>,
+inline constexpr OIter uninitialized_move_iters_define(
+  ::fast_io::io_algorithm_t,
   deque_algo_iterator<T, isconst> first,
   deque_algo_iterator<T, isconst> last, OIter dest)
   noexcept(noexcept(
@@ -484,8 +485,8 @@ inline constexpr OIter algorithms_define(
 
 template<typename T, bool isconst, typename OIter>
   requires(!isconst)
-inline constexpr OIter algorithms_define(
-  define_type<uninitialized_move_n_tag>,
+inline constexpr OIter uninitialized_move_n_iters_define(
+  ::fast_io::io_algorithm_t,
   deque_algo_iterator<T, isconst> first, ::std::size_t count,
   OIter dest)
   noexcept(noexcept(
@@ -500,8 +501,8 @@ inline constexpr OIter algorithms_define(
 
 template<typename T, bool isconst, typename OIter>
   requires(!isconst)
-inline constexpr OIter algorithms_define(
-  define_type<uninitialized_move_backward_tag>,
+inline constexpr OIter uninitialized_move_backward_iters_define(
+  ::fast_io::io_algorithm_t,
   deque_algo_iterator<T, isconst> first,
   deque_algo_iterator<T, isconst> last, OIter d_last)
   noexcept(noexcept(
@@ -517,8 +518,8 @@ inline constexpr OIter algorithms_define(
 
 template<typename T, bool isconst, typename OIter>
   requires(!isconst)
-inline constexpr OIter algorithms_define(
-  define_type<uninitialized_relocate_tag>,
+inline constexpr OIter uninitialized_relocate_iters_define(
+  ::fast_io::io_algorithm_t,
   deque_algo_iterator<T, isconst> first,
   deque_algo_iterator<T, isconst> last, OIter dest)
   noexcept(noexcept(
@@ -533,8 +534,8 @@ inline constexpr OIter algorithms_define(
 
 template<typename T, bool isconst, typename OIter>
   requires(!isconst)
-inline constexpr OIter algorithms_define(
-  define_type<uninitialized_relocate_n_tag>,
+inline constexpr OIter uninitialized_relocate_n_iters_define(
+  ::fast_io::io_algorithm_t,
   deque_algo_iterator<T, isconst> first, ::std::size_t count,
   OIter dest)
   noexcept(noexcept(
@@ -549,8 +550,8 @@ inline constexpr OIter algorithms_define(
 
 template<typename T, bool isconst, typename OIter>
   requires(!isconst)
-inline constexpr OIter algorithms_define(
-  define_type<uninitialized_relocate_backward_tag>,
+inline constexpr OIter uninitialized_relocate_backward_iters_define(
+  ::fast_io::io_algorithm_t,
   deque_algo_iterator<T, isconst> first,
   deque_algo_iterator<T, isconst> last, OIter d_last)
   noexcept(noexcept(
@@ -566,8 +567,8 @@ inline constexpr OIter algorithms_define(
 }
 
 template<typename T, bool isconst, typename OIter>
-inline constexpr OIter algorithms_define(
-  define_type<reverse_copy_tag>, deque_algo_iterator<T, isconst> first,
+inline constexpr OIter reverse_copy_iters_define(
+  ::fast_io::io_algorithm_t, deque_algo_iterator<T, isconst> first,
   deque_algo_iterator<T, isconst> last, OIter dest)
   noexcept(noexcept(
     ::fast_io::details::algorithms::reverse_copy_iters_impl(
@@ -581,8 +582,8 @@ inline constexpr OIter algorithms_define(
 
 template<typename T, bool isconst>
   requires(!isconst)
-inline constexpr void algorithms_define(
-  define_type<reverse_tag>, deque_algo_iterator<T, isconst> first,
+inline constexpr void reverse_iters_define(
+  ::fast_io::io_algorithm_t, deque_algo_iterator<T, isconst> first,
   deque_algo_iterator<T, isconst> last)
   noexcept(::fast_io::details::algorithms::move_no_throw<T>)
 {
@@ -591,8 +592,8 @@ inline constexpr void algorithms_define(
 
 template<typename T, bool isconst>
   requires(!isconst)
-inline constexpr deque_algo_iterator<T, isconst> algorithms_define(
-  define_type<rotate_tag>, deque_algo_iterator<T, isconst> first,
+inline constexpr deque_algo_iterator<T, isconst> rotate_iters_define(
+  ::fast_io::io_algorithm_t, deque_algo_iterator<T, isconst> first,
   deque_algo_iterator<T, isconst> middle,
   deque_algo_iterator<T, isconst> last)
   noexcept(::fast_io::details::algorithms::move_no_throw<T>)
@@ -615,8 +616,8 @@ inline constexpr deque_algo_iterator<T, isconst> algorithms_define(
 }
 
 template<typename T, bool isconst, typename OIter>
-inline constexpr OIter algorithms_define(
-  define_type<rotate_copy_tag>, deque_algo_iterator<T, isconst> first,
+inline constexpr OIter rotate_copy_iters_define(
+  ::fast_io::io_algorithm_t, deque_algo_iterator<T, isconst> first,
   deque_algo_iterator<T, isconst> middle,
   deque_algo_iterator<T, isconst> last, OIter dest)
   noexcept(noexcept(
@@ -631,4 +632,4 @@ inline constexpr OIter algorithms_define(
     first, middle, dest, copy);
 }
 
-} // namespace fast_io::algorithms::customization
+} // namespace fast_io::containers::details

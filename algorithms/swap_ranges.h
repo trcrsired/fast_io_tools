@@ -17,7 +17,7 @@ concept swap_ranges_ranges_no_throw =
     ::std::ranges::iterator_t<R1>, ::std::ranges::sentinel_t<R1>, Iter2>;
 
 template<typename R1, typename Iter2>
-concept swap_ranges_index_no_throw =
+concept swap_ranges_index_range_no_throw =
   ::std::ranges::random_access_range<R1> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R1> &&
   ::fast_io::details::algorithms::swap_ranges_iters_no_throw<
@@ -52,8 +52,9 @@ inline constexpr Iter2 swap_ranges_iters(
     !::fast_io::details::algorithms::swap_ranges_iters_no_throw<
       Iter1, Snt1, Iter2>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::swap_ranges_tag, first1, last1, first2);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first1), decltype(first2)>),
+    swap_ranges_iters_define, first1, last1, first2);
   return ::fast_io::details::algorithms::swap_ranges_iters_impl(
     first1, last1, first2);
 }
@@ -69,10 +70,10 @@ inline constexpr Iter2 swap_ranges(R1 &&r1, Iter2 first2)
 }
 
 template<::std::ranges::random_access_range R1, ::std::input_iterator Iter2>
-inline constexpr Iter2 swap_ranges_index(
+inline constexpr Iter2 swap_ranges_index_range(
   R1 &&r1, ::std::size_t firstidx, ::std::size_t lastidx, Iter2 first2)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::swap_ranges_index_no_throw<
+    !::fast_io::details::algorithms::swap_ranges_index_range_no_throw<
       R1, Iter2>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(

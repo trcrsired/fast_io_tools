@@ -34,7 +34,7 @@ concept lexicographical_compare_ranges_no_throw =
     ::std::ranges::iterator_t<R2>, ::std::ranges::sentinel_t<R2>, Cmp>;
 
 template<typename R1, typename R2, typename Cmp>
-concept lexicographical_compare_index_no_throw =
+concept lexicographical_compare_index_range_no_throw =
   ::std::ranges::random_access_range<R1> &&
   ::std::ranges::random_access_range<R2> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R1> &&
@@ -117,8 +117,9 @@ inline constexpr bool lexicographical_compare_iters(
     !::fast_io::details::algorithms::lexicographical_compare_iters_no_throw<
       Iter1, Snt1, Iter2, Snt2, Cmp>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::lexicographical_compare_tag, first1, last1, first2, last2, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first1), decltype(first2)>),
+    lexicographical_compare_iters_define, first1, last1, first2, last2, cmp);
   return ::fast_io::details::algorithms::lexicographical_compare_iters_impl(
     first1, last1, first2, last2, cmp);
 }
@@ -139,12 +140,12 @@ inline constexpr bool lexicographical_compare(
 template<::std::ranges::random_access_range R1,
   ::std::ranges::random_access_range R2,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr bool lexicographical_compare_index(
+inline constexpr bool lexicographical_compare_index_range(
   R1 &&r1, ::std::size_t firstidx1, ::std::size_t lastidx1,
   R2 &&r2, ::std::size_t firstidx2, ::std::size_t lastidx2,
   Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::lexicographical_compare_index_no_throw<
+    !::fast_io::details::algorithms::lexicographical_compare_index_range_no_throw<
       R1, R2, Cmp>)
 {
   auto [first1, last1] = ::fast_io::details::algorithms::algo_index_to_iters(
@@ -167,8 +168,9 @@ inline constexpr auto lexicographical_compare_three_way_iters(
       Iter1, Snt1, Iter2, Snt2, Cmp>)
   -> decltype(cmp.compare(*first1, *first2))
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::lexicographical_compare_three_way_tag, first1, last1, first2, last2, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first1), decltype(first2)>),
+    lexicographical_compare_three_way_iters_define, first1, last1, first2, last2, cmp);
   return ::fast_io::details::algorithms::
     lexicographical_compare_three_way_iters_impl(
       first1, last1, first2, last2, cmp);
@@ -192,12 +194,12 @@ inline constexpr auto lexicographical_compare_three_way(
 template<::std::ranges::random_access_range R1,
   ::std::ranges::random_access_range R2,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr auto lexicographical_compare_three_way_index(
+inline constexpr auto lexicographical_compare_three_way_index_range(
   R1 &&r1, ::std::size_t firstidx1, ::std::size_t lastidx1,
   R2 &&r2, ::std::size_t firstidx2, ::std::size_t lastidx2,
   Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::lexicographical_compare_index_no_throw<
+    !::fast_io::details::algorithms::lexicographical_compare_index_range_no_throw<
       R1, R2, Cmp>)
   -> decltype(cmp.compare(
     *::std::ranges::begin(r1), *::std::ranges::begin(r2)))

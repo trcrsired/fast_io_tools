@@ -23,7 +23,7 @@ constexpr bool constexpr_equal_test()
 	{
 		return false;
 	}
-	return ::fast_io::algorithms::equal_index(a, 0, 3, b, 0, 3);
+	return ::fast_io::algorithms::equal_index_range(a, 0, 3, b, 0, 3);
 }
 
 static_assert(constexpr_equal_test());
@@ -44,11 +44,11 @@ int main()
 	{
 		return 1;
 	}
-	if (::fast_io::algorithms::equal_index(a, 0, 2, b, 0, 2) != true)
+	if (::fast_io::algorithms::equal_index_range(a, 0, 2, b, 0, 2) != true)
 	{
 		return 2;
 	}
-	if (::fast_io::algorithms::equal_index(a, 0, 3, b, 0, 3) != false)
+	if (::fast_io::algorithms::equal_index_range(a, 0, 3, b, 0, 3) != false)
 	{
 		return 3;
 	}

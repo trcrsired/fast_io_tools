@@ -35,7 +35,7 @@ static_assert(noexcept(::fast_io::algorithms::unique_copy(
 int main()
 {
 	std::vector<std::string> values{"a", "a", "b", "b", "c", "a"};
-	auto end{::fast_io::algorithms::unique_index(values, 0, 6)};
+	auto end{::fast_io::algorithms::unique_index_range(values, 0, 6)};
 	if (end != 4)
 	{
 		return 1;

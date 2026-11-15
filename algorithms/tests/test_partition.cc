@@ -117,7 +117,7 @@ int main()
 		return 2;
 	}
 	std::vector<int> values{1, 2, 3, 4, 5};
-	if (::fast_io::algorithms::partition_index(values, 1, 4, even{}) != 3)
+	if (::fast_io::algorithms::partition_index_range(values, 1, 4, even{}) != 3)
 	{
 		return 3;
 	}

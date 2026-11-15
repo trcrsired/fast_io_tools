@@ -58,8 +58,9 @@ inline constexpr void advance_iters(
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::advance_iters_no_throw<Iter>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::advance_tag, it, n);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(it)>),
+    advance_iters_define, it, n);
   ::fast_io::details::algorithms::advance_iters_impl(it, n);
 }
 

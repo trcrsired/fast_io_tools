@@ -29,7 +29,7 @@ concept uninitialized_construct_ranges_no_throw =
   ::std::is_nothrow_destructible_v<::std::ranges::range_value_t<R>>;
 
 template<typename R>
-concept uninitialized_construct_index_no_throw =
+concept uninitialized_construct_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::uninitialized_construct_iters_no_throw<
@@ -372,8 +372,9 @@ inline constexpr Iter uninitialized_default_construct_iters(Iter first, Snt last
     !::fast_io::details::algorithms::uninitialized_construct_iters_no_throw<
       Iter, Snt>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::uninitialized_default_construct_tag, first, last);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    uninitialized_default_construct_iters_define, first, last);
   return ::fast_io::details::algorithms::
     uninitialized_default_construct_iters_impl(first, last);
 }
@@ -395,8 +396,9 @@ inline constexpr Iter uninitialized_default_construct_n_iters(
     !::fast_io::details::algorithms::uninitialized_construct_n_iters_no_throw<
       Iter>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::uninitialized_default_construct_n_tag, first, count);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    uninitialized_default_construct_n_iters_define, first, count);
   return ::fast_io::details::algorithms::
     uninitialized_default_construct_n_iters_impl(first, count);
 }
@@ -418,8 +420,9 @@ inline constexpr Iter uninitialized_value_construct_iters(Iter first, Snt last)
     !::fast_io::details::algorithms::uninitialized_construct_iters_no_throw<
       Iter, Snt>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::uninitialized_value_construct_tag, first, last);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    uninitialized_value_construct_iters_define, first, last);
   return ::fast_io::details::algorithms::
     uninitialized_value_construct_iters_impl(first, last);
 }
@@ -441,8 +444,9 @@ inline constexpr Iter uninitialized_value_construct_n_iters(
     !::fast_io::details::algorithms::uninitialized_construct_n_iters_no_throw<
       Iter>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::uninitialized_value_construct_n_tag, first, count);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    uninitialized_value_construct_n_iters_define, first, count);
   return ::fast_io::details::algorithms::
     uninitialized_value_construct_n_iters_impl(first, count);
 }
@@ -459,10 +463,10 @@ inline constexpr ::std::ranges::iterator_t<R> uninitialized_value_construct_n(
 }
 
 template<::std::ranges::random_access_range R>
-inline constexpr void uninitialized_default_construct_index(
+inline constexpr void uninitialized_default_construct_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::uninitialized_construct_index_no_throw<R>)
+    !::fast_io::details::algorithms::uninitialized_construct_index_range_no_throw<R>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
@@ -471,10 +475,10 @@ inline constexpr void uninitialized_default_construct_index(
 }
 
 template<::std::ranges::random_access_range R>
-inline constexpr void uninitialized_value_construct_index(
+inline constexpr void uninitialized_value_construct_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::uninitialized_construct_index_no_throw<R>)
+    !::fast_io::details::algorithms::uninitialized_construct_index_range_no_throw<R>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);

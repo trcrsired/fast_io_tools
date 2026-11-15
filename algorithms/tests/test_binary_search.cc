@@ -69,7 +69,7 @@ int main()
 	for (int value{}; value != 55; ++value)
 	{
 		auto e1{std::equal_range(values.begin(), values.end(), value)};
-		auto e2{::fast_io::algorithms::equal_range_index(
+		auto e2{::fast_io::algorithms::equal_range_index_range(
 			values, 0, values.size(), value)};
 		if ((e1.first - values.begin()) != static_cast<std::ptrdiff_t>(e2.first) ||
 			(e1.second - values.begin()) != static_cast<std::ptrdiff_t>(e2.second))
@@ -77,7 +77,7 @@ int main()
 			return 1;
 		}
 		if (std::binary_search(values.begin(), values.end(), value) !=
-			::fast_io::algorithms::binary_search_index(
+			::fast_io::algorithms::binary_search_index_range(
 				values, 0, values.size(), value))
 		{
 			return 2;

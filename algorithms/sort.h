@@ -121,7 +121,7 @@ concept sort_iters_no_throw =
     ::std::iter_value_t<Iter>>;
 
 template<typename R, typename Cmp>
-concept sort_index_no_throw =
+concept sort_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::sort_iters_no_throw<
@@ -1307,8 +1307,9 @@ inline constexpr void sort_iters(Iter first, Iter last, Cmp cmp = Cmp{})
     !(::fast_io::details::algorithms::sort_iters_no_throw<Iter, Cmp> &&
       ::fast_io::details::algorithms::sort_comparator_pass_no_throw<Cmp>))
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::sort_tag, first, last, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    sort_iters_define, first, last, cmp);
   ::fast_io::details::algorithms::sort_iters_impl(first, last, cmp);
 }
 
@@ -1326,10 +1327,10 @@ inline constexpr void sort(R &&r, Cmp cmp = Cmp{})
 
 template<::std::ranges::random_access_range R,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr void sort_index(
+inline constexpr void sort_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::sort_index_no_throw<R, Cmp>)
+    !::fast_io::details::algorithms::sort_index_range_no_throw<R, Cmp>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);

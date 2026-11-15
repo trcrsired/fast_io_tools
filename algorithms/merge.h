@@ -79,7 +79,7 @@ concept inplace_merge_ranges_no_throw =
     ::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>, Cmp>;
 
 template<typename R, typename Cmp>
-concept inplace_merge_index_no_throw =
+concept inplace_merge_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::inplace_merge_iters_no_throw<
@@ -124,8 +124,9 @@ inline constexpr OIter merge_iters(
     !::fast_io::details::algorithms::merge_iters_no_throw<
       Iter1, Snt1, Iter2, Snt2, OIter, Cmp>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::merge_tag, first1, last1, first2, last2, dest, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first1), decltype(first2), decltype(dest)>),
+    merge_iters_define, first1, last1, first2, last2, dest, cmp);
   return ::fast_io::details::algorithms::merge_iters_impl(
     first1, last1, first2, last2, dest, cmp);
 }
@@ -152,8 +153,9 @@ inline constexpr void inplace_merge_iters(
     !::fast_io::details::algorithms::inplace_merge_iters_no_throw<
       Iter, Snt, Cmp>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::inplace_merge_tag, first, middle, last, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    inplace_merge_iters_define, first, middle, last, cmp);
   ::fast_io::details::algorithms::inplace_merge_iters_impl(
     first, middle, last, cmp);
 }
@@ -172,11 +174,11 @@ inline constexpr void inplace_merge(
 
 template<::std::ranges::random_access_range R,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr void inplace_merge_index(
+inline constexpr void inplace_merge_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t middleidx,
   ::std::size_t lastidx, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::inplace_merge_index_no_throw<R, Cmp>)
+    !::fast_io::details::algorithms::inplace_merge_index_range_no_throw<R, Cmp>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);

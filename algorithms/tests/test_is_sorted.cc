@@ -23,7 +23,7 @@ constexpr bool constexpr_is_sorted_test()
 	int b[]{1, 3, 2, 4};
 	auto until{::fast_io::algorithms::is_sorted_until(b)};
 	return until == b + 2 && !::fast_io::algorithms::is_sorted(b) &&
-		::fast_io::algorithms::is_sorted_until_index(b, 0, 2) == 2;
+		::fast_io::algorithms::is_sorted_until_index_range(b, 0, 2) == 2;
 }
 
 static_assert(constexpr_is_sorted_test());
@@ -42,11 +42,11 @@ int main()
 	{
 		return 1;
 	}
-	if (::fast_io::algorithms::is_sorted_until_index(values, 1, 4) != 4)
+	if (::fast_io::algorithms::is_sorted_until_index_range(values, 1, 4) != 4)
 	{
 		return 2;
 	}
-	if (!::fast_io::algorithms::is_sorted_index(values, 1, 4))
+	if (!::fast_io::algorithms::is_sorted_index_range(values, 1, 4))
 	{
 		return 3;
 	}

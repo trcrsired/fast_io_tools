@@ -158,6 +158,12 @@ concept output_iter_no_throw =
   ::std::output_iterator<OIter, T> &&
   ::fast_io::details::algorithms::iter_no_throw<OIter>;
 
+// Customization is skipped when every iterator involved is contiguous: the
+// algorithm already takes a pointer fast path in that case.
+template<typename... Iters>
+concept contiguous_iters =
+  (::std::contiguous_iterator<Iters> && ...);
+
 template<typename Iter, typename Snt>
 inline constexpr auto copy_source_last(Iter first, Snt last) noexcept
 {

@@ -33,17 +33,17 @@ constexpr bool constexpr_find_test()
 
 static_assert(constexpr_find_test());
 
-constexpr bool constexpr_find_index_test()
+constexpr bool constexpr_find_index_range_test()
 {
 	int a[8]{1, 2, 3, 4, 5, 6, 7, 8};
-	if (::fast_io::algorithms::find_index(a, 1, 6, 4) != 3)
+	if (::fast_io::algorithms::find_index_range(a, 1, 6, 4) != 3)
 	{
 		return false;
 	}
-	return ::fast_io::algorithms::find_index(a, 1, 6, 99) == 6;
+	return ::fast_io::algorithms::find_index_range(a, 1, 6, 99) == 6;
 }
 
-static_assert(constexpr_find_index_test());
+static_assert(constexpr_find_index_range_test());
 
 int find_width_tests();
 
@@ -71,11 +71,11 @@ int main()
 	{
 		return 3;
 	}
-	if (::fast_io::algorithms::find_index(a, 0, 16, 15) != 15)
+	if (::fast_io::algorithms::find_index_range(a, 0, 16, 15) != 15)
 	{
 		return 4;
 	}
-	if (::fast_io::algorithms::find_index(a, 0, 16, 16) != 16)
+	if (::fast_io::algorithms::find_index_range(a, 0, 16, 16) != 16)
 	{
 		return 5;
 	}
@@ -89,11 +89,11 @@ int main()
 	{
 		return 7;
 	}
-	if (::fast_io::algorithms::find_index(v, 2, 10, 0) != 9)
+	if (::fast_io::algorithms::find_index_range(v, 2, 10, 0) != 9)
 	{
 		return 8;
 	}
-	if (::fast_io::algorithms::find_index(v, 2, 10, 100) != 10)
+	if (::fast_io::algorithms::find_index_range(v, 2, 10, 100) != 10)
 	{
 		return 9;
 	}
@@ -127,12 +127,12 @@ int main()
 
 static_assert(noexcept(::fast_io::algorithms::find(
 	::std::declval<int (&)[8]>(), 1)));
-static_assert(noexcept(::fast_io::algorithms::find_index(
+static_assert(noexcept(::fast_io::algorithms::find_index_range(
 	::std::declval<int (&)[8]>(), ::std::size_t{}, ::std::size_t{}, 1)));
 
 static_assert(noexcept(::fast_io::algorithms::find(
 	::std::declval<::std::vector<int> &>(), 1)));
-static_assert(noexcept(::fast_io::algorithms::find_index(
+static_assert(noexcept(::fast_io::algorithms::find_index_range(
 	::std::declval<::std::vector<int> &>(), ::std::size_t{}, ::std::size_t{}, 1)));
 
 static_assert([]() constexpr {

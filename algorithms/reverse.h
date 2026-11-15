@@ -71,7 +71,7 @@ concept reverse_iters_no_throw =
      : ::std::sized_sentinel_for<Snt, Iter>);
 
 template<typename R>
-concept reverse_index_no_throw =
+concept reverse_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::reverse_iters_no_throw<
@@ -164,8 +164,9 @@ inline constexpr void reverse_iters(Iter first, Snt last)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::reverse_iters_no_throw<Iter, Snt>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::reverse_tag, first, last);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    reverse_iters_define, first, last);
   ::fast_io::details::algorithms::reverse_iters_impl(first, last);
 }
 
@@ -180,10 +181,10 @@ inline constexpr void reverse(R &&r)
 }
 
 template<::std::ranges::random_access_range R>
-inline constexpr void reverse_index(
+inline constexpr void reverse_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::reverse_index_no_throw<R>)
+    !::fast_io::details::algorithms::reverse_index_range_no_throw<R>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
@@ -199,8 +200,9 @@ inline constexpr OIter reverse_copy_iters(Iter first, Snt last, OIter dest)
     !::fast_io::details::algorithms::reverse_copy_iters_no_throw<
       Iter, Snt, OIter>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::reverse_copy_tag, first, last, dest);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(dest)>),
+    reverse_copy_iters_define, first, last, dest);
   return ::fast_io::details::algorithms::reverse_copy_iters_impl(
     first, last, dest);
 }

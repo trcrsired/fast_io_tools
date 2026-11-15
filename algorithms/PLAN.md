@@ -33,7 +33,10 @@ Header layout: one algorithm family per header.
 - `is_sorted.h`: the `is_sorted` / `is_sorted_until` family.
 - `lexicographical_compare.h`: the lexicographical comparison family.
 - `merge.h`: `merge` and `inplace_merge`.
-- `minmax.h`: `min` / `max` / `minmax` / `clamp` and the element variants.
+- `minmax.h`: the `min_element` / `max_element` / `minmax_element` variants.
+  The scalar `min` / `max` / `minmax` / `clamp` helpers are intentionally not
+  provided: they take references and return references, which makes dangling
+  references too easy to create.
 - `mismatch.h`: the two-range `mismatch` family.
 - `move.h`: `move` and `move_backward`.
 - `nth_element.h`: `nth_element`.
@@ -97,8 +100,8 @@ time instead of carrying a second advance loop.
 - Names stay as already written:
   - `for_each_iters`
   - `for_each`
-  - `for_each_index`
-- `_index` APIs always validate.
+  - `for_each_index_range`
+- `*_index_range` APIs always validate.
 - Iterator APIs never validate.
 - No `_unchecked` variants. The convention already encodes the policy.
 - `f` receives the element (`f(*first)`), never the iterator.
@@ -124,7 +127,7 @@ Keep these signatures; fix the bodies and specifications.
 
 - `for_each_iters(Iter first, Snt last, F f)`
 - `for_each(R&& r, F f)`
-- `for_each_index(R&& r, size_t firstidx, size_t lastidx, F f)`
+- `for_each_index_range(R&& r, size_t firstidx, size_t lastidx, F f)`
 
 Internal helpers may change freely.
 
@@ -145,7 +148,7 @@ Internal helpers may change freely.
 
 Consequences:
 
-- fast_io containers with `throws_on_violations` throw from `_index` APIs.
+- fast_io containers with `throws_on_violations` throw from `*_index_range` APIs.
 - C arrays, views, `std::vector`, foreign ranges and anything without the flag
   terminate.
 - Iterator APIs never consult the flag, because they never check.
@@ -158,7 +161,7 @@ Containers that need updating when this moves into fast_io:
 
 ## Index normalization
 
-`_index` APIs need one shared checking routine.
+`*_index_range` APIs need one shared checking routine.
 
 Two layers:
 
@@ -276,7 +279,7 @@ No-throw detection for iterators is deliberately minimal and lives in
 - The range form follows the existing `copy_n` convention: `count` is not
   clamped to the range size.
 
-## `for_each_index`
+## `for_each_index_range`
 
 - Checked entry point.
 - Read the range’s allocator flag to select `throwing_violations`.
@@ -284,12 +287,43 @@ No-throw detection for iterators is deliberately minimal and lives in
 - Delegate to `for_each_iters`.
 - `throws` includes the violation policy and the callback.
 
+## `*_index_of` forms
+
+- A range entry point that returns a data-dependent position also gets an
+  `*_index_of` sibling that returns the position as a `std::size_t`:
+  `find_index_of`, `find_if_index_of`, `find_if_not_index_of`,
+  `lower_bound_index_of`, `upper_bound_index_of`, `equal_range_index_of`,
+  `adjacent_find_index_of`, `find_end_index_of`, `find_first_of_index_of`,
+  `search_index_of`, `search_n_index_of`, `min_element_index_of`,
+  `max_element_index_of`, `minmax_element_index_of`,
+  `is_sorted_until_index_of`, `is_heap_until_index_of`, `partition_index_of`,
+  `stable_partition_index_of`, `partition_point_index_of`, `remove_index_of`,
+  `remove_if_index_of`, `unique_index_of`, `rotate_index_of`,
+  `shift_left_index_of` and `shift_right_index_of`.
+- They take a whole range (or two ranges for the search family) and no index
+  arguments. There is nothing to validate, so a whole-range query cannot
+  violate anything and these forms work for ranges configured to throw on
+  violations, unlike the `*_index_range` forms.
+- The not-found sentinel is `size(r)` (or `lastidx1` in the two-range forms),
+  matching `*_index_range`.
+- The result is `returned - begin(r)`. That only needs
+  `random_access_range`; it does not require `sized_range`.
+- Position-returning APIs whose result is always the end of the range or of the
+  output are not given an `_index_of` form: `fill`, `fill_n`, `generate_n`,
+  `destroy`, `destroy_n`, the uninitialized construct/copy/move/relocate
+  families, `for_each_n`, `copy`, `move`, `relocate`, `transform`,
+  `replace_copy`, `unique_copy`, `partition_copy`, `swap_ranges`,
+  `partial_sort_copy`, `merge` and the set operations would only report
+  `size(r)`, `n`, or another constant.
+- `test_index_of.cc` covers every form above in both constant evaluation and
+  runtime, including empty and non-trivial ranges.
+
 ## `find`
 
 - API: `find_iters(first, last, value)`, `find(r, value)`,
-  `find_index(r, firstidx, lastidx, value)`.
+  `find_index_range(r, firstidx, lastidx, value)`, `find_index_of(r, value)`.
 - `find_iters` returns `Iter`; `find` returns `ranges::iterator_t<R>`;
-  `find_index` returns `std::size_t` and uses `lastidx` as the not-found
+  `find_index_range` returns `std::size_t` and uses `lastidx` as the not-found
   sentinel.
 - Comparison is `operator==`, not `<=>`.
 - The value is decayed to `T` internally when `T` is trivially copyable,
@@ -311,22 +345,22 @@ No-throw detection for iterators is deliberately minimal and lives in
 - SIMD compares object representations bitwise; the scalar fallback preserves
   normal `operator==` semantics (for example `-0.0f == 0.0f` and padded
   types).
-- `_index` validates through `algo_index_to_iters`, so `lastidx < firstidx` and
+- `*_index_range` validates through `algo_index_to_iters`, so `lastidx < firstidx` and
   `size < lastidx` are violations; `lastidx == size` is allowed.
 - `throws` includes the violation policy, the comparison, and the final
   `found - first`.
 
 ## `all_of`, `any_of`, `none_of`
 
-- APIs: `*_iters`, the unprefixed range entry points, and `*_index`.
+- APIs: `*_iters`, the unprefixed range entry points, and `*_index_range`.
 - Each predicate is invoked as `static_cast<bool>(f(*it))`; all variants
   short-circuit as soon as the result is known.
 - The index forms validate one `[firstidx, lastidx)` subrange.
 
 ## `count`, `count_if`
 
-- APIs: `count_iters` / `count` / `count_index`, and
-  `count_if_iters` / `count_if` / `count_if_index`.
+- APIs: `count_iters` / `count` / `count_index_range`, and
+  `count_if_iters` / `count_if` / `count_if_index_range`.
 - The iterator and range forms return `iter_difference_t` /
   `range_difference_t`; the index forms return `std::size_t`.
 - `count` compares with `operator==`, matching `find`. `count_if` invokes the
@@ -334,27 +368,27 @@ No-throw detection for iterators is deliberately minimal and lives in
 
 ## `mismatch`
 
-- API: `mismatch_iters` / `mismatch` / `mismatch_index`, using the two-range
+- API: `mismatch_iters` / `mismatch` / `mismatch_index_range`, using the two-range
   form with independent iterator/sentinel pairs.
 - Returns the first differing positions. If one range is exhausted first, the
   returned pair points at that end and the matching position in the other
   range.
 - Equality uses the comparator's `equal` member when available and otherwise
   falls back to `compare(a, b) == 0`; this is the same policy as sort.
-- `mismatch_index` returns absolute indices into the two original ranges.
+- `mismatch_index_range` returns absolute indices into the two original ranges.
 
 ## `find_if`, `find_if_not`
 
-- APIs: `find_if_iters` / `find_if` / `find_if_index`, and the corresponding
+- APIs: `find_if_iters` / `find_if` / `find_if_index_range`, and the corresponding
   `find_if_not*` entries.
 - Predicates are invoked as `static_cast<bool>(f(*it))`.
-- `_index` returns `firstidx + (found - first)` and uses `lastidx` as the
+- `*_index_range` returns `firstidx + (found - first)` and uses `lastidx` as the
   not-found sentinel.
 
 ## `search` family
 
 - `search.h` provides `adjacent_find`, `find_end`, `find_first_of`, `search`,
-  and `search_n`, each with `_iters`, range, and `_index` entry points where
+  and `search_n`, each with `_iters`, range, and `*_index_range` entry points where
   meaningful.
 - All five use comparator-based equality through the shared `equal` helper,
   so a comparator may provide a cheaper `equal(a, b)` and otherwise equality is
@@ -362,7 +396,7 @@ No-throw detection for iterators is deliberately minimal and lives in
 - Empty needles follow the standard rules: `search` returns `first1`,
   `find_end` returns `last1`, and `find_first_of` returns `last1` for an empty
   second range.
-- `*_index` returns absolute indices into the first range, or `lastidx1` when
+- `*_index_range` returns absolute indices into the first range, or `lastidx1` when
   there is no match.
 - The implementations are forward-iterator safe; iterator copies are used for
   the nested scans rather than indexing.
@@ -370,7 +404,7 @@ No-throw detection for iterators is deliberately minimal and lives in
 ## `lexicographical_compare`
 
 - APIs: `lexicographical_compare_iters` / `lexicographical_compare` /
-  `lexicographical_compare_index`, and the corresponding
+  `lexicographical_compare_index_range`, and the corresponding
   `lexicographical_compare_three_way*` entries.
 - The iterator and range forms accept independent iterator/sentinel pairs and
   `input_range`s. The index forms validate both `[firstidx, lastidx)` subranges
@@ -388,12 +422,12 @@ No-throw detection for iterators is deliberately minimal and lives in
 
 ## `remove`
 
-- APIs: `remove_iters` / `remove` / `remove_index`, and
-  `remove_if_iters` / `remove_if` / `remove_if_index`.
+- APIs: `remove_iters` / `remove` / `remove_index_range`, and
+  `remove_if_iters` / `remove_if` / `remove_if_index_range`.
 - `remove` compares with `operator==`; `remove_if` invokes `f(*it)`. Both
   preserve the relative order of the elements that are kept and return the new
   logical end.
-- `remove_index` and `remove_if_index` return the new logical end index, so the
+- `remove_index_range` and `remove_if_index_range` return the new logical end index, so the
   result has the same meaning as the returned iterator in the iterator API.
 - The first matching element is found through the `find` implementation, then a
   single compaction scan move-assigns the kept elements into the prefix.
@@ -430,12 +464,12 @@ No-throw detection for iterators is deliberately minimal and lives in
 ## `fill`
 
 - API pairs: `fill_iters` / `fill`, `fill_n_iters` / `fill_n`, plus
-  `fill_index`.
+  `fill_index_range`.
 - `fill_iters` takes an iterator/sentinel pair and returns the end iterator;
   `fill` takes a range and returns `ranges::iterator_t<R>`. `fill_n` fills the
   first `count` elements of a range and returns the iterator one past the last
   element written, matching `copy_n`.
-- `fill_index(r, firstidx, lastidx, value)` validates the indices through
+- `fill_index_range(r, firstidx, lastidx, value)` validates the indices through
   `algo_index_to_iters` and fills `[firstidx, lastidx)`.
 - Contiguous iterators decay to pointers and re-enter the pointer path, so
   `fill(vec, value)` and `fill(vec.data(), vec.data() + vec.size(), value)`
@@ -448,13 +482,13 @@ No-throw detection for iterators is deliberately minimal and lives in
   broadcast store plus unrolled vector stores for 4/8/16-byte elements, so no
   explicit SIMD path is needed.
 - `throws` includes the iterator increment, the element assignment, and, for
-  `fill_index`, the violation policy and the final index arithmetic.
+  `fill_index_range`, the violation policy and the final index arithmetic.
 
 ### `uninitialized_fill`
 
 - API pairs: `uninitialized_fill_iters` / `uninitialized_fill`,
   `uninitialized_fill_n_iters` / `uninitialized_fill_n`, plus
-  `uninitialized_fill_index`.
+  `uninitialized_fill_index_range`.
 - Placement-constructs copies of the value into uninitialized storage and
   returns the end of the written range.
 - One-byte elements use `my_memset`, because constructing a one-byte object
@@ -481,14 +515,14 @@ No-throw detection for iterators is deliberately minimal and lives in
   `uninitialized_guard`, so a throwing constructor destroys the prefix.
 - Contiguous iterators decay to pointers. `_n` range variants construct the
   first `count` elements of the range.
-- `uninitialized_default_construct_index` and
-  `uninitialized_value_construct_index` bound-check a random-access range and
+- `uninitialized_default_construct_index_range` and
+  `uninitialized_value_construct_index_range` bound-check a random-access range and
   construct `[firstidx, lastidx)`.
 
 ## `destroy`
 
 - API: `destroy_at(T*)`, `destroy_iters` / `destroy`, `destroy_n_iters` /
-  `destroy_n`, plus `destroy_index`.
+  `destroy_n`, plus `destroy_index_range`.
 - A trivially destructible type is a strict no-op: no destructor call and no
   loop body. `destroy_iters` returns `last` directly when the iterator and
   sentinel are the same type, and advances with iterator arithmetic when the
@@ -497,7 +531,7 @@ No-throw detection for iterators is deliberately minimal and lives in
   type, so a pointer or random-access iterator advances in constant time
   instead of being walked.
 - Array element types are destroyed element by element through `destroy_at`.
-- `destroy_index` bound-checks `[firstidx, lastidx)` and destroys that
+- `destroy_index_range` bound-checks `[firstidx, lastidx)` and destroys that
   subrange.
 - Herbceptions forbid throwing destructors, so the destructor check is
   effectively always satisfied; it is still written explicitly.
@@ -530,9 +564,9 @@ No-throw detection for iterators is deliberately minimal and lives in
 - APIs: `is_heap_until_iters` / `is_heap_until`, `is_heap_iters` / `is_heap`,
   `make_heap_iters` / `make_heap`, `push_heap_iters` / `push_heap`,
   `pop_heap_iters` / `pop_heap`, `sort_heap_iters` / `sort_heap`, and the
-  matching `_index` entries: `is_heap_until_index`, `is_heap_index`,
-  `make_heap_index`, `push_heap_index`, `pop_heap_index`, `sort_heap_index`.
-- `is_heap_until_index` returns the index of the first element that breaks the
+  matching `_index` entries: `is_heap_until_index_range`, `is_heap_index_range`,
+  `make_heap_index_range`, `push_heap_index_range`, `pop_heap_index_range`, `sort_heap_index_range`.
+- `is_heap_until_index_range` returns the index of the first element that breaks the
   heap property, or `lastidx` when the subrange is a heap. The mutating index
   entries operate on `[firstidx, lastidx)`; an empty subrange is a no-op.
 - `is_heap_until` returns the first iterator that breaks the heap property;
@@ -552,14 +586,14 @@ No-throw detection for iterators is deliberately minimal and lives in
   move assignment. `is_heap` / `is_heap_until` only compare.
 - The defaulted form requires `Cmp` to be nothrow default-constructible; the
   pass-by-value contract requires nothrow copy and move construction.
-- No `_index` entry point: heap algorithms are whole-range or iterator based and
+- No `*_index_range` entry point: heap algorithms are whole-range or iterator based and
   the container violation policy does not apply.
 
 ## `reverse`
 
-- APIs: `reverse_iters` / `reverse` / `reverse_index`.
+- APIs: `reverse_iters` / `reverse` / `reverse_index_range`.
 - `reverse_iters` takes a bidirectional iterator/sentinel pair; `reverse` takes
-  a `bidirectional_range`; `reverse_index` reverses `[firstidx, lastidx)` of a
+  a `bidirectional_range`; `reverse_index_range` reverses `[firstidx, lastidx)` of a
   random-access range and validates the indices.
 - Contiguous ranges decay to pointers and reverse from both ends. A
   non-common sized sentinel is walked to the last element once and then handled
@@ -597,10 +631,10 @@ No-throw detection for iterators is deliberately minimal and lives in
 
 ## `rotate`
 
-- APIs: `rotate_iters` / `rotate` / `rotate_index`.
+- APIs: `rotate_iters` / `rotate` / `rotate_index_range`.
 - `rotate_iters` takes a forward iterator, an iterator to the new first
   element, and a sentinel; `rotate` takes a `forward_range` and an iterator;
-  `rotate_index` checks `firstidx <= middleidx <= lastidx` and rotates the
+  `rotate_index_range` checks `firstidx <= middleidx <= lastidx` and rotates the
   subrange.
 - All three return the position (or index) that now holds the old first
   element, i.e. `first + (last - middle)`.
@@ -641,8 +675,8 @@ No-throw detection for iterators is deliberately minimal and lives in
 
 ## `sort`
 
-- APIs: `sort_iters` / `sort` / `sort_index`.
-- `sort_index` bound-checks `[firstidx, lastidx)` and sorts that subrange.
+- APIs: `sort_iters` / `sort` / `sort_index_range`.
+- `sort_index_range` bound-checks `[firstidx, lastidx)` and sorts that subrange.
 - Unstable, in-place, `O(N log N)` worst case, random-access iterators only.
 - Every entry point and helper is `constexpr`. During constant evaluation the
   algorithm uses insertion sort for small subranges and the Lomuto partition
@@ -728,8 +762,8 @@ random records.
 
 ## `partial_sort`
 
-- APIs: `partial_sort_iters` / `partial_sort` / `partial_sort_index` and
-  `partial_sort_copy_iters` / `partial_sort_copy` / `partial_sort_copy_index`.
+- APIs: `partial_sort_iters` / `partial_sort` / `partial_sort_index_range` and
+  `partial_sort_copy_iters` / `partial_sort_copy` / `partial_sort_copy_index_range`.
 - Selection uses the heap helpers in `heap.h`: `make_heap_iters_impl`,
   `heap_sift_down` and `sort_heap_iters_impl`. No full sort is performed, so
   the work is `O((middle - first) + (last - middle) * log(middle - first))`
@@ -750,7 +784,7 @@ random records.
 
 ## `nth_element`
 
-- APIs: `nth_element_iters` / `nth_element` / `nth_element_index`.
+- APIs: `nth_element_iters` / `nth_element` / `nth_element_index_range`.
 - Iterative introselect: adaptive pivot selection, one branchless partition per
   level, and a loop that keeps only the side containing `nth`. `O(N)` expected
   comparisons and no auxiliary allocation.
@@ -789,29 +823,38 @@ random records.
 
 ## Customization
 
-- Every public `*_iters` entry starts with `FAST_IO_ALGORITHMS_CUSTOMIZE`.
-  The scalar entries (`min`, `max`, `minmax`, `clamp`, `swap`, `iter_swap`,
-  `destroy_at`) dispatch directly as well. Range and `_index` entries call the
-  `_iters` entry, so they inherit the same hook.
-- A container or iterator author provides an ADL overload:
-  `algorithms_define(customization::define_type<customization::copy_tag>,
-  first, last, dest) noexcept`.
-- Tags live in `fast_io::algorithms::customization` in `customization.h`; there
-  is one tag per algorithm operation. `define_type<Tag>` is an empty tag
-  object; the algorithm arguments carry the concrete types.
+- Every public `*_iters` entry starts with `FAST_IO_ALGORITHMS_CUSTOMIZE_IF`.
+  The scalar entries (`swap`, `iter_swap`, `destroy_at`) dispatch directly as
+  well. Range and `*_index_range` entries call the `_iters` entry, so they inherit the
+  same hook.
+- The customization point is an ADL overload named after the public entry:
+
+  ```cpp
+  template<typename Iter, typename Snt, typename OIter>
+  inline constexpr OIter copy_iters_define(
+    ::fast_io::io_algorithm_t, Iter first, Snt last, OIter dest) noexcept;
+  ```
+
+  `io_algorithm_t` is an empty tag in `fast_io`; the algorithm name selects the
+  operation and the remaining parameters carry the iterator types.
+- Overloads are found by ADL on `io_algorithm_t` and on every algorithm
+  argument, so a container places the overload in the namespace of its
+  iterator. fast_io's deque overloads live in `fast_io::containers::details`.
 - Only `noexcept` overloads are matched. A throwing overload is ignored and
   the generic implementation is used, so the existing `noexcept` contract is
   preserved without recomputing every family's `throws` condition.
-- Dispatch is unqualified inside `customization::dispatch_define`, so ADL
-  searches the tag namespace and the namespaces associated with every
-  algorithm argument. This mirrors fast_io's `uninitialized_relocate_define`
-  pattern.
-- A custom implementation should call the internal `*_iters_impl` or pointer
-  helpers, not the public entry, to avoid re-entering the hook.
+- The hook is skipped when every iterator argument is
+  `::std::contiguous_iterator`: that call already takes the pointer fast path.
+  `common.h` provides the `contiguous_iters<...>` concept used by the gate.
+- A custom implementation should call the internal `*_iters_impl` or the
+  contiguous pointer helpers with pointer arguments, not the public entry, to
+  avoid re-entering the hook.
 - `customization.h` is included by `impl.h`; family headers still contain no
-  includes.
-- `test_customization.cc` uses a user-defined random-access iterator and
-  verifies that `copy`, `find`, `sort`, `nth_element` and scalar `min` select
+  includes. It declares one parser-visible probe per customization name; the
+  probes are never viable and exist only so the unqualified call can be
+  resolved at instantiation time.
+- `test_customization.cc` uses a user-defined non-contiguous random-access
+  iterator and verifies that `copy`, `find`, `sort`, and `nth_element` select
   the custom overloads.
 
 ## fast_io deque
@@ -822,11 +865,12 @@ random records.
   `int` values this made `nth_element` about 2.5x slower and `sort` about 2x
   slower than the same algorithms on a vector.
 - `deque_customization.h` is included by `impl.h` when
-  `<fast_io_dsal/deque.h>` is available. It provides ADL overloads for
-  `copy`, `copy_n`, `copy_backward`, `non_overlapped_copy`,
-  `non_overlapped_copy_n`, `move`, `move_backward`, the uninitialized
-  copy/move/relocate families, `reverse_copy`, `rotate_copy`, `reverse` and
-  `rotate`.
+  `<fast_io_dsal/deque.h>` is available. Its overloads live in
+  `fast_io::containers::details` (the namespace ADL associates with
+  `deque_iterator`) and cover `copy`, `copy_n`, `copy_backward`,
+  `non_overlapped_copy`, `non_overlapped_copy_n`, `move`, `move_backward`, the
+  uninitialized copy/move/relocate families, `reverse_copy`, `rotate_copy`,
+  `reverse` and `rotate`.
 - `deque_forward_segments` and `deque_backward_segments` walk the controller
   block pointers once and hand contiguous `T*` ranges to the existing pointer
   implementations. `deque_reverse_segments` swaps front/back block chunks
@@ -1049,7 +1093,7 @@ information passed as data.
 Three distinct tiers:
 
 1. Caller contract violation
-   - `_index` APIs only
+   - `*_index_range` APIs only
    - allocator flag selects throw vs terminate
    - no flag means terminate
 
@@ -1096,7 +1140,7 @@ herbceptions.
 - `for_each_iters` calls `f(first)` instead of `f(*first)`.
 - `for_each_iters` calls `to_address(last)` without requiring `Snt` to be a
   contiguous iterator.
-- `for_each_index` omits `firstidx` and `lastidx` when calling
+- `for_each_index_range` omits `firstidx` and `lastidx` when calling
   `algo_index_to_iters`.
 - `algo_index_to_iters` hardcodes `throwing_violations = false`.
 - `algo_index_to_iters` assumes `ranges::data(r)` is a pointer.
@@ -1118,7 +1162,7 @@ herbceptions.
 ## Implementation order
 
 1. Fix syntax, includes, and `throws` macros.
-2. Add allocator-flag lookup and wire it into `for_each_index` /
+2. Add allocator-flag lookup and wire it into `for_each_index_range` /
    `algo_index_to_iters`.
 3. Correct the index path and the shared byte checker.
 4. Correct `for_each_iters` decay, callback semantics, and iterator `throws`.

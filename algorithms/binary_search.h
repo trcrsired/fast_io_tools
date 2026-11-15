@@ -26,7 +26,7 @@ concept lower_bound_ranges_no_throw =
     ::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>, T, Cmp>;
 
 template<typename R, typename T, typename Cmp>
-concept lower_bound_index_no_throw =
+concept lower_bound_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::lower_bound_iters_no_throw<
@@ -114,8 +114,9 @@ inline constexpr Iter lower_bound_iters(
     !::fast_io::details::algorithms::lower_bound_iters_no_throw<
       Iter, Snt, T, Cmp>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::lower_bound_tag, first, last, value, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    lower_bound_iters_define, first, last, value, cmp);
   return ::fast_io::details::algorithms::lower_bound_iters_impl(
     first, last, value, cmp);
 }
@@ -134,11 +135,11 @@ inline constexpr ::std::ranges::iterator_t<R> lower_bound(
 
 template<::std::ranges::random_access_range R, typename T,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr ::std::size_t lower_bound_index(
+inline constexpr ::std::size_t lower_bound_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx,
   T const &value, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::lower_bound_index_no_throw<
+    !::fast_io::details::algorithms::lower_bound_index_range_no_throw<
       R, T, Cmp>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
@@ -146,6 +147,20 @@ inline constexpr ::std::size_t lower_bound_index(
   auto const result{::fast_io::algorithms::lower_bound_iters(
     first, last, value, cmp)};
   return firstidx + static_cast<::std::size_t>(result - first);
+}
+
+template<::std::ranges::random_access_range R, typename T,
+  typename Cmp = ::fast_io::algorithms::compare_three_way>
+inline constexpr ::std::size_t lower_bound_index_of(
+  R &&r, T const &value, Cmp cmp = Cmp{})
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::lower_bound_ranges_no_throw<
+      R, T, Cmp>)
+{
+  auto const first{::std::ranges::begin(r)};
+  auto const result{::fast_io::algorithms::lower_bound(
+    ::std::forward<R>(r), value, cmp)};
+  return static_cast<::std::size_t>(result - first);
 }
 
 template<::std::forward_iterator Iter, ::std::sentinel_for<Iter> Snt,
@@ -156,8 +171,9 @@ inline constexpr Iter upper_bound_iters(
     !::fast_io::details::algorithms::lower_bound_iters_no_throw<
       Iter, Snt, T, Cmp>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::upper_bound_tag, first, last, value, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    upper_bound_iters_define, first, last, value, cmp);
   return ::fast_io::details::algorithms::upper_bound_iters_impl(
     first, last, value, cmp);
 }
@@ -176,11 +192,11 @@ inline constexpr ::std::ranges::iterator_t<R> upper_bound(
 
 template<::std::ranges::random_access_range R, typename T,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr ::std::size_t upper_bound_index(
+inline constexpr ::std::size_t upper_bound_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx,
   T const &value, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::lower_bound_index_no_throw<
+    !::fast_io::details::algorithms::lower_bound_index_range_no_throw<
       R, T, Cmp>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
@@ -188,6 +204,20 @@ inline constexpr ::std::size_t upper_bound_index(
   auto const result{::fast_io::algorithms::upper_bound_iters(
     first, last, value, cmp)};
   return firstidx + static_cast<::std::size_t>(result - first);
+}
+
+template<::std::ranges::random_access_range R, typename T,
+  typename Cmp = ::fast_io::algorithms::compare_three_way>
+inline constexpr ::std::size_t upper_bound_index_of(
+  R &&r, T const &value, Cmp cmp = Cmp{})
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::lower_bound_ranges_no_throw<
+      R, T, Cmp>)
+{
+  auto const first{::std::ranges::begin(r)};
+  auto const result{::fast_io::algorithms::upper_bound(
+    ::std::forward<R>(r), value, cmp)};
+  return static_cast<::std::size_t>(result - first);
 }
 
 template<::std::forward_iterator Iter, ::std::sentinel_for<Iter> Snt,
@@ -198,8 +228,9 @@ inline constexpr ::std::pair<Iter, Iter> equal_range_iters(
     !::fast_io::details::algorithms::lower_bound_iters_no_throw<
       Iter, Snt, T, Cmp>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::equal_range_tag, first, last, value, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    equal_range_iters_define, first, last, value, cmp);
   auto const lower{::fast_io::details::algorithms::lower_bound_iters_impl(
     first, last, value, cmp)};
   return {
@@ -224,11 +255,11 @@ equal_range(R &&r, T const &value, Cmp cmp = Cmp{})
 template<::std::ranges::random_access_range R, typename T,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
 inline constexpr ::std::pair<::std::size_t, ::std::size_t>
-equal_range_index(
+equal_range_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx,
   T const &value, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::lower_bound_index_no_throw<
+    !::fast_io::details::algorithms::lower_bound_index_range_no_throw<
       R, T, Cmp>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
@@ -240,6 +271,22 @@ equal_range_index(
     firstidx + static_cast<::std::size_t>(result.second - first)};
 }
 
+template<::std::ranges::random_access_range R, typename T,
+  typename Cmp = ::fast_io::algorithms::compare_three_way>
+inline constexpr ::std::pair<::std::size_t, ::std::size_t>
+equal_range_index_of(R &&r, T const &value, Cmp cmp = Cmp{})
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::lower_bound_ranges_no_throw<
+      R, T, Cmp>)
+{
+  auto const first{::std::ranges::begin(r)};
+  auto const result{::fast_io::algorithms::equal_range(
+    ::std::forward<R>(r), value, cmp)};
+  return {
+    static_cast<::std::size_t>(result.first - first),
+    static_cast<::std::size_t>(result.second - first)};
+}
+
 template<::std::forward_iterator Iter, ::std::sentinel_for<Iter> Snt,
   typename T, typename Cmp = ::fast_io::algorithms::compare_three_way>
 inline constexpr bool binary_search_iters(
@@ -248,8 +295,9 @@ inline constexpr bool binary_search_iters(
     !::fast_io::details::algorithms::lower_bound_iters_no_throw<
       Iter, Snt, T, Cmp>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::binary_search_tag, first, last, value, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    binary_search_iters_define, first, last, value, cmp);
   auto const found{
     ::fast_io::details::algorithms::lower_bound_iters_impl(
       first, last, value, cmp)};
@@ -270,11 +318,11 @@ inline constexpr bool binary_search(
 
 template<::std::ranges::random_access_range R, typename T,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr bool binary_search_index(
+inline constexpr bool binary_search_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx,
   T const &value, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::lower_bound_index_no_throw<
+    !::fast_io::details::algorithms::lower_bound_index_range_no_throw<
       R, T, Cmp>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(

@@ -72,8 +72,9 @@ inline constexpr OIter move_iters(Iter first, Snt last, OIter dest)
     !::fast_io::details::algorithms::move_iters_no_throw<
       Iter, Snt, OIter>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::move_tag, first, last, dest);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(dest)>),
+    move_iters_define, first, last, dest);
   return ::fast_io::details::algorithms::move_iters_impl(
     first, last, dest);
 }
@@ -98,8 +99,9 @@ inline constexpr OIter move_backward_iters(
     !::fast_io::details::algorithms::move_backward_iters_no_throw<
       Iter, Snt, OIter>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::move_backward_tag, first, last, d_last);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(d_last)>),
+    move_backward_iters_define, first, last, d_last);
   return ::fast_io::details::algorithms::move_backward_iters_impl(
     first, last, d_last);
 }

@@ -23,7 +23,7 @@ concept count_ranges_no_throw =
     ::std::ranges::iterator_t<R>, T>;
 
 template<typename R, typename T>
-concept count_index_no_throw =
+concept count_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::count_iter_no_throw<
@@ -50,7 +50,7 @@ concept count_if_ranges_no_throw =
     ::std::ranges::iterator_t<R>, F>;
 
 template<typename R, typename F>
-concept count_if_index_no_throw =
+concept count_if_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::std::is_nothrow_move_constructible_v<F> &&
@@ -103,8 +103,9 @@ inline constexpr ::std::iter_difference_t<Iter> count_iters(
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::count_iters_no_throw<Iter, Snt, T>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::count_tag, first, last, value);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    count_iters_define, first, last, value);
   return ::fast_io::details::algorithms::count_iters_impl(
     first, last, value);
 }
@@ -120,10 +121,10 @@ inline constexpr ::std::ranges::range_difference_t<R> count(
 }
 
 template<::std::ranges::random_access_range R, typename T>
-inline constexpr ::std::size_t count_index(
+inline constexpr ::std::size_t count_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, T const &value)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::count_index_no_throw<R, T>)
+    !::fast_io::details::algorithms::count_index_range_no_throw<R, T>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
@@ -139,8 +140,9 @@ inline constexpr ::std::iter_difference_t<Iter> count_if_iters(
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::count_if_iters_no_throw<Iter, Snt, F>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::count_if_tag, first, last, f);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    count_if_iters_define, first, last, f);
   return ::fast_io::details::algorithms::count_if_iters_impl(
     first, last, f);
 }
@@ -155,10 +157,10 @@ inline constexpr ::std::ranges::range_difference_t<R> count_if(R &&r, F f)
 }
 
 template<::std::ranges::random_access_range R, typename F>
-inline constexpr ::std::size_t count_if_index(
+inline constexpr ::std::size_t count_if_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::count_if_index_no_throw<R, F>)
+    !::fast_io::details::algorithms::count_if_index_range_no_throw<R, F>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);

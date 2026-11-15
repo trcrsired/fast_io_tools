@@ -30,7 +30,7 @@ constexpr bool constexpr_transform_test()
 	int b[3]{};
 	int c[3]{};
 	::fast_io::algorithms::transform(a, b, add_one{});
-	::fast_io::algorithms::transform_index(a, 1, 3, c + 1, add_one{});
+	::fast_io::algorithms::transform_index_range(a, 1, 3, c + 1, add_one{});
 	if (b[0] != 2 || b[1] != 3 || b[2] != 4)
 	{
 		return false;
@@ -60,7 +60,7 @@ int main()
 	std::vector<int> a{1, 2, 3, 4};
 	std::vector<int> b{10, 20, 30, 40};
 	std::vector<int> out(4);
-	auto end{::fast_io::algorithms::transform_binary_index(
+	auto end{::fast_io::algorithms::transform_binary_index_range(
 		a, 1, 4, b, 1, 4, out.begin(), add{})};
 	if (end != out.begin() + 3)
 	{

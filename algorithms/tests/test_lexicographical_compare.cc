@@ -81,7 +81,7 @@ bool check_empty()
 		::fast_io::algorithms::lexicographical_compare_three_way(a, empty) > 0;
 }
 
-bool check_index()
+bool check_index_range()
 {
 	std::uint64_t state{0x9e3779b97f4a7c15ull};
 	for (std::size_t n1{}; n1 != 8; ++n1)
@@ -118,7 +118,7 @@ bool check_index()
 								b.begin() + static_cast<std::ptrdiff_t>(f2),
 								b.begin() + static_cast<std::ptrdiff_t>(l2))};
 							bool const actual{
-								::fast_io::algorithms::lexicographical_compare_index(
+								::fast_io::algorithms::lexicographical_compare_index_range(
 									a, f1, l1, b, f2, l2)};
 							if (expected != actual)
 							{
@@ -143,7 +143,7 @@ bool check_index()
 										: std::strong_ordering::equal)};
 							auto const actual_three{
 								::fast_io::algorithms::
-									lexicographical_compare_three_way_index(
+									lexicographical_compare_three_way_index_range(
 										a, f1, l1, b, f2, l2)};
 							if (expected_three != actual_three)
 							{
@@ -194,7 +194,7 @@ static_assert(noexcept(::fast_io::algorithms::lexicographical_compare(
 static_assert(noexcept(::fast_io::algorithms::lexicographical_compare_three_way(
 	::std::declval<int (&)[4]>(),
 	::std::declval<int (&)[4]>())));
-static_assert(noexcept(::fast_io::algorithms::lexicographical_compare_index(
+static_assert(noexcept(::fast_io::algorithms::lexicographical_compare_index_range(
 	::std::declval<std::vector<int> &>(), std::size_t{}, std::size_t{},
 	::std::declval<std::vector<int> &>(), std::size_t{}, std::size_t{})));
 
@@ -228,7 +228,7 @@ int main()
 	{
 		return 4;
 	}
-	if (!check_index())
+	if (!check_index_range())
 	{
 		return 5;
 	}

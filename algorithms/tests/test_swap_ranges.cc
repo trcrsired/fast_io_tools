@@ -23,7 +23,7 @@ static_assert(constexpr_swap_ranges_test());
 
 static_assert(noexcept(::fast_io::algorithms::swap_ranges(
 	::std::declval<std::vector<int> &>(), ::std::declval<int *>())));
-static_assert(noexcept(::fast_io::algorithms::swap_ranges_index(
+static_assert(noexcept(::fast_io::algorithms::swap_ranges_index_range(
 	::std::declval<std::vector<int> &>(), std::size_t{}, std::size_t{},
 	::std::declval<int *>())));
 
@@ -31,7 +31,7 @@ int main()
 {
 	std::vector<std::string> a{"a", "b", "c", "d"};
 	std::vector<std::string> b{"w", "x", "y", "z"};
-	::fast_io::algorithms::swap_ranges_index(a, 1, 3, b.begin() + 1);
+	::fast_io::algorithms::swap_ranges_index_range(a, 1, 3, b.begin() + 1);
 	if (a[0] != "a" || a[1] != "x" || a[2] != "y" || a[3] != "d")
 	{
 		return 1;

@@ -40,7 +40,7 @@ struct move_only
 namespace
 {
 
-bool check_heap_index()
+bool check_heap_index_range()
 {
 	std::uint32_t seed{987654321u};
 	auto next = [&seed]() {
@@ -66,8 +66,8 @@ bool check_heap_index()
 			// Heap construction may pick a different valid layout than the
 			// standard library, so check the heap property and the multiset.
 			auto actual{source};
-			::fast_io::algorithms::make_heap_index(actual, first, last);
-			if (!::fast_io::algorithms::is_heap_index(actual, first, last))
+			::fast_io::algorithms::make_heap_index_range(actual, first, last);
+			if (!::fast_io::algorithms::is_heap_index_range(actual, first, last))
 			{
 				return false;
 			}
@@ -88,7 +88,7 @@ bool check_heap_index()
 
 			// Queries are layout independent and must agree exactly.
 			if (std::is_heap(reference_begin, reference_end) !=
-				::fast_io::algorithms::is_heap_index(source, first, last))
+				::fast_io::algorithms::is_heap_index_range(source, first, last))
 			{
 				return false;
 			}
@@ -96,7 +96,7 @@ bool check_heap_index()
 				std::is_heap_until(reference_begin, reference_end) -
 				source.begin()};
 			if (expected_until != static_cast<std::ptrdiff_t>(
-					::fast_io::algorithms::is_heap_until_index(
+					::fast_io::algorithms::is_heap_until_index_range(
 						source, first, last)))
 			{
 				return false;
@@ -113,7 +113,7 @@ bool check_heap_index()
 			std::sort_heap(
 				expected_sorted.begin() + begin_offset,
 				expected_sorted.begin() + end_offset);
-			::fast_io::algorithms::sort_heap_index(
+			::fast_io::algorithms::sort_heap_index_range(
 				actual_sorted, first, last);
 			if (actual_sorted != expected_sorted)
 			{
@@ -131,7 +131,7 @@ bool check_heap_index()
 				std::push_heap(
 					expected_push.begin() + begin_offset,
 					expected_push.begin() + end_offset);
-				::fast_io::algorithms::push_heap_index(
+				::fast_io::algorithms::push_heap_index_range(
 					actual_push, first, last);
 				if (actual_push != expected_push)
 				{
@@ -143,7 +143,7 @@ bool check_heap_index()
 				std::pop_heap(
 					expected_pop.begin() + begin_offset,
 					expected_pop.begin() + end_offset);
-				::fast_io::algorithms::pop_heap_index(
+				::fast_io::algorithms::pop_heap_index_range(
 					actual_pop, first, last);
 				if (actual_pop != expected_pop)
 				{
@@ -270,23 +270,23 @@ constexpr bool constexpr_empty_test()
 
 static_assert(constexpr_empty_test());
 
-constexpr bool constexpr_heap_index_test()
+constexpr bool constexpr_heap_index_range_test()
 {
 	int a[9]{0, 5, 1, 4, 2, 8, 3, 7, 6};
-	if (::fast_io::algorithms::is_heap_index(a, 1, 8))
+	if (::fast_io::algorithms::is_heap_index_range(a, 1, 8))
 	{
 		return false;
 	}
-	::fast_io::algorithms::make_heap_index(a, 1, 8);
-	if (!::fast_io::algorithms::is_heap_index(a, 1, 8))
+	::fast_io::algorithms::make_heap_index_range(a, 1, 8);
+	if (!::fast_io::algorithms::is_heap_index_range(a, 1, 8))
 	{
 		return false;
 	}
-	if (::fast_io::algorithms::is_heap_until_index(a, 1, 8) != 8)
+	if (::fast_io::algorithms::is_heap_until_index_range(a, 1, 8) != 8)
 	{
 		return false;
 	}
-	::fast_io::algorithms::sort_heap_index(a, 1, 8);
+	::fast_io::algorithms::sort_heap_index_range(a, 1, 8);
 	for (int i{2}; i < 8; ++i)
 	{
 		if (a[i - 1] > a[i])
@@ -295,34 +295,34 @@ constexpr bool constexpr_heap_index_test()
 		}
 	}
 	a[8] = 100;
-	::fast_io::algorithms::push_heap_index(a, 1, 9);
+	::fast_io::algorithms::push_heap_index_range(a, 1, 9);
 	if (a[1] != 100)
 	{
 		return false;
 	}
-	::fast_io::algorithms::pop_heap_index(a, 1, 9);
+	::fast_io::algorithms::pop_heap_index_range(a, 1, 9);
 	if (a[8] != 100)
 	{
 		return false;
 	}
 
 	// Empty subranges are valid and are no-ops.
-	if (!::fast_io::algorithms::is_heap_index(a, 4, 4))
+	if (!::fast_io::algorithms::is_heap_index_range(a, 4, 4))
 	{
 		return false;
 	}
-	if (::fast_io::algorithms::is_heap_until_index(a, 4, 4) != 4)
+	if (::fast_io::algorithms::is_heap_until_index_range(a, 4, 4) != 4)
 	{
 		return false;
 	}
-	::fast_io::algorithms::make_heap_index(a, 4, 4);
-	::fast_io::algorithms::push_heap_index(a, 4, 4);
-	::fast_io::algorithms::pop_heap_index(a, 4, 4);
-	::fast_io::algorithms::sort_heap_index(a, 4, 4);
+	::fast_io::algorithms::make_heap_index_range(a, 4, 4);
+	::fast_io::algorithms::push_heap_index_range(a, 4, 4);
+	::fast_io::algorithms::pop_heap_index_range(a, 4, 4);
+	::fast_io::algorithms::sort_heap_index_range(a, 4, 4);
 	return a[8] == 100;
 }
 
-static_assert(constexpr_heap_index_test());
+static_assert(constexpr_heap_index_range_test());
 
 static_assert(noexcept(::fast_io::algorithms::make_heap(
 	::std::declval<int (&)[8]>())));
@@ -332,10 +332,10 @@ static_assert(noexcept(::fast_io::algorithms::is_heap_iters(
 	::std::declval<int *>(), ::std::declval<int *>())));
 static_assert(!noexcept(::fast_io::algorithms::make_heap_iters(
 	::std::declval<int *>(), ::std::declval<int *>(), throwing_compare{})));
-static_assert(noexcept(::fast_io::algorithms::make_heap_index(
+static_assert(noexcept(::fast_io::algorithms::make_heap_index_range(
 	::std::declval<::std::vector<int> &>(), ::std::size_t{},
 	::std::size_t{})));
-static_assert(noexcept(::fast_io::algorithms::is_heap_until_index(
+static_assert(noexcept(::fast_io::algorithms::is_heap_until_index_range(
 	::std::declval<int (&)[8]>(), ::std::size_t{}, ::std::size_t{})));
 
 int main()
@@ -456,7 +456,7 @@ int main()
 		}
 	}
 
-	if (!check_heap_index())
+	if (!check_heap_index_range())
 	{
 		return 17;
 	}

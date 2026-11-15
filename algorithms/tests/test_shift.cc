@@ -74,9 +74,9 @@ bool check_shift()
 			expected = source;
 			actual = source;
 			auto expected_idx{
-				::fast_io::algorithms::shift_left_index(expected, 0, n, amount)};
+				::fast_io::algorithms::shift_left_index_range(expected, 0, n, amount)};
 			auto actual_idx{
-				::fast_io::algorithms::shift_left_index(actual, 0, n, amount)};
+				::fast_io::algorithms::shift_left_index_range(actual, 0, n, amount)};
 			if (expected != actual || expected_idx != actual_idx)
 			{
 				return false;
@@ -100,7 +100,7 @@ int main()
 		return 1;
 	}
 	int a[]{1, 2, 3, 4};
-	::fast_io::algorithms::shift_right_index(a, 1, 4, 1);
+	::fast_io::algorithms::shift_right_index_range(a, 1, 4, 1);
 	if (a[0] != 1 || a[1] != 2 || a[2] != 2 || a[3] != 3)
 	{
 		return 2;

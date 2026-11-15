@@ -94,7 +94,7 @@ int main()
 		return 1;
 	}
 	std::vector<std::string> values{"e", "c", "a", "d", "b"};
-	::fast_io::algorithms::partial_sort_index(values, 0, 2, 5);
+	::fast_io::algorithms::partial_sort_index_range(values, 0, 2, 5);
 	if (values[0] != "a" || values[1] != "b")
 	{
 		return 2;

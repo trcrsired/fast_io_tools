@@ -69,7 +69,7 @@ bool check_count_if()
 	return true;
 }
 
-bool check_index()
+bool check_index_range()
 {
 	std::vector<std::uint64_t> values{0, 1, 2, 1, 3, 1, 4, 1, 5};
 	for (std::size_t first{}; first <= values.size(); ++first)
@@ -80,7 +80,7 @@ bool check_index()
 				values.begin() + static_cast<std::ptrdiff_t>(first)};
 			auto const end{
 				values.begin() + static_cast<std::ptrdiff_t>(last)};
-			if (::fast_io::algorithms::count_index(
+			if (::fast_io::algorithms::count_index_range(
 					values, first, last, 1) !=
 				static_cast<std::size_t>(std::count(begin, end, 1)))
 			{
@@ -89,7 +89,7 @@ bool check_index()
 			auto const predicate = [](std::uint64_t value) noexcept {
 				return (value % 2) == 0;
 			};
-			if (::fast_io::algorithms::count_if_index(
+			if (::fast_io::algorithms::count_if_index_range(
 					values, first, last, predicate) !=
 				static_cast<std::size_t>(
 					std::count_if(begin, end, predicate)))
@@ -116,7 +116,7 @@ constexpr bool constexpr_test()
 	{
 		return false;
 	}
-	if (::fast_io::algorithms::count_index(a, 1, 7, 1) != 3)
+	if (::fast_io::algorithms::count_index_range(a, 1, 7, 1) != 3)
 	{
 		return false;
 	}
@@ -125,7 +125,7 @@ constexpr bool constexpr_test()
 	{
 		return false;
 	}
-	return ::fast_io::algorithms::count_if_index(
+	return ::fast_io::algorithms::count_if_index_range(
 		a, 0, 4,
 		[](int value) constexpr noexcept { return value > 1; }) == 2;
 }
@@ -139,7 +139,7 @@ static_assert(noexcept(::fast_io::algorithms::count(
 static_assert(noexcept(::fast_io::algorithms::count_if(
 	::std::declval<std::vector<int> &>(),
 	[](int value) noexcept { return value == 1; })));
-static_assert(noexcept(::fast_io::algorithms::count_index(
+static_assert(noexcept(::fast_io::algorithms::count_index_range(
 	::std::declval<std::vector<int> &>(), std::size_t{}, std::size_t{}, 1)));
 
 int main()
@@ -152,7 +152,7 @@ int main()
 	{
 		return 2;
 	}
-	if (!check_index())
+	if (!check_index_range())
 	{
 		return 3;
 	}

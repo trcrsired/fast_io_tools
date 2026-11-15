@@ -162,7 +162,7 @@ int main()
 		return 1;
 	}
 	std::vector<std::string> values{"d", "a", "c", "b"};
-	::fast_io::algorithms::nth_element_index(values, 0, 1, 4);
+	::fast_io::algorithms::nth_element_index_range(values, 0, 1, 4);
 	if (values[1] != "b")
 	{
 		return 2;

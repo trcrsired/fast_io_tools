@@ -24,7 +24,7 @@ concept generate_ranges_no_throw =
     ::std::ranges::iterator_t<R>, G>;
 
 template<typename R, typename G>
-concept generate_index_no_throw =
+concept generate_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::std::is_nothrow_move_constructible_v<G> &&
@@ -69,8 +69,9 @@ inline constexpr void generate_iters(Iter first, Snt last, G g)
     !::fast_io::details::algorithms::generate_iters_no_throw<
       Iter, Snt, G>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::generate_tag, first, last, g);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    generate_iters_define, first, last, g);
   ::fast_io::details::algorithms::generate_iters_impl(first, last, g);
 }
 
@@ -84,10 +85,10 @@ inline constexpr void generate(R &&r, G g)
 }
 
 template<::std::ranges::random_access_range R, typename G>
-inline constexpr void generate_index(
+inline constexpr void generate_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, G g)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::generate_index_no_throw<R, G>)
+    !::fast_io::details::algorithms::generate_index_range_no_throw<R, G>)
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, lastidx);
@@ -101,8 +102,9 @@ inline constexpr Iter generate_n_iters(Iter first, ::std::size_t count, G g)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::generate_iter_no_throw<Iter, G>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::generate_n_tag, first, count, g);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    generate_n_iters_define, first, count, g);
   return ::fast_io::details::algorithms::generate_n_iters_impl(
     first, count, g);
 }

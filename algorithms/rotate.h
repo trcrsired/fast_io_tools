@@ -495,7 +495,7 @@ inline constexpr Iter rotate_iters_impl(Iter first, Iter middle, Snt last)
 }
 
 template<bool throwing_violations>
-inline constexpr ::std::size_t rotate_index_check(
+inline constexpr ::std::size_t rotate_index_range_check(
   ::std::size_t n, ::std::size_t firstidx, ::std::size_t middleidx,
   ::std::size_t lastidx)
   FAST_IO_HERBCEPTIONS_THROWS_IF(throwing_violations)
@@ -512,7 +512,7 @@ inline constexpr ::std::size_t rotate_index_check(
 }
 
 template<typename R>
-concept rotate_index_no_throw =
+concept rotate_index_range_no_throw =
   ::std::ranges::random_access_range<R> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R> &&
   ::fast_io::details::algorithms::rotate_iters_no_throw<
@@ -561,8 +561,9 @@ inline constexpr Iter rotate_iters(Iter first, Iter middle, Snt last)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::rotate_iters_no_throw<Iter, Snt>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::rotate_tag, first, middle, last);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first)>),
+    rotate_iters_define, first, middle, last);
   return ::fast_io::details::algorithms::rotate_iters_impl(first, middle, last);
 }
 
@@ -580,22 +581,35 @@ inline constexpr ::std::ranges::iterator_t<R> rotate(
 // Rotate the subrange `[firstidx, lastidx)` around `middleidx`. Returns the
 // index that now holds the element formerly at `firstidx`.
 template<::std::ranges::random_access_range R>
-inline constexpr ::std::size_t rotate_index(
+inline constexpr ::std::size_t rotate_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t middleidx,
   ::std::size_t lastidx)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::rotate_index_no_throw<R>)
+    !::fast_io::details::algorithms::rotate_index_range_no_throw<R>)
 {
   constexpr bool throwing_violations{
     ::fast_io::details::algorithms::range_throws_on_violations<R>};
   ::std::size_t const last{
-    ::fast_io::details::algorithms::rotate_index_check<throwing_violations>(
+    ::fast_io::details::algorithms::rotate_index_range_check<throwing_violations>(
       ::std::ranges::size(r), firstidx, middleidx, lastidx)};
   auto [first, last_it] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R>(r), firstidx, last);
   ::fast_io::algorithms::rotate_iters(
     first, first + (middleidx - firstidx), last_it);
   return firstidx + (last - middleidx);
+}
+
+template<::std::ranges::random_access_range R>
+inline constexpr ::std::size_t rotate_index_of(
+  R &&r, ::std::ranges::iterator_t<R> middle)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::rotate_iters_no_throw<
+      ::std::ranges::iterator_t<R>, ::std::ranges::sentinel_t<R>>)
+{
+  auto const first{::std::ranges::begin(r)};
+  auto const result{::fast_io::algorithms::rotate(
+    ::std::forward<R>(r), middle)};
+  return static_cast<::std::size_t>(result - first);
 }
 
 
@@ -608,8 +622,9 @@ inline constexpr OIter rotate_copy_iters(
     !::fast_io::details::algorithms::rotate_copy_iters_no_throw<
       Iter, Snt, OIter>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::rotate_copy_tag, first, middle, last, dest);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first), decltype(dest)>),
+    rotate_copy_iters_define, first, middle, last, dest);
   return ::fast_io::details::algorithms::rotate_copy_iters_impl(
     first, middle, last, dest);
 }
@@ -627,7 +642,7 @@ inline constexpr OIter rotate_copy(R &&r, ::std::ranges::iterator_t<R> middle,
 }
 
 template<::std::ranges::random_access_range R, typename OIter>
-inline constexpr OIter rotate_copy_index(
+inline constexpr OIter rotate_copy_index_range(
   R &&r, ::std::size_t firstidx, ::std::size_t middleidx,
   ::std::size_t lastidx, OIter dest)
   FAST_IO_HERBCEPTIONS_THROWS_IF(

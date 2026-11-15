@@ -187,7 +187,7 @@ bool check_index_range(std::vector<T> const &source)
 					expected.begin() + static_cast<std::ptrdiff_t>(last));
 				std::vector<T> actual{source};
 				auto const result{
-					::fast_io::algorithms::rotate_index(actual, first, middle, last)};
+					::fast_io::algorithms::rotate_index_range(actual, first, middle, last)};
 				if (!(actual == expected))
 				{
 					return false;
@@ -202,7 +202,7 @@ bool check_index_range(std::vector<T> const &source)
 	return true;
 }
 
-bool check_index()
+bool check_index_range()
 {
 	std::uint64_t state{0x1234567890abcdefull};
 	for (std::size_t n{}; n != 16; ++n)
@@ -304,10 +304,10 @@ constexpr bool constexpr_rotate_big_test()
 	return true;
 }
 
-constexpr bool constexpr_rotate_index_test()
+constexpr bool constexpr_rotate_index_range_test()
 {
 	int a[7]{0, 1, 2, 3, 4, 5, 6};
-	auto const result{::fast_io::algorithms::rotate_index(a, 1, 3, 6)};
+	auto const result{::fast_io::algorithms::rotate_index_range(a, 1, 3, 6)};
 	if (result != 4)
 	{
 		return false;
@@ -340,7 +340,7 @@ constexpr bool constexpr_rotate_empty_test()
 static_assert(constexpr_rotate_gcd_test());
 static_assert(constexpr_rotate_swap_test());
 static_assert(constexpr_rotate_big_test());
-static_assert(constexpr_rotate_index_test());
+static_assert(constexpr_rotate_index_range_test());
 static_assert(constexpr_rotate_empty_test());
 
 } // namespace
@@ -356,7 +356,7 @@ static_assert(noexcept(::fast_io::algorithms::rotate(
 static_assert(noexcept(::fast_io::algorithms::rotate_iters(
 	::std::declval<int *>(), ::std::declval<int *>(),
 	::std::declval<int *>())));
-static_assert(noexcept(::fast_io::algorithms::rotate_index(
+static_assert(noexcept(::fast_io::algorithms::rotate_index_range(
 	::std::declval<std::vector<int> &>(), std::size_t{}, std::size_t{},
 	std::size_t{})));
 static_assert(!noexcept(::fast_io::algorithms::rotate(
@@ -391,7 +391,7 @@ int main()
 	{
 		return 1;
 	}
-	if (!check_index())
+	if (!check_index_range())
 	{
 		return 2;
 	}
@@ -470,7 +470,7 @@ int main()
 			return 8;
 		}
 
-		::fast_io::algorithms::rotate_index(deque_values, 2, 6, 12);
+		::fast_io::algorithms::rotate_index_range(deque_values, 2, 6, 12);
 	}
 	catch throws(::std::error)
 	{

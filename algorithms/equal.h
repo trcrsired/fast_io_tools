@@ -22,7 +22,7 @@ concept equal_ranges_no_throw =
     ::std::ranges::iterator_t<R2>, ::std::ranges::sentinel_t<R2>, Cmp>;
 
 template<typename R1, typename R2, typename Cmp>
-concept equal_index_no_throw =
+concept equal_index_range_no_throw =
   ::std::ranges::random_access_range<R1> &&
   ::std::ranges::random_access_range<R2> &&
   !::fast_io::details::algorithms::range_throws_on_violations<R1> &&
@@ -68,8 +68,9 @@ inline constexpr bool equal_iters(
     !::fast_io::details::algorithms::equal_iters_no_throw<
       Iter1, Snt1, Iter2, Snt2, Cmp>)
 {
-  FAST_IO_ALGORITHMS_CUSTOMIZE(
-    ::fast_io::algorithms::customization::equal_tag, first1, last1, first2, last2, cmp);
+  FAST_IO_ALGORITHMS_CUSTOMIZE_IF(
+    (!::fast_io::details::algorithms::contiguous_iters<decltype(first1), decltype(first2)>),
+    equal_iters_define, first1, last1, first2, last2, cmp);
   return ::fast_io::details::algorithms::equal_iters_impl(
     first1, last1, first2, last2, cmp);
 }
@@ -88,12 +89,12 @@ inline constexpr bool equal(R1 &&r1, R2 &&r2, Cmp cmp = Cmp{})
 template<::std::ranges::random_access_range R1,
   ::std::ranges::random_access_range R2,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline constexpr bool equal_index(
+inline constexpr bool equal_index_range(
   R1 &&r1, ::std::size_t firstidx1, ::std::size_t lastidx1,
   R2 &&r2, ::std::size_t firstidx2, ::std::size_t lastidx2,
   Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::equal_index_no_throw<R1, R2, Cmp>)
+    !::fast_io::details::algorithms::equal_index_range_no_throw<R1, R2, Cmp>)
 {
   auto [first1, last1] = ::fast_io::details::algorithms::algo_index_to_iters(
     ::std::forward<R1>(r1), firstidx1, lastidx1);
