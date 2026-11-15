@@ -1,7 +1,5 @@
 #pragma once
 
-#include "common.h"
-
 // Construction of objects in uninitialized storage:
 //   - uninitialized_default_construct: default-initialization (`T t;`)
 //   - uninitialized_value_construct: value-initialization (`T()`)
@@ -29,6 +27,14 @@ concept uninitialized_construct_ranges_no_throw =
   ::std::ranges::range<R> &&
   ::std::is_nothrow_default_constructible_v<::std::ranges::range_value_t<R>> &&
   ::std::is_nothrow_destructible_v<::std::ranges::range_value_t<R>>;
+
+template<typename R>
+concept uninitialized_construct_index_no_throw =
+  ::std::ranges::random_access_range<R> &&
+  !::fast_io::details::algorithms::range_throws_on_violations<R> &&
+  ::fast_io::details::algorithms::uninitialized_construct_iters_no_throw<
+    ::fast_io::details::algorithms::algo_index_iterator<R>,
+    ::fast_io::details::algorithms::algo_index_iterator<R>>;
 
 // Default-initialization with a trivial constructor leaves the values
 // indeterminate, so writing zeros is a permitted outcome and turns the whole
@@ -442,6 +448,30 @@ inline constexpr ::std::ranges::iterator_t<R> uninitialized_value_construct_n(
 {
   return ::fast_io::algorithms::uninitialized_value_construct_n_iters(
     ::std::ranges::begin(r), count);
+}
+
+template<::std::ranges::random_access_range R>
+inline constexpr void uninitialized_default_construct_index(
+  R &&r, ::std::size_t firstidx, ::std::size_t lastidx)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::uninitialized_construct_index_no_throw<R>)
+{
+  auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
+    ::std::forward<R>(r), firstidx, lastidx);
+  (void)::fast_io::algorithms::uninitialized_default_construct_iters(
+    first, last);
+}
+
+template<::std::ranges::random_access_range R>
+inline constexpr void uninitialized_value_construct_index(
+  R &&r, ::std::size_t firstidx, ::std::size_t lastidx)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::uninitialized_construct_index_no_throw<R>)
+{
+  auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
+    ::std::forward<R>(r), firstidx, lastidx);
+  (void)::fast_io::algorithms::uninitialized_value_construct_iters(
+    first, last);
 }
 
 } // namespace fast_io::algorithms

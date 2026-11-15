@@ -12,29 +12,26 @@ Baseline: C++23 freestanding. `<ranges>`, `<iterator>`, `std::to_address`,
 
 Header layout: one algorithm family per header.
 
-- `advance.h`: `advance_iters`; includes `common.h`.
+- `advance.h`: `advance_iters`.
 - `common.h`: shared index helpers, flag lookup, iterator/range concepts, and
   element traits shared by several families.
 - `compare.h`: the default `compare_three_way` comparator.
-- `construct.h`: the uninitialized default/value construction family; includes
-  `common.h`.
-- `copy.h`: the copy family, including the uninitialized copy variants; includes
-  `common.h`.
-- `destroy.h`: the destruction family (`destroy_at`, `destroy`, `destroy_n`);
-  includes `advance.h` and `common.h`.
-- `fill.h`: the `fill` family, including the uninitialized fill variants;
-  includes `common.h`.
-- `find.h`: the `find` family; includes `common.h`.
-- `for_each.h`: the `for_each` family; includes `common.h`.
-- `heap.h`: the heap family; includes `common.h` and `compare.h`.
-- `relocate.h`: the relocate family, including the uninitialized move variants;
-  includes `common.h`.
-- `reverse.h`: the `reverse` family; includes `common.h`.
-- `sort.h`: the unstable sort; includes `common.h`, `compare.h` and
-  `reverse.h`.
-- `impl.h`: umbrella that includes every algorithm header.
-- `tests/`: one test translation unit per family. Tests include the headers
-  with relative paths so the directory can move into `fast_io` unchanged.
+- `construct.h`: the uninitialized default/value construction family.
+- `copy.h`: the copy family, including the uninitialized copy variants.
+- `destroy.h`: the destruction family (`destroy_at`, `destroy`, `destroy_n`).
+- `fill.h`: the `fill` family, including the uninitialized fill variants.
+- `find.h`: the `find` family.
+- `for_each.h`: the `for_each` family.
+- `heap.h`: the heap family.
+- `relocate.h`: the relocate family, including the uninitialized move variants.
+- `reverse.h`: the `reverse` family.
+- `sort.h`: the unstable sort.
+- `impl.h`: umbrella. It is the only header that uses `#include`. It includes
+  `common.h` and `compare.h` first and then every algorithm header in
+  dependency order. Family headers contain no includes at all and are not meant
+  to be included on their own.
+- `tests/`: one test translation unit per family. Tests include `../impl.h`
+  with a relative path so the directory can move into `fast_io` unchanged.
 - `benchmarks/`: C++ and Rust benchmark harnesses for `sort`.
 
 One family per header does not mean a family must reimplement its
@@ -316,7 +313,8 @@ No-throw detection for iterators is deliberately minimal and lives in
 ### `uninitialized_fill`
 
 - API pairs: `uninitialized_fill_iters` / `uninitialized_fill`,
-  `uninitialized_fill_n_iters` / `uninitialized_fill_n`.
+  `uninitialized_fill_n_iters` / `uninitialized_fill_n`, plus
+  `uninitialized_fill_index`.
 - Placement-constructs copies of the value into uninitialized storage and
   returns the end of the written range.
 - One-byte elements use `my_memset`, because constructing a one-byte object
@@ -343,11 +341,14 @@ No-throw detection for iterators is deliberately minimal and lives in
   `uninitialized_guard`, so a throwing constructor destroys the prefix.
 - Contiguous iterators decay to pointers. `_n` range variants construct the
   first `count` elements of the range.
+- `uninitialized_default_construct_index` and
+  `uninitialized_value_construct_index` bound-check a random-access range and
+  construct `[firstidx, lastidx)`.
 
 ## `destroy`
 
 - API: `destroy_at(T*)`, `destroy_iters` / `destroy`, `destroy_n_iters` /
-  `destroy_n`.
+  `destroy_n`, plus `destroy_index`.
 - A trivially destructible type is a strict no-op: no destructor call and no
   loop body. `destroy_iters` returns `last` directly when the iterator and
   sentinel are the same type, and advances with iterator arithmetic when the
@@ -356,6 +357,8 @@ No-throw detection for iterators is deliberately minimal and lives in
   type, so a pointer or random-access iterator advances in constant time
   instead of being walked.
 - Array element types are destroyed element by element through `destroy_at`.
+- `destroy_index` bound-checks `[firstidx, lastidx)` and destroys that
+  subrange.
 - Herbceptions forbid throwing destructors, so the destructor check is
   effectively always satisfied; it is still written explicitly.
 
@@ -385,7 +388,12 @@ No-throw detection for iterators is deliberately minimal and lives in
 
 - APIs: `is_heap_until_iters` / `is_heap_until`, `is_heap_iters` / `is_heap`,
   `make_heap_iters` / `make_heap`, `push_heap_iters` / `push_heap`,
-  `pop_heap_iters` / `pop_heap`, `sort_heap_iters` / `sort_heap`.
+  `pop_heap_iters` / `pop_heap`, `sort_heap_iters` / `sort_heap`, and the
+  matching `_index` entries: `is_heap_until_index`, `is_heap_index`,
+  `make_heap_index`, `push_heap_index`, `pop_heap_index`, `sort_heap_index`.
+- `is_heap_until_index` returns the index of the first element that breaks the
+  heap property, or `lastidx` when the subrange is a heap. The mutating index
+  entries operate on `[firstidx, lastidx)`; an empty subrange is a no-op.
 - `is_heap_until` returns the first iterator that breaks the heap property;
   `is_heap` is `is_heap_until(first, last) == last`.
 - Random-access iterators only. The comparator is the last parameter and uses a
@@ -428,7 +436,8 @@ No-throw detection for iterators is deliberately minimal and lives in
 
 ## `sort`
 
-- APIs: `sort_iters` / `sort`.
+- APIs: `sort_iters` / `sort` / `sort_index`.
+- `sort_index` bound-checks `[firstidx, lastidx)` and sorts that subrange.
 - Unstable, in-place, `O(N log N)` worst case, random-access iterators only.
 - Ported from ipnsort (sort-research-rs) by Lukas Bergdoll and Orson Peters.
 - Entry: return for `N < 2`; insertion sort for `N <= 20`; detect a fully

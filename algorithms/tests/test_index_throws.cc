@@ -60,5 +60,80 @@ int main()
 		(void)ec;
 		caught = true;
 	}
-	return caught ? 0 : 4;
+	if (!caught)
+	{
+		return 4;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::sort_index(d, 0, 2);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 5;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::sort_heap_index(d, 0, 2);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 6;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::destroy_index(d, 0, 2);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 7;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::uninitialized_fill_index(d, 0, 2, 7);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 8;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::uninitialized_value_construct_index(d, 0, 2);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	return caught ? 0 : 9;
 }

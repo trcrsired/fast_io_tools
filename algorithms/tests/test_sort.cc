@@ -291,12 +291,48 @@ struct throwing_compare
 	}
 };
 
+bool check_sort_index()
+{
+	std::uint64_t state{0x243f6a8885a308d3ull};
+	for (std::size_t n{}; n != 24; ++n)
+	{
+		std::vector<std::int64_t> source(n);
+		for (auto &value : source)
+		{
+			state ^= state << 13;
+			state ^= state >> 7;
+			state ^= state << 17;
+			value = static_cast<std::int64_t>(state % 97);
+		}
+		for (std::size_t first{}; first <= n; ++first)
+		{
+			for (std::size_t last{first}; last <= n; ++last)
+			{
+				auto expected{source};
+				std::sort(
+					expected.begin() + static_cast<std::ptrdiff_t>(first),
+					expected.begin() + static_cast<std::ptrdiff_t>(last));
+				auto actual{source};
+				::fast_io::algorithms::sort_index(actual, first, last);
+				if (actual != expected)
+				{
+					return false;
+				}
+			}
+		}
+	}
+	return true;
+}
+
 } // namespace
 
 static_assert(noexcept(::fast_io::algorithms::sort(
 	::std::declval<::std::vector<int> &>())));
 static_assert(noexcept(::fast_io::algorithms::sort_iters(
 	::std::declval<int *>(), ::std::declval<int *>())));
+static_assert(noexcept(::fast_io::algorithms::sort_index(
+	::std::declval<::std::vector<int> &>(), ::std::size_t{},
+	::std::size_t{})));
 static_assert(!noexcept(::fast_io::algorithms::sort_iters(
 	::std::declval<int *>(), ::std::declval<int *>(),
 	::std::declval<throwing_compare>())));
@@ -379,6 +415,11 @@ int main()
 		{
 			fail();
 		}
+	}
+
+	if (!check_sort_index())
+	{
+		return 2;
 	}
 
 	return reports ? 1 : 0;

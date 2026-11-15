@@ -57,6 +57,15 @@ constexpr bool constexpr_uninitialized_fill_test()
 
 static_assert(constexpr_uninitialized_fill_test());
 
+constexpr bool constexpr_uninitialized_fill_index_test()
+{
+	int a[6]{1, 2, 3, 4, 5, 6};
+	::fast_io::algorithms::uninitialized_fill_index(a, 1, 5, 0);
+	return a[0] == 1 && a[1] == 0 && a[4] == 0 && a[5] == 6;
+}
+
+static_assert(constexpr_uninitialized_fill_index_test());
+
 constexpr bool constexpr_fill_test()
 {
 	int a[8]{};
@@ -251,6 +260,23 @@ bool check_uninitialized_fill() throws(true)
 		}
 		::fast_io::algorithms::destroy_n_iters(storage.begin(), 3);
 	}
+
+	{
+		raw_storage<std::string, 6> storage;
+		::fast_io::algorithms::uninitialized_fill_index(
+			storage, 1, 5, std::string{"xy"});
+		for (std::size_t i{}; i != storage.size(); ++i)
+		{
+			if (i >= 1 && i < 5)
+			{
+				if (storage.begin()[i] != "xy")
+				{
+					return false;
+				}
+			}
+		}
+		::fast_io::algorithms::destroy_index(storage, 1, 5);
+	}
 	return true;
 }
 
@@ -279,6 +305,8 @@ static_assert(noexcept(::fast_io::algorithms::uninitialized_fill_n_iters(
 	::std::declval<int *>(), std::size_t{}, 1)));
 static_assert(!noexcept(::fast_io::algorithms::uninitialized_fill_n_iters(
 	::std::declval<throwing_value *>(), std::size_t{}, 0)));
+static_assert(noexcept(::fast_io::algorithms::uninitialized_fill_index(
+	::std::declval<std::vector<int> &>(), std::size_t{}, std::size_t{}, 1)));
 
 int main()
 {

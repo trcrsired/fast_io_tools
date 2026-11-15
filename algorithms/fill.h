@@ -1,7 +1,5 @@
 #pragma once
 
-#include "common.h"
-
 namespace fast_io::details::algorithms
 {
 
@@ -60,6 +58,14 @@ concept uninitialized_fill_ranges_no_throw =
   ::std::is_nothrow_constructible_v<
     ::std::ranges::range_value_t<R>, T const &> &&
   ::std::is_nothrow_destructible_v<::std::ranges::range_value_t<R>>;
+
+template<typename R, typename T>
+concept uninitialized_fill_index_no_throw =
+  ::std::ranges::random_access_range<R> &&
+  !::fast_io::details::algorithms::range_throws_on_violations<R> &&
+  ::fast_io::details::algorithms::uninitialized_fill_iters_no_throw<
+    ::fast_io::details::algorithms::algo_index_iterator<R>,
+    ::fast_io::details::algorithms::algo_index_iterator<R>, T>;
 
 template<typename T, typename U>
 inline constexpr T *fill_pointer(T *first, T *last, U const &value)
@@ -454,6 +460,17 @@ inline constexpr ::std::ranges::iterator_t<R> uninitialized_fill_n(
 {
   return ::fast_io::algorithms::uninitialized_fill_n_iters(
     ::std::ranges::begin(r), count, value);
+}
+
+template<::std::ranges::random_access_range R, typename T>
+inline constexpr void uninitialized_fill_index(
+  R &&r, ::std::size_t firstidx, ::std::size_t lastidx, T const &value)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::uninitialized_fill_index_no_throw<R, T>)
+{
+  auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
+    ::std::forward<R>(r), firstidx, lastidx);
+  (void)::fast_io::algorithms::uninitialized_fill_iters(first, last, value);
 }
 
 } // namespace fast_io::algorithms

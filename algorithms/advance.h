@@ -1,7 +1,5 @@
 #pragma once
 
-#include "common.h"
-
 // Iterator advance, mirroring `std::ranges::advance(it, n)`.
 //
 // Advance is in place: the algorithm does not own the iterator it changes.

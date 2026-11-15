@@ -1,8 +1,5 @@
 #pragma once
 
-#include "advance.h"
-#include "common.h"
-
 // Destruction of objects in initialized storage:
 //   - destroy_at
 //   - destroy_iters / destroy
@@ -30,6 +27,14 @@ template<typename R>
 concept destroy_ranges_no_throw =
   ::std::ranges::range<R> &&
   ::std::is_nothrow_destructible_v<::std::ranges::range_value_t<R>>;
+
+template<typename R>
+concept destroy_index_no_throw =
+  ::std::ranges::random_access_range<R> &&
+  !::fast_io::details::algorithms::range_throws_on_violations<R> &&
+  ::fast_io::details::algorithms::destroy_iters_no_throw<
+    ::fast_io::details::algorithms::algo_index_iterator<R>,
+    ::fast_io::details::algorithms::algo_index_iterator<R>>;
 
 template<typename T>
 inline constexpr void destroy_at_impl(T *location)
@@ -160,6 +165,17 @@ inline constexpr ::std::ranges::iterator_t<R> destroy_n(
 {
   return ::fast_io::algorithms::destroy_n_iters(
     ::std::ranges::begin(r), count);
+}
+
+template<::std::ranges::random_access_range R>
+inline constexpr void destroy_index(
+  R &&r, ::std::size_t firstidx, ::std::size_t lastidx)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::destroy_index_no_throw<R>)
+{
+  auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
+    ::std::forward<R>(r), firstidx, lastidx);
+  (void)::fast_io::algorithms::destroy_iters(first, last);
 }
 
 } // namespace fast_io::algorithms

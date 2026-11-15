@@ -1,9 +1,5 @@
 #pragma once
 
-#include "common.h"
-#include "compare.h"
-#include "reverse.h"
-
 // Unstable in-place sort, ported from ipnsort by Lukas Bergdoll and Orson
 // Peters (sort-research-rs).
 //
@@ -120,6 +116,14 @@ concept sort_iters_no_throw =
     Cmp, ::std::iter_value_t<Iter>> &&
   ::fast_io::details::algorithms::move_no_throw<
     ::std::iter_value_t<Iter>>;
+
+template<typename R, typename Cmp>
+concept sort_index_no_throw =
+  ::std::ranges::random_access_range<R> &&
+  !::fast_io::details::algorithms::range_throws_on_violations<R> &&
+  ::fast_io::details::algorithms::sort_iters_no_throw<
+    ::fast_io::details::algorithms::algo_index_iterator<R>, Cmp> &&
+  ::fast_io::details::algorithms::sort_comparator_pass_no_throw<Cmp>;
 
 template<typename T>
 inline constexpr bool sort_network_small_v{
@@ -1284,6 +1288,18 @@ inline void sort(R &&r, Cmp cmp = Cmp{})
 {
   ::fast_io::algorithms::sort_iters(
     ::std::ranges::begin(r), ::std::ranges::end(r), cmp);
+}
+
+template<::std::ranges::random_access_range R,
+  typename Cmp = ::fast_io::algorithms::compare_three_way>
+inline void sort_index(
+  R &&r, ::std::size_t firstidx, ::std::size_t lastidx, Cmp cmp = Cmp{})
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::sort_index_no_throw<R, Cmp>)
+{
+  auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(
+    ::std::forward<R>(r), firstidx, lastidx);
+  ::fast_io::algorithms::sort_iters(first, last, cmp);
 }
 
 } // namespace fast_io::algorithms
