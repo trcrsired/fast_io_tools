@@ -13,20 +13,26 @@ Baseline: C++23 freestanding. `<ranges>`, `<iterator>`, `std::to_address`,
 Header layout: one algorithm family per header.
 
 - `advance.h`: `advance_iters`.
-- `common.h`: shared index helpers, flag lookup, iterator/range concepts, and
-  element traits shared by several families.
+- `all_of.h`: the `all_of` / `any_of` / `none_of` quantifier family.
+- `common.h`: shared index helpers, flag lookup, iterator/range concepts,
+  comparator pass/equality helpers, and element traits shared by several
+  families.
 - `compare.h`: the default `compare_three_way` comparator.
 - `construct.h`: the uninitialized default/value construction family.
 - `copy.h`: the copy family, including the uninitialized copy variants.
+- `count.h`: the `count` / `count_if` family.
 - `destroy.h`: the destruction family (`destroy_at`, `destroy`, `destroy_n`).
 - `fill.h`: the `fill` family, including the uninitialized fill variants.
 - `find.h`: the `find` family.
 - `for_each.h`: the `for_each` family.
 - `heap.h`: the heap family.
 - `lexicographical_compare.h`: the lexicographical comparison family.
+- `mismatch.h`: the two-range `mismatch` family.
 - `relocate.h`: the relocate family, including the uninitialized move variants.
 - `remove.h`: the `remove` / `remove_if` family.
 - `reverse.h`: the `reverse` family.
+- `search.h`: the search family (`adjacent_find`, `find_end`,
+  `find_first_of`, `search`, `search_n`).
 - `sort.h`: the unstable sort.
 - `impl.h`: umbrella. It is the only header that uses `#include`. It includes
   `common.h` and `compare.h` first and then every algorithm header in
@@ -226,6 +232,14 @@ No-throw detection for iterators is deliberately minimal and lives in
 - No checks and no flag lookup.
 - No separate contiguous branch is required; `for_each_iters` handles decay.
 
+## `for_each_n`
+
+- API: `for_each_n_iters(first, count, f)` and `for_each_n(r, count, f)`.
+- Applies `f` to the first `count` elements and returns the iterator one past
+  the last visited element. A zero count returns `first` unchanged.
+- The range form follows the existing `copy_n` convention: `count` is not
+  clamped to the range size.
+
 ## `for_each_index`
 
 - Checked entry point.
@@ -265,6 +279,57 @@ No-throw detection for iterators is deliberately minimal and lives in
   `size < lastidx` are violations; `lastidx == size` is allowed.
 - `throws` includes the violation policy, the comparison, and the final
   `found - first`.
+
+## `all_of`, `any_of`, `none_of`
+
+- APIs: `*_iters`, the unprefixed range entry points, and `*_index`.
+- Each predicate is invoked as `static_cast<bool>(f(*it))`; all variants
+  short-circuit as soon as the result is known.
+- The index forms validate one `[firstidx, lastidx)` subrange.
+
+## `count`, `count_if`
+
+- APIs: `count_iters` / `count` / `count_index`, and
+  `count_if_iters` / `count_if` / `count_if_index`.
+- The iterator and range forms return `iter_difference_t` /
+  `range_difference_t`; the index forms return `std::size_t`.
+- `count` compares with `operator==`, matching `find`. `count_if` invokes the
+  predicate as `static_cast<bool>(f(*it))`.
+
+## `mismatch`
+
+- API: `mismatch_iters` / `mismatch` / `mismatch_index`, using the two-range
+  form with independent iterator/sentinel pairs.
+- Returns the first differing positions. If one range is exhausted first, the
+  returned pair points at that end and the matching position in the other
+  range.
+- Equality uses the comparator's `equal` member when available and otherwise
+  falls back to `compare(a, b) == 0`; this is the same policy as sort.
+- `mismatch_index` returns absolute indices into the two original ranges.
+
+## `find_if`, `find_if_not`
+
+- APIs: `find_if_iters` / `find_if` / `find_if_index`, and the corresponding
+  `find_if_not*` entries.
+- Predicates are invoked as `static_cast<bool>(f(*it))`.
+- `_index` returns `firstidx + (found - first)` and uses `lastidx` as the
+  not-found sentinel.
+
+## `search` family
+
+- `search.h` provides `adjacent_find`, `find_end`, `find_first_of`, `search`,
+  and `search_n`, each with `_iters`, range, and `_index` entry points where
+  meaningful.
+- All five use comparator-based equality through the shared `equal` helper,
+  so a comparator may provide a cheaper `equal(a, b)` and otherwise equality is
+  `compare(a, b) == 0`.
+- Empty needles follow the standard rules: `search` returns `first1`,
+  `find_end` returns `last1`, and `find_first_of` returns `last1` for an empty
+  second range.
+- `*_index` returns absolute indices into the first range, or `lastidx1` when
+  there is no match.
+- The implementations are forward-iterator safe; iterator copies are used for
+  the nested scans rather than indexing.
 
 ## `lexicographical_compare`
 

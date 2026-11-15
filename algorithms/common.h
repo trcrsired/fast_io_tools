@@ -196,4 +196,46 @@ struct uninitialized_guard
   }
 };
 
+template<typename Cmp>
+concept comparator_pass_no_throw =
+  ::std::is_nothrow_copy_constructible_v<Cmp> &&
+  ::std::is_nothrow_move_constructible_v<Cmp> &&
+  ::std::is_nothrow_default_constructible_v<Cmp>;
+
+// Comparators may provide `equal(a, b)` as a cheaper equality test. When it is
+// absent, equality falls back to `compare(a, b) == 0`.
+template<typename Cmp, typename T, typename U>
+inline constexpr bool equal_call_no_throw_v = []() constexpr
+{
+  if constexpr (requires(Cmp cmp, T const &a, U const &b) { cmp.equal(a, b); })
+  {
+    return requires(Cmp cmp, T const &a, U const &b)
+    {
+      { cmp.equal(a, b) } noexcept;
+    };
+  }
+  else
+  {
+    return requires(Cmp cmp, T const &a, U const &b)
+    {
+      { cmp.compare(a, b) == 0 } noexcept;
+    };
+  }
+}();
+
+template<typename Cmp, typename T, typename U>
+inline constexpr bool equal(Cmp cmp, T const &a, U const &b)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::equal_call_no_throw_v<Cmp, T, U>)
+{
+  if constexpr (requires { cmp.equal(a, b); })
+  {
+    return cmp.equal(a, b);
+  }
+  else
+  {
+    return cmp.compare(a, b) == 0;
+  }
+}
+
 }

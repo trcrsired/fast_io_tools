@@ -32,6 +32,18 @@ concept for_each_index_no_throw =
   ::fast_io::details::algorithms::for_each_iter_no_throw<
     ::fast_io::details::algorithms::algo_index_iterator<R>, F>;
 
+template<typename Iter, typename F>
+concept for_each_n_iters_no_throw =
+  ::fast_io::details::algorithms::iter_no_throw<Iter> &&
+  ::fast_io::details::algorithms::for_each_iter_no_throw<Iter, F>;
+
+template<typename R, typename F>
+concept for_each_n_ranges_no_throw =
+  ::std::ranges::range<R> &&
+  ::std::is_nothrow_move_constructible_v<F> &&
+  ::fast_io::details::algorithms::for_each_iter_no_throw<
+    ::std::ranges::iterator_t<R>, F>;
+
 template<::std::input_iterator Iter, ::std::sentinel_for<Iter> Snt, typename F>
 inline constexpr void for_each_iters_impl(Iter first, Snt last, F& f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::for_each_iters_no_throw<Iter, Snt, F>)
@@ -64,6 +76,19 @@ inline constexpr void for_each_iters_impl(Iter first, Snt last, F& f)
   }
 }
 
+template<typename Iter, typename F>
+inline constexpr Iter for_each_n_iters_impl(
+  Iter first, ::std::size_t count, F &f)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::for_each_n_iters_no_throw<Iter, F>)
+{
+  for (; count != 0; --count, ++first)
+  {
+    f(*first);
+  }
+  return first;
+}
+
 }
 
 namespace fast_io::algorithms
@@ -88,6 +113,27 @@ inline constexpr void for_each_index(R&& r, ::std::size_t firstidx, ::std::size_
 {
   auto [first, last] = ::fast_io::details::algorithms::algo_index_to_iters(::std::forward<R>(r), firstidx, lastidx);
   ::fast_io::algorithms::for_each_iters(first, last, ::std::move(f));
+}
+
+// Invoke `f` on the first `count` elements starting at `first` and return the
+// iterator one past the last visited element.
+template<::std::input_iterator Iter, typename F>
+inline constexpr Iter for_each_n_iters(Iter first, ::std::size_t count, F f)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::for_each_n_iters_no_throw<Iter, F>)
+{
+  return ::fast_io::details::algorithms::for_each_n_iters_impl(
+    first, count, f);
+}
+
+template<::std::ranges::range R, typename F>
+inline constexpr ::std::ranges::iterator_t<R> for_each_n(
+  R &&r, ::std::size_t count, F f)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !::fast_io::details::algorithms::for_each_n_ranges_no_throw<R, F>)
+{
+  return ::fast_io::algorithms::for_each_n_iters(
+    ::std::ranges::begin(r), count, ::std::move(f));
 }
 
 }

@@ -246,5 +246,210 @@ int main()
 		return 16;
 	}
 
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::all_of_index(
+			d, 0, 2, [](int) noexcept { return true; });
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 17;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::any_of_index(
+			d, 0, 2, [](int) noexcept { return false; });
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 18;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::none_of_index(
+			d, 0, 2, [](int) noexcept { return false; });
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 19;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::count_index(d, 0, 2, 1);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 20;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::count_if_index(
+			d, 0, 2, [](int) noexcept { return true; });
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 21;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::mismatch_index(
+			d, 0, 2, populated, 0, 1);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 22;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::find_if_index(
+			d, 0, 2, [](int) noexcept { return false; });
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 23;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::find_if_not_index(
+			d, 0, 2, [](int) noexcept { return true; });
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 24;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::adjacent_find_index(d, 0, 2);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 25;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::find_end_index(
+			d, 0, 2, populated, 0, 1);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 26;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::find_first_of_index(
+			d, 0, 2, populated, 0, 1);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 27;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::search_index(
+			d, 0, 2, populated, 0, 1);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 28;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::search_n_index(d, 0, 2, 1, 1);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 29;
+	}
+
 	return 0;
 }
