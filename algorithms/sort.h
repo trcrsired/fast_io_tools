@@ -1033,7 +1033,7 @@ inline constexpr ::std::iter_difference_t<Iter> sort_partition_hoare(
     {
       gap.emplace(::std::move(*left_it));
     }
-    else if (left_it != gap.pos)
+    else if (::std::addressof(*left_it) != gap.pos)
     {
       *gap.pos = ::std::move(*left_it);
     }
