@@ -103,6 +103,8 @@ inline constexpr ::std::iter_difference_t<Iter> count_iters(
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::count_iters_no_throw<Iter, Snt, T>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::count_tag, first, last, value);
   return ::fast_io::details::algorithms::count_iters_impl(
     first, last, value);
 }
@@ -137,6 +139,8 @@ inline constexpr ::std::iter_difference_t<Iter> count_if_iters(
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::count_if_iters_no_throw<Iter, Snt, F>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::count_if_tag, first, last, f);
   return ::fast_io::details::algorithms::count_if_iters_impl(
     first, last, f);
 }

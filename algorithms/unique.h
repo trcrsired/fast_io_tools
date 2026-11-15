@@ -121,6 +121,8 @@ inline constexpr Iter unique_iters(
     !::fast_io::details::algorithms::unique_iters_no_throw<
       Iter, Snt, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::unique_tag, first, last, cmp);
   return ::fast_io::details::algorithms::unique_iters_impl(
     first, last, cmp);
 }
@@ -160,6 +162,8 @@ inline constexpr OIter unique_copy_iters(
     !::fast_io::details::algorithms::unique_copy_iters_no_throw<
       Iter, Snt, OIter, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::unique_copy_tag, first, last, dest, cmp);
   return ::fast_io::details::algorithms::unique_copy_iters_impl(
     first, last, dest, cmp);
 }

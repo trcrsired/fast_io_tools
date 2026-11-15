@@ -108,6 +108,8 @@ inline constexpr OIter transform_iters(
     !::fast_io::details::algorithms::transform_iters_no_throw<
       Iter, Snt, OIter, F>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::transform_tag, first, last, dest, f);
   return ::fast_io::details::algorithms::transform_iters_impl(
     first, last, dest, f);
 }
@@ -146,6 +148,8 @@ inline constexpr OIter transform_binary_iters(
     !::fast_io::details::algorithms::transform_binary_iters_no_throw<
       Iter1, Snt1, Iter2, Snt2, OIter, F>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::transform_binary_tag, first1, last1, first2, last2, dest, f);
   return ::fast_io::details::algorithms::transform_binary_iters_impl(
     first1, last1, first2, last2, dest, f);
 }

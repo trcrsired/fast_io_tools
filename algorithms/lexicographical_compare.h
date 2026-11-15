@@ -117,6 +117,8 @@ inline constexpr bool lexicographical_compare_iters(
     !::fast_io::details::algorithms::lexicographical_compare_iters_no_throw<
       Iter1, Snt1, Iter2, Snt2, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::lexicographical_compare_tag, first1, last1, first2, last2, cmp);
   return ::fast_io::details::algorithms::lexicographical_compare_iters_impl(
     first1, last1, first2, last2, cmp);
 }
@@ -165,6 +167,8 @@ inline constexpr auto lexicographical_compare_three_way_iters(
       Iter1, Snt1, Iter2, Snt2, Cmp>)
   -> decltype(cmp.compare(*first1, *first2))
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::lexicographical_compare_three_way_tag, first1, last1, first2, last2, cmp);
   return ::fast_io::details::algorithms::
     lexicographical_compare_three_way_iters_impl(
       first1, last1, first2, last2, cmp);

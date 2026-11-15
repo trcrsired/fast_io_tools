@@ -254,6 +254,8 @@ inline constexpr Iter is_heap_until_iters(Iter first, Iter last, Cmp cmp = Cmp{}
     !(::fast_io::details::algorithms::is_heap_iters_no_throw<Iter, Cmp> &&
       ::fast_io::details::algorithms::heap_comparator_pass_no_throw<Cmp>))
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::is_heap_until_tag, first, last, cmp);
   return ::fast_io::details::algorithms::is_heap_until_iters_impl(first, last, cmp);
 }
 
@@ -276,6 +278,8 @@ inline constexpr bool is_heap_iters(Iter first, Iter last, Cmp cmp = Cmp{})
     !(::fast_io::details::algorithms::is_heap_iters_no_throw<Iter, Cmp> &&
       ::fast_io::details::algorithms::heap_comparator_pass_no_throw<Cmp>))
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::is_heap_tag, first, last, cmp);
   return ::fast_io::details::algorithms::is_heap_until_iters_impl(first, last, cmp) == last;
 }
 
@@ -298,6 +302,8 @@ inline constexpr void make_heap_iters(Iter first, Iter last, Cmp cmp = Cmp{})
     !(::fast_io::details::algorithms::heap_iters_no_throw<Iter, Cmp> &&
       ::fast_io::details::algorithms::heap_comparator_pass_no_throw<Cmp>))
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::make_heap_tag, first, last, cmp);
   ::fast_io::details::algorithms::make_heap_iters_impl(first, last, cmp);
 }
 
@@ -320,6 +326,8 @@ inline constexpr void push_heap_iters(Iter first, Iter last, Cmp cmp = Cmp{})
     !(::fast_io::details::algorithms::heap_iters_no_throw<Iter, Cmp> &&
       ::fast_io::details::algorithms::heap_comparator_pass_no_throw<Cmp>))
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::push_heap_tag, first, last, cmp);
   ::fast_io::details::algorithms::push_heap_iters_impl(first, last, cmp);
 }
 
@@ -342,6 +350,8 @@ inline constexpr void pop_heap_iters(Iter first, Iter last, Cmp cmp = Cmp{})
     !(::fast_io::details::algorithms::heap_iters_no_throw<Iter, Cmp> &&
       ::fast_io::details::algorithms::heap_comparator_pass_no_throw<Cmp>))
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::pop_heap_tag, first, last, cmp);
   ::fast_io::details::algorithms::pop_heap_iters_impl(first, last, cmp);
 }
 
@@ -364,6 +374,8 @@ inline constexpr void sort_heap_iters(Iter first, Iter last, Cmp cmp = Cmp{})
     !(::fast_io::details::algorithms::heap_iters_no_throw<Iter, Cmp> &&
       ::fast_io::details::algorithms::heap_comparator_pass_no_throw<Cmp>))
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::sort_heap_tag, first, last, cmp);
   ::fast_io::details::algorithms::sort_heap_iters_impl(first, last, cmp);
 }
 

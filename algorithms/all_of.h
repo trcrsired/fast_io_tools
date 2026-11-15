@@ -87,6 +87,8 @@ inline constexpr bool all_of_iters(Iter first, Snt last, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::all_of_iters_no_throw<Iter, Snt, F>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::all_of_tag, first, last, f);
   return ::fast_io::details::algorithms::all_of_iters_impl(first, last, f);
 }
 
@@ -117,6 +119,8 @@ inline constexpr bool any_of_iters(Iter first, Snt last, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::all_of_iters_no_throw<Iter, Snt, F>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::any_of_tag, first, last, f);
   return ::fast_io::details::algorithms::any_of_iters_impl(first, last, f);
 }
 
@@ -147,6 +151,8 @@ inline constexpr bool none_of_iters(Iter first, Snt last, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::all_of_iters_no_throw<Iter, Snt, F>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::none_of_tag, first, last, f);
   return ::fast_io::details::algorithms::none_of_iters_impl(first, last, f);
 }
 

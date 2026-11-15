@@ -385,6 +385,8 @@ template<::std::input_iterator Iter, ::std::sentinel_for<Iter> Snt, typename T>
 inline constexpr Iter find_iters(Iter first, Snt last, T const& value)
   FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::find_iters_no_throw<Iter, Snt, T>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::find_tag, first, last, value);
   return ::fast_io::details::algorithms::find_iters_impl(first, last, value);
 }
 
@@ -411,6 +413,8 @@ inline constexpr Iter find_if_iters(Iter first, Snt last, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::find_if_iters_no_throw<Iter, Snt, F>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::find_if_tag, first, last, f);
   return ::fast_io::details::algorithms::find_if_iters_impl(first, last, f);
 }
 
@@ -443,6 +447,8 @@ inline constexpr Iter find_if_not_iters(Iter first, Snt last, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::find_if_iters_no_throw<Iter, Snt, F>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::find_if_not_tag, first, last, f);
   return ::fast_io::details::algorithms::find_if_not_iters_impl(
     first, last, f);
 }

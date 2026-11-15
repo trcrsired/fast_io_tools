@@ -114,6 +114,8 @@ inline constexpr Iter lower_bound_iters(
     !::fast_io::details::algorithms::lower_bound_iters_no_throw<
       Iter, Snt, T, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::lower_bound_tag, first, last, value, cmp);
   return ::fast_io::details::algorithms::lower_bound_iters_impl(
     first, last, value, cmp);
 }
@@ -154,6 +156,8 @@ inline constexpr Iter upper_bound_iters(
     !::fast_io::details::algorithms::lower_bound_iters_no_throw<
       Iter, Snt, T, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::upper_bound_tag, first, last, value, cmp);
   return ::fast_io::details::algorithms::upper_bound_iters_impl(
     first, last, value, cmp);
 }
@@ -194,6 +198,8 @@ inline constexpr ::std::pair<Iter, Iter> equal_range_iters(
     !::fast_io::details::algorithms::lower_bound_iters_no_throw<
       Iter, Snt, T, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::equal_range_tag, first, last, value, cmp);
   auto const lower{::fast_io::details::algorithms::lower_bound_iters_impl(
     first, last, value, cmp)};
   return {
@@ -242,6 +248,8 @@ inline constexpr bool binary_search_iters(
     !::fast_io::details::algorithms::lower_bound_iters_no_throw<
       Iter, Snt, T, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::binary_search_tag, first, last, value, cmp);
   auto const found{
     ::fast_io::details::algorithms::lower_bound_iters_impl(
       first, last, value, cmp)};

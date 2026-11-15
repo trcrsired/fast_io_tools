@@ -257,6 +257,8 @@ inline constexpr Iter adjacent_find_iters(
     !::fast_io::details::algorithms::adjacent_find_iters_no_throw<
       Iter, Snt, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::adjacent_find_tag, first, last, cmp);
   return ::fast_io::details::algorithms::adjacent_find_iters_impl(
     first, last, cmp);
 }
@@ -296,6 +298,8 @@ inline constexpr Iter1 find_end_iters(
     !::fast_io::details::algorithms::search_iters_no_throw<
       Iter1, Snt1, Iter2, Snt2, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::find_end_tag, first1, last1, first2, last2, cmp);
   return ::fast_io::details::algorithms::find_end_iters_impl(
     first1, last1, first2, last2, cmp);
 }
@@ -342,6 +346,8 @@ inline constexpr Iter1 find_first_of_iters(
     !::fast_io::details::algorithms::search_iters_no_throw<
       Iter1, Snt1, Iter2, Snt2, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::find_first_of_tag, first1, last1, first2, last2, cmp);
   return ::fast_io::details::algorithms::find_first_of_iters_impl(
     first1, last1, first2, last2, cmp);
 }
@@ -387,6 +393,8 @@ inline constexpr Iter1 search_iters(
     !::fast_io::details::algorithms::search_iters_no_throw<
       Iter1, Snt1, Iter2, Snt2, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::search_tag, first1, last1, first2, last2, cmp);
   return ::fast_io::details::algorithms::search_iters_impl(
     first1, last1, first2, last2, cmp);
 }
@@ -432,6 +440,8 @@ inline constexpr Iter search_n_iters(
     !::fast_io::details::algorithms::search_n_iters_no_throw<
       Iter, Snt, T, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::search_n_tag, first, last, count, value, cmp);
   return ::fast_io::details::algorithms::search_n_iters_impl(
     first, last, count, value, cmp);
 }

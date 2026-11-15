@@ -237,6 +237,8 @@ inline constexpr Iter remove_iters(Iter first, Snt last, T const &value)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::remove_iters_no_throw<Iter, Snt, T>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::remove_tag, first, last, value);
   return ::fast_io::details::algorithms::remove_iters_impl(first, last, value);
 }
 
@@ -271,6 +273,8 @@ inline constexpr Iter remove_if_iters(Iter first, Snt last, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::remove_if_iters_no_throw<Iter, Snt, F>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::remove_if_tag, first, last, f);
   return ::fast_io::details::algorithms::remove_if_iters_impl(first, last, f);
 }
 

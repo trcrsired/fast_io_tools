@@ -52,6 +52,8 @@ inline constexpr Iter2 swap_ranges_iters(
     !::fast_io::details::algorithms::swap_ranges_iters_no_throw<
       Iter1, Snt1, Iter2>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::swap_ranges_tag, first1, last1, first2);
   return ::fast_io::details::algorithms::swap_ranges_iters_impl(
     first1, last1, first2);
 }

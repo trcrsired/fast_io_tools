@@ -184,6 +184,8 @@ inline constexpr void replace_iters(
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::replace_iters_no_throw<Iter, Snt, T>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::replace_tag, first, last, old_value, new_value);
   ::fast_io::details::algorithms::replace_iters_impl(
     first, last, old_value, new_value);
 }
@@ -220,6 +222,8 @@ inline constexpr void replace_if_iters(
     !::fast_io::details::algorithms::replace_if_iters_no_throw<
       Iter, Snt, F, T>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::replace_if_tag, first, last, f, new_value);
   ::fast_io::details::algorithms::replace_if_iters_impl(
     first, last, f, new_value);
 }
@@ -257,6 +261,8 @@ inline constexpr OIter replace_copy_iters(
     !::fast_io::details::algorithms::replace_copy_iters_no_throw<
       Iter, Snt, OIter, T>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::replace_copy_tag, first, last, dest, old_value, new_value);
   return ::fast_io::details::algorithms::replace_copy_iters_impl(
     first, last, dest, old_value, new_value);
 }
@@ -281,6 +287,8 @@ inline constexpr OIter replace_copy_if_iters(
     !::fast_io::details::algorithms::replace_copy_if_iters_no_throw<
       Iter, Snt, OIter, F, T>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::replace_copy_if_tag, first, last, dest, f, new_value);
   return ::fast_io::details::algorithms::replace_copy_if_iters_impl(
     first, last, dest, f, new_value);
 }

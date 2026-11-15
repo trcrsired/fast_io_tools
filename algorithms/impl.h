@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "common.h"
+#include "customization.h"
 #include "compare.h"
 #include "swap.h"
 
@@ -47,3 +48,8 @@
 #include "nth_element.h"
 #include "partial_sort.h"
 #include "set_operations.h"
+
+#if __has_include(<fast_io_dsal/deque.h>)
+#include <fast_io_dsal/deque.h>
+#include "deque_customization.h"
+#endif

@@ -97,6 +97,8 @@ template<::std::input_iterator Iter, ::std::sentinel_for<Iter> Snt, typename F>
 inline constexpr void for_each_iters(Iter first, Snt last, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(!::fast_io::details::algorithms::for_each_iters_no_throw<Iter, Snt, F>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::for_each_tag, first, last, f);
   ::fast_io::details::algorithms::for_each_iters_impl(first, last, f);
 }
 
@@ -122,6 +124,8 @@ inline constexpr Iter for_each_n_iters(Iter first, ::std::size_t count, F f)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::for_each_n_iters_no_throw<Iter, F>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::for_each_n_tag, first, count, f);
   return ::fast_io::details::algorithms::for_each_n_iters_impl(
     first, count, f);
 }

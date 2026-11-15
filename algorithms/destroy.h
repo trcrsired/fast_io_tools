@@ -128,6 +128,8 @@ template<typename T>
 inline constexpr void destroy_at(T *location)
   FAST_IO_HERBCEPTIONS_THROWS_IF(!::std::is_nothrow_destructible_v<T>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::destroy_at_tag, location);
   ::fast_io::details::algorithms::destroy_at_impl(location);
 }
 
@@ -136,6 +138,8 @@ inline constexpr Iter destroy_iters(Iter first, Snt last)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::destroy_iters_no_throw<Iter, Snt>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::destroy_tag, first, last);
   return ::fast_io::details::algorithms::destroy_iters_impl(first, last);
 }
 
@@ -153,6 +157,8 @@ inline constexpr Iter destroy_n_iters(Iter first, ::std::size_t count)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::destroy_n_iters_no_throw<Iter>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::destroy_n_tag, first, count);
   return ::fast_io::details::algorithms::destroy_n_iters_impl(first, count);
 }
 

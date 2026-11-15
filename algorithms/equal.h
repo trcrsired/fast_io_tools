@@ -68,6 +68,8 @@ inline constexpr bool equal_iters(
     !::fast_io::details::algorithms::equal_iters_no_throw<
       Iter1, Snt1, Iter2, Snt2, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::equal_tag, first1, last1, first2, last2, cmp);
   return ::fast_io::details::algorithms::equal_iters_impl(
     first1, last1, first2, last2, cmp);
 }

@@ -164,6 +164,8 @@ inline constexpr void reverse_iters(Iter first, Snt last)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::reverse_iters_no_throw<Iter, Snt>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::reverse_tag, first, last);
   ::fast_io::details::algorithms::reverse_iters_impl(first, last);
 }
 
@@ -197,6 +199,8 @@ inline constexpr OIter reverse_copy_iters(Iter first, Snt last, OIter dest)
     !::fast_io::details::algorithms::reverse_copy_iters_no_throw<
       Iter, Snt, OIter>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::reverse_copy_tag, first, last, dest);
   return ::fast_io::details::algorithms::reverse_copy_iters_impl(
     first, last, dest);
 }

@@ -1307,6 +1307,8 @@ inline constexpr void sort_iters(Iter first, Iter last, Cmp cmp = Cmp{})
     !(::fast_io::details::algorithms::sort_iters_no_throw<Iter, Cmp> &&
       ::fast_io::details::algorithms::sort_comparator_pass_no_throw<Cmp>))
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::sort_tag, first, last, cmp);
   ::fast_io::details::algorithms::sort_iters_impl(first, last, cmp);
 }
 

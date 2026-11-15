@@ -177,6 +177,8 @@ inline constexpr void nth_element_iters(
     !::fast_io::details::algorithms::nth_element_iters_no_throw<
       Iter, Snt, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::nth_element_tag, first, nth, last, cmp);
   ::fast_io::details::algorithms::nth_element_iters_impl(
     first, nth, last, cmp);
 }

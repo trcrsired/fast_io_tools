@@ -216,6 +216,8 @@ inline constexpr bool is_permutation_iters(
     !::fast_io::details::algorithms::is_permutation_iters_no_throw<
       Iter1, Snt1, Iter2, Snt2, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::is_permutation_tag, first1, last1, first2, last2, cmp);
   return ::fast_io::details::algorithms::is_permutation_iters_impl(
     first1, last1, first2, last2, cmp);
 }
@@ -264,6 +266,8 @@ inline constexpr bool is_permutation_prefix_iters(
     !::fast_io::details::algorithms::is_permutation_iters_no_throw<
       Iter1, Snt1, Iter2, Snt2, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::is_permutation_prefix_tag, first1, last1, first2, last2, cmp);
   Iter2 prefix_last{first2};
   for (Iter1 it{first1}; it != last1; ++it)
   {
@@ -300,6 +304,8 @@ inline constexpr bool next_permutation_iters(
     !::fast_io::details::algorithms::next_permutation_iters_no_throw<
       Iter, Snt, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::next_permutation_tag, first, last, cmp);
   return ::fast_io::details::algorithms::next_permutation_iters_impl(
     first, last, cmp);
 }
@@ -338,6 +344,8 @@ inline constexpr bool prev_permutation_iters(
     !::fast_io::details::algorithms::next_permutation_iters_no_throw<
       Iter, Snt, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::prev_permutation_tag, first, last, cmp);
   return ::fast_io::details::algorithms::prev_permutation_iters_impl(
     first, last, cmp);
 }

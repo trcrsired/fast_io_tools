@@ -70,6 +70,8 @@ inline constexpr Iter is_sorted_until_iters(
     !::fast_io::details::algorithms::is_sorted_until_iters_no_throw<
       Iter, Snt, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::is_sorted_until_tag, first, last, cmp);
   return ::fast_io::details::algorithms::is_sorted_until_iters_impl(
     first, last, cmp);
 }
@@ -108,6 +110,8 @@ inline constexpr bool is_sorted_iters(
     !::fast_io::details::algorithms::is_sorted_until_iters_no_throw<
       Iter, Snt, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::is_sorted_tag, first, last, cmp);
   auto const result{
     ::fast_io::details::algorithms::is_sorted_until_iters_impl(
       first, last, cmp)};

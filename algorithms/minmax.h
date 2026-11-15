@@ -124,6 +124,8 @@ inline constexpr T const &min(T const &a, T const &b, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::minmax_compare_no_throw<Cmp, T>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::min_tag, a, b, cmp);
   return 0 > cmp.compare(b, a) ? b : a;
 }
 
@@ -132,6 +134,8 @@ inline constexpr T const &max(T const &a, T const &b, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::minmax_compare_no_throw<Cmp, T>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::max_tag, a, b, cmp);
   return 0 > cmp.compare(a, b) ? b : a;
 }
 
@@ -141,6 +145,8 @@ inline constexpr ::std::pair<T const &, T const &> minmax(
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::minmax_compare_no_throw<Cmp, T>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::minmax_tag, a, b, cmp);
   if (0 > cmp.compare(b, a))
   {
     return {b, a};
@@ -154,6 +160,8 @@ inline constexpr T const &clamp(
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::minmax_compare_no_throw<Cmp, T>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::clamp_tag, value, lo, hi, cmp);
   if (0 > cmp.compare(hi, lo)) [[unlikely]]
   {
     __builtin_trap();
@@ -177,6 +185,8 @@ inline constexpr Iter min_element_iters(
     !::fast_io::details::algorithms::minmax_element_sentinel_no_throw<
       Iter, Snt, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::min_element_tag, first, last, cmp);
   return ::fast_io::details::algorithms::min_element_iters_impl(
     first, last, cmp);
 }
@@ -215,6 +225,8 @@ inline constexpr Iter max_element_iters(
     !::fast_io::details::algorithms::minmax_element_sentinel_no_throw<
       Iter, Snt, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::max_element_tag, first, last, cmp);
   return ::fast_io::details::algorithms::max_element_iters_impl(
     first, last, cmp);
 }
@@ -253,6 +265,8 @@ inline constexpr ::std::pair<Iter, Iter> minmax_element_iters(
     !::fast_io::details::algorithms::minmax_element_sentinel_no_throw<
       Iter, Snt, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::minmax_element_tag, first, last, cmp);
   return ::fast_io::details::algorithms::minmax_element_iters_impl(
     first, last, cmp);
 }

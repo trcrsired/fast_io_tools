@@ -74,7 +74,9 @@ from `sort.h`, and a depth limit of `2 * floor(log2(N))` that falls back to
 correct rotate-based merge, not a buffered optimal one. `is_permutation` compares
 multiset counts without auxiliary storage. `next_permutation` and
 `prev_permutation` materialize the sentinel as an iterator once so a
-non-random-access sentinel can be used.
+non-random-access sentinel can be used. Every public algorithm entry also
+checks an ADL customization hook, so a container can replace the generic
+implementation; fast_io's deque uses this for block-wise copy/move/rotate paths.
 
 One family per header does not mean a family must reimplement its
 dependencies. Families call each other's internal implementation when that
@@ -516,9 +518,10 @@ No-throw detection for iterators is deliberately minimal and lives in
   in-place shifts are handled.
 - Generic path constructs through `uninitialized_guard` and destroys the source
   element after each successful construction.
-- Container-specific `uninitialized_relocate_define` /
-  `uninitialized_relocate_backward_define` customization points are deferred
-  until these algorithms move into `fast_io` core.
+- Container-specific overrides use the same ADL `algorithms_define`
+  mechanism as every other family. fast_io deque's block-wise overloads live
+  in `deque_customization.h` and are selected automatically when the deque
+  header is available.
 - `throws` includes move construction and destruction (relocate has no index
   entry point).
 
@@ -783,6 +786,62 @@ random records.
 - The tests verify the pivot value against `std::nth_element` and both
   partition directions (`<=` before `nth`, `>=` after), not that the whole
   range is sorted.
+
+## Customization
+
+- Every public `*_iters` entry starts with `FAST_IO_ALGORITHMS_CUSTOMIZE`.
+  The scalar entries (`min`, `max`, `minmax`, `clamp`, `swap`, `iter_swap`,
+  `destroy_at`) dispatch directly as well. Range and `_index` entries call the
+  `_iters` entry, so they inherit the same hook.
+- A container or iterator author provides an ADL overload:
+  `algorithms_define(customization::define_type<customization::copy_tag>,
+  first, last, dest) noexcept`.
+- Tags live in `fast_io::algorithms::customization` in `customization.h`; there
+  is one tag per algorithm operation. `define_type<Tag>` is an empty tag
+  object; the algorithm arguments carry the concrete types.
+- Only `noexcept` overloads are matched. A throwing overload is ignored and
+  the generic implementation is used, so the existing `noexcept` contract is
+  preserved without recomputing every family's `throws` condition.
+- Dispatch is unqualified inside `customization::dispatch_define`, so ADL
+  searches the tag namespace and the namespaces associated with every
+  algorithm argument. This mirrors fast_io's `uninitialized_relocate_define`
+  pattern.
+- A custom implementation should call the internal `*_iters_impl` or pointer
+  helpers, not the public entry, to avoid re-entering the hook.
+- `customization.h` is included by `impl.h`; family headers still contain no
+  includes.
+- `test_customization.cc` uses a user-defined random-access iterator and
+  verifies that `copy`, `find`, `sort`, `nth_element` and scalar `min` select
+  the custom overloads.
+
+## fast_io deque
+
+- fast_io's deque stores elements in contiguous blocks of
+  `deque_block_size<sizeof(T)>` elements. The generic random-access iterator
+  path re-establishes the block for every dereference and increment. On 1e6
+  `int` values this made `nth_element` about 2.5x slower and `sort` about 2x
+  slower than the same algorithms on a vector.
+- `deque_customization.h` is included by `impl.h` when
+  `<fast_io_dsal/deque.h>` is available. It provides ADL overloads for
+  `copy`, `copy_n`, `copy_backward`, `non_overlapped_copy`,
+  `non_overlapped_copy_n`, `move`, `move_backward`, the uninitialized
+  copy/move/relocate families, `reverse_copy`, `rotate_copy`, `reverse` and
+  `rotate`.
+- `deque_forward_segments` and `deque_backward_segments` walk the controller
+  block pointers once and hand contiguous `T*` ranges to the existing pointer
+  implementations. `deque_reverse_segments` swaps front/back block chunks
+  directly. `rotate` is three reversals over those chunks.
+- The overloads are conditionally `noexcept` through the corresponding pointer
+  operation. For element types whose copy/move/swap can throw, the overload is
+  not selected and the generic path remains.
+- Measured on 1e6 `int`: `copy` 0.414 -> 0.083 ms, `copy_backward`
+  0.408 -> 0.088 ms, `move` 0.416 -> 0.087 ms, `reverse_copy`
+  0.672 -> 0.089 ms, `rotate_copy` 0.419 -> 0.086 ms, `reverse`
+  0.373 -> 0.072 ms, and `rotate` 0.911 -> 0.149 ms.
+- `test_deque_customization.cc` covers block-boundary offsets, empty ranges,
+  multi-block ranges, nontrivial but noexcept element types, move-only types,
+  strings (generic fallback), uninitialized copy/move/relocate, reverse and
+  rotate.
 
 ## Comparator design
 

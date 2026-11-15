@@ -124,6 +124,8 @@ inline constexpr OIter merge_iters(
     !::fast_io::details::algorithms::merge_iters_no_throw<
       Iter1, Snt1, Iter2, Snt2, OIter, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::merge_tag, first1, last1, first2, last2, dest, cmp);
   return ::fast_io::details::algorithms::merge_iters_impl(
     first1, last1, first2, last2, dest, cmp);
 }
@@ -150,6 +152,8 @@ inline constexpr void inplace_merge_iters(
     !::fast_io::details::algorithms::inplace_merge_iters_no_throw<
       Iter, Snt, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::inplace_merge_tag, first, middle, last, cmp);
   ::fast_io::details::algorithms::inplace_merge_iters_impl(
     first, middle, last, cmp);
 }

@@ -561,6 +561,8 @@ inline constexpr Iter rotate_iters(Iter first, Iter middle, Snt last)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::rotate_iters_no_throw<Iter, Snt>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::rotate_tag, first, middle, last);
   return ::fast_io::details::algorithms::rotate_iters_impl(first, middle, last);
 }
 
@@ -606,6 +608,8 @@ inline constexpr OIter rotate_copy_iters(
     !::fast_io::details::algorithms::rotate_copy_iters_no_throw<
       Iter, Snt, OIter>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::rotate_copy_tag, first, middle, last, dest);
   return ::fast_io::details::algorithms::rotate_copy_iters_impl(
     first, middle, last, dest);
 }

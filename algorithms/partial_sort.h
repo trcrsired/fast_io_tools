@@ -146,6 +146,8 @@ inline constexpr void partial_sort_iters(
     !::fast_io::details::algorithms::partial_sort_iters_no_throw<
       Iter, Snt, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::partial_sort_tag, first, middle, last, cmp);
   ::fast_io::details::algorithms::partial_sort_iters_impl(
     first, middle, last, cmp);
 }
@@ -194,6 +196,8 @@ inline constexpr OIter partial_sort_copy_iters(
     !::fast_io::details::algorithms::partial_sort_copy_iters_no_throw<
       Iter, Snt, OIter, OSnt, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::partial_sort_copy_tag, first, last, d_first, d_last, cmp);
   return ::fast_io::details::algorithms::partial_sort_copy_iters_impl(
     first, last, d_first, d_last, cmp);
 }

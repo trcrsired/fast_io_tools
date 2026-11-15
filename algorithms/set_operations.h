@@ -255,6 +255,9 @@ inline constexpr bool includes_iters(
     !::fast_io::details::algorithms::set_iters_no_throw<
       Iter1, Snt1, Iter2, Snt2, Cmp>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::includes_tag, first1, last1,
+    first2, last2, cmp);
   return ::fast_io::details::algorithms::includes_iters_impl(
     first1, last1, first2, last2, cmp);
 }
@@ -299,6 +302,9 @@ inline constexpr bool includes_index(
       !::fast_io::details::algorithms::set_output_iters_no_throw<            \
         Iter1, Snt1, Iter2, Snt2, OIter, Cmp>)                              \
   {                                                                          \
+    FAST_IO_ALGORITHMS_CUSTOMIZE(                                            \
+      ::fast_io::algorithms::customization::name##_tag, first1, last1,       \
+      first2, last2, dest, cmp);                                             \
     return ::fast_io::details::algorithms::name##_iters_impl(                \
       first1, last1, first2, last2, dest, cmp);                              \
   }                                                                          \

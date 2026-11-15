@@ -243,6 +243,8 @@ inline constexpr bool is_partitioned_iters(Iter first, Snt last, F f)
     !::fast_io::details::algorithms::partition_iters_no_throw<
       Iter, Snt, F>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::is_partitioned_tag, first, last, f);
   return ::fast_io::details::algorithms::is_partitioned_iters_impl(
     first, last, f);
 }
@@ -275,6 +277,8 @@ inline constexpr Iter partition_iters(Iter first, Snt last, F f)
     !::fast_io::details::algorithms::partition_swap_iters_no_throw<
       Iter, Snt, F>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::partition_tag, first, last, f);
   return ::fast_io::details::algorithms::partition_iters_impl(
     first, last, f);
 }
@@ -310,6 +314,8 @@ inline constexpr ::std::pair<OIter1, OIter2> partition_copy_iters(
     !::fast_io::details::algorithms::partition_copy_iters_no_throw<
       Iter, Snt, OIter1, OIter2, F>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::partition_copy_tag, first, last, dest_true, dest_false, f);
   return ::fast_io::details::algorithms::partition_copy_iters_impl(
     first, last, dest_true, dest_false, f);
 }
@@ -334,6 +340,8 @@ inline constexpr Iter stable_partition_iters(Iter first, Snt last, F f)
     !::fast_io::details::algorithms::stable_partition_iters_no_throw<
       Iter, Snt, F>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::stable_partition_tag, first, last, f);
   return ::fast_io::details::algorithms::stable_partition_iters_impl(
     first, last, f);
 }
@@ -369,6 +377,8 @@ inline constexpr Iter partition_point_iters(Iter first, Snt last, F f)
     !::fast_io::details::algorithms::partition_iters_no_throw<
       Iter, Snt, F>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::partition_point_tag, first, last, f);
   return ::fast_io::details::algorithms::partition_point_iters_impl(
     first, last, f);
 }

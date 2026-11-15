@@ -179,6 +179,8 @@ inline constexpr void swap(T &&a, U &&b)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::swap_nothrow<T, U>())
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::swap_tag, a, b);
   constexpr ::fast_io::details::algorithms::swap_kind kind{
     ::fast_io::details::algorithms::swap_kind_v<T, U>};
   if constexpr (kind == ::fast_io::details::algorithms::swap_kind::adl)
@@ -215,6 +217,8 @@ inline constexpr void iter_swap(Iter1 a, Iter2 b)
     !::fast_io::details::algorithms::swap_nothrow<
       ::std::iter_reference_t<Iter1>, ::std::iter_reference_t<Iter2>>())
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::iter_swap_tag, a, b);
   ::fast_io::algorithms::swap(*a, *b);
 }
 

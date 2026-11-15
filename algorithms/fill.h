@@ -377,6 +377,8 @@ inline constexpr Iter fill_iters(Iter first, Snt last, T const &value)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::fill_iters_no_throw<Iter, Snt, T>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::fill_tag, first, last, value);
   return ::fast_io::details::algorithms::fill_iters_impl(first, last, value);
 }
 
@@ -394,6 +396,8 @@ inline constexpr Iter fill_n_iters(Iter first, ::std::size_t count, T const &val
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::fill_iter_no_throw<Iter, T>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::fill_n_tag, first, count, value);
   return ::fast_io::details::algorithms::fill_n_iters_impl(first, count, value);
 }
 
@@ -426,6 +430,8 @@ inline constexpr Iter uninitialized_fill_iters(
     !::fast_io::details::algorithms::uninitialized_fill_iters_no_throw<
       Iter, Snt, T>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::uninitialized_fill_tag, first, last, value);
   return ::fast_io::details::algorithms::uninitialized_fill_iters_impl(
     first, last, value);
 }
@@ -447,6 +453,8 @@ inline constexpr Iter uninitialized_fill_n_iters(
     !::fast_io::details::algorithms::uninitialized_fill_n_iters_no_throw<
       Iter, T>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::uninitialized_fill_n_tag, first, count, value);
   return ::fast_io::details::algorithms::uninitialized_fill_n_iters_impl(
     first, count, value);
 }

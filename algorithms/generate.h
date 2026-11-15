@@ -69,6 +69,8 @@ inline constexpr void generate_iters(Iter first, Snt last, G g)
     !::fast_io::details::algorithms::generate_iters_no_throw<
       Iter, Snt, G>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::generate_tag, first, last, g);
   ::fast_io::details::algorithms::generate_iters_impl(first, last, g);
 }
 
@@ -99,6 +101,8 @@ inline constexpr Iter generate_n_iters(Iter first, ::std::size_t count, G g)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::generate_iter_no_throw<Iter, G>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::generate_n_tag, first, count, g);
   return ::fast_io::details::algorithms::generate_n_iters_impl(
     first, count, g);
 }

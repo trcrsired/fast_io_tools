@@ -372,6 +372,8 @@ inline constexpr Iter uninitialized_default_construct_iters(Iter first, Snt last
     !::fast_io::details::algorithms::uninitialized_construct_iters_no_throw<
       Iter, Snt>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::uninitialized_default_construct_tag, first, last);
   return ::fast_io::details::algorithms::
     uninitialized_default_construct_iters_impl(first, last);
 }
@@ -393,6 +395,8 @@ inline constexpr Iter uninitialized_default_construct_n_iters(
     !::fast_io::details::algorithms::uninitialized_construct_n_iters_no_throw<
       Iter>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::uninitialized_default_construct_n_tag, first, count);
   return ::fast_io::details::algorithms::
     uninitialized_default_construct_n_iters_impl(first, count);
 }
@@ -414,6 +418,8 @@ inline constexpr Iter uninitialized_value_construct_iters(Iter first, Snt last)
     !::fast_io::details::algorithms::uninitialized_construct_iters_no_throw<
       Iter, Snt>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::uninitialized_value_construct_tag, first, last);
   return ::fast_io::details::algorithms::
     uninitialized_value_construct_iters_impl(first, last);
 }
@@ -435,6 +441,8 @@ inline constexpr Iter uninitialized_value_construct_n_iters(
     !::fast_io::details::algorithms::uninitialized_construct_n_iters_no_throw<
       Iter>)
 {
+  FAST_IO_ALGORITHMS_CUSTOMIZE(
+    ::fast_io::algorithms::customization::uninitialized_value_construct_n_tag, first, count);
   return ::fast_io::details::algorithms::
     uninitialized_value_construct_n_iters_impl(first, count);
 }
