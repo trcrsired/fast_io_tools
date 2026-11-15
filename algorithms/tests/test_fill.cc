@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <deque>
 #include <list>
+#include <new>
 #include <string>
 #include <vector>
 
@@ -19,6 +20,42 @@ struct pair16
 
 	friend bool operator==(pair16 const &, pair16 const &) noexcept = default;
 };
+
+template <typename T, std::size_t N>
+struct raw_storage
+{
+	alignas(T) std::byte bytes[N * sizeof(T)];
+
+	T *begin() noexcept { return reinterpret_cast<T *>(bytes); }
+	T *end() noexcept { return begin() + N; }
+	std::size_t size() const noexcept { return N; }
+};
+
+struct throwing_value
+{
+	throwing_value(int) throws(true);
+};
+
+constexpr bool constexpr_uninitialized_fill_test()
+{
+	int a[4]{1, 2, 3, 4};
+	auto const result{::fast_io::algorithms::uninitialized_fill(a, 9)};
+	if (result != a + 4)
+	{
+		return false;
+	}
+	for (auto const value : a)
+	{
+		if (value != 9)
+		{
+			return false;
+		}
+	}
+	::fast_io::algorithms::uninitialized_fill_n(a, 2, 5);
+	return a[0] == 5 && a[1] == 5 && a[2] == 9 && a[3] == 9;
+}
+
+static_assert(constexpr_uninitialized_fill_test());
 
 constexpr bool constexpr_fill_test()
 {
@@ -145,6 +182,78 @@ bool check_byte_fill()
 	return true;
 }
 
+bool check_uninitialized_fill() throws(true)
+{
+	{
+		raw_storage<char, 17> storage;
+		if (::fast_io::algorithms::uninitialized_fill(
+				storage, 'q') != storage.end())
+		{
+			return false;
+		}
+		for (std::size_t i{}; i != storage.size(); ++i)
+		{
+			if (storage.begin()[i] != 'q')
+			{
+				return false;
+			}
+		}
+		::fast_io::algorithms::destroy(storage);
+	}
+
+	{
+		raw_storage<std::byte, 8> storage;
+		if (::fast_io::algorithms::uninitialized_fill_n(
+				storage, 6, std::byte{0x5a}) != storage.begin() + 6)
+		{
+			return false;
+		}
+		for (std::size_t i{}; i != 6; ++i)
+		{
+			if (storage.begin()[i] != std::byte{0x5a})
+			{
+				return false;
+			}
+		}
+	}
+
+	{
+		raw_storage<std::string, 4> storage;
+		if (::fast_io::algorithms::uninitialized_fill_n(
+				storage, 4, std::string{"abc"}) != storage.end())
+		{
+			return false;
+		}
+		for (std::size_t i{}; i != storage.size(); ++i)
+		{
+			if (storage.begin()[i] != "abc")
+			{
+				return false;
+			}
+		}
+		::fast_io::algorithms::destroy_n(storage, 4);
+	}
+
+	{
+		raw_storage<pair16, 3> storage;
+		if (::fast_io::algorithms::uninitialized_fill_iters(
+				storage.begin(), storage.end(),
+				pair16{4, 5}) != storage.end())
+		{
+			return false;
+		}
+		for (std::size_t i{}; i != storage.size(); ++i)
+		{
+			if (!(storage.begin()[i] == pair16{4, 5}))
+			{
+				return false;
+			}
+		}
+		::fast_io::algorithms::destroy_n_iters(storage.begin(), 3);
+	}
+	return true;
+}
+
 } // namespace
 
 static_assert(noexcept(::fast_io::algorithms::fill(
@@ -162,6 +271,14 @@ static_assert(!noexcept(::fast_io::algorithms::fill(
 	::std::declval<std::deque<int> &>(), 1)));
 static_assert(!noexcept(::fast_io::algorithms::fill(
 	::std::declval<std::list<int> &>(), 1)));
+static_assert(noexcept(::fast_io::algorithms::uninitialized_fill(
+	::std::declval<int (&)[4]>(), 1)));
+static_assert(noexcept(::fast_io::algorithms::uninitialized_fill(
+	::std::declval<std::vector<int> &>(), 1)));
+static_assert(noexcept(::fast_io::algorithms::uninitialized_fill_n_iters(
+	::std::declval<int *>(), std::size_t{}, 1)));
+static_assert(!noexcept(::fast_io::algorithms::uninitialized_fill_n_iters(
+	::std::declval<throwing_value *>(), std::size_t{}, 0)));
 
 int main()
 {
@@ -223,6 +340,18 @@ int main()
 	if (!check_index())
 	{
 		return 10;
+	}
+
+	try
+	{
+		if (!check_uninitialized_fill())
+		{
+			return 14;
+		}
+	}
+	catch throws(::std::error)
+	{
+		return 15;
 	}
 
 	try

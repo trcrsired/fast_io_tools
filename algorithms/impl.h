@@ -1,8 +1,11 @@
 #pragma once
 
+#include "advance.h"
 #include "common.h"
 #include "compare.h"
+#include "construct.h"
 #include "copy.h"
+#include "destroy.h"
 #include "fill.h"
 #include "find.h"
 #include "for_each.h"

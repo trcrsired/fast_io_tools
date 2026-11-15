@@ -12,13 +12,23 @@ Baseline: C++23 freestanding. `<ranges>`, `<iterator>`, `std::to_address`,
 
 Header layout: one algorithm family per header.
 
+- `advance.h`: `advance_iters`; includes `common.h`.
 - `common.h`: shared index helpers, flag lookup, iterator/range concepts, and
   element traits shared by several families.
 - `compare.h`: the default `compare_three_way` comparator.
-- `fill.h`: the `fill` family; includes `common.h`.
-- `for_each.h`: the `for_each` family; includes `common.h`.
+- `construct.h`: the uninitialized default/value construction family; includes
+  `common.h`.
+- `copy.h`: the copy family, including the uninitialized copy variants; includes
+  `common.h`.
+- `destroy.h`: the destruction family (`destroy_at`, `destroy`, `destroy_n`);
+  includes `advance.h` and `common.h`.
+- `fill.h`: the `fill` family, including the uninitialized fill variants;
+  includes `common.h`.
 - `find.h`: the `find` family; includes `common.h`.
+- `for_each.h`: the `for_each` family; includes `common.h`.
 - `heap.h`: the heap family; includes `common.h` and `compare.h`.
+- `relocate.h`: the relocate family, including the uninitialized move variants;
+  includes `common.h`.
 - `reverse.h`: the `reverse` family; includes `common.h`.
 - `sort.h`: the unstable sort; includes `common.h`, `compare.h` and
   `reverse.h`.
@@ -32,6 +42,8 @@ dependencies. Families call each other's internal implementation when that
 avoids a second copy of the same code, which keeps binary size and
 instruction-cache pressure down. `sort` uses `reverse` for a fully descending
 input; both share the same instantiation instead of carrying a private reverse.
+`destroy` uses `advance` to skip trivially destructible ranges in constant
+time instead of carrying a second advance loop.
 
 ## Non-negotiable decisions
 
@@ -180,6 +192,19 @@ No-throw detection for iterators is deliberately minimal and lives in
   comparison, assignment, construction, and destruction.
 - `algo_index_to_iters` is only marked `throws` for the violation policy.
 
+## `advance`
+
+- API: `advance_iters(Iter& it, iter_difference_t<Iter> n)`.
+- Random-access iterators advance with `it += n`; other iterators walk one step
+  at a time. Negative counts are supported for bidirectional iterators; a
+  negative count on a weaker iterator is a contract violation and traps.
+- Iterator arithmetic (`+=`, `-`), `!=` and sentinel subtraction are assumed
+  non-throwing, as elsewhere. The `throws` contract only adds the `++`/`--`
+  checks.
+- `destroy` reuses the advance implementation so a trivially destructible
+  range is skipped in constant time on random-access iterators instead of
+  walking it.
+
 ## `for_each_iters`
 
 - No checks.
@@ -287,6 +312,52 @@ No-throw detection for iterators is deliberately minimal and lives in
   explicit SIMD path is needed.
 - `throws` includes the iterator increment, the element assignment, and, for
   `fill_index`, the violation policy and the final index arithmetic.
+
+### `uninitialized_fill`
+
+- API pairs: `uninitialized_fill_iters` / `uninitialized_fill`,
+  `uninitialized_fill_n_iters` / `uninitialized_fill_n`.
+- Placement-constructs copies of the value into uninitialized storage and
+  returns the end of the written range.
+- One-byte elements use `my_memset`, because constructing a one-byte object
+  from a one-byte value writes that same byte. Constant evaluation falls back
+  to the placement-new loop.
+- Everything else uses a placement-new loop, which clang turns into broadcast
+  and unrolled vector stores for small trivially copyable types.
+- A partially constructed range is destroyed through `uninitialized_guard` when
+  a constructor throws.
+
+## `construct`
+
+- API pairs: `uninitialized_default_construct_iters` /
+  `uninitialized_default_construct`, `uninitialized_default_construct_n_iters` /
+  `uninitialized_default_construct_n`, and the corresponding
+  `uninitialized_value_construct*` pair.
+- Default construction performs `T t;`; value construction performs `T()`.
+- `uninitialized_default_construct` on a trivially default constructible type
+  may write zeros: default initialization leaves the values indeterminate, so
+  zero is a permitted outcome and the whole range becomes one `memset`.
+  Value-initialization of a trivially default constructible type
+  zero-initializes, so the same fast path is exact there.
+- Non-trivial types use a placement-new loop guarded by
+  `uninitialized_guard`, so a throwing constructor destroys the prefix.
+- Contiguous iterators decay to pointers. `_n` range variants construct the
+  first `count` elements of the range.
+
+## `destroy`
+
+- API: `destroy_at(T*)`, `destroy_iters` / `destroy`, `destroy_n_iters` /
+  `destroy_n`.
+- A trivially destructible type is a strict no-op: no destructor call and no
+  loop body. `destroy_iters` returns `last` directly when the iterator and
+  sentinel are the same type, and advances with iterator arithmetic when the
+  range is random access and sized.
+- `destroy_n_iters` calls `advance_iters` for a trivially destructible value
+  type, so a pointer or random-access iterator advances in constant time
+  instead of being walked.
+- Array element types are destroyed element by element through `destroy_at`.
+- Herbceptions forbid throwing destructors, so the destructor check is
+  effectively always satisfied; it is still written explicitly.
 
 ## `relocate`
 
