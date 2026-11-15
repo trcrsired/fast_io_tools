@@ -343,79 +343,44 @@ inline constexpr void sort13_optimal(Iter v, Cmp cmp)
   ::fast_io::details::algorithms::sort_swap_if_less(v, 5, 6, cmp);
 }
 
-template<typename T>
-struct sort_construct_dest
-{
-  T *first;
-  template<typename I>
-  inline constexpr void write(I i, T const &value) const
-    noexcept(::std::is_nothrow_copy_constructible_v<T>)
-  {
-    ::new (static_cast<void *>(first + i)) T(value);
-  }
-};
-
-template<typename Iter>
-struct sort_assign_dest
-{
-  Iter first;
-  template<typename I>
-  inline constexpr void write(I i, ::std::iter_value_t<Iter> const &value) const
-    noexcept(noexcept(first[i] = value))
-  {
-    first[i] = value;
-  }
-};
-
-template<typename Dest, typename T>
-concept sort_dest_write_no_throw =
-  requires(Dest const &dest, ::std::ptrdiff_t i, T const &value)
-{
-  { dest.write(i, value) } noexcept;
-};
-
-// Merge two adjacent sorted runs using a merge from both ends. Each source
-// element is read exactly once, and each destination element is written
+// Merge two adjacent sorted runs into uninitialized memory. Each source
+// element is read exactly once and each destination element is constructed
 // exactly once. The order invariant is checked at the end; a broken strict
 // weak ordering traps.
-template<typename Src, typename Dest, typename Cmp>
-inline constexpr void sort_bidirectional_merge(
-  Src src, ::std::iter_difference_t<Src> len, Dest dest, Cmp cmp)
+template<typename T, typename Cmp>
+inline constexpr void sort_bidirectional_merge_construct(
+  T *src, ::std::ptrdiff_t len, T *dest, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !(::fast_io::details::algorithms::iter_no_throw<Src> &&
-      ::fast_io::details::algorithms::sort_comparator_pass_no_throw<Cmp> &&
-      ::fast_io::details::algorithms::sort_compare_no_throw<
-        Cmp, ::std::iter_value_t<Src>> &&
-      ::fast_io::details::algorithms::sort_dest_write_no_throw<
-        Dest, ::std::iter_value_t<Src>>))
+    !(::fast_io::details::algorithms::sort_comparator_pass_no_throw<Cmp> &&
+      ::fast_io::details::algorithms::sort_compare_no_throw<Cmp, T> &&
+      ::std::is_nothrow_copy_constructible_v<T>))
 {
-  using difference_type = ::std::iter_difference_t<Src>;
   if (len < 2)
   {
     if (len == 1)
     {
-      dest.write(static_cast<::std::ptrdiff_t>(0), src[0]);
+      ::new (static_cast<void *>(dest)) T(src[0]);
     }
     return;
   }
-  difference_type const len_div_2{static_cast<difference_type>(len / 2)};
-  difference_type left{0};
-  difference_type right{len_div_2};
-  difference_type dst{0};
-  difference_type left_rev{static_cast<difference_type>(len_div_2 - 1)};
-  difference_type right_rev{static_cast<difference_type>(len - 1)};
-  difference_type dst_rev{static_cast<difference_type>(len - 1)};
-  for (difference_type i{0}; i != len_div_2; ++i)
+  ::std::ptrdiff_t const len_div_2{len / 2};
+  ::std::ptrdiff_t left{0};
+  ::std::ptrdiff_t right{len_div_2};
+  ::std::ptrdiff_t dst{0};
+  ::std::ptrdiff_t left_rev{len_div_2 - 1};
+  ::std::ptrdiff_t right_rev{len - 1};
+  ::std::ptrdiff_t dst_rev{len - 1};
+  for (::std::ptrdiff_t i{0}; i != len_div_2; ++i)
   {
     bool const take_left{!(cmp.compare(src[right], src[left]) < 0)};
     if (take_left)
     {
-      dest.write(static_cast<::std::ptrdiff_t>(dst), src[left]);
+      ::new (static_cast<void *>(dest + dst)) T(src[left]);
       ++left;
     }
     else
     {
-      dest.write(static_cast<::std::ptrdiff_t>(dst), src[right]);
+      ::new (static_cast<void *>(dest + dst)) T(src[right]);
       ++right;
     }
     ++dst;
@@ -423,29 +388,28 @@ inline constexpr void sort_bidirectional_merge(
     bool const take_right_rev{!(cmp.compare(src[right_rev], src[left_rev]) < 0)};
     if (take_right_rev)
     {
-      dest.write(static_cast<::std::ptrdiff_t>(dst_rev), src[right_rev]);
+      ::new (static_cast<void *>(dest + dst_rev)) T(src[right_rev]);
       --right_rev;
     }
     else
     {
-      dest.write(static_cast<::std::ptrdiff_t>(dst_rev), src[left_rev]);
+      ::new (static_cast<void *>(dest + dst_rev)) T(src[left_rev]);
       --left_rev;
     }
     --dst_rev;
   }
-  difference_type const left_end{static_cast<difference_type>(left_rev + 1)};
-  difference_type const right_end{static_cast<difference_type>(right_rev + 1)};
+  ::std::ptrdiff_t const left_end{left_rev + 1};
+  ::std::ptrdiff_t const right_end{right_rev + 1};
   if (len % 2 != 0)
   {
-    bool const left_nonempty{left < left_end};
-    if (left_nonempty)
+    if (left < left_end)
     {
-      dest.write(static_cast<::std::ptrdiff_t>(dst), src[left]);
+      ::new (static_cast<void *>(dest + dst)) T(src[left]);
       ++left;
     }
     else
     {
-      dest.write(static_cast<::std::ptrdiff_t>(dst), src[right]);
+      ::new (static_cast<void *>(dest + dst)) T(src[right]);
       ++right;
     }
   }
@@ -455,61 +419,118 @@ inline constexpr void sort_bidirectional_merge(
   }
 }
 
-template<typename T, ::std::size_t N>
-struct sort_scratch
+// Same merge, into already initialized elements.
+template<typename T, typename Cmp>
+inline constexpr void sort_bidirectional_merge_assign(
+  T *src, ::std::ptrdiff_t len, T *dest, Cmp cmp)
+  FAST_IO_HERBCEPTIONS_THROWS_IF(
+    !(::fast_io::details::algorithms::sort_comparator_pass_no_throw<Cmp> &&
+      ::fast_io::details::algorithms::sort_compare_no_throw<Cmp, T> &&
+      ::std::is_nothrow_copy_assignable_v<T>))
 {
-  alignas(T) ::std::byte storage[sizeof(T) * N];
-  inline constexpr T *data() noexcept
+  if (len < 2)
   {
-    return reinterpret_cast<T *>(storage);
+    if (len == 1)
+    {
+      dest[0] = src[0];
+    }
+    return;
   }
-};
+  ::std::ptrdiff_t const len_div_2{len / 2};
+  ::std::ptrdiff_t left{0};
+  ::std::ptrdiff_t right{len_div_2};
+  ::std::ptrdiff_t dst{0};
+  ::std::ptrdiff_t left_rev{len_div_2 - 1};
+  ::std::ptrdiff_t right_rev{len - 1};
+  ::std::ptrdiff_t dst_rev{len - 1};
+  for (::std::ptrdiff_t i{0}; i != len_div_2; ++i)
+  {
+    bool const take_left{!(cmp.compare(src[right], src[left]) < 0)};
+    if (take_left)
+    {
+      dest[dst] = src[left];
+      ++left;
+    }
+    else
+    {
+      dest[dst] = src[right];
+      ++right;
+    }
+    ++dst;
+
+    bool const take_right_rev{!(cmp.compare(src[right_rev], src[left_rev]) < 0)};
+    if (take_right_rev)
+    {
+      dest[dst_rev] = src[right_rev];
+      --right_rev;
+    }
+    else
+    {
+      dest[dst_rev] = src[left_rev];
+      --left_rev;
+    }
+    --dst_rev;
+  }
+  ::std::ptrdiff_t const left_end{left_rev + 1};
+  ::std::ptrdiff_t const right_end{right_rev + 1};
+  if (len % 2 != 0)
+  {
+    if (left < left_end)
+    {
+      dest[dst] = src[left];
+      ++left;
+    }
+    else
+    {
+      dest[dst] = src[right];
+      ++right;
+    }
+  }
+  if (left != left_end || right != right_end) [[unlikely]]
+  {
+    __builtin_trap();
+  }
+}
 
 // Stable sort of 4 elements into uninitialized `dst`.
-template<typename Iter, typename Cmp>
-inline constexpr void sort4_stable(
-  Iter v, ::std::iter_value_t<Iter> *dst, Cmp cmp)
+template<typename T, typename Cmp>
+inline constexpr void sort4_stable(T *v, T *dst, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::sort_copy_ops_iter_no_throw<Iter, Cmp>)
+    !::fast_io::details::algorithms::sort_copy_ops_no_throw<Cmp, T>)
 {
-  using difference_type = ::std::iter_difference_t<Iter>;
-  using value_type = ::std::iter_value_t<Iter>;
   bool const c1{cmp.compare(v[1], v[0]) < 0};
   bool const c2{cmp.compare(v[3], v[2]) < 0};
-  difference_type const a{c1 ? 1 : 0};
-  difference_type const b{c1 ? 0 : 1};
-  difference_type const c{static_cast<difference_type>(2 + (c2 ? 1 : 0))};
-  difference_type const d{static_cast<difference_type>(2 + (c2 ? 0 : 1))};
+  ::std::ptrdiff_t const a{c1 ? 1 : 0};
+  ::std::ptrdiff_t const b{c1 ? 0 : 1};
+  ::std::ptrdiff_t const c{2 + (c2 ? 1 : 0)};
+  ::std::ptrdiff_t const d{2 + (c2 ? 0 : 1)};
   bool const c3{cmp.compare(v[c], v[a]) < 0};
   bool const c4{cmp.compare(v[d], v[b]) < 0};
-  difference_type const min{c3 ? c : a};
-  difference_type const max{c4 ? b : d};
-  difference_type const unknown_left{c3 ? a : (c4 ? c : b)};
-  difference_type const unknown_right{c4 ? d : (c3 ? b : c)};
+  ::std::ptrdiff_t const min{c3 ? c : a};
+  ::std::ptrdiff_t const max{c4 ? b : d};
+  ::std::ptrdiff_t const unknown_left{c3 ? a : (c4 ? c : b)};
+  ::std::ptrdiff_t const unknown_right{c4 ? d : (c3 ? b : c)};
   bool const c5{cmp.compare(v[unknown_right], v[unknown_left]) < 0};
-  difference_type const lo{c5 ? unknown_right : unknown_left};
-  difference_type const hi{c5 ? unknown_left : unknown_right};
-  ::new (static_cast<void *>(dst + 0)) value_type(v[min]);
-  ::new (static_cast<void *>(dst + 1)) value_type(v[lo]);
-  ::new (static_cast<void *>(dst + 2)) value_type(v[hi]);
-  ::new (static_cast<void *>(dst + 3)) value_type(v[max]);
+  ::std::ptrdiff_t const lo{c5 ? unknown_right : unknown_left};
+  ::std::ptrdiff_t const hi{c5 ? unknown_left : unknown_right};
+  ::new (static_cast<void *>(dst + 0)) T(v[min]);
+  ::new (static_cast<void *>(dst + 1)) T(v[lo]);
+  ::new (static_cast<void *>(dst + 2)) T(v[hi]);
+  ::new (static_cast<void *>(dst + 3)) T(v[max]);
 }
 
 // Stable sort of 8 elements into uninitialized `dst`, using `temp` for 8
 // intermediate elements.
-template<typename Iter, typename Cmp>
+template<typename T, typename Cmp>
 inline constexpr void sort8_stable(
-  Iter v, ::std::iter_value_t<Iter> *dst,
-  ::std::iter_value_t<Iter> *temp, Cmp cmp)
+  T *v, T *dst, T *temp, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::sort_copy_ops_iter_no_throw<Iter, Cmp>)
+    !::fast_io::details::algorithms::sort_copy_ops_no_throw<Cmp, T>)
 {
-  using value_type = ::std::iter_value_t<Iter>;
   ::fast_io::details::algorithms::sort4_stable(v, temp, cmp);
   ::fast_io::details::algorithms::sort4_stable(v + 4, temp + 4, cmp);
-  ::fast_io::details::algorithms::sort_bidirectional_merge(
-    temp, 8,
-    ::fast_io::details::algorithms::sort_construct_dest<value_type>{dst}, cmp);
+  ::fast_io::details::algorithms::sort_bidirectional_merge_construct(
+    temp, 8, dst, cmp);
 }
 
 template<typename Iter, typename Cmp>
@@ -524,24 +545,22 @@ inline constexpr void sort_small_sort_fallback(
   }
 }
 
-template<typename Iter, typename Cmp>
+template<typename T, typename Cmp>
 inline constexpr void sort_small_sort_general(
-  Iter v, ::std::iter_difference_t<Iter> len, Cmp cmp)
+  T *v, ::std::ptrdiff_t len, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::sort_copy_ops_iter_no_throw<Iter, Cmp>)
+    !::fast_io::details::algorithms::sort_copy_ops_no_throw<Cmp, T>)
 {
-  using difference_type = ::std::iter_difference_t<Iter>;
-  using value_type = ::std::iter_value_t<Iter>;
   if (len < 2)
   {
     return;
   }
-  static_assert(::fast_io::details::algorithms::sort_general_small_v<value_type>);
-  ::fast_io::details::algorithms::sort_scratch<value_type, 48> scratch;
-  value_type *s{scratch.data()};
-  difference_type const len_div_2{static_cast<difference_type>(len / 2)};
-  difference_type presorted_len;
-  if constexpr (sizeof(value_type) <= 16)
+  static_assert(::fast_io::details::algorithms::sort_general_small_v<T>);
+  alignas(T) ::std::byte scratch_storage[sizeof(T) * 48];
+  T *s{reinterpret_cast<T *>(scratch_storage)};
+  ::std::ptrdiff_t const len_div_2{len / 2};
+  ::std::ptrdiff_t presorted_len;
+  if constexpr (sizeof(T) <= 16)
   {
     if (len >= 16)
     {
@@ -558,8 +577,8 @@ inline constexpr void sort_small_sort_general(
     }
     else
     {
-      ::new (static_cast<void *>(s)) value_type(v[0]);
-      ::new (static_cast<void *>(s + len_div_2)) value_type(v[len_div_2]);
+      ::new (static_cast<void *>(s)) T(v[0]);
+      ::new (static_cast<void *>(s + len_div_2)) T(v[len_div_2]);
       presorted_len = 1;
     }
   }
@@ -573,47 +592,44 @@ inline constexpr void sort_small_sort_general(
     }
     else
     {
-      ::new (static_cast<void *>(s)) value_type(v[0]);
-      ::new (static_cast<void *>(s + len_div_2)) value_type(v[len_div_2]);
+      ::new (static_cast<void *>(s)) T(v[0]);
+      ::new (static_cast<void *>(s + len_div_2)) T(v[len_div_2]);
       presorted_len = 1;
     }
   }
-  for (difference_type k{0}; k != 2; ++k)
+  for (::std::ptrdiff_t k{0}; k != 2; ++k)
   {
-    difference_type const offset{k != 0 ? len_div_2 : 0};
-    difference_type const desired_len{
-      k != 0 ? static_cast<difference_type>(len - len_div_2) : len_div_2};
-    for (difference_type i{presorted_len}; i != desired_len; ++i)
+    ::std::ptrdiff_t const offset{k != 0 ? len_div_2 : 0};
+    ::std::ptrdiff_t const desired_len{
+      k != 0 ? len - len_div_2 : len_div_2};
+    for (::std::ptrdiff_t i{presorted_len}; i != desired_len; ++i)
     {
-      ::new (static_cast<void *>(s + offset + i)) value_type(v[offset + i]);
+      ::new (static_cast<void *>(s + offset + i)) T(v[offset + i]);
       ::fast_io::details::algorithms::sort_insert_tail(
-        s, offset, static_cast<difference_type>(offset + i), cmp);
+        s, offset, offset + i, cmp);
     }
   }
-  ::fast_io::details::algorithms::sort_bidirectional_merge(
-    s, len, ::fast_io::details::algorithms::sort_assign_dest<Iter>{v}, cmp);
+  ::fast_io::details::algorithms::sort_bidirectional_merge_assign(s, len, v, cmp);
 }
 
-template<typename Iter, typename Cmp>
+template<typename T, typename Cmp>
 inline constexpr void sort_small_sort_network(
-  Iter v, ::std::iter_difference_t<Iter> len, Cmp cmp)
+  T *v, ::std::ptrdiff_t len, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::sort_copy_ops_iter_no_throw<Iter, Cmp>)
+    !::fast_io::details::algorithms::sort_copy_ops_no_throw<Cmp, T>)
 {
-  using difference_type = ::std::iter_difference_t<Iter>;
-  using value_type = ::std::iter_value_t<Iter>;
   if (len < 2)
   {
     return;
   }
-  static_assert(::fast_io::details::algorithms::sort_network_small_v<value_type>);
-  difference_type const len_div_2{static_cast<difference_type>(len / 2)};
+  static_assert(::fast_io::details::algorithms::sort_network_small_v<T>);
+  ::std::ptrdiff_t const len_div_2{len / 2};
   bool const no_merge{len < 18};
-  difference_type region_start{0};
-  difference_type region_len{no_merge ? len : len_div_2};
+  ::std::ptrdiff_t region_start{0};
+  ::std::ptrdiff_t region_len{no_merge ? len : len_div_2};
   for (;;)
   {
-    difference_type presorted_len;
+    ::std::ptrdiff_t presorted_len;
     if (region_len >= 13)
     {
       ::fast_io::details::algorithms::sort13_optimal(v + region_start, cmp);
@@ -639,13 +655,12 @@ inline constexpr void sort_small_sort_network(
       break;
     }
     region_start = len_div_2;
-    region_len = static_cast<difference_type>(len - len_div_2);
+    region_len = len - len_div_2;
   }
-  ::fast_io::details::algorithms::sort_scratch<value_type, 32> scratch;
-  value_type *s{scratch.data()};
-  ::fast_io::details::algorithms::sort_bidirectional_merge(
-    v, len, ::fast_io::details::algorithms::sort_construct_dest<value_type>{s}, cmp);
-  for (difference_type i{0}; i != len; ++i)
+  alignas(T) ::std::byte scratch_storage[sizeof(T) * 32];
+  T *s{reinterpret_cast<T *>(scratch_storage)};
+  ::fast_io::details::algorithms::sort_bidirectional_merge_construct(v, len, s, cmp);
+  for (::std::ptrdiff_t i{0}; i != len; ++i)
   {
     v[i] = s[i];
   }
@@ -656,6 +671,7 @@ inline constexpr void sort_small_sort(
   Iter v, ::std::iter_difference_t<Iter> len, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !(::fast_io::details::algorithms::iter_no_throw<Iter> &&
+      ::fast_io::details::algorithms::sort_ops_iter_no_throw<Iter, Cmp> &&
       ::fast_io::details::algorithms::sort_small_ops_no_throw<
         Cmp, ::std::iter_value_t<Iter>>))
 {
@@ -669,13 +685,21 @@ inline constexpr void sort_small_sort(
   }
   else
   {
-    if constexpr (::fast_io::details::algorithms::sort_network_small_v<value_type>)
+    if constexpr (::std::contiguous_iterator<Iter>)
     {
-      ::fast_io::details::algorithms::sort_small_sort_network(v, len, cmp);
-    }
-    else if constexpr (::fast_io::details::algorithms::sort_general_small_v<value_type>)
-    {
-      ::fast_io::details::algorithms::sort_small_sort_general(v, len, cmp);
+      value_type *const base{::std::to_address(v)};
+      if constexpr (::fast_io::details::algorithms::sort_network_small_v<value_type>)
+      {
+        ::fast_io::details::algorithms::sort_small_sort_network(base, len, cmp);
+      }
+      else if constexpr (::fast_io::details::algorithms::sort_general_small_v<value_type>)
+      {
+        ::fast_io::details::algorithms::sort_small_sort_general(base, len, cmp);
+      }
+      else
+      {
+        ::fast_io::details::algorithms::sort_small_sort_fallback(v, len, cmp);
+      }
     }
     else
     {
