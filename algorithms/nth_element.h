@@ -6,6 +6,7 @@ namespace fast_io::details::algorithms
 template<typename Iter, typename Snt, typename Cmp>
 concept nth_element_iters_no_throw =
   ::fast_io::details::algorithms::sentinel_no_throw<Iter, Snt> &&
+  ::std::random_access_iterator<Iter> &&
   ::fast_io::details::algorithms::sort_iters_no_throw<Iter, Cmp> &&
   ::fast_io::details::algorithms::comparator_pass_no_throw<Cmp>;
 
@@ -30,12 +31,83 @@ inline constexpr void nth_element_iters_impl(
     !::fast_io::details::algorithms::nth_element_iters_no_throw<
       Iter, Snt, Cmp>)
 {
-  // A complete sort also satisfies the nth-element postcondition.
+  using difference_type = ::std::iter_difference_t<Iter>;
   Iter last_iter{first};
   for (; last_iter != last; ++last_iter)
   {
   }
-  ::fast_io::algorithms::sort_iters(first, last_iter, cmp);
+  difference_type const length{last_iter - first};
+  if (length < 2)
+  {
+    return;
+  }
+  difference_type depth{
+    2 * ::fast_io::details::algorithms::sort_floor_log2(
+          static_cast<::std::size_t>(length))};
+  while (last_iter - first > 1)
+  {
+    if (depth <= 0)
+    {
+      ::fast_io::algorithms::sort_iters(first, last_iter, cmp);
+      return;
+    }
+    --depth;
+    difference_type const remaining{last_iter - first};
+    Iter middle{first + remaining / 2};
+    Iter tail{last_iter};
+    --tail;
+    if (0 > cmp.compare(*middle, *first))
+    {
+      ::fast_io::algorithms::iter_swap(middle, first);
+    }
+    if (0 > cmp.compare(*tail, *first))
+    {
+      ::fast_io::algorithms::iter_swap(tail, first);
+    }
+    if (0 > cmp.compare(*tail, *middle))
+    {
+      ::fast_io::algorithms::iter_swap(tail, middle);
+    }
+    ::fast_io::algorithms::iter_swap(first, middle);
+
+    Iter less{first};
+    ++less;
+    Iter current{less};
+    Iter greater{last_iter};
+    while (current != greater)
+    {
+      auto const order{cmp.compare(*current, *first)};
+      if (0 > order)
+      {
+        ::fast_io::algorithms::iter_swap(less, current);
+        ++less;
+        ++current;
+      }
+      else if (0 < order)
+      {
+        --greater;
+        ::fast_io::algorithms::iter_swap(current, greater);
+      }
+      else
+      {
+        ++current;
+      }
+    }
+    ::fast_io::algorithms::iter_swap(first, less - 1);
+    Iter const boundary{less - 1};
+    if (nth < boundary)
+    {
+      last_iter = boundary;
+    }
+    else if (!(nth < greater))
+    {
+      first = greater;
+    }
+    else
+    {
+      return;
+    }
+  }
 }
 
 } // namespace fast_io::details::algorithms

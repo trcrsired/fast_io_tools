@@ -64,10 +64,14 @@ Header layout: one algorithm family per header.
 
 All `<algorithm>` families are implemented except the random-number algorithms
 (`random_shuffle`, `shuffle`, `sample`) and `stable_sort`, which are deferred.
-`partial_sort` and `nth_element` currently delegate to the full sort; sorting
-satisfies their postconditions. `partial_sort_copy` sorts the copied prefix and
-then performs insertion into that sorted prefix. `inplace_merge` is a correct
-rotate-based merge, not a buffered optimal one. `is_permutation` compares
+`partial_sort` uses a max-heap of the `middle - first` smallest elements seen
+so far: heapify the prefix, scan the remainder and replace the root whenever a
+smaller element appears, then heap-sort the prefix. `partial_sort_copy` does the
+same into the destination prefix. `nth_element` is iterative introselect rather
+than a full sort: median-of-three pivot selection, an in-place three-way
+partition, and a depth limit of `2 * floor(log2(N))` that falls back to
+`sort_iters` if partitioning stops making progress. `inplace_merge` is a
+correct rotate-based merge, not a buffered optimal one. `is_permutation` compares
 multiset counts without auxiliary storage. `next_permutation` and
 `prev_permutation` materialize the sentinel as an iterator once so a
 non-random-access sentinel can be used.
@@ -718,6 +722,48 @@ random): `fast_io::algorithms::sort` ~17.5 ns/element, Rust `ipnsort`
 size matrix is about parity (~0.99x the time of ipnsort); the C++ port is
 faster on descending and large-element inputs, and within a few percent on
 random records.
+
+## `partial_sort`
+
+- APIs: `partial_sort_iters` / `partial_sort` / `partial_sort_index` and
+  `partial_sort_copy_iters` / `partial_sort_copy` / `partial_sort_copy_index`.
+- Selection uses the heap helpers in `heap.h`: `make_heap_iters_impl`,
+  `heap_sift_down` and `sort_heap_iters_impl`. No full sort is performed, so
+  the work is `O((middle - first) + (last - middle) * log(middle - first))`
+  comparisons.
+- The prefix `[first, middle)` is heapified as a max-heap. Each remaining
+  element that compares less than the root is moved into the root's slot and
+  sifted down, evicting the previous maximum. A final heap sort orders the
+  prefix ascending.
+- `partial_sort_copy` fills the destination prefix from the input, heapifies it
+  and uses the same replacement scan for the rest of the input. It returns the
+  destination end that was written. Elements beyond the destination capacity
+  are ignored.
+- `middle == first` (or an empty destination) returns immediately without
+  touching the comparator.
+- Postcondition coverage in the tests checks the sorted prefix, the
+  no-smaller-element property of the tail, and equivalence with
+  `std::partial_sort`; the tail itself is deliberately unspecified.
+
+## `nth_element`
+
+- APIs: `nth_element_iters` / `nth_element` / `nth_element_index`.
+- Iterative introselect: median-of-three pivot selection, an in-place three-way
+  partition around the pivot, and a loop that keeps only the side containing
+  `nth`. `O(N)` expected comparisons and no auxiliary allocation.
+- The partition first swaps the median of `first`, `middle` and `last - 1` to
+  `first`. It then collects elements less than the pivot into `(first, less)`,
+  equal elements into `[less, greater)`, and greater elements into
+  `[greater, last)`. Finally the pivot is swapped to `less - 1`, which becomes
+  the left/equal boundary.
+- If `nth` falls in the equal block the loop returns. Otherwise it recurses
+  into the strictly smaller or strictly greater side by adjusting `first` or
+  `last_iter`; no recursion is used.
+- The depth limit is `2 * sort_floor_log2(length)`. On exhaustion the remaining
+  range is handed to `sort_iters`, which keeps the worst case `O(N log N)`.
+- The tests verify the pivot value against `std::nth_element` and both
+  partition directions (`<=` before `nth`, `>=` after), not that the whole
+  range is sorted.
 
 ## Comparator design
 

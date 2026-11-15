@@ -6,8 +6,9 @@ namespace fast_io::details::algorithms
 template<typename Iter, typename Snt, typename Cmp>
 concept partial_sort_iters_no_throw =
   ::fast_io::details::algorithms::sentinel_no_throw<Iter, Snt> &&
-  ::fast_io::details::algorithms::sort_iters_no_throw<Iter, Cmp> &&
-  ::fast_io::details::algorithms::comparator_pass_no_throw<Cmp>;
+  ::std::random_access_iterator<Iter> &&
+  ::fast_io::details::algorithms::heap_iters_no_throw<Iter, Cmp> &&
+  ::fast_io::details::algorithms::heap_comparator_pass_no_throw<Cmp>;
 
 template<typename R, typename Cmp>
 concept partial_sort_ranges_no_throw =
@@ -29,8 +30,8 @@ concept partial_sort_copy_iters_no_throw =
   ::fast_io::details::algorithms::sentinel_no_throw<Iter, Snt> &&
   ::fast_io::details::algorithms::sentinel_no_throw<OIter, OSnt> &&
   ::std::random_access_iterator<OIter> &&
-  ::fast_io::details::algorithms::sort_iters_no_throw<OIter, Cmp> &&
-  ::fast_io::details::algorithms::comparator_pass_no_throw<Cmp> &&
+  ::fast_io::details::algorithms::heap_iters_no_throw<OIter, Cmp> &&
+  ::fast_io::details::algorithms::heap_comparator_pass_no_throw<Cmp> &&
   requires(Iter &src, OIter &dest)
 {
   { *dest = *src } noexcept;
@@ -64,12 +65,31 @@ inline constexpr void partial_sort_iters_impl(
     !::fast_io::details::algorithms::partial_sort_iters_no_throw<
       Iter, Snt, Cmp>)
 {
-  // A complete sort also satisfies the partial-sort postcondition.
+  using difference_type = ::std::iter_difference_t<Iter>;
   Iter last_iter{first};
   for (; last_iter != last; ++last_iter)
   {
   }
-  ::fast_io::algorithms::sort_iters(first, last_iter, cmp);
+  difference_type const heap_size{middle - first};
+  if (heap_size <= 0)
+  {
+    return;
+  }
+  ::fast_io::details::algorithms::make_heap_iters_impl(
+    first, middle, cmp);
+  for (Iter it{middle}; it != last_iter; ++it)
+  {
+    if (!(0 > cmp.compare(*it, *first)))
+    {
+      continue;
+    }
+    auto value{::std::move(*it)};
+    *it = ::std::move(*first);
+    ::fast_io::details::algorithms::heap_sift_down(
+      first, difference_type{}, heap_size, ::std::move(value), cmp);
+  }
+  ::fast_io::details::algorithms::sort_heap_iters_impl(
+    first, middle, cmp);
 }
 
 template<typename Iter, typename Snt, typename OIter, typename OSnt,
@@ -80,6 +100,7 @@ inline constexpr OIter partial_sort_copy_iters_impl(
     !::fast_io::details::algorithms::partial_sort_copy_iters_no_throw<
       Iter, Snt, OIter, OSnt, Cmp>)
 {
+  using difference_type = ::std::iter_difference_t<OIter>;
   OIter d_end{d_first};
   while (first != last && d_end != d_last)
   {
@@ -91,39 +112,21 @@ inline constexpr OIter partial_sort_copy_iters_impl(
   {
     return d_first;
   }
-  ::fast_io::algorithms::sort_iters(d_first, d_end, cmp);
-  if (first == last)
-  {
-    return d_end;
-  }
-  OIter const max_pos{
-    [&]() constexpr
-    {
-      OIter pos{d_end};
-      --pos;
-      return pos;
-    }()};
+  difference_type const count{d_end - d_first};
+  ::fast_io::details::algorithms::make_heap_iters_impl(
+    d_first, d_end, cmp);
   for (; first != last; ++first)
   {
-    if (!(0 > cmp.compare(*first, *max_pos)))
+    if (!(0 > cmp.compare(*first, *d_first)))
     {
       continue;
     }
     ::std::iter_value_t<OIter> value(*first);
-    OIter pos{max_pos};
-    while (pos != d_first)
-    {
-      OIter prev{pos};
-      --prev;
-      if (!(0 > cmp.compare(value, *prev)))
-      {
-        break;
-      }
-      *pos = ::std::move(*prev);
-      pos = prev;
-    }
-    *pos = ::std::move(value);
+    ::fast_io::details::algorithms::heap_sift_down(
+      d_first, difference_type{}, count, ::std::move(value), cmp);
   }
+  ::fast_io::details::algorithms::sort_heap_iters_impl(
+    d_first, d_end, cmp);
   return d_end;
 }
 

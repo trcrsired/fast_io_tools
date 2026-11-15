@@ -48,9 +48,16 @@ bool check_random()
 			auto actual{source};
 			::fast_io::algorithms::partial_sort(actual, actual.begin() + middle);
 			if (!std::equal(expected.begin(), expected.begin() + middle, actual.begin()) ||
-				!std::is_sorted(actual.begin(), actual.end()))
+				!std::is_sorted(actual.begin(), actual.begin() + middle))
 			{
 				return false;
+			}
+			for (std::size_t i{middle}; i != n; ++i)
+			{
+				if (middle != 0 && actual[i] < actual[middle - 1])
+				{
+					return false;
+				}
 			}
 
 			std::vector<int> expected_out(n), actual_out(n);

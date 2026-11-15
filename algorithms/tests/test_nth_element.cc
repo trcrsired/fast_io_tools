@@ -58,7 +58,10 @@ bool check_random()
 			auto actual{source};
 			::fast_io::algorithms::nth_element(actual, actual.begin() + nth);
 			if (expected[nth] != actual[nth] ||
-				!std::is_sorted(actual.begin(), actual.end()))
+				!std::is_partitioned(actual.begin(), actual.begin() + nth,
+					[&](int value) { return value <= actual[nth]; }) ||
+				!std::is_partitioned(actual.begin() + nth, actual.end(),
+					[&](int value) { return value >= actual[nth]; }))
 			{
 				return false;
 			}
