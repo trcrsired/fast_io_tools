@@ -3,3 +3,8 @@
 /cpp.sink
 /rust.csv
 /rust_sort/target/
+/bench_rotate
+/cpp_rotate.csv
+/cpp_rotate.sink
+/rust_rotate.csv
+/rust_rotate/target/

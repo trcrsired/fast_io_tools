@@ -6,22 +6,14 @@ namespace fast_io::details::algorithms
 template<typename T>
 inline constexpr bool reverse_block_v{
   ::fast_io::details::algorithms::copy_trivial_v<T> &&
-  sizeof(T) <= 16};
-
-template<typename T>
-inline constexpr void reverse_swap(T &a, T &b)
-  FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::move_no_throw<T>)
-{
-  T temp{::std::move(a)};
-  a = ::std::move(b);
-  b = ::std::move(temp);
-}
+  sizeof(T) <= 16 &&
+  !::fast_io::details::algorithms::swap_adl::swappable<T &, T &>};
 
 template<typename T>
 inline constexpr void reverse_ptr(T *first, ::std::ptrdiff_t len)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::move_no_throw<T>)
+    !(::fast_io::details::algorithms::move_no_throw<T> &&
+      ::fast_io::details::algorithms::swap_no_throw_v<T>))
 {
   if (len < 2)
   {
@@ -57,7 +49,7 @@ inline constexpr void reverse_ptr(T *first, ::std::ptrdiff_t len)
   }
   while (i < j)
   {
-    ::fast_io::details::algorithms::reverse_swap(first[i], first[j]);
+    ::fast_io::algorithms::swap(first[i], first[j]);
     ++i;
     --j;
   }
@@ -66,7 +58,8 @@ inline constexpr void reverse_ptr(T *first, ::std::ptrdiff_t len)
 template<typename Iter>
 concept reverse_iter_no_throw =
   ::fast_io::details::algorithms::decrement_iter_no_throw<Iter> &&
-  ::fast_io::details::algorithms::move_no_throw<::std::iter_value_t<Iter>>;
+  ::fast_io::details::algorithms::move_no_throw<::std::iter_value_t<Iter>> &&
+  ::fast_io::details::algorithms::swap_no_throw_v<::std::iter_value_t<Iter>>;
 
 template<typename Iter, typename Snt>
 concept reverse_iters_no_throw =
@@ -107,7 +100,7 @@ inline constexpr void reverse_iters_impl(Iter first, Snt last)
     --last;
     while (first != last)
     {
-      ::fast_io::details::algorithms::reverse_swap(*first, *last);
+      ::fast_io::algorithms::swap(*first, *last);
       ++first;
       if (first == last)
       {

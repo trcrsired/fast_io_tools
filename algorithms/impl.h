@@ -8,6 +8,7 @@
 
 #include "common.h"
 #include "compare.h"
+#include "swap.h"
 
 #include "advance.h"
 #include "construct.h"
@@ -19,4 +20,5 @@
 #include "heap.h"
 #include "relocate.h"
 #include "reverse.h"
+#include "rotate.h"
 #include "sort.h"

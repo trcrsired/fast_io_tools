@@ -434,6 +434,70 @@ No-throw detection for iterators is deliberately minimal and lives in
   two families share one instantiation instead of each carrying a private
   reverse.
 
+## `swap` / `iter_swap`
+
+- APIs: `swap(T&&, U&&)` / `iter_swap(Iter1, Iter2)`.
+- Follows the decision order of libc++ `std::ranges::swap`: an unqualified
+  `swap` found by argument-dependent lookup when an operand is a class, union
+  or enum; element-wise exchange for lvalue arrays of equal extent; otherwise
+  the move-based exchange.
+- One function template selects the branch with `if constexpr`. The chosen
+  branch is recorded in `swap_kind_v`, so the `throws` condition is the one
+  that belongs to the branch actually taken instead of a conservative union.
+- Unqualified lookup is restricted to ADL by a deleted `swap` template in
+  `swap_adl`; the same namespace provides the `swappable` /
+  `nothrow_swappable` concepts. Rvalues are rejected for the move-based branch,
+  matching `std::ranges::swap`.
+- `swap_no_throw_v<T>` is the one-argument condition used by `reverse`, `sort`
+  and `rotate` for a pair of values of a known element type.
+- `iter_swap` forwards to `swap(*a, *b)`, so a type's own swap is preferred
+  there as well. This is why `reverse` and `sort` no longer carry private
+  move-exchange helpers.
+
+## `rotate`
+
+- APIs: `rotate_iters` / `rotate` / `rotate_index`.
+- `rotate_iters` takes a forward iterator, an iterator to the new first
+  element, and a sentinel; `rotate` takes a `forward_range` and an iterator;
+  `rotate_index` checks `firstidx <= middleidx <= lastidx` and rotates the
+  subrange.
+- All three return the position (or index) that now holds the old first
+  element, i.e. `first + (last - middle)`.
+- Contiguous ranges decay to pointers. A non-common sentinel is walked once to
+  an iterator before the rotation starts.
+- Pointer dispatch, in order:
+  1. A single-position rotation is one temporary plus one slide
+     (`left == 1` or `right == 1`). For trivially copyable elements the slide
+     is a `memmove`; otherwise it is a move-assignment loop.
+  2. Large trivially copyable elements whose size is a multiple of
+     `sizeof(size_t)` and whose alignment permits it are rotated as machine
+     words (`size_of(T) > 32`). This gives the block algorithms cheap,
+     vectorizable 8-byte elements and avoids element-sized juggling.
+  3. When the smaller side fits in the 4 KiB stack buffer, it is saved with
+     `memcpy`, the other side is moved with `memmove`, and the saved side is
+     copied back. The buffer is larger than Rust's 256-byte one because the
+     extra stack is cheap for a leaf helper and removes a whole block-swap
+     round on medium inputs.
+  4. For small total lengths (`left + right < 24`) use gcd juggling: two moves
+     per element instead of three. This is also the path for non-trivial
+     element types.
+  5. Otherwise use Gries-Mills block exchange. Two blocks of trivially
+     copyable values are exchanged through the same stack buffer, so a large
+     block is a few `memmove`s instead of one exchange per value. Small
+     trivially copyable types (up to 16 bytes) use the 4-element vectorizable
+     exchange used by `reverse`.
+- A type with an ADL `swap` bypasses every byte path, so its own swap is always
+  the one that runs. This keeps `rotate` consistent with `swap`'s decision
+  order.
+- Constant evaluation cannot use the stack buffer or reinterpret pointers as
+  words. `if consteval` therefore selects the gcd or element-exchange path;
+  those are fully `constexpr`.
+- Non-contiguous ranges (forward, bidirectional, `std::deque`) use the classic
+  forward rotation: one `iter_swap` per element, no temporary and no distance
+  requirement.
+- `throws` covers iterator increment and equality, element move construction,
+  move assignment, destruction and the element type's swap.
+
 ## `sort`
 
 - APIs: `sort_iters` / `sort` / `sort_index`.

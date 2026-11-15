@@ -66,3 +66,28 @@ pattern-defeating / partial insertion path exploits the long sorted prefix.
 `ipnsort` and this port deliberately use a single pass for run detection and
 then sort normally; they do not have the same `s95` optimization. They win by
 a wide margin on `random`, `d20`, `p5` and `descending`.
+
+# rotate benchmarks
+
+`bench_rotate.cc` benchmarks `fast_io::algorithms::rotate` against libc++'s
+`std::rotate`. `rust_rotate/` does the same for Rust's `slice::rotate_left`.
+Both use the same sizes, the same six shift positions and the same element
+types as the sort benchmarks.
+
+```
+./run_rotate_benchmarks.sh            # full run
+./run_rotate_benchmarks.sh --quick    # smaller sizes
+```
+
+Rows are nanoseconds per element (best of several repetitions). `fast/std` is
+libc++ `std::rotate` divided by `fast_io::rotate`; `fast/rust` is Rust
+`rotate_left` divided by `fast_io::rotate`. Values above 1.0 mean `fast_io` is
+faster. The merged table is printed by `summarize_rotate.py` from
+`cpp_rotate.csv` and `rust_rotate.csv`.
+
+The shifts are `1`, `n/8`, `n/4`, `n/2`, `7n/8` and `n-1`. The important
+cases are `1` / `n-1` (single slide), the small shifts (small-side buffer) and
+the near-half shifts (Gries-Mills block exchange). On the development machine
+`fast_io` is faster than Rust's `rotate_left` on almost every row; the largest
+remaining gap is a 1 KiB element rotated by a quarter at 100000 elements,
+where both implementations are memory-bound.

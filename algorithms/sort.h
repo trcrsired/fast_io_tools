@@ -78,7 +78,8 @@ template<typename Cmp, typename T>
 concept sort_ops_no_throw =
   ::fast_io::details::algorithms::sort_comparator_pass_no_throw<Cmp> &&
   ::fast_io::details::algorithms::sort_compare_no_throw<Cmp, T> &&
-  ::fast_io::details::algorithms::move_no_throw<T>;
+  ::fast_io::details::algorithms::move_no_throw<T> &&
+  ::fast_io::details::algorithms::swap_no_throw_v<T>;
 
 template<typename Cmp, typename T>
 concept sort_copy_ops_no_throw =
@@ -115,6 +116,8 @@ concept sort_iters_no_throw =
   ::fast_io::details::algorithms::sort_equal_no_throw_v<
     Cmp, ::std::iter_value_t<Iter>> &&
   ::fast_io::details::algorithms::move_no_throw<
+    ::std::iter_value_t<Iter>> &&
+  ::fast_io::details::algorithms::swap_no_throw_v<
     ::std::iter_value_t<Iter>>;
 
 template<typename R, typename Cmp>
@@ -165,16 +168,6 @@ inline constexpr bool sort_small_ops_no_throw = []() constexpr
     return ::fast_io::details::algorithms::sort_ops_no_throw<Cmp, T>;
   }
 }();
-
-template<typename T>
-inline constexpr void sort_swap(T &a, T &b)
-  FAST_IO_HERBCEPTIONS_THROWS_IF(
-    !::fast_io::details::algorithms::move_no_throw<T>)
-{
-  T temp{::std::move(a)};
-  a = ::std::move(b);
-  b = ::std::move(temp);
-}
 
 // Insert the element at `tail` into the already sorted range
 // [`begin`, `tail`), using the hole technique.
@@ -714,7 +707,7 @@ inline constexpr void sort_heapsort_sift_down(
     {
       break;
     }
-    ::fast_io::details::algorithms::sort_swap(first[node], first[child]);
+    ::fast_io::algorithms::swap(first[node], first[child]);
     node = child;
   }
 }
@@ -740,7 +733,7 @@ inline constexpr void sort_heapsort(
     {
       if (i != 0)
       {
-        ::fast_io::details::algorithms::sort_swap(first[0], first[i]);
+        ::fast_io::algorithms::swap(first[0], first[i]);
       }
       sift_idx = 0;
     }
@@ -1053,7 +1046,7 @@ inline constexpr ::std::iter_difference_t<Iter> sort_partition(
   }
   if (pivot_pos != 0)
   {
-    ::fast_io::details::algorithms::sort_swap(first[0], first[pivot_pos]);
+    ::fast_io::algorithms::swap(first[0], first[pivot_pos]);
   }
   difference_type num_lt;
   auto const *const pivot_ptr{::std::addressof(first[0])};
@@ -1079,7 +1072,7 @@ inline constexpr ::std::iter_difference_t<Iter> sort_partition(
   }
   if (num_lt != 0)
   {
-    ::fast_io::details::algorithms::sort_swap(first[0], first[num_lt]);
+    ::fast_io::algorithms::swap(first[0], first[num_lt]);
   }
   return num_lt;
 }

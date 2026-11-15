@@ -135,5 +135,69 @@ int main()
 		(void)ec;
 		caught = true;
 	}
-	return caught ? 0 : 9;
+	if (!caught)
+	{
+		return 9;
+	}
+
+	throwing_deque populated{};
+	for (int i{}; i != 5; ++i)
+	{
+		populated.data.push_back(i);
+	}
+
+	// middle before first
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::rotate_index(populated, 1, 0, 4);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 10;
+	}
+
+	// middle after last
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::rotate_index(populated, 1, 5, 4);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 11;
+	}
+
+	// A valid rotation must not report a violation.
+	caught = false;
+	try
+	{
+		auto const result{
+			::fast_io::algorithms::rotate_index(populated, 1, 3, 4)};
+		if (result != 2)
+		{
+			return 12;
+		}
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (caught)
+	{
+		return 13;
+	}
+
+	return 0;
 }
