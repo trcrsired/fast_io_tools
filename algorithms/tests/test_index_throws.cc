@@ -199,5 +199,52 @@ int main()
 		return 13;
 	}
 
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::remove_index(d, 0, 2, 7);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 14;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::lexicographical_compare_index(
+			d, 0, 2, populated, 0, 1);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 15;
+	}
+
+	caught = false;
+	try
+	{
+		::fast_io::algorithms::lexicographical_compare_index(
+			populated, 0, 1, d, 0, 2);
+	}
+	catch throws(::std::error ec)
+	{
+		(void)ec;
+		caught = true;
+	}
+	if (!caught)
+	{
+		return 16;
+	}
+
 	return 0;
 }

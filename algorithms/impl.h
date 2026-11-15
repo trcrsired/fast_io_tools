@@ -5,6 +5,7 @@
 // `compare.h` themselves.
 
 #include <bit>
+#include <compare>
 
 #include "common.h"
 #include "compare.h"
@@ -18,6 +19,8 @@
 #include "find.h"
 #include "for_each.h"
 #include "heap.h"
+#include "lexicographical_compare.h"
+#include "remove.h"
 #include "relocate.h"
 #include "reverse.h"
 #include "rotate.h"

@@ -23,7 +23,9 @@ Header layout: one algorithm family per header.
 - `find.h`: the `find` family.
 - `for_each.h`: the `for_each` family.
 - `heap.h`: the heap family.
+- `lexicographical_compare.h`: the lexicographical comparison family.
 - `relocate.h`: the relocate family, including the uninitialized move variants.
+- `remove.h`: the `remove` / `remove_if` family.
 - `reverse.h`: the `reverse` family.
 - `sort.h`: the unstable sort.
 - `impl.h`: umbrella. It is the only header that uses `#include`. It includes
@@ -263,6 +265,43 @@ No-throw detection for iterators is deliberately minimal and lives in
   `size < lastidx` are violations; `lastidx == size` is allowed.
 - `throws` includes the violation policy, the comparison, and the final
   `found - first`.
+
+## `lexicographical_compare`
+
+- APIs: `lexicographical_compare_iters` / `lexicographical_compare` /
+  `lexicographical_compare_index`, and the corresponding
+  `lexicographical_compare_three_way*` entries.
+- The iterator and range forms accept independent iterator/sentinel pairs and
+  `input_range`s. The index forms validate both `[firstidx, lastidx)` subranges
+  of two random-access ranges; the argument order is
+  `(r1, first1, last1, r2, first2, last2, cmp)`.
+- `lexicographical_compare` returns `bool` from a single `cmp.compare(a, b)`
+  call per element pair. `lexicographical_compare_three_way` returns the
+  comparison category produced by the comparator; exhaustion of the first range
+  yields `strong_ordering::less`, exhaustion of the second yields
+  `strong_ordering::greater`, and exhausting both yields
+  `strong_ordering::equal`.
+- `throws` includes both iterator increment gates, the by-value comparator
+  pass, and the comparator invocation. The index forms additionally include
+  both ranges' violation policies.
+
+## `remove`
+
+- APIs: `remove_iters` / `remove` / `remove_index`, and
+  `remove_if_iters` / `remove_if` / `remove_if_index`.
+- `remove` compares with `operator==`; `remove_if` invokes `f(*it)`. Both
+  preserve the relative order of the elements that are kept and return the new
+  logical end.
+- `remove_index` and `remove_if_index` return the new logical end index, so the
+  result has the same meaning as the returned iterator in the iterator API.
+- The first matching element is found through the `find` implementation, then a
+  single compaction scan move-assigns the kept elements into the prefix.
+- Contiguous iterators decay to pointers and re-enter one pointer
+  instantiation. Non-contiguous forward ranges (`std::forward_list`,
+  `std::list`) use the generic iterator path.
+- `throws` includes the comparison or predicate invocation, the equality
+  search, move assignment, the iterator increment gates, and, for the index
+  forms, the violation policy and the final index arithmetic.
 
 ## `copy`
 
