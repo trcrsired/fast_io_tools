@@ -439,6 +439,13 @@ No-throw detection for iterators is deliberately minimal and lives in
 - APIs: `sort_iters` / `sort` / `sort_index`.
 - `sort_index` bound-checks `[firstidx, lastidx)` and sorts that subrange.
 - Unstable, in-place, `O(N log N)` worst case, random-access iterators only.
+- Every entry point and helper is `constexpr`. During constant evaluation the
+  algorithm uses insertion sort for small subranges and the Lomuto partition
+  for every element size: the fast small sorts need uninitialized scratch and
+  the Hoare partition stores a gap element in a byte buffer, and neither can be
+  expressed in a constant expression because obtaining the typed pointer needs
+  `reinterpret_cast`. Those paths are guarded with `if consteval`, so runtime
+  codegen is unchanged.
 - Ported from ipnsort (sort-research-rs) by Lukas Bergdoll and Orson Peters.
 - Entry: return for `N < 2`; insertion sort for `N <= 20`; detect a fully
   ascending or descending run; otherwise quicksort with a depth limit of

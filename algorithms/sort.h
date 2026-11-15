@@ -167,7 +167,7 @@ inline constexpr bool sort_small_ops_no_throw = []() constexpr
 }();
 
 template<typename T>
-inline void sort_swap(T &a, T &b)
+inline constexpr void sort_swap(T &a, T &b)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::move_no_throw<T>)
 {
@@ -179,7 +179,7 @@ inline void sort_swap(T &a, T &b)
 // Insert the element at `tail` into the already sorted range
 // [`begin`, `tail`), using the hole technique.
 template<typename Iter, typename Cmp>
-inline void sort_insert_tail(
+inline constexpr void sort_insert_tail(
   Iter base, ::std::iter_difference_t<Iter> begin,
   ::std::iter_difference_t<Iter> tail, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
@@ -213,7 +213,7 @@ inline void sort_insert_tail(
 
 // Sort `v[0, len)` assuming `v[0, offset)` is already sorted.
 template<typename Iter, typename Cmp>
-inline void sort_insertion_sort_shift_left(
+inline constexpr void sort_insertion_sort_shift_left(
   Iter v, ::std::iter_difference_t<Iter> len,
   ::std::iter_difference_t<Iter> offset, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
@@ -249,7 +249,7 @@ inline void sort_insertion_sort_shift_left(
 }
 
 template<typename Iter, typename Cmp>
-inline void sort_swap_if_less(
+inline constexpr void sort_swap_if_less(
   Iter v, ::std::iter_difference_t<Iter> a,
   ::std::iter_difference_t<Iter> b, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
@@ -266,7 +266,7 @@ inline void sort_swap_if_less(
 
 // Optimal sorting network for 9 elements.
 template<typename Iter, typename Cmp>
-inline void sort9_optimal(Iter v, Cmp cmp)
+inline constexpr void sort9_optimal(Iter v, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::sort_copy_ops_iter_no_throw<Iter, Cmp>)
 {
@@ -299,7 +299,7 @@ inline void sort9_optimal(Iter v, Cmp cmp)
 
 // Optimal sorting network for 13 elements.
 template<typename Iter, typename Cmp>
-inline void sort13_optimal(Iter v, Cmp cmp)
+inline constexpr void sort13_optimal(Iter v, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::sort_copy_ops_iter_no_throw<Iter, Cmp>)
 {
@@ -355,7 +355,7 @@ struct sort_construct_dest
 {
   T *first;
   template<typename I>
-  inline void write(I i, T const &value) const
+  inline constexpr void write(I i, T const &value) const
     noexcept(::std::is_nothrow_copy_constructible_v<T>)
   {
     ::new (static_cast<void *>(first + i)) T(value);
@@ -367,7 +367,7 @@ struct sort_assign_dest
 {
   Iter first;
   template<typename I>
-  inline void write(I i, ::std::iter_value_t<Iter> const &value) const
+  inline constexpr void write(I i, ::std::iter_value_t<Iter> const &value) const
     noexcept(noexcept(first[i] = value))
   {
     first[i] = value;
@@ -386,7 +386,7 @@ concept sort_dest_write_no_throw =
 // exactly once. The order invariant is checked at the end; a broken strict
 // weak ordering traps.
 template<typename Src, typename Dest, typename Cmp>
-inline void sort_bidirectional_merge(
+inline constexpr void sort_bidirectional_merge(
   Src src, ::std::iter_difference_t<Src> len, Dest dest, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !(::fast_io::details::algorithms::iter_no_throw<Src> &&
@@ -466,7 +466,7 @@ template<typename T, ::std::size_t N>
 struct sort_scratch
 {
   alignas(T) ::std::byte storage[sizeof(T) * N];
-  inline T *data() noexcept
+  inline constexpr T *data() noexcept
   {
     return reinterpret_cast<T *>(storage);
   }
@@ -474,7 +474,7 @@ struct sort_scratch
 
 // Stable sort of 4 elements into uninitialized `dst`.
 template<typename Iter, typename Cmp>
-inline void sort4_stable(
+inline constexpr void sort4_stable(
   Iter v, ::std::iter_value_t<Iter> *dst, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::sort_copy_ops_iter_no_throw<Iter, Cmp>)
@@ -505,7 +505,7 @@ inline void sort4_stable(
 // Stable sort of 8 elements into uninitialized `dst`, using `temp` for 8
 // intermediate elements.
 template<typename Iter, typename Cmp>
-inline void sort8_stable(
+inline constexpr void sort8_stable(
   Iter v, ::std::iter_value_t<Iter> *dst,
   ::std::iter_value_t<Iter> *temp, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
@@ -520,7 +520,7 @@ inline void sort8_stable(
 }
 
 template<typename Iter, typename Cmp>
-inline void sort_small_sort_fallback(
+inline constexpr void sort_small_sort_fallback(
   Iter v, ::std::iter_difference_t<Iter> len, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::sort_ops_iter_no_throw<Iter, Cmp>)
@@ -532,7 +532,7 @@ inline void sort_small_sort_fallback(
 }
 
 template<typename Iter, typename Cmp>
-inline void sort_small_sort_general(
+inline constexpr void sort_small_sort_general(
   Iter v, ::std::iter_difference_t<Iter> len, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::sort_copy_ops_iter_no_throw<Iter, Cmp>)
@@ -602,7 +602,7 @@ inline void sort_small_sort_general(
 }
 
 template<typename Iter, typename Cmp>
-inline void sort_small_sort_network(
+inline constexpr void sort_small_sort_network(
   Iter v, ::std::iter_difference_t<Iter> len, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::sort_copy_ops_iter_no_throw<Iter, Cmp>)
@@ -659,7 +659,7 @@ inline void sort_small_sort_network(
 }
 
 template<typename Iter, typename Cmp>
-inline void sort_small_sort(
+inline constexpr void sort_small_sort(
   Iter v, ::std::iter_difference_t<Iter> len, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !(::fast_io::details::algorithms::iter_no_throw<Iter> &&
@@ -667,22 +667,32 @@ inline void sort_small_sort(
         Cmp, ::std::iter_value_t<Iter>>))
 {
   using value_type = ::std::iter_value_t<Iter>;
-  if constexpr (::fast_io::details::algorithms::sort_network_small_v<value_type>)
+  if consteval
   {
-    ::fast_io::details::algorithms::sort_small_sort_network(v, len, cmp);
-  }
-  else if constexpr (::fast_io::details::algorithms::sort_general_small_v<value_type>)
-  {
-    ::fast_io::details::algorithms::sort_small_sort_general(v, len, cmp);
+    // The fast small sorts need uninitialized scratch storage, which cannot
+    // be obtained in a constant expression. Constant evaluation is not
+    // performance sensitive, so use the insertion-sort fallback there.
+    ::fast_io::details::algorithms::sort_small_sort_fallback(v, len, cmp);
   }
   else
   {
-    ::fast_io::details::algorithms::sort_small_sort_fallback(v, len, cmp);
+    if constexpr (::fast_io::details::algorithms::sort_network_small_v<value_type>)
+    {
+      ::fast_io::details::algorithms::sort_small_sort_network(v, len, cmp);
+    }
+    else if constexpr (::fast_io::details::algorithms::sort_general_small_v<value_type>)
+    {
+      ::fast_io::details::algorithms::sort_small_sort_general(v, len, cmp);
+    }
+    else
+    {
+      ::fast_io::details::algorithms::sort_small_sort_fallback(v, len, cmp);
+    }
   }
 }
 
 template<typename Iter, typename Cmp>
-inline void sort_heapsort_sift_down(
+inline constexpr void sort_heapsort_sift_down(
   Iter first, ::std::iter_difference_t<Iter> n,
   ::std::iter_difference_t<Iter> node, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
@@ -712,7 +722,7 @@ inline void sort_heapsort_sift_down(
 // Branchless-heapsort style fallback, interleaving heap construction and
 // extraction. Used when the quicksort depth limit is exhausted.
 template<typename Iter, typename Cmp>
-inline void sort_heapsort(
+inline constexpr void sort_heapsort(
   Iter first, ::std::iter_difference_t<Iter> len, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::sort_ops_iter_no_throw<Iter, Cmp>)
@@ -741,7 +751,7 @@ inline void sort_heapsort(
 }
 
 template<typename Iter, typename Cmp>
-inline ::std::iter_difference_t<Iter> sort_median3(
+inline constexpr ::std::iter_difference_t<Iter> sort_median3(
   Iter v, ::std::iter_difference_t<Iter> a,
   ::std::iter_difference_t<Iter> b, ::std::iter_difference_t<Iter> c, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
@@ -758,7 +768,7 @@ inline ::std::iter_difference_t<Iter> sort_median3(
 }
 
 template<typename Iter, typename Cmp>
-inline ::std::iter_difference_t<Iter> sort_median3_rec(
+inline constexpr ::std::iter_difference_t<Iter> sort_median3_rec(
   Iter v, ::std::iter_difference_t<Iter> a,
   ::std::iter_difference_t<Iter> b, ::std::iter_difference_t<Iter> c,
   ::std::iter_difference_t<Iter> n, Cmp cmp)
@@ -785,7 +795,7 @@ inline ::std::iter_difference_t<Iter> sort_median3_rec(
 // Adaptive pseudomedian pivot selection from glidesort. Samples an
 // approximation of the median of roughly sqrt(n) elements.
 template<typename Iter, typename Cmp>
-inline ::std::iter_difference_t<Iter> sort_choose_pivot(
+inline constexpr ::std::iter_difference_t<Iter> sort_choose_pivot(
   Iter v, ::std::iter_difference_t<Iter> len, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::sort_ops_iter_no_throw<Iter, Cmp>)
@@ -810,7 +820,7 @@ inline ::std::iter_difference_t<Iter> sort_choose_pivot(
 // Branchless cyclic Lomuto partition for small and medium elements.
 // `equal` selects the equal-element partition: elements <= pivot go left.
 template<bool equal, typename Iter, typename Cmp>
-inline ::std::iter_difference_t<Iter> sort_partition_lomuto(
+inline constexpr ::std::iter_difference_t<Iter> sort_partition_lomuto(
   Iter first, ::std::iter_difference_t<Iter> len,
   ::std::iter_value_t<Iter> const *__restrict pivot_ptr, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
@@ -924,18 +934,18 @@ struct sort_gap
   alignas(T) ::std::byte storage[sizeof(T)];
   ::std::ptrdiff_t pos{};
   bool active{};
-  inline ~sort_gap() noexcept
+  inline constexpr ~sort_gap() noexcept
   {
     if (active)
     {
       ptr()->~T();
     }
   }
-  inline T *ptr() noexcept
+  inline constexpr T *ptr() noexcept
   {
     return reinterpret_cast<T *>(storage);
   }
-  inline void emplace(T &&value)
+  inline constexpr void emplace(T &&value)
     noexcept(::std::is_nothrow_move_constructible_v<T>)
   {
     ::new (static_cast<void *>(ptr())) T(::std::move(value));
@@ -946,7 +956,7 @@ struct sort_gap
 // Branchy cyclic Hoare partition for large elements. Fewer element moves
 // than pairwise swapping, which matters when copies are expensive.
 template<bool equal, typename Iter, typename Cmp>
-inline ::std::iter_difference_t<Iter> sort_partition_hoare(
+inline constexpr ::std::iter_difference_t<Iter> sort_partition_hoare(
   Iter first, ::std::iter_difference_t<Iter> len,
   ::std::iter_value_t<Iter> const *__restrict pivot_ptr, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
@@ -1025,7 +1035,7 @@ inline ::std::iter_difference_t<Iter> sort_partition_hoare(
 }
 
 template<bool equal, typename Iter, typename Cmp>
-inline ::std::iter_difference_t<Iter> sort_partition(
+inline constexpr ::std::iter_difference_t<Iter> sort_partition(
   Iter first, ::std::iter_difference_t<Iter> len,
   ::std::iter_difference_t<Iter> pivot_pos, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
@@ -1047,15 +1057,25 @@ inline ::std::iter_difference_t<Iter> sort_partition(
   }
   difference_type num_lt;
   auto const *const pivot_ptr{::std::addressof(first[0])};
-  if constexpr (sizeof(value_type) <= 96)
+  if consteval
   {
+    // The Hoare partition keeps one element in a byte buffer and therefore
+    // cannot run in a constant expression. Lomuto has no such storage.
     num_lt = ::fast_io::details::algorithms::sort_partition_lomuto<equal>(
       first, len, pivot_ptr, cmp);
   }
   else
   {
-    num_lt = ::fast_io::details::algorithms::sort_partition_hoare<equal>(
-      first, len, pivot_ptr, cmp);
+    if constexpr (sizeof(value_type) <= 96)
+    {
+      num_lt = ::fast_io::details::algorithms::sort_partition_lomuto<equal>(
+        first, len, pivot_ptr, cmp);
+    }
+    else
+    {
+      num_lt = ::fast_io::details::algorithms::sort_partition_hoare<equal>(
+        first, len, pivot_ptr, cmp);
+    }
   }
   if (num_lt != 0)
   {
@@ -1065,7 +1085,7 @@ inline ::std::iter_difference_t<Iter> sort_partition(
 }
 
 template<typename Iter, typename Cmp>
-inline void sort_quicksort(
+inline constexpr void sort_quicksort(
   Iter first, ::std::iter_difference_t<Iter> len,
   Iter ancestor, bool has_ancestor,
   ::std::iter_difference_t<Iter> limit, Cmp cmp)
@@ -1121,7 +1141,7 @@ struct sort_run
 };
 
 template<typename Iter, typename Cmp>
-inline ::fast_io::details::algorithms::sort_run sort_find_existing_run(
+inline constexpr ::fast_io::details::algorithms::sort_run sort_find_existing_run(
   Iter first, ::std::iter_difference_t<Iter> len, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::sort_ops_iter_no_throw<Iter, Cmp>)
@@ -1197,7 +1217,7 @@ inline ::fast_io::details::algorithms::sort_run sort_find_existing_run(
   return {static_cast<::std::ptrdiff_t>(run_len), descending};
 }
 
-inline ::std::ptrdiff_t sort_floor_log2(::std::size_t n) noexcept
+inline constexpr ::std::ptrdiff_t sort_floor_log2(::std::size_t n) noexcept
 {
   ::std::ptrdiff_t r{};
   while (n > 1)
@@ -1209,7 +1229,7 @@ inline ::std::ptrdiff_t sort_floor_log2(::std::size_t n) noexcept
 }
 
 template<::std::random_access_iterator Iter, typename Cmp>
-inline void sort_iters_impl(Iter first, Iter last, Cmp cmp)
+inline constexpr void sort_iters_impl(Iter first, Iter last, Cmp cmp)
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !(::fast_io::details::algorithms::sort_iters_no_throw<Iter, Cmp> &&
       ::fast_io::details::algorithms::sort_comparator_pass_no_throw<Cmp>))
@@ -1270,7 +1290,7 @@ namespace fast_io::algorithms
 // Unstable, in-place, O(N log N) worst-case sort.
 template<::std::random_access_iterator Iter,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline void sort_iters(Iter first, Iter last, Cmp cmp = Cmp{})
+inline constexpr void sort_iters(Iter first, Iter last, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !(::fast_io::details::algorithms::sort_iters_no_throw<Iter, Cmp> &&
       ::fast_io::details::algorithms::sort_comparator_pass_no_throw<Cmp>))
@@ -1280,7 +1300,7 @@ inline void sort_iters(Iter first, Iter last, Cmp cmp = Cmp{})
 
 template<::std::ranges::random_access_range R,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline void sort(R &&r, Cmp cmp = Cmp{})
+inline constexpr void sort(R &&r, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !(::fast_io::details::algorithms::sort_iters_no_throw<
         ::std::ranges::iterator_t<R>, Cmp> &&
@@ -1292,7 +1312,7 @@ inline void sort(R &&r, Cmp cmp = Cmp{})
 
 template<::std::ranges::random_access_range R,
   typename Cmp = ::fast_io::algorithms::compare_three_way>
-inline void sort_index(
+inline constexpr void sort_index(
   R &&r, ::std::size_t firstidx, ::std::size_t lastidx, Cmp cmp = Cmp{})
   FAST_IO_HERBCEPTIONS_THROWS_IF(
     !::fast_io::details::algorithms::sort_index_no_throw<R, Cmp>)

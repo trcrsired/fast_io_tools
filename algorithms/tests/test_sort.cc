@@ -324,6 +324,179 @@ bool check_sort_index()
 	return true;
 }
 
+struct greater_compare
+{
+	template <typename T, typename U>
+	inline constexpr auto compare(T const &a, U const &b) const noexcept
+	{
+		return b <=> a;
+	}
+};
+
+struct cx_pair
+{
+	int key;
+	int value;
+};
+
+struct cx_pair_compare
+{
+	inline constexpr auto compare(cx_pair const &a, cx_pair const &b) const noexcept
+	{
+		return a.key <=> b.key;
+	}
+};
+
+struct cx_big
+{
+	long long key;
+	long long payload;
+};
+
+struct cx_big_compare
+{
+	inline constexpr auto compare(cx_big const &a, cx_big const &b) const noexcept
+	{
+		return a.key <=> b.key;
+	}
+};
+
+template <typename T>
+constexpr bool constexpr_sorted_ascending(T const *a, std::size_t n)
+{
+	for (std::size_t i{1}; i < n; ++i)
+	{
+		if (a[i] < a[i - 1])
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+constexpr bool constexpr_pairs_sorted(cx_pair const *a, std::size_t n)
+{
+	for (std::size_t i{1}; i < n; ++i)
+	{
+		if (a[i].key < a[i - 1].key)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+constexpr bool constexpr_big_sorted(cx_big const *a, std::size_t n)
+{
+	for (std::size_t i{1}; i < n; ++i)
+	{
+		if (a[i].key < a[i - 1].key)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+constexpr bool check_constexpr_sort()
+{
+	// Insertion sort path for very small inputs.
+	{
+		int a[]{5, 4, 3, 2, 1};
+		::fast_io::algorithms::sort(a);
+		if (!constexpr_sorted_ascending(a, 5))
+		{
+			return false;
+		}
+	}
+
+	// Descending run detection and reversal.
+	{
+		int a[40]{};
+		for (int i{}; i != 40; ++i)
+		{
+			a[i] = 40 - i;
+		}
+		::fast_io::algorithms::sort(a);
+		if (!constexpr_sorted_ascending(a, 40))
+		{
+			return false;
+		}
+	}
+
+	// Quicksort partitioning with a duplicate-heavy input.
+	{
+		int a[200]{};
+		for (int i{}; i != 200; ++i)
+		{
+			a[i] = (i * 97 + 13) % 41;
+		}
+		::fast_io::algorithms::sort(a);
+		if (!constexpr_sorted_ascending(a, 200))
+		{
+			return false;
+		}
+	}
+
+	// Custom comparator and iterator entry point.
+	{
+		int a[]{1, 2, 3, 4, 5};
+		::fast_io::algorithms::sort_iters(a, a + 5, greater_compare{});
+		for (int i{1}; i != 5; ++i)
+		{
+			if (a[i - 1] < a[i])
+			{
+				return false;
+			}
+		}
+	}
+
+	// Non-trivial element type sorted through a custom comparator.
+	{
+		cx_pair a[]{{4, 0}, {2, 1}, {5, 2}, {1, 3}, {2, 4}, {0, 5}, {3, 6}};
+		::fast_io::algorithms::sort(a, cx_pair_compare{});
+		if (!constexpr_pairs_sorted(a, 7))
+		{
+			return false;
+		}
+	}
+
+	// Elements wider than the run-detection unroll threshold.
+	{
+		cx_big a[100]{};
+		for (int i{}; i != 100; ++i)
+		{
+			a[i] = cx_big{static_cast<long long>((i * 61 + 7) % 100), i};
+		}
+		::fast_io::algorithms::sort(a, cx_big_compare{});
+		if (!constexpr_big_sorted(a, 100))
+		{
+			return false;
+		}
+	}
+
+	// Bounds-checked subrange entry point.
+	{
+		int a[]{9, 8, 7, 6, 5, 4, 3};
+		::fast_io::algorithms::sort_index(a, 1, 6);
+		if (a[0] != 9 || a[6] != 3)
+		{
+			return false;
+		}
+		for (int i{2}; i != 6; ++i)
+		{
+			if (a[i - 1] > a[i])
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+static_assert(check_constexpr_sort());
+
 } // namespace
 
 static_assert(noexcept(::fast_io::algorithms::sort(
