@@ -1219,13 +1219,9 @@ inline constexpr ::fast_io::details::algorithms::sort_run sort_find_existing_run
 
 inline constexpr ::std::ptrdiff_t sort_floor_log2(::std::size_t n) noexcept
 {
-  ::std::ptrdiff_t r{};
-  while (n > 1)
-  {
-    n >>= 1;
-    ++r;
-  }
-  return r;
+  // std::bit_width(n) is 1 + floor(log2(n)) for n != 0.
+  return n == 0 ? 0
+                : static_cast<::std::ptrdiff_t>(::std::bit_width(n) - 1);
 }
 
 template<::std::random_access_iterator Iter, typename Cmp>

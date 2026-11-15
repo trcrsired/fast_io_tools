@@ -4,6 +4,8 @@
 // header. Family headers intentionally do not include `common.h` or
 // `compare.h` themselves.
 
+#include <bit>
+
 #include "common.h"
 #include "compare.h"
 

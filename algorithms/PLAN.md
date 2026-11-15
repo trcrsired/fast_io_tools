@@ -449,7 +449,9 @@ No-throw detection for iterators is deliberately minimal and lives in
 - Ported from ipnsort (sort-research-rs) by Lukas Bergdoll and Orson Peters.
 - Entry: return for `N < 2`; insertion sort for `N <= 20`; detect a fully
   ascending or descending run; otherwise quicksort with a depth limit of
-  `2 * floor(log2(N))` and a heapsort fallback.
+  `2 * floor(log2(N))` and a heapsort fallback. The limit is computed as
+  `2 * (::std::bit_width(N) - 1)` from `<bit>`; `impl.h` includes `<bit>` since
+  family headers carry no includes.
 - Pivot selection is the glidesort adaptive pseudomedian sampler (median of 3
   below 64 elements, recursive sampling of roughly `N^0.528` elements above).
 - Quicksort recurses into the left side and loops on the right. The ancestor
