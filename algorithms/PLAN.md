@@ -19,7 +19,8 @@ Header layout: one algorithm family per header.
 - `common.h`: shared index helpers, flag lookup, iterator/range concepts,
   comparator pass/equality helpers, and element traits shared by several
   families.
-- `compare.h`: the default `compare_three_way` comparator.
+- `compare.h`: the default `compare_three_way` comparator, `compare_by` and
+  `descend_compare_by`.
 - `construct.h`: the uninitialized default/value construction family.
 - `copy.h`: the copy family, including the uninitialized copy variants.
 - `count.h`: the `count` / `count_if` family.
@@ -106,10 +107,9 @@ time instead of carrying a second advance loop.
 - No `_unchecked` variants. The convention already encodes the policy.
 - `f` receives the element (`f(*first)`), never the iterator.
 - Comparators use `<=>`, not `<`, and are passed by value.
-- Comparator invocation goes through a named `compare` member, never through
-  `operator()`.
-- `operator()` is only accepted as a lambda adapter input, and is erased to a
-  function pointer at the API boundary.
+- Comparators are named types with a `compare` member. Lambdas and `operator()`
+  callables are not accepted and are not adapted or erased. A one-off ordering
+  is written as a small named struct.
 - Unrecoverable internal failure uses `__builtin_trap()`.
 - Construction into uninitialized storage uses placement new. `std::construct_at`
   is not used; placement new works under herbceptions and in constant
@@ -926,47 +926,19 @@ Ordering itself may throw:
 All of those belong in the `throws(...)` condition. Do not assume an ordering
 type is non-throwing just because the standard ordering categories are.
 
-### No `operator()` in the algorithm core
+### Named comparators only
 
-Never instantiate an algorithm body on a closure type.
+A comparator is always a named type with a real `compare` member.
 
-- Public function sees the user callable.
-- If it has `.compare`, use it directly.
-- Otherwise it is a lambda-like callable and is erased.
-
-This is one function with internal `if constexpr`, not two overloads.
-
-### Erasure
-
-Erased comparator is a small value object containing:
-
-- an optional context pointer for captures
-- a function pointer / trampoline
-- a `compare` member that calls the trampoline
-
-Captureless lambda: null context, plain function pointer.
-Capturing lambda: context pointer plus trampoline; no allocation.
-
-The trampoline signature uses `void const*` or byte pointers. The heavy
-algorithm is instantiated on the erased comparator type, not on the closure
-type, so two identical lambdas produce one heavy instantiation.
-
-### `throws` through erasure
-
-The trampoline and the erased comparator carry a compile-time may-throw bit.
-An erased comparator that may throw and one that may not are distinct types, so
-the heavy core can be declared with `throws(false)` or `throws(...)` correctly
-without per-lambda duplication.
-
-- Public adapter spec is computed from the original callable.
-- Heavy core spec is computed from the erased comparator.
-- `throws(false)` is the spelling used for the non-throwing instantiations.
-
-### Named comparators
-
-A named comparator with a real `.compare` is already a deliberate type and may
-bypass erasure. This is not a duplication problem because the type was chosen
-explicitly. The internal dispatch still happens inside one function.
+- Lambdas and other `operator()` callables are rejected, not adapted and not
+  erased.
+- There is no callable adapter and no erased comparator. A closure type inside
+  the algorithm body would silently multiply instantiations and would make
+  `throws` depend on an invisible trampoline.
+- A one-off ordering is written as a small named struct, optionally with
+  `compare_by` for member projections.
+- Distinct named comparators produce distinct instantiations. That duplication
+  is deliberate and visible in the source.
 
 ### Partial ordering
 
@@ -984,23 +956,23 @@ Reasons:
 - `cmp.compare(a, b)` already receives the whole elements, so the comparator can
   extract whatever key it wants. A projector is redundant for the core design.
 - Every extra callable parameter is another template axis and another source of
-  duplicate instantiations. A projector parameter would multiply the problem
-  the comparator erasure is meant to solve.
-- A lambda projector is exactly the closure-type bloat we are removing.
+  duplicate instantiations.
+- A lambda projector would put a closure type inside the algorithm body.
 - `throws` stays simpler when there is only one user callable in the core.
 
 If projection ergonomics are needed later, the projection belongs inside a
-comparator adapter:
+named comparator type:
 
-- member pointers (`&T::field`) or similar canonical values
+- member pointers (`&T::field`) or named projection types
 - a named comparator object with a real `.compare`
-- the same erasure/canonicalization rules as any other comparator
+- lambda projections are rejected like lambda comparators
 
 It must not become an extra algorithm parameter.
 
 ### `compare_by`
 
-Chosen design: `compare_by<Projection, Comparator = compare_three_way>`.
+Chosen design: `compare_by<Projection, Comparator = compare_three_way>`,
+implemented in `compare.h`.
 
 It is an ordinary comparator type:
 
@@ -1013,7 +985,31 @@ Class template argument deduction keeps the call site short:
 
 - `sort(r, compare_by{&T::field})`
 - `sort(r, compare_by{&T::field, compare_three_way{}})`
-- `sort(r, compare_by{&T::field, compare_descending{}})`
+- `sort(r, descend_compare_by{&T::field})`
+- `sort(r, compare_by{&T::field, named_descending{}})`
+
+There is no default projection and no identity function object. A projection is
+always explicit. Identity ordering is expressed by passing no comparator at all,
+which selects `compare_three_way`.
+
+`compare_by` also forwards `equal` to the wrapped comparator, so equality-based
+algorithms keep the comparator fast path when it exists.
+
+### `descend_compare_by`
+
+`descend_compare_by<Projection, Comparator = compare_three_way>` is the
+reversed form. It applies the same projection and invokes the wrapped
+comparator with the two projected keys swapped. Equality is symmetric, so it is
+forwarded unchanged.
+
+Deduction guides mirror `compare_by`:
+
+- `descend_compare_by{&T::field}`
+- `descend_compare_by{&T::field, compare_three_way{}}`
+- `descend_compare_by{&T::field, named_descending{}}`
+
+Passing a descending comparator to `descend_compare_by` yields ascending order,
+because the reversal is applied once more.
 
 The algorithm still sees exactly one comparator argument with `.compare`. No
 projector template axis is added to the algorithm. `compare_by` itself is the
@@ -1029,64 +1025,14 @@ are all included in `compare_by::compare`’s `throws` condition.
 
 Canonicalization rules:
 
-- member pointers and named projection types are already canonical values
-- captureless lambda projections can be erased to a function pointer
-- capturing/generic projections go through the same erased-callable machinery
-- if the projection and comparator are erased together, the heavy algorithm
-  core is still instantiated once per erased comparator type, not per lambda
-
-Trade-off: a compile-time member pointer can be applied directly without an
-indirect call, but then the algorithm core is instantiated per projection type.
-Erasing the projection removes those instantiations at the cost of an indirect
-call. `compare_by` follows the same policy as the comparator itself: named
-projections stay static, lambdas get erased.
+- member pointers and named projection types are the only accepted projections
+- lambda projections are rejected, matching the comparator rule
+- the projection is applied statically, so the core is instantiated per
+  projection type; that instantiation is deliberate and visible
 
 Multi-key ordering is not a separate algorithm parameter. If needed, it is a
 projection that produces a tuple-like key, or a dedicated named comparator with
 its own `.compare`.
-
-## Element-type deduplication
-
-`int` and `long` are separate template instantiations even when they are
-layout-compatible and the comparator semantics are the same.
-
-Two levels:
-
-### Comparator-level
-
-Erase the comparator to a signature over `void const*` / byte pointers. This
-shares the comparator call shape across element types, but the algorithm body
-still depends on `T` for moves and swaps.
-
-### Layout-level, trivial types only
-
-For trivially copyable or trivially relocatable element types, the algorithm
-body can operate on:
-
-- `std::byte*`
-- element count
-- runtime `sizeof(T)`
-- runtime `alignof(T)`
-- erased comparator over `void const*`
-
-Then `int` and `long` with the same size/alignment share one algorithm body.
-Only the per-type comparator thunk differs.
-
-Restrictions:
-
-- valid only for trivially copyable / trivially relocatable types
-- object lifetime rules still apply
-- alignment must be respected
-- non-trivial types must stay on the typed path
-- comparison still needs a per-type thunk
-
-The intended split:
-
-- trivial/relocatable elements: byte-based shared core
-- non-trivial elements: typed core
-
-This is the same philosophy as the shared index checker: one runtime body, type
-information passed as data.
 
 ## Failure model
 
@@ -1152,12 +1098,9 @@ herbceptions.
 
 ## Remaining decisions
 
-1. Comparator erased-signature shape and whether named comparators bypass
-   erasure.
-2. Whether the trivial-element byte core is part of the first implementation.
-3. Core-level home for the contract-violation reporter.
-4. Return values for the three public functions (`void` or final state).
-5. Exposing `allocator_flags` on the fast_io containers themselves.
+1. Core-level home for the contract-violation reporter.
+2. Return values for the three public functions (`void` or final state).
+3. Exposing `allocator_flags` on the fast_io containers themselves.
 
 ## Implementation order
 
@@ -1166,8 +1109,8 @@ herbceptions.
    `algo_index_to_iters`.
 3. Correct the index path and the shared byte checker.
 4. Correct `for_each_iters` decay, callback semantics, and iterator `throws`.
-5. Add the comparator adapter and erased comparator.
-6. Add the trivial-element byte core.
+5. `compare_by` is implemented; extend it only when a concrete projection need
+   appears.
 
 ## Open dialogs (processed / dropped)
 
@@ -1175,4 +1118,5 @@ herbceptions.
   forced call emission.
 - No renamed APIs and no `_unchecked` variants.
 - No overload sets.
-- Lambda bloat is handled by type-erasing callables at the boundary.
+- No lambda comparators. Comparators are named types with `.compare`; callable
+  adaptation and erasure are rejected as a source of hidden cost and confusion.
